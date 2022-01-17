@@ -1,0 +1,51 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title> Clients List </ion-title>
+    <ion-button
+      (click)="resetSearch()"
+      slot="end"
+      fill="none"
+      data-bs-toggle="collapse"
+      data-bs-target="#collapseExample"
+      ><ion-icon name="search-sharp" slot="icon-only"></ion-icon
+    ></ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="collapse sticky-top mb-0" id="collapseExample">
+    <div class="container input-group px-2 pt-2 pb-1">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Type to search Clients"
+        [(ngModel)]="clientSearchValue"
+      />
+      <span class="input-group-text" (click)="resetSearch()"
+        ><ion-icon name="close-circle-outline" size="large"></ion-icon
+      ></span>
+    </div>
+  </div>
+
+  <div class="container">
+    <button
+      *ngFor="let client of clientsData | clientsSearch:clientSearchValue"
+      (click)="openClientDetails(client.name)"
+      class="list-group-item list-group-item-action rounded-3 my-1 silverBg border-2"
+    >
+      <span class="fs-5">{{client?.name}}</span>
+      <span class="badge rounded-circle bg-primary m-2 my-0"
+        >{{client?.data?.length - getRecordsInfo(client.data)}}</span
+      >
+      <span class="badge rounded-circle bg-success"
+        >{{getRecordsInfo(client.data)}}</span
+      >
+    </button>
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="danger" routerLink="/addNewClient" class="me-2 mb-1">
+      <ion-icon name="add" size="large"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

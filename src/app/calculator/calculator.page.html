@@ -1,0 +1,220 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Interest Calculator</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <div class="container">
+      <p class="fs-4 fw-2 mx-1 my-2 ms-1 text-center">
+        Enter details to calculate
+      </p>
+      <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            placeholder="name"
+            name="clientName"
+            [ngModel]="clientName"
+            disabled
+          />
+          <label for="name">Client name</label>
+        </div>
+        <div class="mb-3 d-flex justify-content-between">
+          <div class="form-floating d-inline-block">
+            <input
+              type="number"
+              class="form-control"
+              id="principal"
+              placeholder="100000"
+              #principal="ngModel"
+              name="principal"
+              [(ngModel)]="linkData.principal"
+              required
+              [class.is-valid]="principal.valid"
+              [class.is-invalid]="principal.invalid &&  formRef.submitted"
+            />
+            <label for="principal">Principal</label>
+            <div id="principal" class="invalid-feedback">
+              Please enter Principal amount.
+            </div>
+          </div>
+  
+          <div class="form-floating d-inline-block">
+            <input
+              type="number"
+              class="form-control"
+              id="interest"
+              placeholder="1.50"
+              [(ngModel)]="linkData.interest"
+              name="interest"
+              #interest="ngModel"
+              required
+              [class.is-valid]="interest.valid"
+              [class.is-invalid]="interest.invalid &&  formRef.submitted"
+            />
+            <label for="interest">Interest Rate</label>
+            <div id="interest" class="invalid-feedback">
+              Please enter interest value.
+            </div>
+          </div>
+        </div>
+  
+        <div class="form-floating mb-3">
+          <input
+            type="date"
+            class="form-control"
+            id="startDate"
+            [(ngModel)]="linkData.startDate"
+            name="startDate"
+            required
+            #startDate="ngModel"
+            [class.is-valid]="startDate.valid"
+            [class.is-invalid]="startDate.invalid &&  formRef.submitted"
+          />
+          <label for="startDate">Start date</label>
+          <div id="startDate" class="invalid-feedback">
+            Please enter start Date.
+          </div>
+        </div>
+        <div class="form-floating mb-2">
+          <input
+            type="date"
+            class="form-control"
+            id="endDate"
+            [(ngModel)]="linkData.endDate"
+            name="endDate"
+            required
+            #endDate="ngModel"
+            [class.is-valid]="endDate.valid"
+            [class.is-invalid]="endDate.invalid &&  formRef.submitted"
+          />
+          <label for="endDate">End date</label>
+          <div id="endDate" class="invalid-feedback">Please enter end Date.</div>
+        </div>
+  
+        <div
+          *ngIf="linkData?.closedOn"
+          class="bg-success rounded-3 text-light  text-center"
+        >
+          <div class="p-2">
+            Record closed on
+            <span class="fw-bold"
+              >{{linkData?.closedOndata?.closedOn.split('-').reverse().join('/')}}</span
+            ><br />
+            with amount
+            <span class="fw-bold">₹ {{linkData?.closedAmount}}</span>
+          </div>
+        </div>
+  
+        <div class="d-grid mt-2 gap-2">
+          <button class="btn btn-warning" type="submit">Calculate</button>
+        </div>
+      </form>
+      <!-- <h1>{{linkData | json}}</h1> -->
+  
+      <hr />
+  
+      <div *ngIf="showCalculatedData">
+        <div class="p-2 border border-success rounded-3 border-3 m-1">
+          <h4 class="text-center text-light bg-success rounded-3 p-2">
+            Entered Data
+          </h4>
+          <div class="row p-1">
+            <div class="col fw-bold">Principal</div>
+            :
+            <div class="col fw-bold">{{currencyFormat(linkData.principal)}}</div>
+          </div>
+          <div class="row p-1">
+            <div class="col fw-bold">Rate</div>
+            :
+            <div class="col">{{linkData.interest}}</div>
+          </div>
+          <div class="row p-1">
+            <div class="col fw-bold">Start Date</div>
+            :
+            <div class="col">
+              {{linkData.startDate.split('-').reverse().join('/')}}
+            </div>
+          </div>
+          <div class="row p-1">
+            <div class="col fw-bold">End Date</div>
+            :
+            <div class="col">
+              {{linkData.endDate.split('-').reverse().join('/')}}
+            </div>
+          </div>
+          <h4 class="text-center text-light bg-success rounded-3 p-2">
+            Calculated Data
+          </h4>
+          <div class="row p-1">
+            <div class="col fw-bold">Time Period</div>
+            :
+            <div class="col">
+              {{timePeriod?.y}}y, {{timePeriod?.m}}m, {{timePeriod?.d}}d
+            </div>
+          </div>
+          <div class="row p-1">
+            <div class="col fw-bold">in months</div>
+            :
+            <div class="col">{{timePeriodInMonths?.toFixed(2)}} M</div>
+          </div>
+          <div class="row p-1">
+            <div class="col fw-bold">
+              Interest Amount <br />
+              <span *ngIf="advIntShow">(for 3 years)</span>
+            </div>
+            :
+            <div class="col fw-bolder">
+              {{currencyFormat(interestObj?.interest)}}
+            </div>
+          </div>
+          <div *ngIf="!advIntShow">
+            <div class="row p-1">
+              <div class="col fw-bold">Total Amount</div>
+              :
+              <div class="col fw-bolder">
+                {{currencyFormat(interestObj?.interest + linkData?.principal)}}
+              </div>
+            </div>
+          </div>
+          <div *ngIf="advIntShow">
+            <h4 class="text-center text-light bg-danger rounded-3 p-2">
+              Time taken greater than 3 years
+            </h4>
+            <div class="row p-1">
+              <div class="col fw-bold">New Principal</div>
+              :
+              <div class="col">{{currencyFormat(interestObj?.newPrincipal)}}</div>
+            </div>
+            <div class="row p-1">
+              <div class="col fw-bold">Remaining Time</div>
+              :
+              <div class="col">
+                {{timePeriod?.y - 3}}y, {{timePeriod?.m}}m, {{timePeriod?.d}}d
+                ({{interestObj?.tm.toFixed(2)}}M)
+              </div>
+            </div>
+            <div class="row p-1">
+              <div class="col fw-bold">New Interest</div>
+              :
+              <div class="col fw-bold">
+                {{currencyFormat(interestObj?.newInterest)}}
+              </div>
+            </div>
+            <div class="row p-1">
+              <div class="col fw-bold">Final Amount</div>
+              :
+              <div class="col fw-bold">
+                {{currencyFormat(interestObj?.newPrincipal +
+                interestObj?.newInterest)}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ion-content>
+  

@@ -4,33 +4,53 @@ import { TabsPage } from './tabs.page';
 
 const routes: Routes = [
   {
-    path: 'tabs',
+    path: 'clida',
     component: TabsPage,
     children: [
       {
-        path: 'tab1',
-        loadChildren: () => import('../tab1/tab1.module').then(m => m.Tab1PageModule)
+        path: 'clients-list',
+        loadChildren: () =>
+          import('../clients-list/clients-list.module').then(
+            (m) => m.ClientsListPageModule
+          ),
       },
       {
-        path: 'tab2',
-        loadChildren: () => import('../tab2/tab2.module').then(m => m.Tab2PageModule)
+        path: 'clients-list/client-details/:name',
+        loadChildren: () =>
+          import('../clients-list/client-details/client-details.module').then(
+            (m) => m.ClientDetailsPageModule
+          ),
       },
       {
-        path: 'tab3',
-        loadChildren: () => import('../tab3/tab3.module').then(m => m.Tab3PageModule)
+        path: 'dashboard',
+        loadChildren: () =>
+          import('../dashboard/dashboard.module').then(
+            (m) => m.DashboardPageModule
+          ),
       },
       {
-        path: '',
-        redirectTo: '/tabs/tab1',
-        pathMatch: 'full'
-      }
-    ]
+        path: 'calculator/:name/:id',
+        loadChildren: () =>
+          import('../calculator/calculator.module').then(
+            (m) => m.CalculatorPageModule
+          ),
+      },
+      {
+        path: 'calculator',
+        redirectTo: 'calculator/-/0',
+      },
+      {
+        path: 'about',
+        loadChildren: () =>
+          import('../about/about.module').then((m) => m.AboutPageModule),
+      },
+    ],
   },
   {
     path: '',
-    redirectTo: '/tabs/tab1',
-    pathMatch: 'full'
-  }
+    redirectTo: '/clida/clients-list',
+    pathMatch: 'full',
+  },
 ];
 
 @NgModule({
