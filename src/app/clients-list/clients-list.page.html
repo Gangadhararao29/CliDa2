@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title> Clients List </ion-title>
     <ion-button
-      [hidden]="true"
+      [hidden]="showEntryText"
       (click)="resetSearch()"
       slot="end"
       fill="none"
@@ -28,7 +28,48 @@
     </div>
   </div>
 
-  <div class="container">
+  <div *ngIf="showEntryText" class="text-center mx-2 container">
+    <h3 class="border border-primary border-3 p-2 rounded-3 mt-3">
+      Clida says Hello 👋
+    </h3>
+
+    <div class="bg-info p-2 rounded-3">
+      <p>
+        If you used the app before,<br />
+        and to load the previous data,<br />
+        click on Export/Import button ,<br />
+        to import Json file.
+      </p>
+      <button class="btn btn-primary mb-1 rounded-pill" routerLink="/share">
+        Export / Import
+      </button>
+    </div>
+
+    <div class="bg-info p-2 rounded-3 mt-2">
+      <p>
+        To add the clients manually,<br />
+        click on the below button, Or<br />
+        click on the bottom right add button.
+      </p>
+      <button
+        class="btn btn-danger mb-1 rounded-pill"
+        routerLink="/addNewClient"
+      >
+        Add new Client
+      </button>
+    </div>
+
+    <div class="bg-warning p-2 rounded-3 mt-2">
+      <ion-icon name="alert-circle" size="large"></ion-icon>
+      <p class="text-justify">
+        Please save your data periodically using the Export / Import tab in
+        menu. The data is saved in the documents folder in your phone internal
+        storage
+      </p>
+    </div>
+  </div>
+
+  <div *ngIf="!showEntryText" class="container">
     <button
       *ngFor="let client of clientsData | clientsSearch:clientSearchValue"
       (click)="openClientDetails(client.name)"

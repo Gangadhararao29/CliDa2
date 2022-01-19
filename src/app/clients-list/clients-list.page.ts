@@ -31,6 +31,6 @@ export class ClientsListPage implements OnInit {
   }
 
   openClientDetails(name) {
-    this.router.navigate(['clida/clients-list/client-details', name]);
+    this.router.navigate(['clida/client-details', name]);
   }
 }
