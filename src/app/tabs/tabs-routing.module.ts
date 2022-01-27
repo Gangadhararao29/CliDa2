@@ -15,9 +15,9 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'client-details/:name',
+        path: 'clients-list/client-details/:key',
         loadChildren: () =>
-          import('../clients-list/client-details/client-details.module').then(
+          import('../client-details/client-details.module').then(
             (m) => m.ClientDetailsPageModule
           ),
       },
@@ -29,7 +29,7 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'calculator/:name/:id',
+        path: 'calculator/:key/:id',
         loadChildren: () =>
           import('../calculator/calculator.module').then(
             (m) => m.CalculatorPageModule
@@ -37,12 +37,26 @@ const routes: Routes = [
       },
       {
         path: 'calculator',
-        redirectTo: 'calculator/-/0',
+        redirectTo: 'calculator/0/0',
       },
       {
         path: 'about',
         loadChildren: () =>
           import('../about/about.module').then((m) => m.AboutPageModule),
+      },
+      {
+        path: 'clients-list/add-client',
+        loadChildren: () =>
+          import('../add-client/add-client.module').then(
+            (m) => m.AddClientPageModule
+          ),
+      },
+      {
+        path: 'clients-list/client-details/:key/edit-details/:clientId',
+        loadChildren: () =>
+          import('../edit-details/edit-details.module').then(
+            (m) => m.EditDetailsPageModule
+          ),
       },
     ],
   },

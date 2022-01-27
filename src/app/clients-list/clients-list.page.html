@@ -28,8 +28,8 @@
     </div>
   </div>
 
-  <div *ngIf="showEntryText" class="text-center mx-2 container">
-    <h3 class="border border-primary border-3 p-2 rounded-3 mt-3">
+  <div *ngIf="showEntryText" class="text-center container">
+    <h3 class="border border-primary border-3 p-2 rounded-3 mt-3 bg-light">
       Clida says Hello 👋
     </h3>
 
@@ -40,7 +40,7 @@
         click on Export/Import button ,<br />
         to import Json file.
       </p>
-      <button class="btn btn-primary mb-1 rounded-pill" routerLink="/share">
+      <button class="btn btn-primary mb-1 rounded-pill" routerLink="/clida/about">
         Export / Import
       </button>
     </div>
@@ -53,7 +53,7 @@
       </p>
       <button
         class="btn btn-danger mb-1 rounded-pill"
-        routerLink="/addNewClient"
+        routerLink="/clida/clients-list/add-client"
       >
         Add new Client
       </button>
@@ -62,8 +62,8 @@
     <div class="bg-warning p-2 rounded-3 mt-2">
       <ion-icon name="alert-circle" size="large"></ion-icon>
       <p class="text-justify">
-        Please save your data periodically using the Export / Import tab in
-        menu. The data is saved in the documents folder in your phone internal
+        Please save your data periodically using the Export / Import tab.
+        The data is saved in the documents folder in your phone's internal
         storage
       </p>
     </div>
@@ -72,24 +72,23 @@
   <div *ngIf="!showEntryText" class="container">
     <button
       *ngFor="let client of clientsData | clientsSearch:clientSearchValue"
-      (click)="openClientDetails(client.name)"
+      (click)="openClientDetails(client.key)"
       class="list-group-item list-group-item-action rounded-3 my-1 silverBg border-2"
     >
-      <span class="fs-5">{{client?.name}}</span>
+      <span class="fs-5">{{client?.data.name}}</span>
       <span class="badge rounded-circle bg-primary m-2 my-0"
-        >{{client?.data?.length - getRecordsInfo(client.data)}}</span
+        >{{client?.data.data?.length - getRecordsInfo(client.data.data)}}</span
       >
       <span class="badge rounded-circle bg-success"
-        >{{getRecordsInfo(client.data)}}</span
+        >{{getRecordsInfo(client.data.data)}}</span
       >
     </button>
   </div>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button
-      size="small"
       color="danger"
-      routerLink="/addNewClient"
+      routerLink="/clida/clients-list/add-client"
       class="me-2 mb-1"
     >
       <ion-icon name="add" size="large"></ion-icon>

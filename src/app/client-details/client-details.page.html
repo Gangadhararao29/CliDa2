@@ -1,6 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-back-button slot="start"></ion-back-button>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
     <ion-title>{{client?.name}}</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -42,25 +44,25 @@
           data-bs-parent="#accordionPanelsStayOpenExample"
         >
           <div class="accordion-body">
-            <div class="container bg-light py-2 rounded-3">
+            <div class="container bg-light p-2 rounded-3">
               <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-5">Principal</div>
                 <div class="col-1">:</div>
                 <div class="col-6">₹ {{isd.format(data?.principal)}}</div>
               </div>
-              <div class="d-flex my-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-5">Interest Rate</div>
                 <div class="col-1">:</div>
                 <div class="col-6">{{data?.interest}}</div>
               </div>
-              <div class="d-flex my-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-5">Start Date</div>
                 <div class="col-1">:</div>
                 <div class="col-6">
                   {{data?.startDate.split('-').reverse().join('/')}}
                 </div>
               </div>
-              <div class="d-flex my-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-5">End Date</div>
                 <div class="col-1">:</div>
                 <div class="col-6">
@@ -69,14 +71,12 @@
               </div>
             </div>
 
-            <div class="container bg-light py-2 rounded-3 mt-2">
-              <div class="d-flex my-1 justify-content-between fw-bolder fs-6">
+            <div class="container bg-light p-2 rounded-3 mt-2">
+              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-5">Time Period</div>
                 <div class="col-1">:</div>
                 <div class="col-6">
-                  {{dateDiff(data?.startDate,today).y}}y,
-                  {{dateDiff(data?.startDate,today).m}}m,
-                  {{dateDiff(data?.startDate,today).d}}d.
+                  {{calculateDateDifference(data?.startDate,today)}}
                 </div>
               </div>
               <div
@@ -91,21 +91,21 @@
                   Interest calculated for only 3 years
                 </div>
               </div>
-              <div class="d-flex my-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-5">in months</div>
                 <div class="col-1">:</div>
                 <div class="col-6">
                   {{totalTimeinMonths(data?.startDate,today).toFixed(2)}}m
                 </div>
               </div>
-              <div class="d-flex my-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-5">Interest Amt</div>
                 <div class="col-1">:</div>
                 <div class="col-6">
                   ₹ {{isd.format(calculateInterest(data))}}
                 </div>
               </div>
-              <div class="d-flex my-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-5">Total Amt</div>
                 <div class="col-1">:</div>
                 <div class="col-6">
@@ -118,7 +118,7 @@
               *ngIf="data?.closedOn"
               class="container bg-light py-2 rounded-3 mt-2 border-success border-3 border"
             >
-              <div class="d-flex my-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-5">Closed on</div>
                 <div class="col-1">:</div>
                 <div class="col-6">

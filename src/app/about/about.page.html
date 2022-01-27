@@ -1,7 +1,45 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>about</ion-title>
+    <ion-title>Share</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content> </ion-content>
+<ion-content>
+  <div class="container my-3 mx-auto">
+    <div class="my-2 p-2 text-center rounded-3 border-3 border bg-light">
+      <span class="d-block mb-1">
+        To export your Data into json file. <br>
+        Click on export button
+      </span>
+      <a
+        class="btn btn-primary"
+        title="Download JSON"
+        [href]="downloadJsonHref"
+        download="download.json"
+        (click)="exportData()"
+        >Export <ion-icon name="share-outline"></ion-icon
+      ></a>
+    </div>
+    <div class="my-2 p-2 text-center rounded-3 border-3 border bg-light">
+      <span class="d-block mb-1">
+        To import your data into the app.  <br>
+         Choose .json file in the input feild
+      </span>
+      <div class="my-1">
+        <input
+          class="btn btn-primary w-100"
+          #fileInput
+          type="file"
+          accept="application/JSON"
+          (change)="importData($event.target)"
+        />
+      </div>
+    </div>
+
+    <div class="d-grid gap-2 bg-light">
+      <button class="btn btn-danger" type="reset" (click)="resetData()">
+        Reset Data
+      </button>
+    </div>
+  </div>
+</ion-content>

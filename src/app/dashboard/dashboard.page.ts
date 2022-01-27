@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import sampleData from '../../assets/sampleData.json';
+import { ClientDataService } from '../services/client-data.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,26 +29,28 @@ export class DashboardPage implements OnInit {
   array2: any[];
   graphObject: any;
   math;
-  constructor() {
+  totalClients: any;
+  constructor(private clientDataService: ClientDataService) {
     this.math = Math;
   }
 
   ngOnInit() {
-    this.clientsData = sampleData;
-    this.getTotalArray();
-    this.sortByPrincipal();
-    this.sortByTimePeriod();
-    this.sortByYear();
+    this.clientDataService.getRawClients().then((res) => {
+      this.totalClients = res.length;
+      this.getTotalArray(res);
+      this.sortByPrincipal();
+      this.sortByTimePeriod();
+      this.sortByYear(res);
+    });
   }
 
-  getTotalArray() {
-    this.clientsData.forEach((client) => {
+  getTotalArray(response) {
+    response.forEach((client) => {
       this.name = client.name;
       let totalPrincipal = 0;
       let greaterTimePeriod = 0;
       let totalInterest = 0;
       client.data.forEach((record) => {
-        // console.log(record);
         this.principal = record.principal;
         this.time = this.calculateTimeperiod(record.startDate, this.today);
         this.interestObj = this.calcaulateInterest(
@@ -72,7 +74,6 @@ export class DashboardPage implements OnInit {
         finalAmount: totalPrincipal + totalInterest,
       });
     });
-    // console.log(this.totalArray);
   }
 
   sortByPrincipal() {
@@ -88,7 +89,6 @@ export class DashboardPage implements OnInit {
         }
       })
     );
-    // console.log(this.array1);
   }
 
   sortByTimePeriod() {
@@ -104,7 +104,6 @@ export class DashboardPage implements OnInit {
         }
       })
     );
-    // console.log(this.array2);
   }
 
   getTotalPrincipalAmount() {
@@ -167,10 +166,10 @@ export class DashboardPage implements OnInit {
     }
   }
 
-  sortByYear() {
+  sortByYear(response) {
     const combinedData = [];
     const dateSet = new Set();
-    this.clientsData.forEach((record) => {
+    response.forEach((record) => {
       record.data.forEach((data) => {
         combinedData.push(data);
         dateSet.add(new Date(data.startDate).getFullYear());

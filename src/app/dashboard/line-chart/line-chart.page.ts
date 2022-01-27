@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ChartConfiguration, ChartType } from 'chart.js';
+import { ClientDataService } from 'src/app/services/client-data.service';
 
 @Component({
   selector: 'app-line-chart',
@@ -7,8 +8,6 @@ import { ChartConfiguration, ChartType } from 'chart.js';
   styleUrls: ['./line-chart.page.scss'],
 })
 export class LineChartPage implements OnInit {
-  @Input() graphData: any;
-
   public lineChartData: ChartConfiguration['data'];
 
   public lineChartOptions: ChartConfiguration['options'] = {
@@ -43,12 +42,69 @@ export class LineChartPage implements OnInit {
   labels = [];
   dataSet1 = [0];
   dataSet2 = [0];
-  // dataSet3 = [0];
 
-  constructor() {}
+  constructor(private clientDataService: ClientDataService) {}
 
-  ngOnInit() {
-    Object.entries(this.graphData).forEach((ele: any) => {
+  ngOnInit(): void {
+    this.clientDataService.getRawClients().then((res) => {
+      this.sortByYear(res);
+    });
+  }
+
+  sortByYear(response) {
+    const combinedData = [];
+    const dateSet = new Set();
+    response.forEach((record) => {
+      record.data.forEach((data) => {
+        combinedData.push(data);
+        dateSet.add(new Date(data.startDate).getFullYear());
+      });
+    });
+
+    const filteredDataForYear = {};
+    dateSet.forEach((date) => {
+      filteredDataForYear[`${date}`] = combinedData.filter(
+        (objectData) => new Date(objectData.startDate).getFullYear() == date
+      );
+    });
+
+    const filteredDataByMonth = {};
+    for (const year in filteredDataForYear) {
+      if (year) {
+        const monthArray = (filteredDataByMonth[year] = [[], []]);
+        filteredDataForYear[year].filter((element) => {
+          if (new Date(element.startDate).getMonth() + 1 < 6) {
+            monthArray[0].push(element);
+          } else {
+            monthArray[1].push(element);
+          }
+        });
+      }
+    }
+
+    const graphObject = {};
+    for (const halfYearlyData in filteredDataByMonth) {
+      if (halfYearlyData) {
+        graphObject[halfYearlyData] = { prin1: 0, tot1: 0, prin2: 0, tot2: 0 };
+        filteredDataByMonth[halfYearlyData][0].forEach((record) => {
+          graphObject[halfYearlyData].prin1 += record.principal;
+          graphObject[halfYearlyData].tot1 +=
+            (record.principal * record.interest) / 100.0;
+        });
+
+        filteredDataByMonth[halfYearlyData][1].forEach((record) => {
+          graphObject[halfYearlyData].prin2 += record.principal;
+          graphObject[halfYearlyData].tot2 +=
+            (record.principal * record.interest) / 100.0;
+        });
+      }
+    }
+    this.renderGraph(graphObject);
+    console.log(graphObject);
+  }
+
+  renderGraph(graphData) {
+    Object.entries(graphData).forEach((ele: any) => {
       this.labels.push(ele[0], ele[0].toString() + '-06');
       this.dataSet1.push(ele[1].prin1, ele[1].prin2);
       this.dataSet2.push(ele[1].tot1, ele[1].tot2);
@@ -59,10 +115,6 @@ export class LineChartPage implements OnInit {
     for (let i = 1; i < this.dataSet2.length; i++) {
       this.dataSet2[i] += this.dataSet2[i - 1];
     }
-
-    // for (let i = 1; i < this.dataSet1.length; i++) {
-    //   this.dataSet3[i] = this.dataSet3[i - 1] + this.dataSet1[i];
-    // }
 
     this.lineChartData = {
       datasets: [
@@ -88,7 +140,7 @@ export class LineChartPage implements OnInit {
           pointBorderColor: '#fff',
           pointHoverBackgroundColor: '#fff',
           pointHoverBorderColor: 'green',
-          fill:'start'
+          fill: 'start',
         },
       ],
       labels: this.labels,

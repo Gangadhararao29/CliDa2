@@ -9,7 +9,7 @@
     <div class="border border-3 rounded-3 p-2 mt-2 bg-light">
       <div class="d-flex p-2">
         <div class="me-2 ">Number of Clients:</div>
-        <div class="ms-auto me-1">{{clientsData.length}}</div>
+        <div class="ms-auto me-1">{{totalClients}}</div>
       </div>
       <div class="d-flex p-2">
         <div class="me-2 ">Total principal:</div>
@@ -25,7 +25,7 @@
       </div>
     </div>
 
-    <app-line-chart [graphData]="graphObject"></app-line-chart>
+    <app-line-chart></app-line-chart>
 
     <p
       class="mx-1 my-1 text-center bg-success rounded-3 text-light p-1"
