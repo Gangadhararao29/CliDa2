@@ -71,7 +71,7 @@ export class ClientDetailsPage {
   }
 
   approveData(id) {
-    this.showCloseDiv = true;
+    this.showCloseDiv = !this.showCloseDiv;
     this.approveDataId = id;
   }
 

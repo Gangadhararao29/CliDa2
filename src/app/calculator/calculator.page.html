@@ -106,15 +106,19 @@
         <div class="p-2">
           Record closed on
           <span class="fw-bold"
-            >{{linkData?.closedOndata?.closedOn.split('-').reverse().join('/')}}</span
+            >{{linkData?.closedOn.split('-').reverse().join('/')}}</span
           ><br />
           with amount
           <span class="fw-bold">₹ {{linkData?.closedAmount}}</span>
         </div>
       </div>
 
-      <div class="d-grid mt-2 gap-2">
-        <button class="btn btn-warning p-1" type="submit">Calculate</button>
+      <div class="d-grid my-2 gap-2">
+        <button class="btn btn-warning p-2" type="submit">Calculate</button>
+      </div>
+
+      <div class="d-grid my-1 gap-2">
+        <button class="btn btn-danger p-2" type="reset">Reset</button>
       </div>
     </form>
     <!-- <h1>{{linkData | json}}</h1> -->
@@ -165,7 +169,7 @@
         </div>
         <div class="row p-1">
           <div class="col fw-bold">
-            Interest Amount <br />
+            Interest Amt <br />
             <span *ngIf="advIntShow">(for 3 years)</span>
           </div>
           :

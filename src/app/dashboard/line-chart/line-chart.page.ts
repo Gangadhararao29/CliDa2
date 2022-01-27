@@ -100,7 +100,6 @@ export class LineChartPage implements OnInit {
       }
     }
     this.renderGraph(graphObject);
-    console.log(graphObject);
   }
 
   renderGraph(graphData) {

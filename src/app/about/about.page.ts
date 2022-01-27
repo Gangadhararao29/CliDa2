@@ -109,7 +109,7 @@ export class AboutPage {
           );
 
           setTimeout(() => {
-            // this.router.navigate(['clida', 'clientsList']).then(() => {});
+            this.router.navigate(['clida', 'clients-list']);
           }, 2000);
         });
     };

@@ -28,43 +28,52 @@
     </div>
   </div>
 
-  <div *ngIf="showEntryText" class="text-center container">
-    <h3 class="border border-primary border-3 p-2 rounded-3 mt-3 bg-light">
+  <div *ngIf="showEntryText" class="container">
+    <h3
+      class="border border-primary border-3 p-2 rounded-3 text-center mt-3 bg-light"
+    >
       Clida says Hello 👋
     </h3>
 
     <div class="bg-info p-2 rounded-3">
-      <p>
-        If you used the app before,<br />
-        and to load the previous data,<br />
-        click on Export/Import button ,<br />
-        to import Json file.
-      </p>
-      <button class="btn btn-primary mb-1 rounded-pill" routerLink="/clida/about">
-        Export / Import
-      </button>
+      <div class="justifyText my-1">
+        To load the previous data from .json file, click on Export/Import button
+        or Go to the share tab in the bottom navigation bar.
+      </div>
+      <div class="text-center">
+        <button
+          class="btn btn-primary mb-1 rounded-pill"
+          routerLink="/clida/about"
+        >
+          Export / Import
+        </button>
+      </div>
     </div>
 
     <div class="bg-info p-2 rounded-3 mt-2">
-      <p>
+      <div class="my-1 text-center">
         To add the clients manually,<br />
         click on the below button, Or<br />
         click on the bottom right add button.
-      </p>
-      <button
-        class="btn btn-danger mb-1 rounded-pill"
-        routerLink="/clida/clients-list/add-client"
-      >
-        Add new Client
-      </button>
+      </div>
+      <div class="text-center">
+        <button
+          class="btn btn-danger mb-1 rounded-pill"
+          routerLink="/clida/clients-list/add-client"
+        >
+          Add new Client
+        </button>
+      </div>
     </div>
 
     <div class="bg-warning p-2 rounded-3 mt-2">
-      <ion-icon name="alert-circle" size="large"></ion-icon>
-      <p class="text-justify">
-        Please save your data periodically using the Export / Import tab.
-        The data is saved in the documents folder in your phone's internal
-        storage
+      <div class="text-center">
+        <ion-icon name="alert-circle" size="large"></ion-icon>
+      </div>
+      <p class="justifyText">
+        Please save your data periodically using the Share tab. The data will be
+        saved in the documents folder in your phone's internal storage, when you
+        click on export button.
       </p>
     </div>
   </div>

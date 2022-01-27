@@ -77,6 +77,8 @@ export class CalculatorPage {
     }
   }
 
+  
+
   dateInputErrorAlert() {
     const alert = document.createElement('ion-alert');
     alert.header = 'Please check the dates';
