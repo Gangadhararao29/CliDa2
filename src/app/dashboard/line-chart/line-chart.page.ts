@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import { ClientDataService } from 'src/app/services/client-data.service';
 
@@ -7,7 +12,9 @@ import { ClientDataService } from 'src/app/services/client-data.service';
   templateUrl: './line-chart.page.html',
   styleUrls: ['./line-chart.page.scss'],
 })
-export class LineChartPage implements OnInit {
+export class LineChartPage implements OnChanges {
+  @Input() responseData: [];
+
   public lineChartData: ChartConfiguration['data'];
 
   public lineChartOptions: ChartConfiguration['options'] = {
@@ -42,13 +49,18 @@ export class LineChartPage implements OnInit {
   labels = [];
   dataSet1 = [0];
   dataSet2 = [0];
+  dataArray = [];
 
-  constructor(private clientDataService: ClientDataService) {}
+  constructor() {}
 
-  ngOnInit(): void {
-    this.clientDataService.getRawClients().then((res) => {
-      this.sortByYear(res);
-    });
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.responseData.currentValue) {
+      this.labels = [];
+      this.dataSet1 = [0];
+      this.dataSet2 = [0];
+      this.dataArray = [];
+      this.sortByYear(changes.responseData.currentValue);
+    }
   }
 
   sortByYear(response) {

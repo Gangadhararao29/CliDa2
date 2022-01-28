@@ -74,12 +74,12 @@ export class ClientDataService {
     }
   }
 
-  deleteClient(id) {
-    return this.db.collection('clientsData').doc(id).delete();
+  async deleteClient(id) {
+    return await this.db.collection('clientsData').doc(id).delete();
   }
 
-  deleteDataBase() {
-    return this.db.delete();
+  async deleteDataBase() {
+    return await this.db.delete();
   }
 
   /**

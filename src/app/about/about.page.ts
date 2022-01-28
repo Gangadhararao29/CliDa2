@@ -15,8 +15,7 @@ export class AboutPage {
   downloadJsonHref: any;
   importedJSON: any;
   jsonFile: any;
-  title = 'Export/Import';
-  clientsData;
+  clientsData: string;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -27,23 +26,24 @@ export class AboutPage {
   ) {}
 
   ionViewWillEnter() {}
+
   exportData() {
-    //const clientsData = ''; //JSON.parse(this.cds.getClientsData());
-    this.clientDataService.getAllClientsData().then((data) => {
-      this.clientsData = data.value;
+    this.clientDataService.getRawClients().then((data) => {
+      this.clientsData = JSON.stringify(data);
       this.writeSecretFile(this.clientsData);
       this.downloadJsonHref = this.sanitizer.bypassSecurityTrustUrl(
         'data:text/json;charset=UTF-8,' + encodeURIComponent(this.clientsData)
       );
     });
   }
+
   importData(target) {
     this.jsonFile = target.files.item(0);
-    this.presentAlert(this.jsonFile);
+    this.presentImportDataAlert(this.jsonFile);
   }
 
   async writeSecretFile(clientsDataString: string) {
-    const fileName = `Cli-da/clientsData_${new Date()
+    const fileName = `CliDa/clientsData_${new Date()
       .toJSON()
       .slice(0, 10)}.json`;
     await Filesystem.writeFile({
@@ -56,18 +56,19 @@ export class AboutPage {
       .then(() => {
         this.presentToast(
           `File saved Successfully.<br>Path:/Documents/${fileName}`,
-          3500
+          3000
         );
       })
       .catch((err) => {
         this.presentToast(
-          'No data to Export <br>Import clients or  Add clients to continue',
-          3500
+          'No data to Export <br>Import clients or  Add clients to continue<br>' +
+            err,
+          3000
         );
       });
   }
 
-  async presentAlert(file) {
+  async presentImportDataAlert(file) {
     const alert = await this.alertController.create({
       header: 'Existing Data will?',
       buttons: [
@@ -105,12 +106,12 @@ export class AboutPage {
           this.inputVar.nativeElement.value = null;
           this.presentToast(
             'Data imported succcessfully <br>Redirecting to Clients List Tab',
-            2500
+            2000
           );
 
           setTimeout(() => {
             this.router.navigate(['clida', 'clients-list']);
-          }, 2000);
+          }, 1500);
         });
     };
   }
@@ -122,6 +123,25 @@ export class AboutPage {
       duration,
     });
     toast.present();
+  }
+
+  async presentDeleteAlert() {
+    const alert = await this.alertController.create({
+      header: 'Do you want to reset the app data?',
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: () => {},
+        },
+        {
+          text: 'Confirm',
+          handler: () => {
+            this.resetData();
+          },
+        },
+      ],
+    });
+    await alert.present();
   }
 
   resetData() {

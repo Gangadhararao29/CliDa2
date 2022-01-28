@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { of } from 'rxjs';
 import { ClientDataService } from '../services/client-data.service';
 
 @Component({
@@ -6,7 +7,7 @@ import { ClientDataService } from '../services/client-data.service';
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
 })
-export class DashboardPage implements OnInit {
+export class DashboardPage {
   clientsData = [];
   totalArray = [];
   name: any;
@@ -27,20 +28,20 @@ export class DashboardPage implements OnInit {
     .join('-');
   time: { d: number; m: number; y: number };
   array2: any[];
-  graphObject: any;
   math;
-  totalClients: any;
+  totalClients: Array<any>;
+  graphDataObservable: any;
   constructor(private clientDataService: ClientDataService) {
     this.math = Math;
   }
 
-  ngOnInit() {
+  ionViewWillEnter() {
     this.clientDataService.getRawClients().then((res) => {
-      this.totalClients = res.length;
+      this.totalClients = res;
+      this.totalArray = [];
       this.getTotalArray(res);
       this.sortByPrincipal();
       this.sortByTimePeriod();
-      this.sortByYear(res);
     });
   }
 
@@ -164,56 +165,5 @@ export class DashboardPage implements OnInit {
       const newInterest = (newPrincipal * tm * rate) / 100.0;
       return { interest, newPrincipal, newInterest, tm };
     }
-  }
-
-  sortByYear(response) {
-    const combinedData = [];
-    const dateSet = new Set();
-    response.forEach((record) => {
-      record.data.forEach((data) => {
-        combinedData.push(data);
-        dateSet.add(new Date(data.startDate).getFullYear());
-      });
-    });
-
-    const filteredDataForYear = {};
-    dateSet.forEach((date) => {
-      filteredDataForYear[`${date}`] = combinedData.filter(
-        (objectData) => new Date(objectData.startDate).getFullYear() == date
-      );
-    });
-
-    const filteredDataByMonth = {};
-    for (const year in filteredDataForYear) {
-      if (year) {
-        const monthArray = (filteredDataByMonth[year] = [[], []]);
-        filteredDataForYear[year].filter((element) => {
-          if (new Date(element.startDate).getMonth() + 1 < 6) {
-            monthArray[0].push(element);
-          } else {
-            monthArray[1].push(element);
-          }
-        });
-      }
-    }
-
-    const graphObject = {};
-    for (const halfYearlyData in filteredDataByMonth) {
-      if (halfYearlyData) {
-        graphObject[halfYearlyData] = { prin1: 0, tot1: 0, prin2: 0, tot2: 0 };
-        filteredDataByMonth[halfYearlyData][0].forEach((record) => {
-          graphObject[halfYearlyData].prin1 += record.principal;
-          graphObject[halfYearlyData].tot1 +=
-            (record.principal * record.interest) / 100.0;
-        });
-
-        filteredDataByMonth[halfYearlyData][1].forEach((record) => {
-          graphObject[halfYearlyData].prin2 += record.principal;
-          graphObject[halfYearlyData].tot2 +=
-            (record.principal * record.interest) / 100.0;
-        });
-      }
-    }
-    this.graphObject = graphObject;
   }
 }
