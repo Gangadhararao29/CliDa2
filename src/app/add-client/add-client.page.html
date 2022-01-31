@@ -7,28 +7,35 @@
 
 <ion-content>
   <div class="container my-2">
-    <p class="fs-4 fw-2 mx-1 my-2 text-center p-2 bg-light rounded-3">Enter client details</p>
-    <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)" class=" p-2 bg-light rounded-3">
+    <p class="fs-4 fw-2 mx-1 my-2 text-center p-2 bg-light rounded-3">
+      Enter client details
+    </p>
+    <form
+      #formRef="ngForm"
+      (ngSubmit)="onSubmit(formRef)"
+      class="p-2 bg-light rounded-3"
+    >
       <div class="form-floating mb-2">
         <input
           type="text"
           class="form-control"
           id="name"
-          placeholder="name"
+          placeholder="Enter name"
+          list="nameRef"
           name="userName"
           ngModel
           #userName="ngModel"
           required
           [class.is-valid]="userName.valid"
           [class.is-invalid]="userName.invalid && formRef.submitted"
-          list="nameRef"
         />
         <label for="name">Name</label>
         <div id="name" class="invalid-feedback">Please enter a Name.</div>
-        <datalist id="nameRef">
-          <option *ngFor="let client of clientsData |  slice:0:5;">
-            {{client.name}}
-          </option>
+        <datalist id="nameRef" #nameList>
+          <option
+            *ngFor="let client of clientsData"
+            [value]="client.name"
+          ></option>
         </datalist>
       </div>
       <div class="mb-2 justify-content-between d-flex">
@@ -90,7 +97,7 @@
       </div>
 
       <div class="mt-0 mb-1">
-        <ion-item lines="none" color='light'>
+        <ion-item lines="none" color="light">
           <ion-label>Add multiple records</ion-label>
           <ion-toggle
             [(ngModel)]="multiRecordsSelected"

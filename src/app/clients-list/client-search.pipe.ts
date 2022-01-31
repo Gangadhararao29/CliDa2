@@ -9,7 +9,7 @@ export class ClientsSearchPipe implements PipeTransform {
       return clientsArray;
     }
     return clientsArray.filter((client) =>
-      client.name.toLowerCase().includes(searchText.toLowerCase())
+      client.data.name.toLowerCase().includes(searchText.toLowerCase())
     );
   }
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { ClientDataService } from '../services/client-data.service';
@@ -10,7 +10,7 @@ import { ClientDataService } from '../services/client-data.service';
 })
 export class AddClientPage {
   isAddBtnDisable: boolean;
-  clientsData: any;
+  clientsData = [];
   formRefVariable: any;
 
   constructor(
@@ -21,6 +21,9 @@ export class AddClientPage {
 
   ionViewWillEnter() {
     this.isAddBtnDisable = false;
+    this.clientDataService.getRawClients().then((res) => {
+      this.clientsData = res;
+    });
   }
 
   onSubmit(formRef) {
