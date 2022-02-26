@@ -1,8 +1,12 @@
 ion-content {
-  --ion-background-color: #e9ecef;
+  --ion-background-color: var(--ion-color-silver);
 }
 
 .justifyText {
   text-align: justify;
   text-justify: inter-word;
+}
+
+ion-list {
+  background-color: var(--ion-color-silver);
 }

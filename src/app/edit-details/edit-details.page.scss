@@ -2,6 +2,10 @@ ion-button {
   z-index: 100;
 }
 
+ion-content {
+  --ion-background-color: var(--ion-color-silver);
+}
+
 ion-title {
   position: absolute;
   top: 0;
@@ -14,4 +18,12 @@ ion-title {
 .justifyText {
   text-align: justify;
   text-justify: inter-word;
+}
+
+label {
+  color: black;
+}
+
+.formClass {
+  background-color: var(--ion-color-light);
 }

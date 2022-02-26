@@ -1,4 +1,15 @@
 ion-content {
-    --ion-background-color: #e9ecef;
-  }
-  
+  --ion-background-color: var(--ion-color-silver);
+}
+
+.formLabel {
+  color: black;
+}
+
+.formClass {
+  background-color: var(--ion-color-light);
+}
+
+.highlight {
+  color: #06b70c;
+}

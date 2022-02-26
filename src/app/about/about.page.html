@@ -5,10 +5,68 @@
 </ion-header>
 
 <ion-content>
-  <div class="container my-3 mx-auto">
+  <ion-card color="light">
+    <ion-card-header>
+      <ion-card-title>Export Section</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <div class="text-center mb-1">
+        To save your clients data into internal storage, Click on export button.
+      </div>
+      <div>
+        <ion-button expand="block" (click)="exportData()"
+          >Export <ion-icon name="share-outline"></ion-icon
+        ></ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card color="light">
+    <ion-card-header>
+      <ion-card-title>Import Section</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <div class="text-center mb-1">
+        To load your clients data into the app, Choose .json file in the below
+        input feild
+      </div>
+      <div>
+        <ion-item color="primary">
+          <ion-input
+            background="primary"
+            #fileInput
+            type="file"
+            accept="application/JSON"
+            (change)="importData($event.target)"
+          ></ion-input>
+        </ion-item>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-button
+    (click)="presentDeleteAlert()"
+    color="danger"
+    expand="block"
+    class="mx-2"
+    >Reset Data</ion-button
+  >
+
+  <ion-item class="m-2" color="light" lines="none">
+    <ion-label>Select Theme</ion-label>
+    <ion-select [value]="themeName"  (ionChange)="changeTheme($event)">
+      <ion-select-option value="light">Light</ion-select-option>
+      <ion-select-option value="dark">Dark</ion-select-option>
+      <ion-select-option value="auto">Auto</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- <div class="container my-3 mx-auto">
     <div class="my-2 p-2 text-center rounded-3 border-3 border bg-light">
       <span class="d-block mb-1">
-        To export your Data into json file. <br>
+        To export your Data into json file. <br />
         Click on export button
       </span>
       <a
@@ -22,8 +80,8 @@
     </div>
     <div class="my-2 p-2 text-center rounded-3 border-3 border bg-light">
       <span class="d-block mb-1">
-        To import your data into the app.  <br>
-         Choose .json file in the input feild
+        To import your data into the app. <br />
+        Choose .json file in the input feild
       </span>
       <div class="my-1">
         <input
@@ -37,15 +95,17 @@
     </div>
 
     <div class="d-grid gap-2 bg-light">
-      <button class="btn btn-danger" type="reset" (click)="presentDeleteAlert()">
+      <button
+        class="btn btn-danger"
+        type="reset"
+        (click)="presentDeleteAlert()"
+      >
         Reset Data
       </button>
     </div>
-  </div>
+  </div> -->
 </ion-content>
 
 <ion-footer>
-  <div class="text-center">
-    CliDa 2.0
-  </div>
+  <!-- <div class="text-center">CliDa 2.0</div> -->
 </ion-footer>

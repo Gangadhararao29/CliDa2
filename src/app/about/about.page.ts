@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
@@ -16,16 +16,18 @@ export class AboutPage {
   importedJSON: any;
   jsonFile: any;
   clientsData: string;
+  darkModeFlag = false;
+  themeName = localStorage.getItem('theme');
 
   constructor(
     private sanitizer: DomSanitizer,
     public alertController: AlertController,
     private toastController: ToastController,
     private router: Router,
-    private clientDataService: ClientDataService
+    private clientDataService: ClientDataService,
+    private renderer: Renderer2
   ) {}
 
-  ionViewWillEnter() {}
 
   exportData() {
     this.clientDataService.getRawClients().then((data) => {
@@ -148,5 +150,21 @@ export class AboutPage {
     this.clientDataService.deleteDataBase();
     const message = 'Data successfully deleted';
     this.presentToast(message, 2000);
+  }
+
+  changeTheme(event) {
+    localStorage.setItem('theme', event.detail.value);
+    if (event.detail.value === 'light') {
+      this.renderer.removeClass(document.body, 'dark');
+    } else if (event.detail.value === 'dark') {
+      this.renderer.addClass(document.body, 'dark');
+    } else {
+      const preferColorMode = window.matchMedia('(prefers-color-scheme:dark)');
+      if (preferColorMode) {
+        this.renderer.addClass(document.body, 'dark');
+      } else {
+        this.renderer.removeClass(document.body, 'dark');
+      }
+    }
   }
 }

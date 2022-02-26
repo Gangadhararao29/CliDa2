@@ -15,17 +15,14 @@
 
 <ion-content>
   <div class="collapse sticky-top mb-0" id="collapseExample">
-    <div class="container input-group px-2 pt-2 pb-1">
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Type to search Clients"
-        [(ngModel)]="clientSearchValue"
-      />
-      <span class="input-group-text" (click)="resetSearch()"
-        ><ion-icon name="close-circle-outline" size="large"></ion-icon
-      ></span>
-    </div>
+    <ion-searchbar
+      animated
+      color="light"
+      placeholder="type to search clients.."
+      [(ngModel)]="clientSearchValue"
+      enterkeyhint='search'
+      search-icon = 'search-outline'
+    ></ion-searchbar>
   </div>
 
   <div *ngIf="showEntryText" class="container">
@@ -78,20 +75,23 @@
     </div>
   </div>
 
-  <div *ngIf="!showEntryText" class="container">
-    <button
-      *ngFor="let client of clientsData | clientsSearch:clientSearchValue"
-      (click)="openClientDetails(client.key)"
-      class="list-group-item list-group-item-action rounded-3 my-1 silverBg border-2"
-    >
-      <span class="fs-5">{{client?.data.name}}</span>
-      <span class="badge rounded-circle bg-primary m-2 my-0"
-        >{{client?.data.data?.length - getRecordsInfo(client.data.data)}}</span
+  <div *ngIf="!showEntryText">
+    <ion-list>
+      <ion-item
+        *ngFor="let client of clientsData | clientsSearch:clientSearchValue"
+        (click)="openClientDetails(client.key)"
+        color="light"
+        class="mb-2 mx-2 mt-1 rounded-3"
       >
-      <span class="badge rounded-circle bg-success"
-        >{{getRecordsInfo(client.data.data)}}</span
-      >
-    </button>
+        <span class="fs-5">{{client?.data.name}}</span>
+        <span class="badge rounded-circle bg-primary m-2 my-0"
+          >{{client?.data.data?.length - getRecordsInfo(client.data.data)}}
+        </span>
+        <span class="badge rounded-circle bg-success"
+          >{{getRecordsInfo(client.data.data)}}</span
+        >
+      </ion-item>
+    </ion-list>
   </div>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">

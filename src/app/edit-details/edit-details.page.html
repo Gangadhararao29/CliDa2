@@ -8,9 +8,14 @@
 </ion-header>
 
 <ion-content>
-  <div class="container">
-    <p class="fs-4 fw-2 mx-1 my-2 text-center">Primary details</p>
-    <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
+  <div class="">
+    <form
+      #formRef="ngForm"
+      (ngSubmit)="onSubmit(formRef)"
+      class="p-2 m-2 formClass rounded-3"
+    >
+    <p class="fs-4 fw-2 mx-1 mb-2 text-center">Primary details</p>
+
       <div class="form-floating mb-3">
         <input
           type="text"
@@ -120,7 +125,7 @@
         <button class="btn btn-success" type="submit">Confirm</button>
       </div>
     </form>
-    <div *ngIf="client.closedOn" class="d-grid mt-2 gap-2">
+    <div *ngIf="client.closedOn" class="d-grid m-2 gap-2">
       <button class="btn btn-danger" (click)="resetClosedData()">
         Reset closed details
       </button>
@@ -132,9 +137,8 @@
         <p class="mt-1 p-2 border border-warning rounded-3 justifyText">
           If the name of the client is changed here, It will search for the
           existing records and if found it will add it there or else it will add
-          as a new record. <b
-            ><i>Existing record will be deleted from this client name.</i></b
-          >
+          as a new record.
+          <b><i>Existing record will be deleted from this client name.</i></b>
         </p>
       </div>
     </div>
