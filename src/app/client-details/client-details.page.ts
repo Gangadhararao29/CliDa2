@@ -107,14 +107,12 @@ export class ClientDetailsPage {
 
   async presentAlertConfirm(clientDataIndex, dataLength) {
     const alert = await this.alertController.create({
-      header: 'Confirm!',
+      header: 'Confirm',
+      cssClass: 'alertStyle',
+      backdropDismiss:false,
+      animated:true,
       message: '<strong>Do you want to delete this record?</strong>',
       buttons: [
-        {
-          text: 'No',
-          role: 'cancel',
-          cssClass: 'secondary',
-        },
         {
           text: 'Yes',
           handler: () => {
@@ -133,6 +131,11 @@ export class ClientDetailsPage {
               this.presentToast('Client record deleted successfully', 2500);
             }
           },
+        },
+        {
+          text: 'No',
+          role: 'cancel',
+          cssClass: 'secondary',
         },
       ],
     });

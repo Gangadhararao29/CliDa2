@@ -16,7 +16,7 @@
 @import "~@ionic/angular/css/normalize.css";
 @import "~@ionic/angular/css/structure.css";
 @import "~@ionic/angular/css/typography.css";
-@import '~@ionic/angular/css/display.css';
+@import "~@ionic/angular/css/display.css";
 
 /* Optional CSS utils that can be commented out */
 @import "~@ionic/angular/css/padding.css";
@@ -24,3 +24,77 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+.alertStyle .alert-wrapper {
+  border-radius: 8px;
+  .alert-head {
+    background: var(--ion-color-primary);
+    color: white;
+  }
+  h2 {
+    color: white;
+  }
+  .alert-message {
+    padding: 0 20px;
+    margin-top: 8px;
+  }
+
+  .alert-button-group {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+    button {
+      border: 1px solid var(--ion-color-primary);
+      border-radius: 6px;
+      width: 48%;
+      margin: 5px 0;
+
+      &:first-child {
+        background: var(--ion-color-primary);
+        color: white;
+      }
+    }
+
+    span {
+      display: flex;
+      justify-content: center;
+    }
+  }
+}
+
+.alertMultiStyle .alert-wrapper {
+  border-radius: 8px;
+  .alert-head {
+    background: var(--ion-color-primary);
+    color: white;
+  }
+  h2 {
+    color: white;
+  }
+
+  .alert-button-group {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+    button {
+      border: 1px solid var(--ion-color-primary);
+      border-radius: 6px;
+      width: 100%;
+      margin: 5px 0;
+      background: var(--ion-color-primary);
+      color: white;
+      &:last-child {
+        background: var(--ion-color-light);
+        color: var(--ion-color-dark);
+      }
+    }
+
+    span {
+      display: flex;
+      justify-content: center;
+    }
+  }
+}
+

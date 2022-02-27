@@ -59,20 +59,22 @@ export class EditDetailsPage {
 
   async presentAlertConfirm(formRef) {
     const alert = await this.alertController.create({
-      cssClass: 'my-custom-class',
-      header: 'Confirm!',
+      cssClass: 'alertStyle',
+      header: 'Confirm',
+      backdropDismiss: false,
+      animated: true,
       message: '<strong>Do you want to save these changes?</strong>',
       buttons: [
-        {
-          text: 'No',
-          role: 'cancel',
-          cssClass: 'secondary',
-        },
         {
           text: 'Yes',
           handler: () => {
             this.saveClientsData(formRef);
           },
+        },
+        {
+          text: 'No',
+          role: 'cancel',
+          cssClass: 'secondary',
         },
       ],
     });
@@ -169,21 +171,23 @@ export class EditDetailsPage {
 
   async resetFieldsConfirmPopup() {
     const alert = await this.alertController.create({
-      cssClass: 'my-custom-class',
-      header: 'Confirm!',
+      cssClass: 'alertStyle',
+      header: 'Confirm',
+      backdropDismiss: false,
+      animated: true,
       message: '<strong>Do you want to reset closedOn details?</strong>',
       buttons: [
-        {
-          text: 'No',
-          role: 'cancel',
-          cssClass: 'secondary',
-        },
         {
           text: 'Yes',
           handler: () => {
             this.client.closedOn = null;
             this.client.closedAmount = 0;
           },
+        },
+        {
+          text: 'No',
+          role: 'cancel',
+          cssClass: 'secondary',
         },
       ],
     });

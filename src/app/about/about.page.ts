@@ -11,13 +11,13 @@ import { ClientDataService } from '../services/client-data.service';
   styleUrls: ['./about.page.scss'],
 })
 export class AboutPage {
-  @ViewChild('fileInput', { static: false }) inputVar: ElementRef;
   downloadJsonHref: any;
   importedJSON: any;
   jsonFile: any;
   clientsData: string;
   darkModeFlag = false;
   themeName = localStorage.getItem('theme');
+  inputClientData: any;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -27,7 +27,6 @@ export class AboutPage {
     private clientDataService: ClientDataService,
     private renderer: Renderer2
   ) {}
-
 
   exportData() {
     this.clientDataService.getRawClients().then((data) => {
@@ -73,6 +72,9 @@ export class AboutPage {
   async presentImportDataAlert(file) {
     const alert = await this.alertController.create({
       header: 'Existing Data will?',
+      cssClass: 'alertMultiStyle',
+      backdropDismiss:false,
+      animated:true,
       buttons: [
         {
           text: 'Merge with new data',
@@ -89,7 +91,7 @@ export class AboutPage {
         {
           text: 'Cancel',
           handler: () => {
-            this.inputVar.nativeElement.value = null;
+            this.inputClientData = '';
           },
         },
       ],
@@ -105,7 +107,8 @@ export class AboutPage {
       this.clientDataService
         .saveBulkClients(this.importedJSON, replaceStatus)
         .then((res) => {
-          this.inputVar.nativeElement.value = null;
+          this.inputClientData = '';
+
           this.presentToast(
             'Data imported succcessfully <br>Redirecting to Clients List Tab',
             2000
@@ -130,16 +133,19 @@ export class AboutPage {
   async presentDeleteAlert() {
     const alert = await this.alertController.create({
       header: 'Do you want to reset the app data?',
+      backdropDismiss:false,
+      animated:true,
+      cssClass: 'alertStyle',
       buttons: [
-        {
-          text: 'Cancel',
-          handler: () => {},
-        },
         {
           text: 'Confirm',
           handler: () => {
             this.resetData();
           },
+        },
+        {
+          text: 'Cancel',
+          handler: () => {},
         },
       ],
     });

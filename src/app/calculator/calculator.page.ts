@@ -77,8 +77,6 @@ export class CalculatorPage {
     }
   }
 
-  
-
   dateInputErrorAlert() {
     const alert = document.createElement('ion-alert');
     alert.header = 'Please check the dates';
@@ -92,7 +90,7 @@ export class CalculatorPage {
   async presentToast() {
     const toast = await this.toastController.create({
       message: 'Interest Calculated Successfully',
-      duration: 2000,
+      duration: 1500,
       position: 'top',
     });
     toast.present();

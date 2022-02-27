@@ -5,13 +5,13 @@
 </ion-header>
 
 <ion-content>
-  <ion-card color="light">
+  <ion-card color="light" class="m-2">
     <ion-card-header>
-      <ion-card-title>Export Section</ion-card-title>
+      <ion-card-title>Export section</ion-card-title>
     </ion-card-header>
 
     <ion-card-content>
-      <div class="text-center mb-1">
+      <div class="mb-2 pb-2">
         To save your clients data into internal storage, Click on export button.
       </div>
       <div>
@@ -22,13 +22,13 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card color="light">
+  <ion-card color="light" class="m-2">
     <ion-card-header>
-      <ion-card-title>Import Section</ion-card-title>
+      <ion-card-title>Import section</ion-card-title>
     </ion-card-header>
 
     <ion-card-content>
-      <div class="text-center mb-1">
+      <div class="mb-2 pb-2">
         To load your clients data into the app, Choose .json file in the below
         input feild
       </div>
@@ -40,28 +40,33 @@
             type="file"
             accept="application/JSON"
             (change)="importData($event.target)"
+            [ngModel]="inputClientData"
           ></ion-input>
         </ion-item>
       </div>
     </ion-card-content>
   </ion-card>
 
-  <ion-button
-    (click)="presentDeleteAlert()"
-    color="danger"
-    expand="block"
-    class="mx-2"
-    >Reset Data</ion-button
-  >
-
-  <ion-item class="m-2" color="light" lines="none">
+  <ion-item class="m-2 border rounded-3" color="light" lines="none">
     <ion-label>Select Theme</ion-label>
-    <ion-select [value]="themeName"  (ionChange)="changeTheme($event)">
+    <ion-select
+      [value]="themeName"
+      (ionChange)="changeTheme($event)"
+      interface="popover"
+    >
       <ion-select-option value="light">Light</ion-select-option>
       <ion-select-option value="dark">Dark</ion-select-option>
       <ion-select-option value="auto">Auto</ion-select-option>
     </ion-select>
   </ion-item>
+
+  <ion-button
+    (click)="presentDeleteAlert()"
+    color="danger"
+    expand="block"
+    class="mx-2"
+    >Remove clients data</ion-button
+  >
 
   <!-- <div class="container my-3 mx-auto">
     <div class="my-2 p-2 text-center rounded-3 border-3 border bg-light">

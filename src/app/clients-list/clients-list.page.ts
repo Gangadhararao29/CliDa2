@@ -57,6 +57,9 @@ export class ClientsListPage {
   async presentAlertConfirm() {
     const alert = await this.alertController.create({
       header: 'Exit',
+      cssClass: 'alertStyle',
+      backdropDismiss:false,
+      animated:true,
       message: '<strong>Do you want to close the app?</strong>',
       buttons: [
         {
