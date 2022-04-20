@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { of } from 'rxjs';
+import { Component } from '@angular/core';
 import { ClientDataService } from '../services/client-data.service';
 
 @Component({
@@ -11,6 +10,7 @@ export class DashboardPage {
   clientsData = [];
   totalArray = [];
   name: any;
+  key: any;
   principal: any;
   interestObj: any;
   timeperiod: any;
@@ -31,12 +31,16 @@ export class DashboardPage {
   math;
   totalClients: Array<any>;
   graphDataObservable: any;
+  timeGridIcon = 'arrow-down-outline';
+  principalGridIcon = 'arrow-down-outline';
   constructor(private clientDataService: ClientDataService) {
     this.math = Math;
   }
 
   ionViewWillEnter() {
-    this.clientDataService.getRawClients().then((res) => {
+    this.timeGridIcon = 'arrow-down-outline';
+    this.principalGridIcon = 'arrow-down-outline';
+    this.clientDataService.getAllClientsData().then((res) => {
       this.totalClients = res;
       this.totalArray = [];
       this.getTotalArray(res);
@@ -47,27 +51,31 @@ export class DashboardPage {
 
   getTotalArray(response) {
     response.forEach((client) => {
-      this.name = client.name;
+      this.name = client.data.name;
+      this.key = client.key;
       let totalPrincipal = 0;
       let greaterTimePeriod = 0;
       let totalInterest = 0;
-      client.data.forEach((record) => {
-        this.principal = record.principal;
-        this.time = this.calculateTimeperiod(record.startDate, this.today);
-        this.interestObj = this.calcaulateInterest(
-          this.principal,
-          this.time,
-          record.interest
-        );
-        this.timeperiod = this.time.m + 12 * this.time.y + this.time.d / 30.0;
-        this.total = this.principal + this.interestObj.interest;
-        totalPrincipal += this.principal;
-        totalInterest += this.interestObj.interest;
-        if (this.timeperiod > greaterTimePeriod) {
-          greaterTimePeriod = this.timeperiod;
+      client.data.data.forEach((record) => {
+        if (!record.closedOn) {
+          this.principal = record.principal;
+          this.time = this.calculateTimeperiod(record.startDate, this.today);
+          this.interestObj = this.calculateInterest(
+            this.principal,
+            this.time,
+            record.interest
+          );
+          this.timeperiod = this.time.m + 12 * this.time.y + this.time.d / 30.0;
+          this.total = this.principal + this.interestObj.interest;
+          totalPrincipal += this.principal;
+          totalInterest += this.interestObj.interest;
+          if (this.timeperiod > greaterTimePeriod) {
+            greaterTimePeriod = this.timeperiod;
+          }
         }
       });
       this.totalArray.push({
+        key: this.key,
         name: this.name,
         totalPrincipal,
         totalInterest,
@@ -77,31 +85,31 @@ export class DashboardPage {
     });
   }
 
-  sortByPrincipal() {
+  sortByPrincipal(value = true) {
     this.array1 = Array.from(
       this.totalArray.sort((a, b) => {
         const keyA = a.totalPrincipal;
         const keyB = b.totalPrincipal;
         if (keyA < keyB) {
-          return +1;
+          return value ? +1 : -1;
         }
         if (keyA > keyB) {
-          return -1;
+          return value ? -1 : +1;
         }
       })
     );
   }
 
-  sortByTimePeriod() {
+  sortByTimePeriod(value = true) {
     this.array2 = Array.from(
       this.totalArray.sort((a, b) => {
         const keyA = a.greaterTimePeriod;
         const keyB = b.greaterTimePeriod;
         if (keyA < keyB) {
-          return +1;
+          return value ? +1 : -1;
         }
         if (keyA > keyB) {
-          return -1;
+          return value ? -1 : +1;
         }
       })
     );
@@ -153,7 +161,7 @@ export class DashboardPage {
     }
   }
 
-  calcaulateInterest(principal, time, rate) {
+  calculateInterest(principal, time, rate) {
     let tm = time.m + 12 * time.y + time.d / 30.0;
     if (tm <= 36) {
       const interest = (principal * tm * rate) / 100.0;
@@ -164,6 +172,30 @@ export class DashboardPage {
       const newPrincipal = principal + interest;
       const newInterest = (newPrincipal * tm * rate) / 100.0;
       return { interest, newPrincipal, newInterest, tm };
+    }
+  }
+
+  getClientsDetailsPageUrl(key) {
+    return 'client-details/' + key;
+  }
+
+  sortTimeGridChange() {
+    if (this.timeGridIcon === 'arrow-down-outline') {
+      this.timeGridIcon = 'arrow-up-outline';
+      this.sortByTimePeriod(false);
+    } else {
+      this.timeGridIcon = 'arrow-down-outline';
+      this.sortByTimePeriod(true);
+    }
+  }
+
+  sortPrincipalGridChange() {
+    if (this.principalGridIcon === 'arrow-down-outline') {
+      this.principalGridIcon = 'arrow-up-outline';
+      this.sortByPrincipal(false);
+    } else {
+      this.principalGridIcon = 'arrow-down-outline';
+      this.sortByPrincipal(true);
     }
   }
 }

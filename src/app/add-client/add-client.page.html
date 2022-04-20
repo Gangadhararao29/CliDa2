@@ -90,6 +90,7 @@
           name="startDate"
           required
           #startDate="ngModel"
+          [ngModel]="today"
           [class.is-valid]="startDate.valid"
           [class.is-invalid]="startDate.invalid &&  formRef.submitted"
         />

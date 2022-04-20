@@ -29,6 +29,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'dashboard/client-details/:key',
+        loadChildren: () =>
+          import('../client-details/client-details.module').then(
+            (m) => m.ClientDetailsPageModule
+          ),
+      },
+      {
         path: 'calculator/:key/:id',
         loadChildren: () =>
           import('../calculator/calculator.module').then(

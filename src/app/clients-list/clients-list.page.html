@@ -14,50 +14,56 @@
 </ion-header>
 
 <ion-content>
-  <div class="collapse sticky-top mb-0" id="collapseExample">
-    <ion-searchbar
-      animated
-      color="light"
-      placeholder="type to search clients.."
-      [(ngModel)]="clientSearchValue"
-      enterkeyhint="search"
-      search-icon="search-outline"
-    ></ion-searchbar>
+  <div class="collapse sticky-top mt-2 mb-0 mx-2" id="collapseExample">
+    <div class="input-group bgLight">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="type to search clients..."
+        [(ngModel)]="clientSearchValue"
+        aria-label="Username"
+        aria-describedby="basic-addon1"
+      />
+      <span
+        class="input-group-text"
+        id="basic-addon1"
+        (click)="resetSearch()"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseExample"
+        >Close</span
+      >
+    </div>
   </div>
 
-  <div *ngIf="showEntryText" class="container my-2 ">
+  <div *ngIf="showEntryText" class="container my-2">
     <ion-item
       color="light"
       lines="none"
-      class="border border-info border-3 text-center rounded-3 mb-2"
+      class="border border-primary border-3 text-center rounded-3 mb-2"
     >
       <ion-label class="fs-5"> Clida says Hello 👋</ion-label>
     </ion-item>
 
-    <div class="bg-info p-2 rounded-3 mt-1">
-      <div class="justifyText my-1">
-        To load the previous data from .json file, click on Export/Import button
-        or Go to the share tab in the bottom navigation bar.
+    <div class="bgLight rounded-3 mt-1 pb-1">
+      <div class="justifyText p-2">
+        To load already saved data from json file, click on Export/Import button
+        or go to the Share tab from the bottom navigation bar.
       </div>
       <div class="text-center">
-        <button
-          class="btn btn-primary mb-1 rounded-pill"
-          routerLink="/clida/about"
-        >
+        <button class="btn btn-primary mb-1" routerLink="/clida/about">
           Export / Import
         </button>
       </div>
     </div>
 
-    <div class="bg-info p-2 rounded-3 mt-2">
-      <div class="my-1 text-center">
-        To add the clients manually,<br />
-        click on the below button, Or<br />
-        click on the bottom right add button.
+    <div class="bgLight rounded-3 mt-2 pb-1">
+      <div class="justifyText p-2">
+        To add the clients manually, click on the below button or click on the
+        bottom right add button.
       </div>
       <div class="text-center">
         <button
-          class="btn btn-danger mb-1 rounded-pill"
+          class="btn btn-danger mb-1"
           routerLink="/clida/clients-list/add-client"
         >
           Add new Client
@@ -65,35 +71,38 @@
       </div>
     </div>
 
-    <div class="bg-warning p-2 rounded-3 mt-2">
-      <div class="text-center">
-        <ion-icon name="alert-circle" size="large"></ion-icon>
+    <div class="mt-2">
+      <div class="text-center bg-warning rounded-3">
+        <ion-icon name="alert-circle-outline" size="large"></ion-icon>
       </div>
-      <p class="justifyText">
+      <div class="justifyText bgLight p-2 rounded-3">
         Please save your data periodically using the Share tab. The data will be
         saved in the documents folder in your phone's internal storage, when you
         click on export button.
-      </p>
+      </div>
     </div>
   </div>
 
   <div *ngIf="!showEntryText">
-    <ion-list>
-      <ion-item
-        *ngFor="let client of clientsData | clientsSearch:clientSearchValue"
-        (click)="openClientDetails(client.key)"
-        color="light"
-        class="mb-2 mx-2 mt-1 rounded-3"
-      >
-        <span class="fs-5">{{client?.data.name}}</span>
-        <span class="badge rounded-circle bg-primary m-2 my-0"
-          >{{client?.data.data?.length - getRecordsInfo(client.data.data)}}
-        </span>
-        <span class="badge rounded-circle bg-success"
-          >{{getRecordsInfo(client.data.data)}}</span
-        >
-      </ion-item>
-    </ion-list>
+    <ion-item
+      *ngFor="let client of clientsData | clientsSearch:clientSearchValue"
+      (click)="openClientDetails(client.key)"
+      color="light"
+      class="m-2 rounded-3"
+    >
+      <div>{{client?.data.name}}</div>
+      <div class="ms-auto d-flex text-end">
+        <div class="mt-1">
+          <ion-badge
+            *ngFor="let clientDetail of client.data.data"
+            class="ms-1"
+            [color]="getColor(clientDetail)"
+            slot="end"
+            >{{(clientDetail.principal/1000).toFixed() + 'K'}}
+          </ion-badge>
+        </div>
+      </div>
+    </ion-item>
   </div>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -101,6 +110,7 @@
       color="danger"
       routerLink="/clida/clients-list/add-client"
       class="me-2 mb-1"
+      size="small"
     >
       <ion-icon name="add" size="large"></ion-icon>
     </ion-fab-button>

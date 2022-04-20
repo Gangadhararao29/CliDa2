@@ -12,6 +12,7 @@ export class AddClientPage {
   isAddBtnDisable: boolean;
   clientsData = [];
   formRefVariable: any;
+  today: any;
 
   constructor(
     private clientDataService: ClientDataService,
@@ -24,6 +25,7 @@ export class AddClientPage {
     this.clientDataService.getRawClients().then((res) => {
       this.clientsData = res;
     });
+    this.today = this.clientDataService.today;
   }
 
   onSubmit(formRef) {
@@ -73,7 +75,7 @@ export class AddClientPage {
         this.router.navigateByUrl('/clida/clients-list').then(() => {
           formRef.resetForm();
         });
-      }, 2000);
+      }, 1500);
     }
   }
 

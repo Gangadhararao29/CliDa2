@@ -5,68 +5,69 @@
 </ion-header>
 
 <ion-content>
-  <div class="mx-2">
-    <div class="rounded-3 p-2 mt-2 ionBgLight">
-      <div class="d-flex p-2">
-        <div class="me-2">Number of Clients:</div>
-        <div class="ms-auto me-1">{{totalClients?.length}}</div>
-      </div>
-      <div class="d-flex p-2">
-        <div class="me-2">Total principal:</div>
-        <div class="ms-auto me-1">
-          ₹ {{isd.format(getTotalPrincipalAmount())}}
-        </div>
-      </div>
-      <div class="d-flex p-2">
-        <div class="me-2">Final Amount:</div>
-        <div class="ms-auto me-1">
-          ₹ {{(isd.format(getFinalAmount().toFixed()))}}
-        </div>
+  <div class="rounded-3 p-2 m-2 ionBgLight">
+    <div class="d-flex px-2 py-1">
+      <div class="me-2">Number of Clients:</div>
+      <div class="ms-auto me-1">{{totalClients?.length}}</div>
+    </div>
+    <div class="d-flex px-2 py-1">
+      <div class="me-2">Total principal:</div>
+      <div class="ms-auto me-1">
+        ₹ {{isd.format(getTotalPrincipalAmount())}}
       </div>
     </div>
-
-    <app-line-chart [responseData]="totalClients" class="my-2"></app-line-chart>
-
-    <p class="m-2 text-center bg-success rounded-3 text-light p-1">
-      Sorting by Time ⬇
-    </p>
-    <div class="rounded-3 m-2">
-      <div class="text-left">
-        <ul class="list-group">
-          <li
-            *ngFor="let client of array2 | slice:0:4;"
-            class="list-group-item"
-          >
-            <div class="d-flex">
-              <div class="flex-grow-1">{{client.name}}</div>
-              <div class="fw-bolder">
-                {{math.trunc((client.greaterTimePeriod)/12) + "Y " +
-                math.trunc(client.greaterTimePeriod%12)+ "M"}}
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <p class="m-2 text-center bg-success rounded-3 text-light p-1">
-      Sorting by Principal ⬇
-    </p>
-    <div class="rounded-3 m-2">
-      <div>
-        <ul class="list-group">
-          <li
-            *ngFor="let client of array1 | slice:0:4;"
-            class="list-group-item"
-          >
-            <div class="d-flex">
-              <div class="flex-grow-1">{{client.name}}</div>
-              <div class="fw-bolder">
-                ₹{{isd.format(client.totalPrincipal)}}
-              </div>
-            </div>
-          </li>
-        </ul>
+    <div class="d-flex px-2 py-1">
+      <div class="me-2">Final Amount:</div>
+      <div class="ms-auto me-1">
+        ₹ {{(isd.format(getFinalAmount().toFixed()))}}
       </div>
     </div>
   </div>
+
+  <app-line-chart [responseData]="totalClients" class="my-2"></app-line-chart>
+
+  <ion-card>
+    <ion-item color="success" class="text-center">
+      Sorting by Time
+      <ion-icon
+        [name]="timeGridIcon"
+        slot="end"
+        (click)="sortTimeGridChange()"
+      ></ion-icon>
+    </ion-item>
+    <span *ngFor="let client of array2 | slice:0:4;">
+      <ion-item
+        [routerLink]="getClientsDetailsPageUrl(client.key)"
+        color="light"
+      >
+        <ion-label>{{client.name}}</ion-label>
+        <ion-label slot="end" class="fw-bolder">
+          {{math.trunc((client.greaterTimePeriod)/12) + "Y " +
+          math.trunc(client.greaterTimePeriod%12)+ "M"}}</ion-label
+        >
+      </ion-item>
+    </span>
+  </ion-card>
+
+  <ion-card>
+    <ion-item color="success" class="text-center"
+      >Sorting by Principal
+      <ion-icon
+        [name]="principalGridIcon"
+        slot="end"
+        (click)="sortPrincipalGridChange()"
+      ></ion-icon
+    ></ion-item>
+    <span *ngFor="let client of array1 | slice:0:4;">
+      <ion-item
+        [routerLink]="getClientsDetailsPageUrl(client.key)"
+        color="light"
+      >
+        <ion-label class="ion-text-wrap">{{client.name}}</ion-label>
+        <ion-label slot="end" class="fw-bolder">
+          ₹{{isd.format(client.totalPrincipal)}}</ion-label
+        >
+      </ion-item>
+    </span>
+  </ion-card>
 </ion-content>

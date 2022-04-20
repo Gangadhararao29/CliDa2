@@ -29,8 +29,8 @@
 
     <ion-card-content>
       <div class="mb-2 pb-2">
-        To load your clients data into the app, Choose .json file in the below
-        input feild
+        To load your clients data into the app, Click on Choose file and select
+        .json file from internal storage.
       </div>
       <div>
         <ion-item color="primary">
@@ -65,52 +65,10 @@
     color="danger"
     expand="block"
     class="mx-2"
-    >Remove clients data</ion-button
+    >Remove all clients data</ion-button
   >
-
-  <!-- <div class="container my-3 mx-auto">
-    <div class="my-2 p-2 text-center rounded-3 border-3 border bg-light">
-      <span class="d-block mb-1">
-        To export your Data into json file. <br />
-        Click on export button
-      </span>
-      <a
-        class="btn btn-primary"
-        title="Download JSON"
-        [href]="downloadJsonHref"
-        download="download.json"
-        (click)="exportData()"
-        >Export <ion-icon name="share-outline"></ion-icon
-      ></a>
-    </div>
-    <div class="my-2 p-2 text-center rounded-3 border-3 border bg-light">
-      <span class="d-block mb-1">
-        To import your data into the app. <br />
-        Choose .json file in the input feild
-      </span>
-      <div class="my-1">
-        <input
-          class="btn btn-primary w-100"
-          #fileInput
-          type="file"
-          accept="application/JSON"
-          (change)="importData($event.target)"
-        />
-      </div>
-    </div>
-
-    <div class="d-grid gap-2 bg-light">
-      <button
-        class="btn btn-danger"
-        type="reset"
-        (click)="presentDeleteAlert()"
-      >
-        Reset Data
-      </button>
-    </div>
-  </div> -->
 </ion-content>
 
 <ion-footer>
-  <!-- <div class="text-center">CliDa 2.0</div> -->
+  <!-- <div class="text-center">CliDa beta-2.0</div> -->
 </ion-footer>

@@ -54,14 +54,11 @@ export class ClientDetailsPage {
   }
 
   calculateInterest(data) {
-    const timeObject = this.clientsDataService.calculateTimeperiod(
+    const interestObject = this.clientsDataService.calculateInterest(
+      data.principal,
+      data.interest,
       data.startDate,
       this.today
-    );
-    const interestObject = this.clientsDataService.calcaulateInterest(
-      data.principal,
-      timeObject.tm,
-      data.interest
     );
     return Number.parseInt(interestObject.interest.toFixed(2), 10);
   }
@@ -109,8 +106,8 @@ export class ClientDetailsPage {
     const alert = await this.alertController.create({
       header: 'Confirm',
       cssClass: 'alertStyle',
-      backdropDismiss:false,
-      animated:true,
+      backdropDismiss: false,
+      animated: true,
       message: '<strong>Do you want to delete this record?</strong>',
       buttons: [
         {
@@ -125,7 +122,7 @@ export class ClientDetailsPage {
               );
               setTimeout(() => {
                 this.router.navigate(['clida', 'clients-list']);
-              }, 2000);
+              }, 1500);
             } else {
               this.clientsDataService.updateClientRecordByName(this.client);
               this.presentToast('Client record deleted successfully', 2500);
@@ -150,5 +147,18 @@ export class ClientDetailsPage {
       position: 'top',
     });
     toast.present();
+  }
+
+  getColor(detail) {
+    const tm = this.clientsDataService.calculateTimeperiod(detail?.startDate).tm;
+    if (detail?.closedOn) {
+      return 'success';
+    } else if (tm >= 30) {
+      return 'danger';
+    } else if (tm >= 24) {
+      return 'warning';
+    } else {
+      return 'light';
+    }
   }
 }

@@ -100,12 +100,12 @@ export class EditDetailsPage {
           this.responseHandler();
         });
     } else {
-      console.log(this.allClientData);
       const existingClient = this.allClientData.find(
         (record) => record.name == formRef.value.name
       );
       if (existingClient) {
         existingClient.data.push({
+          id: Date.now(),
           principal: formRef.value.principal,
           interest: formRef.value.interest,
           startDate: formRef.value.startDate,
@@ -115,7 +115,7 @@ export class EditDetailsPage {
         this.clientDataService
           .updateClientRecordByName(existingClient)
           .then(() => {
-            this.deleteRecordAndSaveNewRecord();
+            this.deleteRecord();
           });
       } else {
         this.clientDataService
@@ -123,6 +123,7 @@ export class EditDetailsPage {
             name: formRef.value.name,
             data: [
               {
+                id: Date.now(),
                 principal: formRef.value.principal,
                 interest: formRef.value.interest,
                 startDate: formRef.value.startDate,
@@ -132,19 +133,19 @@ export class EditDetailsPage {
             ],
           })
           .then(() => {
-            this.responseHandler();
+            this.deleteRecord();
           });
       }
     }
   }
 
-  deleteRecordAndSaveNewRecord() {
+  deleteRecord() {
     const index = this.clientData.data.findIndex(
       (ele) => ele.id == this.clientId
     );
     const clientDataLength = this.clientData.data.length;
     this.clientData.data.splice(index, 1);
-    if (clientDataLength == 1) {
+    if (clientDataLength <= 1) {
       this.clientDataService.deleteClient(this.clientKey).then(() => {
         this.responseHandler();
       });

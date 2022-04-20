@@ -61,10 +61,11 @@ export class CalculatorPage {
       );
 
       if (!isNaN(this.timePeriodObject.d)) {
-        this.interestObj = this.clientsDataService.calcaulateInterest(
+        this.interestObj = this.clientsDataService.calculateInterest(
           formRef.value.principal,
-          this.timePeriodObject.tm,
-          formRef.value.interest
+          formRef.value.interest,
+          formRef.value.startDate,
+        formRef.value.endDate
         );
 
         this.showCalculatedData = true;

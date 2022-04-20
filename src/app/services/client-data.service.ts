@@ -5,6 +5,16 @@ import LocalBase from 'localbase';
 })
 export class ClientDataService {
   db = new LocalBase('clida');
+  today = new Date()
+    .toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
+    .split('/')
+    .reverse()
+    .join('-');
+
   constructor() {}
 
   async getAllClientsData() {
@@ -86,7 +96,7 @@ export class ClientDataService {
    * for calculating interests
    */
 
-  calculateTimeperiod(startDate, endDate) {
+  calculateTimeperiod(startDate, endDate = this.today) {
     const d1 = new Date(startDate).getDate();
     const m1 = new Date(startDate).getMonth() + 1;
     const y1 = new Date(startDate).getFullYear();
@@ -113,7 +123,8 @@ export class ClientDataService {
     }
   }
 
-  calcaulateInterest(principal, timeInMonths, rate) {
+  calculateInterest(principal, rate, startDate, endDate = this.today) {
+    let timeInMonths = this.calculateTimeperiod(startDate, endDate).tm;
     if (timeInMonths <= 36) {
       const interest = (principal * timeInMonths * rate) / 100.0;
       return { interest };

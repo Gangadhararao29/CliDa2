@@ -67,7 +67,7 @@ export class LineChartPage implements OnChanges {
     const combinedData = [];
     const dateSet = new Set();
     response.forEach((record) => {
-      record.data.forEach((data) => {
+      record.data.data.forEach((data) => {
         combinedData.push(data);
         dateSet.add(new Date(data.startDate).getFullYear());
       });

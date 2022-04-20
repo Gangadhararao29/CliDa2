@@ -36,16 +36,6 @@ export class ClientsListPage {
     });
   }
 
-  getRecordsInfo(data) {
-    let closed = 0;
-    data.forEach((record) => {
-      if (record.closedOn) {
-        closed++;
-      }
-    });
-    return closed ? closed : null;
-  }
-
   resetSearch() {
     this.clientSearchValue = null;
   }
@@ -58,8 +48,8 @@ export class ClientsListPage {
     const alert = await this.alertController.create({
       header: 'Exit',
       cssClass: 'alertStyle',
-      backdropDismiss:false,
-      animated:true,
+      backdropDismiss: false,
+      animated: true,
       message: '<strong>Do you want to close the app?</strong>',
       buttons: [
         {
@@ -76,5 +66,20 @@ export class ClientsListPage {
       ],
     });
     await alert.present();
+  }
+
+  getColor(detail) {
+    const tm = this.clientDataService.calculateTimeperiod(detail?.startDate).tm;
+    if (detail?.closedOn) {
+      return 'success';
+    } else if (tm >= 30) {
+      return 'danger';
+    } else if (tm >= 24) {
+      return 'warning';
+    } else if (tm >= 12) {
+      return 'secondary';
+    } else {
+      return 'primary';
+    }
   }
 }
