@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content>
-  <div class="mx-1 mt-1">
+  <div class="mx-2 mt-1">
     <ion-accordion toggle-icon="none">
       <ion-item slot="header" color="primary" class="rounded-1">
         <ion-label class="d-flex ms-2">
@@ -119,19 +119,19 @@
             </div>
 
             <div
-                *ngIf="totalTimeinMonths(data?.startDate,today)>36"
-                class="d-flex mt-2 justify-content-around align-items-center bg-warning rounded-3"
-              >
-                <ion-icon
-                  name="alert-circle-outline"
-                  size="large"
-                  slot="start"
-                ></ion-icon>
-                <div>
-                  Interest calculated for 3 years only.<br />
-                  Please use calculate option.
-                </div>
+              *ngIf="totalTimeinMonths(data?.startDate,today)>36"
+              class="d-flex mt-2 p-2 justify-content-around align-items-center bg-warning rounded-3"
+            >
+              <ion-icon
+                name="alert-circle-outline"
+                size="large"
+                slot="start"
+              ></ion-icon>
+              <div>
+                Interest calculated for 3 years only.<br />
+                Please use calculate option.
               </div>
+            </div>
 
             <div
               *ngIf="showCloseDiv"
@@ -192,7 +192,7 @@
                     Edit
                   </button>
                 </div>
-                <div class="col mx-1" >
+                <div class="col mx-1">
                   <button
                     class="btn btn-warning w-100"
                     (click)="openCalculator(data?.id)"
@@ -202,7 +202,7 @@
                 </div>
               </div>
 
-              <div class="d-flex mt-1">
+              <div class="d-flex mt-2">
                 <div class="col mx-1">
                   <button
                     class="btn btn-success w-100"

@@ -74,14 +74,16 @@ export class DashboardPage {
           }
         }
       });
-      this.totalArray.push({
-        key: this.key,
-        name: this.name,
-        totalPrincipal,
-        totalInterest,
-        greaterTimePeriod,
-        finalAmount: totalPrincipal + totalInterest,
-      });
+      if (totalPrincipal !== 0 && greaterTimePeriod !== 0) {
+        this.totalArray.push({
+          key: this.key,
+          name: this.name,
+          totalPrincipal,
+          totalInterest,
+          greaterTimePeriod,
+          finalAmount: totalPrincipal + totalInterest,
+        });
+      }
     });
   }
 
@@ -98,6 +100,7 @@ export class DashboardPage {
         }
       })
     );
+    this.array1 = this.array1.filter((rec) => rec.finalAmount !== 0);
   }
 
   sortByTimePeriod(value = true) {

@@ -1,8 +1,7 @@
 {
-  "name": "cli-da-2",
-  "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "name": "CliDa",
+  "version": "2.5",
+  "author": "Gangadhararao Chandu",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

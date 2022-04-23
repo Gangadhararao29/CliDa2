@@ -24,46 +24,51 @@
         aria-label="Username"
         aria-describedby="basic-addon1"
       />
-      <span
-        class="input-group-text"
-        id="basic-addon1"
-        (click)="resetSearch()"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseExample"
-        >Close</span
+      <span class="input-group-text" id="basic-addon1" (click)="resetSearch()"
+        >Clear</span
       >
     </div>
+    <!-- 
+        <ion-searchbar
+      animated
+      color="light"
+      placeholder="Type to search clients..."
+      [(ngModel)]="clientSearchValue"
+      enterkeyhint="search"
+      search-icon="search-outline"
+    ></ion-searchbar>
+     -->
   </div>
 
   <div *ngIf="showEntryText" class="container my-2">
     <ion-item
       color="light"
       lines="none"
-      class="border border-primary border-3 text-center rounded-3 mb-2"
+      class="border border-primary border-3 text-center rounded-3"
     >
       <ion-label class="fs-5"> Clida says Hello 👋</ion-label>
     </ion-item>
 
-    <div class="bgLight rounded-3 mt-1 pb-1">
-      <div class="justifyText p-2">
+    <div class="bgLight rounded-3 px-3 py-2 my-2">
+      <div class="justifyText mb-2">
         To load already saved data from json file, click on Export/Import button
         or go to the Share tab from the bottom navigation bar.
       </div>
-      <div class="text-center">
-        <button class="btn btn-primary mb-1" routerLink="/clida/about">
+      <div class="text-center mb-1">
+        <button class="btn btn-primary" routerLink="/clida/about">
           Export / Import
         </button>
       </div>
     </div>
 
-    <div class="bgLight rounded-3 mt-2 pb-1">
-      <div class="justifyText p-2">
+    <div class="bgLight rounded-3 px-3 py-2 mb-2">
+      <div class="justifyText mb-2">
         To add the clients manually, click on the below button or click on the
         bottom right add button.
       </div>
-      <div class="text-center">
+      <div class="text-center mb-1">
         <button
-          class="btn btn-danger mb-1"
+          class="btn btn-danger"
           routerLink="/clida/clients-list/add-client"
         >
           Add new Client
@@ -72,10 +77,10 @@
     </div>
 
     <div class="mt-2">
-      <div class="text-center bg-warning rounded-3">
+      <div class="text-center bg-warning rounded-3 mt-2 pt-2">
         <ion-icon name="alert-circle-outline" size="large"></ion-icon>
       </div>
-      <div class="justifyText bgLight p-2 rounded-3">
+      <div class="justifyText bgLight py-2 px-3 rounded-3">
         Please save your data periodically using the Share tab. The data will be
         saved in the documents folder in your phone's internal storage, when you
         click on export button.
@@ -104,13 +109,13 @@
       </div>
     </ion-item>
   </div>
+  <ion-item color="silver" lines="none"></ion-item>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button
       color="danger"
       routerLink="/clida/clients-list/add-client"
       class="me-2 mb-1"
-      size="small"
     >
       <ion-icon name="add" size="large"></ion-icon>
     </ion-fab-button>
