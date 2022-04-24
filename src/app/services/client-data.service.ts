@@ -51,8 +51,8 @@ export class ClientDataService {
         .collection('clientsData')
         .delete()
         .then((res) => {
-          clientsDataGroup.forEach((client) => {
-            this.addNewClient(client);
+          clientsDataGroup.forEach(async (client) => {
+            await this.addNewClient(client);
           });
         });
     } else {

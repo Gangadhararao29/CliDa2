@@ -26,10 +26,11 @@
 @import "~@ionic/angular/css/flex-utils.css";
 
 .alertStyle .alert-wrapper {
-  border-radius: 8px;
+  border-radius: 10px;
   .alert-head {
     background: var(--ion-color-primary);
     color: white;
+    padding: 15px 25px;
   }
   h2 {
     color: white;
@@ -98,3 +99,12 @@
   }
 }
 
+.successToastClass {
+  --background: #198754;
+  --color: whitesmoke;
+}
+
+.failedToastClass {
+  --background: #dc3545;
+  --color: whitesmoke;
+}

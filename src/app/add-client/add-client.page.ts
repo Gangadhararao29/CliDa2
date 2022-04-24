@@ -47,6 +47,7 @@ export class AddClientPage {
   }
 
   saveNewClientData(newClientData, formRef) {
+    this.isAddBtnDisable = true;
     this.clientDataService.getClientByName(newClientData.name).then((res) => {
       if (res) {
         res.data.push(newClientData.data[0]);
@@ -64,12 +65,12 @@ export class AddClientPage {
   routeToClientList(formRef) {
     let message = '';
     if (formRef.value.multiRecordsSelected) {
-      message = 'New client added successfully.';
+      message = 'New record added to the client successfully.';
+      this.isAddBtnDisable = false;
       this.presentToast(message);
     } else {
-      this.isAddBtnDisable = true;
       message =
-        'New client added successfully.<br>Redirecting to Clients list tab.';
+        'New client added successfully,<br>Redirecting to Clients list tab.';
       this.presentToast(message);
       setTimeout(() => {
         this.router.navigateByUrl('/clida/clients-list').then(() => {
@@ -90,7 +91,10 @@ export class AddClientPage {
     const toast = await this.toastController.create({
       message,
       position: 'top',
-      duration: 2000,
+      duration: 2500,
+      animated: true,
+      cssClass: 'successToastClass',
+      icon: 'checkmark-outline',
     });
     toast.present();
   }
