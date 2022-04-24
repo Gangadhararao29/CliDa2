@@ -63,7 +63,7 @@ export class EditDetailsPage {
       header: 'Confirm',
       backdropDismiss: false,
       animated: true,
-      message: '<strong>Do you want to save these changes?</strong>',
+      message: '<b>Do you want to save these changes?</b>',
       buttons: [
         {
           text: 'Yes',
@@ -198,9 +198,12 @@ export class EditDetailsPage {
   async presentToast() {
     const toast = await this.toastController.create({
       message:
-        'Your changes have been saved.<br>Redirecting to ClientsDetails Tab',
+        'Your changes have been saved.<br>Redirecting to ClientsDetails Menu',
       duration: 2500,
       position: 'top',
+      animated: true,
+      cssClass: 'successToastClass',
+      icon: 'checkmark-outline',
     });
     toast.present();
   }

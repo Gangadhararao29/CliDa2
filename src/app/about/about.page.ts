@@ -1,4 +1,4 @@
-import { Component,Renderer2 } from '@angular/core';
+import { Component, Renderer2 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
@@ -37,12 +37,6 @@ export class AboutPage {
       );
     });
   }
-
-  importData(target) {
-    this.jsonFile = target.files.item(0);
-    this.presentImportDataAlert(this.jsonFile);
-  }
-
   async writeSecretFile(clientsDataString: string) {
     const fileName = `CliDa/clientsData_${new Date()
       .toJSON()
@@ -56,36 +50,40 @@ export class AboutPage {
     })
       .then(() => {
         this.presentToast(
-          `File saved Successfully.<br>Path:/Documents/${fileName}`,
-          3000
+          `File saved successfully in <br> Documents/${fileName}.`,
+          2500,
+          'successToastClass',
+          'checkmark-outline'
         );
       })
       .catch((err) => {
-        this.presentToast(
-          'No data to Export <br>Import clients or  Add clients to continue<br>' +
-            err,
-          3000
-        );
+        const errString = 'No Data found.<br>' + err.toString().slice(6);
+        this.presentToast(errString, 2500, 'failedToastClass', 'alert-outline');
       });
+  }
+
+  importData(target) {
+    this.jsonFile = target.files.item(0);
+    this.presentImportDataAlert(this.jsonFile);
   }
 
   async presentImportDataAlert(file) {
     const alert = await this.alertController.create({
       header: 'Existing Data will?',
       cssClass: 'alertMultiStyle',
-      backdropDismiss:false,
-      animated:true,
+      backdropDismiss: false,
+      animated: true,
       buttons: [
-        {
-          text: 'Merge with new data',
-          handler: () => {
-            this.importHandler(file, false);
-          },
-        },
         {
           text: 'Replace with new data',
           handler: () => {
             this.importHandler(file, true);
+          },
+        },
+        {
+          text: 'Merge with new data',
+          handler: () => {
+            this.importHandler(file, false);
           },
         },
         {
@@ -108,10 +106,11 @@ export class AboutPage {
         .saveBulkClients(this.importedJSON, replaceStatus)
         .then((res) => {
           this.inputClientData = '';
-
           this.presentToast(
             'Data imported succcessfully <br>Redirecting to Clients List Tab',
-            2000
+            2000,
+            'successToastClass',
+            'checkmark-outline'
           );
 
           setTimeout(() => {
@@ -121,11 +120,14 @@ export class AboutPage {
     };
   }
 
-  async presentToast(message, duration) {
+  async presentToast(message, duration, cssClass, icon) {
     const toast = await this.toastController.create({
       message,
       position: 'top',
       duration,
+      animated: true,
+      cssClass,
+      icon: 'checkmark-outline',
     });
     toast.present();
   }
@@ -133,8 +135,8 @@ export class AboutPage {
   async presentDeleteAlert() {
     const alert = await this.alertController.create({
       header: 'Do you want to reset the app data?',
-      backdropDismiss:false,
-      animated:true,
+      backdropDismiss: false,
+      animated: true,
       cssClass: 'alertStyle',
       buttons: [
         {
@@ -155,7 +157,7 @@ export class AboutPage {
   resetData() {
     this.clientDataService.deleteDataBase();
     const message = 'Data successfully deleted';
-    this.presentToast(message, 2000);
+    this.presentToast(message, 2000, 'successToastClass', 'checkmark-outline');
   }
 
   changeTheme(event) {

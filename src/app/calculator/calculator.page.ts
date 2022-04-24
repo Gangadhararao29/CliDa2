@@ -91,8 +91,11 @@ export class CalculatorPage {
   async presentToast() {
     const toast = await this.toastController.create({
       message: 'Interest Calculated Successfully',
-      duration: 1500,
+      duration: 2500,
       position: 'top',
+      animated: true,
+      cssClass: 'successToastClass',
+      icon: 'checkmark-outline',
     });
     toast.present();
   }

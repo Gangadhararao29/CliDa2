@@ -117,15 +117,14 @@ export class ClientDetailsPage {
             if (dataLength == 1) {
               this.clientsDataService.deleteClient(this.clientId);
               this.presentToast(
-                'Client deleted completely. <br>Redirecting to Clients list tab',
-                2500
+                'Client deleted completely. <br>Redirecting to Clients list tab'
               );
               setTimeout(() => {
                 this.router.navigate(['clida', 'clients-list']);
               }, 1500);
             } else {
               this.clientsDataService.updateClientRecordByName(this.client);
-              this.presentToast('Client record deleted successfully', 2500);
+              this.presentToast('Client record deleted successfully');
             }
           },
         },
@@ -140,17 +139,22 @@ export class ClientDetailsPage {
     await alert.present();
   }
 
-  async presentToast(message, duration) {
+  async presentToast(message) {
     const toast = await this.toastController.create({
       message,
-      duration,
+      duration: 2500,
       position: 'top',
+      animated: true,
+      cssClass: 'successToastClass',
+      icon: 'checkmark-outline',
     });
     toast.present();
   }
 
   getColor(detail) {
-    const tm = this.clientsDataService.calculateTimeperiod(detail?.startDate).tm;
+    const tm = this.clientsDataService.calculateTimeperiod(
+      detail?.startDate
+    ).tm;
     if (detail?.closedOn) {
       return 'success';
     } else if (tm >= 30) {
