@@ -5,6 +5,7 @@ import LocalBase from 'localbase';
 })
 export class ClientDataService {
   db = new LocalBase('clida');
+
   today = new Date()
     .toLocaleDateString('en-GB', {
       day: '2-digit',
@@ -15,7 +16,9 @@ export class ClientDataService {
     .reverse()
     .join('-');
 
-  constructor() {}
+  constructor() {
+    this.db.config.debug = false;
+  }
 
   async getAllClientsData() {
     return await this.db.collection('clientsData').get({ keys: true });
@@ -47,39 +50,22 @@ export class ClientDataService {
   async saveBulkClients(clientsDataGroupString, replaceStatus) {
     const clientsDataGroup = JSON.parse(clientsDataGroupString);
     if (replaceStatus) {
-      this.db
-        .collection('clientsData')
-        .delete()
-        .then((res) => {
-          clientsDataGroup.forEach(async (client) => {
-            await this.addNewClient(client);
-          });
-        });
+      return await this.db.collection('clientsData').set(clientsDataGroup);
     } else {
-      let responseObject = [];
-      this.getRawClients().then((res) => {
-        responseObject = res;
-        responseObject.forEach((record) => {
-          clientsDataGroup.forEach((client, index, clientsDataArray) => {
-            if (record.name == client.name) {
-              record.data.push(...client.data);
-              clientsDataArray.splice(index, 1);
+      clientsDataGroup.forEach((client) => {
+        this.getClientByName(client.name).then((res) => {
+          if (res) {
+            const recordExisted = res.data.filter(
+              (clientData) => clientData.id === res.id
+            );
+            if (!recordExisted) {
+              res.push(client.data);
+              this.updateClientRecordByName(res);
             }
-          });
+          } else {
+            this.addNewClient(client);
+          }
         });
-
-        this.db
-          .collection('clientsData')
-          .delete()
-          .then(() => {
-            responseObject.forEach((client) => {
-              this.addNewClient(client);
-            });
-
-            clientsDataGroup.forEach((client) => {
-              this.addNewClient(client);
-            });
-          });
       });
     }
   }
@@ -92,6 +78,9 @@ export class ClientDataService {
     return await this.db.delete();
   }
 
+  async orderByVariable(objectName) {
+    return await this.db.collection('clientsData').orderBy(objectName).get();
+  }
   /**
    * for calculating interests
    */

@@ -38,6 +38,7 @@ export class AboutPage {
       );
     });
   }
+
   async writeSecretFile(clientsDataString: string) {
     const fileName = `CliDa/clientsData_${new Date()
       .toJSON()
