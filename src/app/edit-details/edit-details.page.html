@@ -12,9 +12,9 @@
     <form
       #formRef="ngForm"
       (ngSubmit)="onSubmit(formRef)"
-      class="p-2 m-2 formClass rounded-3"
+      class="p-2 mx-2 formClass rounded-3"
     >
-      <p class="fs-4 fw-2 mx-1 mb-2 text-center">Primary details</p>
+      <span class="fs-5 fw-2 mx-1 mb-2">Primary details</span>
 
       <div class="form-floating mb-2">
         <input
@@ -91,8 +91,8 @@
       </div>
 
       <div *ngIf="client.closedOn">
-        <p class="fs-4 fw-2 mx-1 mb-1 text-center">Closed details</p>
-        <div class="mb-3 d-flex justify-content-between">
+        <span class="fs-5 fw-2 mx-1">Closed details</span>
+        <div class="d-flex mb-2 justify-content-between">
           <div class="form-floating d-inline-block">
             <input
               type="date"

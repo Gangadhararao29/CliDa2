@@ -70,7 +70,7 @@ export class AddClientPage {
       this.presentToast(message);
     } else {
       message =
-        'New client added successfully,<br>Redirecting to Clients list tab.';
+        'New client record added successfully,<br>Redirecting to Clients list tab.';
       this.presentToast(message);
       setTimeout(() => {
         this.router.navigateByUrl('/clida/clients-list').then(() => {
