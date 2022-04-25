@@ -18,6 +18,7 @@ export class AboutPage {
   darkModeFlag = false;
   themeName = localStorage.getItem('theme');
   inputClientData: any;
+  sortValue: any;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -127,7 +128,7 @@ export class AboutPage {
       duration,
       animated: true,
       cssClass,
-      icon: 'checkmark-outline',
+      icon,
     });
     toast.present();
   }
@@ -173,6 +174,44 @@ export class AboutPage {
       } else {
         this.renderer.removeClass(document.body, 'dark');
       }
+    }
+  }
+
+  changeSort(event) {
+    if (event.target.value) {
+      event.target.disabled = true;
+      this.clientDataService.getRawClients().then((clients) => {
+        clients.map((ele) => {
+          ele.data.sort((a, b) => {
+            const keyA = new Date(a.startDate);
+            const keyB = new Date(b.startDate);
+            return keyA < keyB ? -1 : +1;
+          });
+        });
+
+        if (event.target.value === 'name') {
+          clients.sort((a, b) => (a.name < b.name ? -1 : +1));
+        } else if (event.target.value === 'year') {
+          clients.sort((a, b) => {
+            const keyA = new Date(a.data[0].startDate);
+            const keyB = new Date(b.data[0].startDate);
+            return keyA < keyB ? -1 : +1;
+          });
+        }
+
+        this.clientDataService
+          .saveBulkClients(JSON.stringify(clients), true)
+          .then((res) => {
+            this.presentToast(
+              'Data sorted successfully',
+              2500,
+              'successToastClass',
+              'checkmark-outline'
+            );
+            event.target.disabled = false;
+            event.target.value = null;
+          });
+      });
     }
   }
 }

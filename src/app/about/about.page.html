@@ -48,6 +48,18 @@
   </ion-card>
 
   <ion-item class="m-2 border rounded-3" color="light" lines="none">
+    <ion-label>Sort main list by</ion-label>
+    <ion-select
+      (ionChange)="changeSort($event)"
+      interface="action"
+      placeholder="Year/Name"
+    >
+      <ion-select-option value="year">Year</ion-select-option>
+      <ion-select-option value="name">Name</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item class="m-2 border rounded-3" color="light" lines="none">
     <ion-label>Select Theme</ion-label>
     <ion-select
       [value]="themeName"

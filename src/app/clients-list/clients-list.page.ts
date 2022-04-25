@@ -82,4 +82,24 @@ export class ClientsListPage {
       return 'primary';
     }
   }
+
+  sortModel(str) {
+    this.clientsData.forEach((ele) => {
+      ele.data.data.sort((a, b) => {
+        const keyA = new Date(a.startDate);
+        const keyB = new Date(b.startDate);
+        return keyA < keyB ? -1 : +1;
+      });
+    });
+
+    if (str === 'name') {
+      this.clientsData.sort((a, b) => (a.data.name < b.data.name ? -1 : +1));
+    } else if (str === 'time') {
+      this.clientsData.sort((a, b) => {
+        const keyA = new Date(a.data.data[0].startDate);
+        const keyB = new Date(b.data.data[0].startDate);
+        return keyA < keyB ? -1 : +1;
+      });
+    }
+  }
 }

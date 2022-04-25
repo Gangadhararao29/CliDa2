@@ -1,35 +1,38 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title> Clients List </ion-title>
-    <ion-button
-      [hidden]="showEntryText"
-      (click)="resetSearch()"
-      slot="end"
-      fill="none"
-      data-bs-toggle="collapse"
-      data-bs-target="#collapseExample"
-      ><ion-icon name="search-sharp" slot="icon-only"></ion-icon
-    ></ion-button>
+
+    <ion-buttons slot="primary">
+      <ion-button
+        [hidden]="showEntryText"
+        (click)="resetSearch()"
+        slot="end"
+        fill="none"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseExample"
+        ><ion-icon name="search-sharp" slot="icon-only"></ion-icon
+      ></ion-button>
+      <ion-button id="rightSideMenu">
+        <ion-icon slot="icon-only" name="funnel-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <ion-popover trigger="rightSideMenu" [dismissOnSelect]="true">
+    <ng-template>
+      <ion-item [button]="true" (click)="sortModel('name')"
+        >Sort by Name (asc)
+      </ion-item>
+      <ion-item [button]="true" (click)="sortModel('time')"
+        >Sort by Time (des)
+      </ion-item>
+    </ng-template>
+  </ion-popover>
+
   <div class="collapse sticky-top mt-2 mb-0 mx-2" id="collapseExample">
-    <div class="input-group bgLight">
-      <input
-        type="text"
-        class="form-control"
-        placeholder="type to search clients..."
-        [(ngModel)]="clientSearchValue"
-        aria-label="Username"
-        aria-describedby="basic-addon1"
-      />
-      <span class="input-group-text" id="basic-addon1" (click)="resetSearch()"
-        >Clear</span
-      >
-    </div>
-    <!-- 
-        <ion-searchbar
+    <ion-searchbar
       animated
       color="light"
       placeholder="Type to search clients..."
@@ -37,7 +40,6 @@
       enterkeyhint="search"
       search-icon="search-outline"
     ></ion-searchbar>
-     -->
   </div>
 
   <div *ngIf="showEntryText" class="container my-2">
