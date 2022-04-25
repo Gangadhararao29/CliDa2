@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { ClientDataService } from '../services/client-data.service';
@@ -13,6 +13,7 @@ export class AddClientPage {
   clientsData = [];
   formRefVariable: any;
   today: any;
+  listType = 'credit';
 
   constructor(
     private clientDataService: ClientDataService,
@@ -29,6 +30,7 @@ export class AddClientPage {
   }
 
   onSubmit(formRef) {
+    console.log(formRef.value);
     this.formRefVariable = formRef;
     if (formRef.valid) {
       const newClientData = {
@@ -36,9 +38,13 @@ export class AddClientPage {
         data: [
           {
             id: Date.now(),
-            principal: formRef.value.principal,
+            principal:
+              this.listType == 'credit'
+                ? formRef.value.principal
+                : -formRef.value.principal,
             interest: formRef.value.interest,
             startDate: formRef.value.startDate,
+            comments: formRef.value.comments,
           },
         ],
       };

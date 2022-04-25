@@ -20,6 +20,7 @@ export class EditDetailsPage {
   clientId: any;
   clientKey: any;
   allClientData = [];
+  listType = '';
   constructor(
     private activatedRoute: ActivatedRoute,
     private clientDataService: ClientDataService,
@@ -39,6 +40,7 @@ export class EditDetailsPage {
         this.clientDataService.getRawClients().then((response) => {
           this.allClientData = response;
         });
+        this.listType = this.client.principal > 0 ? 'credit' : 'debit';
       });
     });
   }
@@ -86,8 +88,12 @@ export class EditDetailsPage {
     if (this.clientData.name == formRef.value.name) {
       this.clientData.data.forEach((record) => {
         if (record.id == this.clientId) {
-          record.principal = formRef.value.principal;
+          record.principal =
+            this.listType === 'credit'
+              ? Math.abs(formRef.value.principal)
+              : -Math.abs(formRef.value.principal);
           record.interest = formRef.value.interest;
+          record.comments = formRef.value.comments;
           record.startDate = formRef.value.startDate;
           record.closedOn = formRef.value.closedOn;
           record.closedAmount = formRef.value.closedAmount;
@@ -109,6 +115,7 @@ export class EditDetailsPage {
           principal: formRef.value.principal,
           interest: formRef.value.interest,
           startDate: formRef.value.startDate,
+          comments: formRef.value.comments,
           closedOn: formRef.value.closedOn,
           closedAmount: formRef.value.closedAmount,
         });
@@ -128,6 +135,7 @@ export class EditDetailsPage {
                 interest: formRef.value.interest,
                 startDate: formRef.value.startDate,
                 closedOn: formRef.value.closedOn,
+                comments: formRef.value.comments,
                 closedAmount: formRef.value.closedAmount,
               },
             ],

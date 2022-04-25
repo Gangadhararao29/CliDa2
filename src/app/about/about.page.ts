@@ -209,8 +209,10 @@ export class AboutPage {
               'successToastClass',
               'checkmark-outline'
             );
-            event.target.disabled = false;
-            event.target.value = null;
+            setTimeout(() => {
+              event.target.disabled = false;
+              event.target.value = null;
+            }, 1500);
           });
       });
     }

@@ -1,16 +1,32 @@
 <ion-header>
   <ion-toolbar>
     <ion-back-button slot="start"></ion-back-button>
-    <ion-title>Add new client</ion-title>
+    <ion-title>Add new record</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-item lines="none" color="light" class="mx-2 mt-1 rounded-3">
-    <ion-label class="fs-5 fw-2"> Enter client details </ion-label>
-  </ion-item>
+  <ion-list color="light" class="mx-2">
+    <ion-radio-group value="credit" [(ngModel)]="listType">
+      <ion-list-header color="light">
+        <ion-label class="fs-6">Select Record type</ion-label>
+      </ion-list-header>
 
-  <div class="mx-2 my-1">
+      <div class="d-flex justify-content-between">
+        <ion-item color="light" class="col">
+          <ion-label>Debit</ion-label>
+          <ion-radio slot="start" value="debit"></ion-radio>
+        </ion-item>
+
+        <ion-item color="light" class="col">
+          <ion-label>Credit</ion-label>
+          <ion-radio slot="start" value="credit"></ion-radio>
+        </ion-item>
+      </div>
+    </ion-radio-group>
+  </ion-list>
+
+  <div class="mx-2">
     <form
       #formRef="ngForm"
       (ngSubmit)="onSubmit(formRef)"
@@ -98,6 +114,18 @@
         <div id="startDate" class="invalid-feedback">
           Please enter start Date.
         </div>
+      </div>
+
+      <div class="form-floating mb-2">
+        <textarea
+          class="form-control"
+          placeholder="Leave a comment here"
+          id="comments"
+          ngModel
+          name="comments"
+          #comments="ngModel"
+        ></textarea>
+        <label for="comments">Comments</label>
       </div>
 
       <div class="my-0">

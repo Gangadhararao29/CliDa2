@@ -9,6 +9,24 @@
 
 <ion-content>
   <div class="">
+
+    <ion-list color="light" class="mx-2 my-2 formClass">
+      <div class="fw-2 mx-3">Select Record type</div>
+      <ion-radio-group value="credit" [(ngModel)]="listType">
+        <div class="d-flex justify-content-between">
+          <ion-item color="light" class="col">
+            <ion-label>Debit</ion-label>
+            <ion-radio slot="start" value="debit"></ion-radio>
+          </ion-item>
+
+          <ion-item color="light" class="col">
+            <ion-label>Credit</ion-label>
+            <ion-radio slot="start" value="credit"></ion-radio>
+          </ion-item>
+        </div>
+      </ion-radio-group>
+    </ion-list>
+
     <form
       #formRef="ngForm"
       (ngSubmit)="onSubmit(formRef)"
@@ -71,7 +89,6 @@
           </div>
         </div>
       </div>
-
       <div class="form-floating mb-2">
         <input
           type="date"
@@ -119,6 +136,19 @@
             <label for="closedAmount">Amount</label>
           </div>
         </div>
+      </div>
+
+      <div class="form-floating mb-2">
+        <textarea
+          class="form-control"
+          id="comments"
+          ngModel
+          name="comments"
+          [value]="client.comments"
+          required
+          #comments="ngModel"
+        ></textarea>
+        <label for="comments">Comments</label>
       </div>
 
       <div class="d-grid gap-2">

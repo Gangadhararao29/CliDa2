@@ -15,6 +15,9 @@ export class ClientsListPage {
   clientsData: any;
   clientSearchValue = '';
   showEntryText: boolean;
+  debitData = [];
+  creditData = [];
+  showDebitList: boolean;
   constructor(
     private router: Router,
     private platform: Platform,
@@ -33,6 +36,30 @@ export class ClientsListPage {
     this.clientDataService.getAllClientsData().then((data) => {
       this.clientsData = data;
       this.showEntryText = this.clientsData.length > 0 ? false : true;
+      this.debitData = [];
+      this.creditData = [];
+
+      this.clientsData.forEach((client) => {
+        const name = client.data.name;
+        const key = client.key;
+        const tempDebitData = [];
+        const tempCreditData = [];
+        client.data.data.forEach((record) => {
+          if (record.principal < 0) {
+            tempDebitData.push(record);
+          } else {
+            tempCreditData.push(record);
+          }
+        });
+        if (tempDebitData.length) {
+          this.debitData.push({ key, data: { name, data: tempDebitData } });
+        }
+        if (tempCreditData.length) {
+          this.creditData.push({ key, data: { name, data: tempCreditData } });
+        }
+      });
+      const tabSection = localStorage.getItem('tabSection');
+      this.showDebitList = tabSection === 'debits' ? true : false;
     });
   }
 
@@ -83,23 +110,28 @@ export class ClientsListPage {
     }
   }
 
-  sortModel(str) {
-    this.clientsData.forEach((ele) => {
-      ele.data.data.sort((a, b) => {
-        const keyA = new Date(a.startDate);
-        const keyB = new Date(b.startDate);
-        return keyA < keyB ? -1 : +1;
-      });
-    });
+  // sortModel(str) {
+  //   this.clientsData.forEach((ele) => {
+  //     ele.data.data.sort((a, b) => {
+  //       const keyA = new Date(a.startDate);
+  //       const keyB = new Date(b.startDate);
+  //       return keyA < keyB ? -1 : +1;
+  //     });
+  //   });
 
-    if (str === 'name') {
-      this.clientsData.sort((a, b) => (a.data.name < b.data.name ? -1 : +1));
-    } else if (str === 'time') {
-      this.clientsData.sort((a, b) => {
-        const keyA = new Date(a.data.data[0].startDate);
-        const keyB = new Date(b.data.data[0].startDate);
-        return keyA < keyB ? -1 : +1;
-      });
-    }
+  //   if (str === 'name') {
+  //     this.clientsData.sort((a, b) => (a.data.name < b.data.name ? -1 : +1));
+  //   } else if (str === 'time') {
+  //     this.clientsData.sort((a, b) => {
+  //       const keyA = new Date(a.data.data[0].startDate);
+  //       const keyB = new Date(b.data.data[0].startDate);
+  //       return keyA < keyB ? -1 : +1;
+  //     });
+  //   }
+  // }
+
+  setListType(event) {
+    this.showDebitList = event.detail.value === 'debits' ? true : false;
+    localStorage.setItem('tabSection', event.detail.value);
   }
 }

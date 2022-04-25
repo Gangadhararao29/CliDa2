@@ -22,6 +22,10 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'clients-list/adv-search',
+        loadChildren: () => import('../adv-search/adv-search.module').then( m => m.AdvSearchPageModule)
+      },
+      {
         path: 'dashboard',
         loadChildren: () =>
           import('../dashboard/dashboard.module').then(
