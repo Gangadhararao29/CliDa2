@@ -26,7 +26,7 @@
 
   <app-line-chart [responseData]="totalClients" class="my-2"></app-line-chart>
 
-  <ion-card>
+  <ion-card color="light">
     <ion-item color="success" class="text-center">
       Sorting by Time
       <ion-icon
@@ -35,7 +35,7 @@
         (click)="sortTimeGridChange()"
       ></ion-icon>
     </ion-item>
-    <span *ngFor="let client of array2 | slice:0:4;">
+    <span *ngFor="let client of array2 | paginate: { itemsPerPage: 4, currentPage: grid1Page, id:'grid1'}">
       <ion-item
         [routerLink]="getClientsDetailsPageUrl(client.key)"
         color="light"
@@ -47,9 +47,15 @@
         >
       </ion-item>
     </span>
+    <pagination-controls
+      (pageChange)="grid1Page = $event"
+      id="grid1"
+      responsive="true"
+      autoHide="true"
+    ></pagination-controls>
   </ion-card>
 
-  <ion-card>
+  <ion-card color="light">
     <ion-item color="success" class="text-center"
       >Sorting by Principal
       <ion-icon
@@ -58,7 +64,7 @@
         (click)="sortPrincipalGridChange()"
       ></ion-icon
     ></ion-item>
-    <span *ngFor="let client of array1 | slice:0:4;">
+    <span *ngFor="let client of array1 | paginate: { itemsPerPage: 4, currentPage: grid2Page, id:'grid2'}">
       <ion-item
         [routerLink]="getClientsDetailsPageUrl(client.key)"
         color="light"
@@ -69,5 +75,11 @@
         >
       </ion-item>
     </span>
+    <pagination-controls
+      (pageChange)="grid2Page = $event"
+      id="grid2"
+      responsive="true"
+      autoHide="true"
+    ></pagination-controls>
   </ion-card>
 </ion-content>
