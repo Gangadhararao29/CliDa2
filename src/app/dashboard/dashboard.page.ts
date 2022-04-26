@@ -7,6 +7,8 @@ import { ClientDataService } from '../services/client-data.service';
   styleUrls: ['./dashboard.page.scss'],
 })
 export class DashboardPage {
+  grid1Page = 1;
+  grid2Page = 1;
   totalArray = [];
   name: any;
   key: any;

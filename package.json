@@ -32,6 +32,7 @@
     "jquery": "^3.6.0",
     "localbase": "^0.7.5",
     "ng2-charts": "^3.0.8",
+    "ngx-pagination": "^5.1.1",
     "popper.js": "^1.16.1",
     "rxjs": "~6.6.0",
     "tslib": "^2.2.0",
