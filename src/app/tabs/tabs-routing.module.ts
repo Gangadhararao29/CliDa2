@@ -23,7 +23,17 @@ const routes: Routes = [
       },
       {
         path: 'clients-list/adv-search',
-        loadChildren: () => import('../adv-search/adv-search.module').then( m => m.AdvSearchPageModule)
+        loadChildren: () =>
+          import('../adv-search/adv-search.module').then(
+            (m) => m.AdvSearchPageModule
+          ),
+      },
+      {
+        path: 'clients-list/adv-search/client-details/:key',
+        loadChildren: () =>
+          import('../client-details/client-details.module').then(
+            (m) => m.ClientDetailsPageModule
+          ),
       },
       {
         path: 'dashboard',

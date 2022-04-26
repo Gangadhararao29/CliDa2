@@ -9,7 +9,6 @@
 
 <ion-content>
   <div class="">
-
     <ion-list color="light" class="mx-2 my-2 formClass">
       <div class="fw-2 mx-3">Select Record type</div>
       <ion-radio-group value="credit" [(ngModel)]="listType">
@@ -145,7 +144,7 @@
           ngModel
           name="comments"
           [value]="client.comments"
-          required
+          placeholder="Enter comments here"
           #comments="ngModel"
         ></textarea>
         <label for="comments">Comments</label>

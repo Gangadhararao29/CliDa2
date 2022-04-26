@@ -78,9 +78,20 @@ export class ClientDataService {
     return await this.db.delete();
   }
 
-  async orderByVariable(objectName) {
-    return await this.db.collection('clientsData').orderBy(objectName).get();
+  async orderByName(orderKey) {
+    if (orderKey === 'asc') {
+      return await this.db
+        .collection('clientsData')
+        .orderBy('name')
+        .get({ keys: true });
+    } else {
+      return await this.db
+        .collection('clientsData')
+        .orderBy('name', 'desc')
+        .get({ keys: true });
+    }
   }
+
   /**
    * for calculating interests
    */

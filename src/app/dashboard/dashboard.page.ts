@@ -108,11 +108,14 @@ export class DashboardPage {
   }
 
   getTotalPrincipalAmount() {
-    return this.totalArray.reduce((prev, curr) => prev + curr.totalPrincipal,0);
+    return this.totalArray.reduce(
+      (prev, curr) => prev + curr.totalPrincipal,
+      0
+    );
   }
 
   getFinalAmount() {
-    return this.totalArray.reduce((prev,curr)=> prev + curr.finalAmount,0);
+    return this.totalArray.reduce((prev, curr) => prev + curr.finalAmount, 0);
   }
 
   getClientsDetailsPageUrl(key) {

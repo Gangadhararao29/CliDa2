@@ -10,7 +10,7 @@
         data-bs-target="#collapseExample"
         ><ion-icon name="search-sharp" slot="icon-only"></ion-icon
       ></ion-button>
-      <ion-button routerLink="/clida/clients-list/adv-search">
+      <ion-button [hidden]="showEntryText" routerLink="adv-search">
         <ion-icon name="color-wand" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -29,7 +29,7 @@
     ></ion-searchbar>
   </div>
 
-  <div *ngIf="showEntryText" class="container my-2">
+  <div [hidden]="!showEntryText" class="container my-2">
     <ion-item
       color="light"
       lines="none"
@@ -77,7 +77,7 @@
     </div>
   </div>
 
-  <div class="bgLight">
+  <div class="bgLight" [hidden]="showEntryText">
     <ion-segment
       color="primary"
       value="credits"
@@ -92,7 +92,7 @@
     </ion-segment>
   </div>
 
-  <div *ngIf="!showEntryText">
+  <div [hidden]="showEntryText">
     <div class="debitList" [hidden]="!showDebitList">
       <ion-item
         *ngFor="let client of debitData | clientsSearch:clientSearchValue"
