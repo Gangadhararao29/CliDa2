@@ -65,7 +65,7 @@ export class CalculatorPage {
           formRef.value.principal,
           formRef.value.interest,
           formRef.value.startDate,
-        formRef.value.endDate
+          formRef.value.endDate
         );
 
         this.showCalculatedData = true;
@@ -83,7 +83,6 @@ export class CalculatorPage {
     alert.header = 'Please check the dates';
     alert.message = 'End date should be greater than Start Date';
     alert.buttons = ['Ok'];
-
     document.body.appendChild(alert);
     return alert.present();
   }

@@ -130,109 +130,6 @@
         </ion-button>
       </div>
     </form>
-    <!-- <h1>{{linkData | json}}</h1> -->
-    <!-- <div
-      *ngIf="showCalculatedData && false"
-      class="bg-light rounded-3 p-2 mt-2"
-    >
-      <div class="p-2 border border-success rounded-3 border-3 my-1">
-        <h4 class="text-center text-light bg-success rounded-3 p-2">
-          Entered Data
-        </h4>
-        <div class="row p-1">
-          <div class="col fw-bold">Principal</div>
-          :
-          <div class="col fw-bold">{{currencyFormat(linkData.principal)}}</div>
-        </div>
-        <div class="row p-1">
-          <div class="col fw-bold">Rate</div>
-          :
-          <div class="col">{{linkData.interest}}</div>
-        </div>
-        <div class="row p-1">
-          <div class="col fw-bold">Start Date</div>
-          :
-          <div class="col">
-            {{linkData.startDate.split('-').reverse().join('/')}}
-          </div>
-        </div>
-        <div class="row p-1">
-          <div class="col fw-bold">End Date</div>
-          :
-          <div class="col">
-            {{linkData.endDate.split('-').reverse().join('/')}}
-          </div>
-        </div>
-        <h4 class="text-center text-light bg-success rounded-3 p-2">
-          Calculated Data
-        </h4>
-        <div class="row p-1">
-          <div class="col fw-bold">Time Period</div>
-          :
-          <div class="col">
-            {{timePeriodObject?.y}}y, {{timePeriodObject?.m}}m,
-            {{timePeriodObject?.d}}d
-          </div>
-        </div>
-        <div class="row p-1">
-          <div class="col fw-bold">in months</div>
-          :
-          <div class="col">{{timePeriodObject.tm.toFixed(2)}} M</div>
-        </div>
-        <div class="row p-1">
-          <div class="col fw-bold">
-            Interest Amt <br />
-            <span *ngIf="advIntShow">(for 3 years)</span>
-          </div>
-          :
-          <div class="col fw-bolder">
-            {{currencyFormat(interestObj?.interest)}}
-          </div>
-        </div>
-        <div *ngIf="!advIntShow">
-          <div class="row p-1">
-            <div class="col fw-bold">Total Amount</div>
-            :
-            <div class="col fw-bolder">
-              {{currencyFormat(interestObj?.interest + linkData?.principal)}}
-            </div>
-          </div>
-        </div>
-        <div *ngIf="advIntShow">
-          <h4 class="text-center text-light bg-danger rounded-3 p-2">
-            Time taken greater than 3 years
-          </h4>
-          <div class="row p-1">
-            <div class="col fw-bold">New Principal</div>
-            :
-            <div class="col">{{currencyFormat(interestObj?.newPrincipal)}}</div>
-          </div>
-          <div class="row p-1">
-            <div class="col fw-bold">Remaining Time</div>
-            :
-            <div class="col">
-              {{timePeriodObject?.y - 3}}y, {{timePeriodObject?.m}}m,
-              {{timePeriodObject?.d}}d ({{interestObj?.tm.toFixed(2)}}M)
-            </div>
-          </div>
-          <div class="row p-1">
-            <div class="col fw-bold">New Interest</div>
-            :
-            <div class="col fw-bold">
-              {{currencyFormat(interestObj?.newInterest)}}
-            </div>
-          </div>
-          <div class="row p-1">
-            <div class="col fw-bold">Final Amount</div>
-            :
-            <div class="col fw-bold">
-              {{currencyFormat(interestObj?.newPrincipal +
-              interestObj?.newInterest)}}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
   </div>
 
   <ion-card color="light" *ngIf="showCalculatedData">
@@ -314,7 +211,7 @@
       </div>
 
       <div *ngIf="advIntShow">
-        <h5 class="bg-danger p-2 mt-2">Time taken greater than 3 years</h5>
+        <h6 class="bg-danger p-2 mt-2 rounded-3">Time taken greater than 3 years</h6>
         <div class="row">
           <div class="col">New Principal</div>
           :

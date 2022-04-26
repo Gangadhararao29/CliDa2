@@ -40,8 +40,8 @@ export class ClientsListPage {
     this.clientSearchValue = null;
   }
 
-  openClientDetails(name) {
-    this.router.navigate(['clida/clients-list/client-details', name]);
+  openClientDetails(key) {
+    this.router.navigate(['clida/clients-list/client-details', key]);
   }
 
   async presentAlertConfirm() {

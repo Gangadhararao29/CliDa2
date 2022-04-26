@@ -2,16 +2,6 @@ ion-content {
   --ion-background-color: var(--ion-color-silver);
 }
 
-.accordion-body {
-  --ion-background-color: var(--ion-color-silver);
-  padding-left: 0;
-  padding-right: 0;
-}
-
-ion-button {
-  z-index: 100;
-}
-
 ion-title {
   position: absolute;
   top: 0;
@@ -21,13 +11,8 @@ ion-title {
   text-align: center;
 }
 
-ion-accordian {
-  background-color: palegreen;
-}
-
 .ionColorBgLight {
   background-color: var(--ion-color-light);
-  color: var(--ion-color-dark)
 }
 
 .ionColorBgSilver {
