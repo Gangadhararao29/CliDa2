@@ -6,12 +6,13 @@
 </ion-header>
 
 <ion-content>
-  <ion-list color="light" class="mx-2">
+  <div class="m-2 formClass pt-2">
     <ion-radio-group value="credit" [(ngModel)]="listType">
-      <ion-list-header color="light">
-        <ion-label class="fs-6">Select Record type</ion-label>
-      </ion-list-header>
-
+      <ion-label position="stacked" class="mx-3">
+        <span style="font-size: large; font-weight: 300"
+          >Select Record type</span
+        >
+      </ion-label>
       <div class="d-flex justify-content-between">
         <ion-item color="light" class="col">
           <ion-label>Debit</ion-label>
@@ -24,7 +25,7 @@
         </ion-item>
       </div>
     </ion-radio-group>
-  </ion-list>
+  </div>
 
   <div class="mx-2">
     <form
