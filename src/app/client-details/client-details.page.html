@@ -97,14 +97,17 @@
               </div>
             </div>
 
-            <div *ngIf="data?.comments"  class="text-muted rounded-3 px-3 py-1 mt-2 ionColorBgLight">
-              <small class="fw-bolder">Comments: </small><br>
-              <small class="">{{data?.comments}}</small>
+            <div
+              *ngIf="data?.comments"
+              class="text-muted rounded-3 px-3 py-1 mt-2 bgLight"
+            >
+              <small class="fw-bolder">Comments: </small>
+              <small>{{data?.comments}}</small>
             </div>
 
             <div
               *ngIf="data?.closedOn"
-              class="ionColorBgLight py-2 rounded-3 mt-2 border-success border-3 border"
+              class="bgLight py-2 rounded-3 mt-2 border-success border-3 border"
             >
               <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-1"></div>
