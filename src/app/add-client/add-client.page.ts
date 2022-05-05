@@ -30,7 +30,6 @@ export class AddClientPage {
   }
 
   onSubmit(formRef) {
-    console.log(formRef.value);
     this.formRefVariable = formRef;
     if (formRef.valid) {
       const newClientData = {
@@ -39,7 +38,7 @@ export class AddClientPage {
           {
             id: Date.now(),
             principal:
-              this.listType == 'credit'
+              this.listType === 'credit'
                 ? formRef.value.principal
                 : -formRef.value.principal,
             interest: formRef.value.interest,
