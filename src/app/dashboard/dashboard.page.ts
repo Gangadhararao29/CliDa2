@@ -28,14 +28,12 @@ export class DashboardPage {
   }
 
   ionViewWillEnter() {
-    this.timeGridIcon = 'arrow-down-outline';
-    this.principalGridIcon = 'arrow-down-outline';
     this.clientDataService.getAllClientsData().then((res) => {
       this.totalClients = this.filterData(res);
       this.totalArray = [];
       this.getTotalArray(this.totalClients);
-      this.sortByPrincipal();
-      this.sortByTimePeriod();
+      this.sortByPrincipal(this.timeGridIcon === 'arrow-down-outline');
+      this.sortByTimePeriod(this.principalGridIcon === 'arrow-down-outline');
     });
   }
 
