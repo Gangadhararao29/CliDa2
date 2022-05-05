@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 import { ClientDataService } from '../services/client-data.service';
 
@@ -7,7 +7,7 @@ import { ClientDataService } from '../services/client-data.service';
   templateUrl: './adv-search.page.html',
   styleUrls: ['./adv-search.page.scss'],
 })
-export class AdvSearchPage {
+export class AdvSearchPage implements OnInit {
   @ViewChild('formInput') formInputElement: ElementRef;
   sortAndFilterParams = [];
   showErrorText = false;
@@ -17,7 +17,7 @@ export class AdvSearchPage {
     private clientDataService: ClientDataService
   ) {}
 
-  ionViewWillEnter() {
+  ngOnInit() {
     const storedValue = JSON.parse(localStorage.getItem('sortAndFilterParams'));
     this.sortAndFilterParams = storedValue ? storedValue : [];
   }
@@ -132,8 +132,11 @@ export class AdvSearchPage {
   }
 
   deleteAllParams() {
-    this.sortAndFilterParams = [];
-    localStorage.setItem('sortAndFilterParams', '');
+    this.sortAndFilterParams.pop();
+    localStorage.setItem(
+      'sortAndFilterParams',
+      JSON.stringify(this.sortAndFilterParams)
+    );
   }
 
   getColor(detail) {
