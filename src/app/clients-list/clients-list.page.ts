@@ -18,6 +18,7 @@ export class ClientsListPage {
   debitData = [];
   creditData = [];
   showDebitList: boolean;
+  tabSection = 'credits';
   constructor(
     private router: Router,
     private platform: Platform,
@@ -33,6 +34,17 @@ export class ClientsListPage {
   }
 
   ionViewWillEnter() {
+    this.getDisplayData();
+    if (localStorage.getItem('tabSection') === 'debits') {
+      this.tabSection = 'debits';
+      this.showDebitList = true;
+    } else {
+      this.tabSection = 'credits';
+      this.showDebitList = false;
+    }
+  }
+
+  getDisplayData() {
     this.clientDataService.getAllClientsData().then((data) => {
       this.clientsData = data;
       this.showEntryText = this.clientsData.length > 0 ? false : true;
@@ -58,8 +70,6 @@ export class ClientsListPage {
           this.creditData.push({ key, data: { name, data: tempCreditData } });
         }
       });
-      const tabSection = localStorage.getItem('tabSection');
-      this.showDebitList = tabSection === 'debits' ? true : false;
     });
   }
 

@@ -40,13 +40,12 @@
     </ion-card>
   </div>
 
-  <div class="collapse bgLight py-2 mx-2" id="formInput" #formInput>
+  <div class="collapse mx-2" id="formInput" #formInput>
     <form #formRef="ngForm" (ngSubmit)="addNewParams(formRef)">
       <ion-card color="light">
-        <span class="mx-2 p-2 fs-5">Sort Params</span>
         <div class="d-flex">
           <ion-item color="light" class="me-1 col">
-            <ion-label position="stacked">By</ion-label>
+            <ion-label position="stacked">Sort by</ion-label>
             <ion-select
               interface="popover"
               id="sortBy"
@@ -60,7 +59,7 @@
             </ion-select>
           </ion-item>
           <ion-item color="light" class="ms-1 col">
-            <ion-label position="stacked">Order</ion-label>
+            <ion-label position="stacked">Sort order</ion-label>
             <ion-select
               interface="popover"
               id="sortOrder"
@@ -75,10 +74,8 @@
       </ion-card>
 
       <ion-card color="light">
-        <span class="mx-2 p-2 fs-5">Filter Params</span>
-
         <ion-item color="light">
-          <ion-label position="stacked">By</ion-label>
+          <ion-label position="stacked">Filter by</ion-label>
           <ion-select
             interface="popover"
             id="filterBy"
@@ -99,6 +96,7 @@
               id="filterMin"
               name="filterMin"
               ngModel
+              type="number"
               #filterMin="ngModel"
               [ngModel]="0"
             ></ion-input>
@@ -109,6 +107,7 @@
               interface="popover"
               id="filterMax"
               name="filterMax"
+              type="number"
               ngModel
               #filterMax="ngModel"
               [ngModel]="0"

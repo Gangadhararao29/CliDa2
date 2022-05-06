@@ -1,5 +1,5 @@
 ion-content {
-  --ion-background-color: var(--ion-color-silver);
+  --ion-background-color: var(--ion-color-medium);
 }
 
 .justifyText {
@@ -9,4 +9,22 @@ ion-content {
 
 .bgLight {
   background-color: var(--ion-color-light);
+}
+
+ion-segment {
+  border-radius: 2rem;
+  height: 2.25rem;
+  align-items: center;
+  background-color: var(--ion-color-light);
+}
+
+ion-segment-button {
+  border-radius: 2rem;
+  --indicator-color: transparent !important;
+  --indicator-color-checked: transparent !important;
+}
+
+.segment-button-checked {
+  background-color: var(--ion-color-primary);
+  color: white;
 }

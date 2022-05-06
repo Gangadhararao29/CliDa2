@@ -1,7 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title> Clients List </ion-title>
-
+    <ion-title> Clients list </ion-title>
     <ion-buttons slot="primary">
       <ion-button
         [hidden]="showEntryText"
@@ -10,25 +9,11 @@
         data-bs-target="#collapseExample"
         ><ion-icon name="search-sharp" slot="icon-only"></ion-icon
       ></ion-button>
-      <ion-button [hidden]="showEntryText" routerLink="adv-search">
-        <ion-icon name="color-wand" slot="icon-only"></ion-icon>
-      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div class="collapse sticky-top" id="collapseExample">
-    <ion-searchbar
-      animated
-      color="light"
-      placeholder="Type to search clients..."
-      [(ngModel)]="clientSearchValue"
-      enterkeyhint="search"
-      search-icon="search-outline"
-    ></ion-searchbar>
-  </div>
-
   <div [hidden]="!showEntryText" class="container my-2">
     <ion-item
       color="light"
@@ -77,12 +62,8 @@
     </div>
   </div>
 
-  <div class="bgLight" [hidden]="showEntryText">
-    <ion-segment
-      color="primary"
-      value="credits"
-      (ionChange)="setListType($event)"
-    >
+  <div [hidden]="showEntryText">
+    <ion-segment [value]="tabSection" (ionChange)="setListType($event)">
       <ion-segment-button value="credits">
         <ion-label>Credits</ion-label>
       </ion-segment-button>
@@ -90,6 +71,17 @@
         <ion-label>Debits</ion-label>
       </ion-segment-button>
     </ion-segment>
+  </div>
+
+  <div class="collapse sticky-top" id="collapseExample">
+    <ion-searchbar
+      animated
+      color="light"
+      placeholder="Type to search clients..."
+      [(ngModel)]="clientSearchValue"
+      enterkeyhint="search"
+      search-icon="search-outline"
+    ></ion-searchbar>
   </div>
 
   <div [hidden]="showEntryText">
@@ -136,14 +128,10 @@
       </ion-item>
     </div>
   </div>
-  <ion-item color="silver" lines="none"></ion-item>
+  <ion-item color="medium" lines="none"></ion-item>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button
-      color="danger"
-      routerLink="/clida/clients-list/add-client"
-      class="me-2 mb-1"
-    >
+    <ion-fab-button color="danger" routerLink="add-client" class="me-1 mb-1">
       <ion-icon name="add" size="large"></ion-icon>
     </ion-fab-button>
   </ion-fab>

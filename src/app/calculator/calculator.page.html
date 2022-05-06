@@ -5,16 +5,14 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-item lines="none" color="light" class="mx-2 mt-2 rounded-3">
-    <ion-label class="fs-5 fw-2"> Enter details to calculate </ion-label>
-  </ion-item>
-
   <div class="m-2">
     <form
       #formRef="ngForm"
       (ngSubmit)="onSubmit(formRef)"
       class="p-2 formClass rounded-3"
     >
+      <div class="fs-5 fw-2 m-1">Enter details to calculate</div>
+
       <div class="form-floating mb-2">
         <input
           type="text"
@@ -63,7 +61,7 @@
             [class.is-invalid]="interest.invalid &&  formRef.submitted"
           />
           <label for="interest"
-            ><span class="formLabel">Interest Rate</span></label
+            ><span class="formLabel">Interest rate</span></label
           >
           <div id="interest" class="invalid-feedback">
             Please enter interest value.
@@ -136,17 +134,14 @@
     <ion-item
       lines="none"
       color="success"
-      style="font-size: larger; font-weight: 550"
+      style="font-size: larger; font-weight: bolder"
       >Calculated Data</ion-item
     >
-    <div
-      class="m-2 px-2 text-center"
-      style="font-size: larger; font-weight: 550"
-    >
+    <div class="m-2 text-center" style="font-size: 110%">
       <div class="row">
         <div class="col">Name</div>
         <div class="col-auto">:</div>
-        <div class="col">{{linkData.name}}</div>
+        <div class="col-auto">{{linkData.name}}</div>
       </div>
       <div class="row">
         <div class="col">Principal(P)</div>
@@ -198,7 +193,7 @@
         <div class="col-auto">:</div>
         <div class="col highlight">
           {{currencyFormat(interestObj?.interest)}}
-          <span *ngIf="advIntShow" style="font-size: smaller">(3 y)</span>
+          <span *ngIf="advIntShow" style="font-size: smaller">(3y)</span>
         </div>
       </div>
 
@@ -211,7 +206,9 @@
       </div>
 
       <div *ngIf="advIntShow">
-        <h6 class="bg-danger p-2 mt-2 rounded-3">Time taken greater than 3 years</h6>
+        <h6 class="bg-danger text-light p-2 mt-2 rounded-3">
+          Time taken greater than 3 years
+        </h6>
         <div class="row">
           <div class="col">New Principal</div>
           :
@@ -228,7 +225,9 @@
         <div class="row">
           <div class="col">New Interest</div>
           <div class="col-auto">:</div>
-          <div class="col">{{currencyFormat(interestObj?.newInterest)}}</div>
+          <div class="col highlight">
+            {{currencyFormat(interestObj?.newInterest)}}
+          </div>
         </div>
         <div class="row">
           <div class="col">Final Amount</div>

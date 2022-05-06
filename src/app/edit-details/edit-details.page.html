@@ -8,175 +8,176 @@
 </ion-header>
 
 <ion-content>
-  <div class="">
-    <ion-list color="light" class="mx-2 my-2 formClass">
-      <div class="fw-2 mx-3">Select Record type</div>
-      <ion-radio-group value="credit" [(ngModel)]="listType">
-        <div class="d-flex justify-content-between">
-          <ion-item color="light" class="col">
-            <ion-label>Debit</ion-label>
-            <ion-radio slot="start" value="debit"></ion-radio>
-          </ion-item>
-
-          <ion-item color="light" class="col">
-            <ion-label>Credit</ion-label>
-            <ion-radio slot="start" value="credit"></ion-radio>
-          </ion-item>
-        </div>
-      </ion-radio-group>
-    </ion-list>
-
-    <form
-      #formRef="ngForm"
-      (ngSubmit)="onSubmit(formRef)"
-      class="p-2 mx-2 formClass rounded-3"
-    >
-      <span class="fs-5 fw-2 mx-1 mb-2">Primary details</span>
-
-      <div class="form-floating mb-2">
-        <input
-          type="text"
-          class="form-control"
-          id="name"
-          placeholder="100000"
-          #name="ngModel"
-          name="name"
-          [ngModel]="client.name"
-          required
-          [class.is-valid]="name.valid"
-          [class.is-invalid]="name.invalid &&  formRef.submitted"
-        />
-        <label for="name">Client name</label>
-        <div id="name" class="invalid-feedback">Please enter a Name.</div>
-      </div>
-      <div class="mb-2 d-flex justify-content-between">
-        <div class="form-floating d-inline-block">
-          <input
-            type="number"
-            class="form-control"
-            id="principal"
-            placeholder="100000"
-            #principal="ngModel"
-            name="principal"
-            [ngModel]="client.principal"
-            required
-            [class.is-valid]="principal.valid"
-            [class.is-invalid]="principal.invalid &&  formRef.submitted"
-          />
-          <label for="principal">Principal</label>
-          <div id="principal" class="invalid-feedback">
-            Please enter Principal amount.
-          </div>
-        </div>
-
-        <div class="form-floating d-inline-block">
-          <input
-            type="number"
-            class="form-control"
-            id="interest"
-            placeholder="1.50"
-            [ngModel]="client.interest"
-            name="interest"
-            #interest="ngModel"
-            required
-            [class.is-valid]="interest.valid"
-            [class.is-invalid]="interest.invalid &&  formRef.submitted"
-          />
-          <label for="interest">Interest</label>
-          <div id="interest" class="invalid-feedback">
-            Please enter interest value.
-          </div>
-        </div>
-      </div>
-      <div class="form-floating mb-2">
-        <input
-          type="date"
-          class="form-control"
-          id="startDate"
-          [ngModel]="client.startDate"
-          name="startDate"
-          required
-          #startDate="ngModel"
-          [class.is-valid]="startDate.valid"
-          [class.is-invalid]="startDate.invalid &&  formRef.submitted"
-        />
-        <label for="startDate">Start date</label>
-        <div id="startDate" class="invalid-feedback">
-          Please enter start Date.
-        </div>
-      </div>
-
-      <div *ngIf="client.closedOn">
-        <span class="fs-5 fw-2 mx-1">Closed details</span>
-        <div class="d-flex mb-2 justify-content-between">
-          <div class="form-floating d-inline-block">
-            <input
-              type="date"
-              class="form-control"
-              id="closedOn"
-              placeholder="29/01/2015"
-              [ngModel]="client.closedOn"
-              #closedOn="ngModel"
-              name="closedOn"
-            />
-            <label for="closedOn">On</label>
-          </div>
-
-          <div class="form-floating d-inline-block">
-            <input
-              type="number"
-              class="form-control"
-              id="closedAmount"
-              placeholder="100000"
-              [ngModel]="client.closedAmount"
-              name="closedAmount"
-              #closedAmount="ngModel"
-            />
-            <label for="closedAmount">Amount</label>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-floating mb-2">
-        <textarea
-          class="form-control"
-          id="comments"
-          ngModel
-          name="comments"
-          [value]="client.comments"
-          placeholder="Enter comments here"
-          #comments="ngModel"
-        ></textarea>
-        <label for="comments">Comments</label>
-      </div>
-
-      <div class="d-grid gap-2">
-        <button class="btn btn-success" type="submit">Confirm</button>
-      </div>
-
-      <div *ngIf="client.closedOn" class="d-grid mt-2">
-        <button
-          class="btn btn-danger"
-          type="button"
-          (click)="resetClosedData()"
+  <div class="m-2 formClass pt-2">
+    <ion-radio-group value="credit" [(ngModel)]="listType">
+      <ion-label position="stacked" class="mx-3">
+        <span style="font-size: large; font-weight: 300"
+          >Select Record type</span
         >
-          Reset closed details
-        </button>
+      </ion-label>
+      <div class="d-flex justify-content-between">
+        <ion-item color="light" class="col">
+          <ion-label>Debit</ion-label>
+          <ion-radio slot="start" value="debit"></ion-radio>
+        </ion-item>
+
+        <ion-item color="light" class="col">
+          <ion-label>Credit</ion-label>
+          <ion-radio slot="start" value="credit"></ion-radio>
+        </ion-item>
       </div>
-    </form>
-
-    <ion-card *ngIf="name.dirty" color="light">
-      <ion-item color="warning">
-        <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
-        <ion-label>Caution</ion-label>
-      </ion-item>
-
-      <ion-card-content>
-        If the name of the client is changed here, It will search for the
-        existing records and if found it will add it there or else it will add
-        as a new record.
-        <b><i>Existing record will be deleted from the current client.</i></b>
-      </ion-card-content>
-    </ion-card>
+    </ion-radio-group>
   </div>
+
+  <form
+    #formRef="ngForm"
+    (ngSubmit)="onSubmit(formRef)"
+    class="p-2 mx-2 formClass rounded-3"
+  >
+    <span class="fs-5 fw-2 mx-1 mb-2">Primary details</span>
+
+    <div class="form-floating mb-2">
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        placeholder="100000"
+        #name="ngModel"
+        name="name"
+        [ngModel]="client.name"
+        required
+        [class.is-valid]="name.valid"
+        [class.is-invalid]="name.invalid &&  formRef.submitted"
+      />
+      <label for="name">Client name</label>
+      <div id="name" class="invalid-feedback">Please enter a Name.</div>
+      <div [hidden]="!name.dirty" class="custom-invalid-tooltip">
+        Caution see below for more details.
+      </div>
+    </div>
+    <div class="mb-2 d-flex justify-content-between">
+      <div class="form-floating d-inline-block">
+        <input
+          type="number"
+          class="form-control"
+          id="principal"
+          placeholder="100000"
+          #principal="ngModel"
+          name="principal"
+          [ngModel]="client.principal"
+          required
+          [class.is-valid]="principal.valid"
+          [class.is-invalid]="principal.invalid &&  formRef.submitted"
+        />
+        <label for="principal">Principal</label>
+        <div id="principal" class="invalid-feedback">
+          Please enter Principal amount.
+        </div>
+      </div>
+
+      <div class="form-floating d-inline-block">
+        <input
+          type="number"
+          class="form-control"
+          id="interest"
+          placeholder="1.50"
+          [ngModel]="client.interest"
+          name="interest"
+          #interest="ngModel"
+          required
+          [class.is-valid]="interest.valid"
+          [class.is-invalid]="interest.invalid &&  formRef.submitted"
+        />
+        <label for="interest">Interest</label>
+        <div id="interest" class="invalid-feedback">
+          Please enter interest value.
+        </div>
+      </div>
+    </div>
+    <div class="form-floating mb-2">
+      <input
+        type="date"
+        class="form-control"
+        id="startDate"
+        [ngModel]="client.startDate"
+        name="startDate"
+        required
+        #startDate="ngModel"
+        [class.is-valid]="startDate.valid"
+        [class.is-invalid]="startDate.invalid &&  formRef.submitted"
+      />
+      <label for="startDate">Start date</label>
+      <div id="startDate" class="invalid-feedback">
+        Please enter start Date.
+      </div>
+    </div>
+
+    <div *ngIf="client.closedOn">
+      <span class="fs-5 fw-2 mx-1">Closed details</span>
+      <div class="d-flex mb-2 justify-content-between">
+        <div class="form-floating">
+          <input
+            type="date"
+            class="form-control"
+            id="closedOn"
+            placeholder="29/01/2015"
+            [ngModel]="client.closedOn"
+            #closedOn="ngModel"
+            name="closedOn"
+          />
+          <label for="closedOn">On</label>
+        </div>
+
+        <div class="form-floating">
+          <input
+            type="number"
+            class="form-control"
+            id="closedAmount"
+            placeholder="100000"
+            [ngModel]="client.closedAmount"
+            name="closedAmount"
+            #closedAmount="ngModel"
+          />
+          <label for="closedAmount">Amount</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-floating mb-2">
+      <textarea
+        class="form-control"
+        id="comments"
+        ngModel
+        name="comments"
+        [value]="client.comments"
+        placeholder="Enter comments here"
+        #comments="ngModel"
+      ></textarea>
+      <label for="comments">Comments</label>
+    </div>
+
+    <div class="d-grid gap-2">
+      <button class="btn btn-success" type="submit">Confirm</button>
+    </div>
+
+    <div *ngIf="client.closedOn" class="d-grid mt-2">
+      <button class="btn btn-danger" type="button" (click)="resetClosedData()">
+        Reset closed details
+      </button>
+    </div>
+  </form>
+
+  <ion-card *ngIf="name.dirty" color="light">
+    <ion-item color="warning">
+      <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
+      <ion-label>Caution</ion-label>
+    </ion-item>
+
+    <ion-card-content>
+      If the name of the client is changed here, It will search for the existing
+      records and if found it will add it there or else it will add as a new
+      record.
+      <b><i>Existing record will be deleted from the current client.</i></b>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

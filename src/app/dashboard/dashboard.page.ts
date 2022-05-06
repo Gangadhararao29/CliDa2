@@ -28,14 +28,19 @@ export class DashboardPage {
   }
 
   ionViewWillEnter() {
-    this.timeGridIcon = 'arrow-down-outline';
-    this.principalGridIcon = 'arrow-down-outline';
     this.clientDataService.getAllClientsData().then((res) => {
-      this.totalClients = res;
+      this.totalClients = this.filterData(res);
       this.totalArray = [];
-      this.getTotalArray(res);
-      this.sortByPrincipal();
-      this.sortByTimePeriod();
+      this.getTotalArray(this.totalClients);
+      this.sortByPrincipal(this.timeGridIcon === 'arrow-down-outline');
+      this.sortByTimePeriod(this.principalGridIcon === 'arrow-down-outline');
+    });
+  }
+
+  filterData(res) {
+    return res.filter((ele) => {
+      ele.data.data = ele.data.data.filter((record) => !record.closedOn);
+      return ele.data.data.length;
     });
   }
 
@@ -47,34 +52,31 @@ export class DashboardPage {
       let greaterTimePeriod = 0;
       let totalInterest = 0;
       client.data.data.forEach((record) => {
-        if (!record.closedOn) {
-          this.principal = record.principal;
-          this.timeObject = this.clientDataService.calculateTimeperiod(
-            record.startDate
-          );
-          this.interestObj = this.clientDataService.calculateInterest(
-            this.principal,
-            record.interest,
-            record.startDate
-          );
-          this.total = this.principal + this.interestObj.interest;
-          totalPrincipal += this.principal;
-          totalInterest += this.interestObj.interest;
-          if (this.timeObject.tm > greaterTimePeriod) {
-            greaterTimePeriod = this.timeObject.tm;
-          }
+        this.principal = record.principal;
+        this.timeObject = this.clientDataService.calculateTimeperiod(
+          record.startDate
+        );
+        this.interestObj = this.clientDataService.calculateInterest(
+          this.principal,
+          record.interest,
+          record.startDate
+        );
+        this.total = this.principal + this.interestObj.interest;
+        totalPrincipal += this.principal;
+        totalInterest += this.interestObj.interest;
+        if (this.timeObject.tm > greaterTimePeriod) {
+          greaterTimePeriod = this.timeObject.tm;
         }
       });
-      if (totalPrincipal !== 0 && greaterTimePeriod !== 0) {
-        this.totalArray.push({
-          key: this.key,
-          name: this.name,
-          totalPrincipal,
-          totalInterest,
-          greaterTimePeriod,
-          finalAmount: totalPrincipal + totalInterest,
-        });
-      }
+
+      this.totalArray.push({
+        key: this.key,
+        name: this.name,
+        totalPrincipal,
+        totalInterest,
+        greaterTimePeriod,
+        finalAmount: totalPrincipal + totalInterest,
+      });
     });
   }
 
@@ -118,10 +120,6 @@ export class DashboardPage {
 
   getFinalAmount() {
     return this.totalArray.reduce((prev, curr) => prev + curr.finalAmount, 0);
-  }
-
-  getClientsDetailsPageUrl(key) {
-    return 'client-details/' + key;
   }
 
   sortTimeGridChange() {
