@@ -164,16 +164,25 @@ export class AboutPage {
 
   changeTheme(event) {
     localStorage.setItem('theme', event.detail.value);
-    if (event.detail.value === 'light') {
-      this.renderer.removeClass(document.body, 'dark');
-    } else if (event.detail.value === 'dark') {
-      this.renderer.addClass(document.body, 'dark');
-    } else {
-      const preferColorMode = window.matchMedia('(prefers-color-scheme:dark)');
-      if (preferColorMode) {
-        this.renderer.addClass(document.body, 'dark');
-      } else {
+    switch (event.detail.value) {
+      case 'light': {
         this.renderer.removeClass(document.body, 'dark');
+        break;
+      }
+      case 'dark': {
+        this.renderer.addClass(document.body, 'dark');
+        break;
+      }
+      case 'auto': {
+        const preferColorMode = window.matchMedia(
+          '(prefers-color-scheme:dark)'
+        );
+        if (preferColorMode.matches) {
+          this.renderer.addClass(document.body, 'dark');
+        } else {
+          this.renderer.removeClass(document.body, 'dark');
+        }
+        break;
       }
     }
   }
