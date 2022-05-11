@@ -1,10 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, IonRouterOutlet, Platform } from '@ionic/angular';
-import { Plugins } from '@capacitor/core';
+import { App } from '@capacitor/app';
 import { ClientDataService } from '../services/client-data.service';
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const { App } = Plugins;
 
 @Component({
   selector: 'app-clients-list',
@@ -47,7 +45,7 @@ export class ClientsListPage {
   getDisplayData() {
     this.clientDataService.getAllClientsData().then((data) => {
       this.clientsData = data;
-      this.showEntryText = this.clientsData.length > 0 ? false : true;
+      this.showEntryText = data.length > 0 ? false : true;
       this.debitData = [];
       this.creditData = [];
 

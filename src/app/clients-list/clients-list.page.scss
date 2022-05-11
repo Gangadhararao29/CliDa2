@@ -12,14 +12,15 @@ ion-content {
 }
 
 ion-segment {
-  border-radius: 2rem;
-  height: 2.25rem;
+  border-radius: 0.65rem;
+  height: 2.5rem;
   align-items: center;
-  background-color: var(--ion-color-light);
 }
 
 ion-segment-button {
-  border-radius: 2rem;
+  margin: 2.5px;
+  background-color: var(--ion-color-light);
+  border-radius: 0.65rem;
   --indicator-color: transparent !important;
   --indicator-color-checked: transparent !important;
 }
