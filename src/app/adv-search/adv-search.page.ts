@@ -10,8 +10,11 @@ import { ClientDataService } from '../services/client-data.service';
 export class AdvSearchPage implements OnInit {
   @ViewChild('formInput') formInputElement: ElementRef;
   sortAndFilterParams = [];
-  showErrorText = false;
   displayData = [];
+  showSortMissingText = false;
+  showFilterMissingText = false;
+  showfilterRangeErrorText = false;
+  showNoRecords = false;
   constructor(
     public toastController: ToastController,
     private clientDataService: ClientDataService
@@ -28,26 +31,47 @@ export class AdvSearchPage implements OnInit {
       (formRef.value.filterBy &&
         formRef.value.filterMax > formRef.value.filterMin)
     ) {
-      this.showErrorText = false;
+      this.removeAllErrors();
       this.sortAndFilterParams.push({
         active: 'light',
-        sort: { by: formRef.value.sortBy, order: formRef.value.sortOrder },
+        sort: {
+          by: formRef.value.sortBy,
+          order: formRef.value.sortOrder,
+        },
         filter: {
           by: formRef.value.filterBy,
           min: formRef.value.filterMin,
           max: formRef.value.filterMax,
         },
       });
-      this.formInputElement.nativeElement.classList.remove('show');
-      this.presentToast('New model added');
-      this.sortAndFilterParams.forEach((ele) => (ele.active = 'light'));
-      localStorage.setItem(
-        'sortAndFilterParams',
-        JSON.stringify(this.sortAndFilterParams)
-      );
+      this.postAdditionNewParams();
     } else {
-      this.showErrorText = true;
+      if (!formRef.value.sortBy) {
+        this.showSortMissingText = true;
+      }
+      if (!formRef.value.filterBy) {
+        this.showFilterMissingText = true;
+      }
+      if (formRef.value.filterMin >= formRef.value.filterMax) {
+        this.showfilterRangeErrorText = true;
+      }
     }
+  }
+
+  removeAllErrors() {
+    this.showSortMissingText = false;
+    this.showFilterMissingText = false;
+    this.showfilterRangeErrorText = false;
+  }
+
+  postAdditionNewParams() {
+    this.formInputElement.nativeElement.classList.remove('show');
+    this.presentToast('New model added');
+    this.sortAndFilterParams.forEach((ele) => (ele.active = 'light'));
+    localStorage.setItem(
+      'sortAndFilterParams',
+      JSON.stringify(this.sortAndFilterParams)
+    );
   }
 
   applyParams(index) {
@@ -67,6 +91,7 @@ export class AdvSearchPage implements OnInit {
         if (paramsModel.filter.by) {
           this.filterDataModel(paramsModel);
         }
+        this.showNoRecords = this.displayData.length ? false : true;
       });
     } else {
       this.clientDataService.getAllClientsData().then((res) => {
@@ -75,6 +100,7 @@ export class AdvSearchPage implements OnInit {
         if (paramsModel.filter.by) {
           this.filterDataModel(paramsModel);
         }
+        this.showNoRecords = this.displayData.length ? false : true;
       });
     }
   }
