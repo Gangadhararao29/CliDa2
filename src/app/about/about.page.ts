@@ -30,7 +30,7 @@ export class AboutPage {
   ) {}
 
   exportData() {
-    this.clientDataService.getRawClients().then((data) => {
+    this.clientDataService.getAllClientsData().then((data) => {
       this.clientsData = JSON.stringify(data);
       this.writeSecretFile(this.clientsData);
       this.downloadJsonHref = this.sanitizer.bypassSecurityTrustUrl(
@@ -190,7 +190,7 @@ export class AboutPage {
   changeSort(event) {
     if (event.target.value) {
       event.target.disabled = true;
-      this.clientDataService.getRawClients().then((clients) => {
+      this.clientDataService.getAllClientsData().then((clients) => {
         clients.map((ele) => {
           ele.data.sort((a, b) => {
             const keyA = new Date(a.startDate);

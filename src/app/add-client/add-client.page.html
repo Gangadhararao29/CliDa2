@@ -7,7 +7,7 @@
 
 <ion-content>
   <div class="m-2 formClass pt-2">
-    <ion-radio-group value="credit" [(ngModel)]="listType">
+    <ion-radio-group value="credit" [(ngModel)]="recordType">
       <ion-label position="stacked" class="mx-3">
         <span style="font-size: large; font-weight: 300"
           >Select Record type</span
@@ -15,13 +15,12 @@
       </ion-label>
       <div class="d-flex justify-content-between">
         <ion-item color="light" class="col">
-          <ion-label>Debit</ion-label>
-          <ion-radio slot="start" value="debit"></ion-radio>
-        </ion-item>
-
-        <ion-item color="light" class="col">
           <ion-label>Credit</ion-label>
           <ion-radio slot="start" value="credit"></ion-radio>
+        </ion-item>
+        <ion-item color="light" class="col">
+          <ion-label>Debit</ion-label>
+          <ion-radio slot="start" value="debit"></ion-radio>
         </ion-item>
       </div>
     </ion-radio-group>

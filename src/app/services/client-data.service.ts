@@ -20,24 +20,32 @@ export class ClientDataService {
     this.db.config.debug = false;
   }
 
-  async getAllClientsData() {
+  async getAllClientsDataWithKeys() {
     return await this.db.collection('clientsData').get({ keys: true });
+  }
+
+  async getAllClientsData() {
+    return await this.db.collection('clientsData').get();
+  }
+
+  async getClientByName(name) {
+    return await this.db.collection('clientsData').doc({ name }).get();
   }
 
   async getClientByKey(key) {
     return await this.db.collection('clientsData').doc(key).get();
   }
 
-  async getRawClients() {
-    return await this.db.collection('clientsData').get();
-  }
-
-  async addNewClient(newClient) {
+  async saveNewClient(newClient) {
     return await this.db.collection('clientsData').add(newClient);
   }
 
-  async getClientByName(name) {
-    return await this.db.collection('clientsData').doc({ name }).get();
+  async deleteClientByKey(id) {
+    return await this.db.collection('clientsData').doc({ id }).delete();
+  }
+
+  async deleteDataBase() {
+    return await this.db.delete();
   }
 
   async updateClientRecordByName(clientData) {
@@ -45,6 +53,47 @@ export class ClientDataService {
       .collection('clientsData')
       .doc({ name: clientData.name })
       .update(clientData);
+  }
+
+  async addNewClientData(formData, recordType, includeClosedDetails = false) {
+    const payLoad = this.generatePayLoad(
+      formData,
+      recordType,
+      includeClosedDetails
+    );
+    return await this.getClientByName(payLoad.name).then((res) => {
+      if (res) {
+        res.data.push(payLoad.data[0]);
+        return this.updateClientRecordByName(res);
+      } else {
+        return this.saveNewClient(payLoad);
+      }
+    });
+  }
+
+  async editClientData(formData, recordType, clientData, index) {
+    formData.userName = this.formatToCamelCase(formData.userName);
+    formData.principal =
+      recordType === 'credit'
+        ? Math.abs(formData.principal)
+        : -Math.abs(formData.principal);
+    if (formData.userName == clientData.name) {
+      delete formData.userName;
+      formData.id = clientData.data[index].id;
+      clientData.data[index] = formData;
+      return await this.updateClientRecordByName(clientData);
+    } else {
+      return await this.addNewClientData(formData, recordType, true);
+    }
+  }
+
+  async deleteClientData(clientData, index, key) {
+    if (clientData.length <= 1) {
+      return this.deleteClientByKey(key);
+    } else {
+      clientData.data.splice(index, 1);
+      return this.updateClientRecordByName(clientData);
+    }
   }
 
   async saveBulkClients(clientsDataGroupString, replaceStatus) {
@@ -63,32 +112,10 @@ export class ClientDataService {
               this.updateClientRecordByName(res);
             }
           } else {
-            this.addNewClient(client);
+            this.saveNewClient(client);
           }
         });
       });
-    }
-  }
-
-  async deleteClient(id) {
-    return await this.db.collection('clientsData').doc(id).delete();
-  }
-
-  async deleteDataBase() {
-    return await this.db.delete();
-  }
-
-  async orderByName(orderKey) {
-    if (orderKey === 'asc') {
-      return await this.db
-        .collection('clientsData')
-        .orderBy('name')
-        .get({ keys: true });
-    } else {
-      return await this.db
-        .collection('clientsData')
-        .orderBy('name', 'desc')
-        .get({ keys: true });
     }
   }
 
@@ -97,12 +124,14 @@ export class ClientDataService {
    */
 
   calculateTimeperiod(startDate, endDate = this.today) {
-    const d1 = new Date(startDate).getDate();
-    const m1 = new Date(startDate).getMonth() + 1;
-    const y1 = new Date(startDate).getFullYear();
-    const d2 = new Date(endDate).getDate();
-    const m2 = new Date(endDate).getMonth() + 1;
-    const y2 = new Date(endDate).getFullYear();
+    const sd = new Date(startDate);
+    const ed = new Date(endDate);
+    const d1 = sd.getDate();
+    const m1 = sd.getMonth() + 1;
+    const y1 = sd.getFullYear();
+    const d2 = ed.getDate();
+    const m2 = ed.getMonth() + 1;
+    const y2 = ed.getFullYear();
 
     let d = d2 - d1;
     let m = m2 - m1;
@@ -134,6 +163,49 @@ export class ClientDataService {
       const newPrincipal = principal + interest;
       const newInterest = (newPrincipal * timeInMonths * rate) / 100.0;
       return { interest, newPrincipal, newInterest, timeInMonths };
+    }
+  }
+
+  /**
+   * utilities here
+   */
+
+  generatePayLoad(formData, recordType, includeClosedDetails) {
+    return {
+      name: this.formatToCamelCase(formData.userName),
+      data: [
+        {
+          id: Date.now(),
+          principal:
+            recordType === 'credit' ? formData.principal : -formData.principal,
+          interest: formData.interest,
+          startDate: formData.startDate,
+          comments: formData.comments,
+          closedOn: includeClosedDetails ? formData.closedOn : null,
+          closedAmount: includeClosedDetails ? formData.closedAmount : null,
+        },
+      ],
+    };
+  }
+
+  formatToCamelCase(name: string) {
+    return name.replace(
+      /(^\w|\s\w)(\S*)/g,
+      (_, m1, m2) => m1.toUpperCase() + m2.toLowerCase()
+    );
+  }
+
+  async orderByName(orderKey) {
+    if (orderKey === 'asc') {
+      return await this.db
+        .collection('clientsData')
+        .orderBy('name')
+        .get({ keys: true });
+    } else {
+      return await this.db
+        .collection('clientsData')
+        .orderBy('name', 'desc')
+        .get({ keys: true });
     }
   }
 }

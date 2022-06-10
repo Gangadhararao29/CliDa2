@@ -13,7 +13,7 @@ export class AddClientPage {
   clientsData = [];
   formRefVariable: any;
   today: any;
-  listType = 'credit';
+  recordType = 'credit';
 
   constructor(
     private clientDataService: ClientDataService,
@@ -23,7 +23,7 @@ export class AddClientPage {
 
   ionViewWillEnter() {
     this.isAddBtnDisable = false;
-    this.clientDataService.getRawClients().then((res) => {
+    this.clientDataService.getAllClientsData().then((res) => {
       this.clientsData = res;
     });
     this.today = this.clientDataService.today;
@@ -32,39 +32,12 @@ export class AddClientPage {
   onSubmit(formRef) {
     this.formRefVariable = formRef;
     if (formRef.valid) {
-      const newClientData = {
-        name: this.formatToCamelCase(formRef.value.userName),
-        data: [
-          {
-            id: Date.now(),
-            principal:
-              this.listType === 'credit'
-                ? formRef.value.principal
-                : -formRef.value.principal,
-            interest: formRef.value.interest,
-            startDate: formRef.value.startDate,
-            comments: formRef.value.comments,
-          },
-        ],
-      };
-      this.saveNewClientData(newClientData, formRef);
+      this.clientDataService
+        .addNewClientData(formRef.value, this.recordType)
+        .then((res) => {
+          this.routeToClientList(formRef);
+        });
     }
-  }
-
-  saveNewClientData(newClientData, formRef) {
-    this.isAddBtnDisable = true;
-    this.clientDataService.getClientByName(newClientData.name).then((res) => {
-      if (res) {
-        res.data.push(newClientData.data[0]);
-        this.clientDataService.updateClientRecordByName(res).then(() => {
-          this.routeToClientList(formRef);
-        });
-      } else {
-        this.clientDataService.addNewClient(newClientData).then(() => {
-          this.routeToClientList(formRef);
-        });
-      }
-    });
   }
 
   routeToClientList(formRef) {
@@ -83,13 +56,6 @@ export class AddClientPage {
         });
       }, 1500);
     }
-  }
-
-  formatToCamelCase(name: string) {
-    return name.replace(
-      /(^\w|\s\w)(\S*)/g,
-      (_, m1, m2) => m1.toUpperCase() + m2.toLowerCase()
-    );
   }
 
   async presentToast(message) {

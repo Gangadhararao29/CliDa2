@@ -94,7 +94,7 @@ export class AdvSearchPage implements OnInit {
         this.showNoRecords = this.displayData.length ? false : true;
       });
     } else {
-      this.clientDataService.getAllClientsData().then((res) => {
+      this.clientDataService.getAllClientsDataWithKeys().then((res) => {
         this.displayData = res;
         this.sortDataModel(paramsModel);
         if (paramsModel.filter.by) {

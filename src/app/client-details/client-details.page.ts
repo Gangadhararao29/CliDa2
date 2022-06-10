@@ -80,8 +80,9 @@ export class ClientDetailsPage {
           ele.closedAmount = formRef.value.closedAmount;
         }
       });
-      this.clientsDataService.updateClientRecordByName(this.client);
-      this.showCloseDiv = false;
+      this.clientsDataService.updateClientRecordByName(this.client).then(() => {
+        this.showCloseDiv = false;
+      });
     }
   }
 
@@ -98,11 +99,10 @@ export class ClientDetailsPage {
 
   deleteData(id) {
     const clientDataIndex = this.client.data.findIndex((data) => data.id == id);
-    const clientDataLength = this.client.data.length;
-    this.presentAlertConfirm(clientDataIndex, clientDataLength);
+    this.presentAlertConfirm(clientDataIndex, this.client, this.clientId);
   }
 
-  async presentAlertConfirm(clientDataIndex, dataLength) {
+  async presentAlertConfirm(clientDataIndex, clientData, key) {
     const alert = await this.alertController.create({
       header: 'Confirm',
       cssClass: 'alertStyle',
@@ -113,19 +113,11 @@ export class ClientDetailsPage {
         {
           text: 'Yes',
           handler: () => {
-            this.client.data.splice(clientDataIndex, 1);
-            if (dataLength == 1) {
-              this.clientsDataService.deleteClient(this.clientId);
-              this.presentToast(
-                'Client deleted completely. <br>Redirecting to Clients list tab'
-              );
-              setTimeout(() => {
-                this.router.navigate(['clida', 'clients-list']);
-              }, 1500);
-            } else {
-              this.clientsDataService.updateClientRecordByName(this.client);
-              this.presentToast('Client record deleted successfully');
-            }
+            this.clientsDataService
+              .deleteClientData(clientData, clientDataIndex, key)
+              .then((res) => {
+                this.deleteResponseHandler(clientData.data.length);
+              });
           },
         },
         {
@@ -137,6 +129,19 @@ export class ClientDetailsPage {
     });
 
     await alert.present();
+  }
+
+  deleteResponseHandler(length) {
+    if (length <= 1) {
+      this.presentToast(
+        'Client deleted completely. <br>Redirecting to Clients list tab'
+      );
+      setTimeout(() => {
+        this.router.navigate(['clida', 'clients-list']);
+      }, 1500);
+    } else {
+      this.presentToast('Client record deleted successfully');
+    }
   }
 
   async presentToast(message) {

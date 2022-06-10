@@ -28,7 +28,7 @@ export class DashboardPage {
   }
 
   ionViewWillEnter() {
-    this.clientDataService.getAllClientsData().then((res) => {
+    this.clientDataService.getAllClientsDataWithKeys().then((res) => {
       this.totalClients = this.filterData(res);
       this.totalArray = [];
       this.getTotalArray(this.totalClients);
