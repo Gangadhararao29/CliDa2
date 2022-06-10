@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { LoadingController, ToastController } from '@ionic/angular';
 import LocalBase from 'localbase';
 @Injectable({
   providedIn: 'root',
@@ -16,7 +17,10 @@ export class ClientDataService {
     .reverse()
     .join('-');
 
-  constructor() {
+  constructor(
+    private toastController: ToastController,
+    private loadingController: LoadingController
+  ) {
     this.db.config.debug = false;
   }
 
@@ -41,7 +45,7 @@ export class ClientDataService {
   }
 
   async deleteClientByKey(id) {
-    return await this.db.collection('clientsData').doc({ id }).delete();
+    return await this.db.collection('clientsData').doc(id).delete();
   }
 
   async deleteDataBase() {
@@ -88,10 +92,10 @@ export class ClientDataService {
   }
 
   async deleteClientData(clientData, index, key) {
-    if (clientData.length <= 1) {
+    clientData.data.splice(index, 1);
+    if (clientData.data.length < 1) {
       return this.deleteClientByKey(key);
     } else {
-      clientData.data.splice(index, 1);
       return this.updateClientRecordByName(clientData);
     }
   }
@@ -104,13 +108,15 @@ export class ClientDataService {
       clientsDataGroup.forEach((client) => {
         this.getClientByName(client.name).then((res) => {
           if (res) {
-            const recordExisted = res.data.filter(
+            const recordIndex = res.data.findIndex(
               (clientData) => clientData.id === res.id
             );
-            if (!recordExisted) {
+            if (recordIndex > -1) {
               res.push(client.data);
-              this.updateClientRecordByName(res);
+            } else {
+              res.data[recordIndex] = client.data;
             }
+            this.updateClientRecordByName(res);
           } else {
             this.saveNewClient(client);
           }
@@ -214,5 +220,30 @@ export class ClientDataService {
         .orderBy('name', 'desc')
         .get({ keys: true });
     }
+  }
+
+  async presentToast(
+    message,
+    cssClass = 'successToastClass',
+    icon = 'checkmark-outline'
+  ) {
+    const toast = await this.toastController.create({
+      message,
+      position: 'top',
+      duration: 2500,
+      animated: true,
+      cssClass,
+      icon,
+    });
+    toast.present();
+  }
+
+  async presentLoading() {
+    const loading = await this.loadingController.create({
+      animated: true,
+      message: 'loading...',
+      duration: 1000,
+    });
+    await loading.present();
   }
 }

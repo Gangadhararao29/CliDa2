@@ -1,5 +1,4 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ToastController } from '@ionic/angular';
 import { ClientDataService } from '../services/client-data.service';
 
 @Component({
@@ -15,10 +14,7 @@ export class AdvSearchPage implements OnInit {
   showFilterMissingText = false;
   showfilterRangeErrorText = false;
   showNoRecords = false;
-  constructor(
-    public toastController: ToastController,
-    private clientDataService: ClientDataService
-  ) {}
+  constructor(private clientDataService: ClientDataService) {}
 
   ngOnInit() {
     const storedValue = JSON.parse(localStorage.getItem('sortAndFilterParams'));
@@ -66,7 +62,7 @@ export class AdvSearchPage implements OnInit {
 
   postAdditionNewParams() {
     this.formInputElement.nativeElement.classList.remove('show');
-    this.presentToast('New model added');
+    this.clientDataService.presentToast('New model added');
     this.sortAndFilterParams.forEach((ele) => (ele.active = 'light'));
     localStorage.setItem(
       'sortAndFilterParams',
@@ -178,17 +174,5 @@ export class AdvSearchPage implements OnInit {
     } else {
       return 'primary';
     }
-  }
-
-  async presentToast(message) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2500,
-      position: 'top',
-      animated: true,
-      cssClass: 'successToastClass',
-      icon: 'checkmark-outline',
-    });
-    toast.present();
   }
 }

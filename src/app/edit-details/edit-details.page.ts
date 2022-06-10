@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { ClientDataService } from '../services/client-data.service';
 
 @Component({
@@ -25,7 +25,6 @@ export class EditDetailsPage {
     private activatedRoute: ActivatedRoute,
     private clientDataService: ClientDataService,
     public alertController: AlertController,
-    public toastController: ToastController,
     private router: Router
   ) {}
 
@@ -66,6 +65,7 @@ export class EditDetailsPage {
         {
           text: 'Yes',
           handler: () => {
+            this.clientDataService.presentLoading();
             this.saveClientsData(formRef);
           },
         },
@@ -95,21 +95,33 @@ export class EditDetailsPage {
 
   responseHandler(name) {
     if (name !== this.clientName) {
-      this.clientDataService.deleteClientData(
-        this.clientData,
-        this.clientRecordIndex,
-        this.clientKey
-      );
+      this.clientDataService
+        .deleteClientData(
+          this.clientData,
+          this.clientRecordIndex,
+          this.clientKey
+        )
+        .then(() => {
+          setTimeout(() => {
+            this.clientDataService.presentToast(
+              'Your changes have been saved.<br>Redirecting to Clients-list tab'
+            );
+            this.router.navigate(['clida', 'clients-list']);
+          }, 1000);
+        });
+    } else {
+      setTimeout(() => {
+        this.clientDataService.presentToast(
+          'Your changes have been saved.<br>Redirecting to Client-Details tab'
+        );
+        this.router.navigate([
+          'clida',
+          'clients-list',
+          'client-details',
+          this.clientKey,
+        ]);
+      }, 1000);
     }
-    this.presentToast();
-    setTimeout(() => {
-      this.router.navigate([
-        'clida',
-        'clients-list',
-        'client-details',
-        this.clientKey,
-      ]);
-    }, 1500);
   }
 
   async resetFieldsConfirmPopup() {
@@ -135,18 +147,5 @@ export class EditDetailsPage {
       ],
     });
     await alert.present();
-  }
-
-  async presentToast() {
-    const toast = await this.toastController.create({
-      message:
-        'Your changes have been saved.<br>Redirecting to ClientsDetails Menu',
-      duration: 2500,
-      position: 'top',
-      animated: true,
-      cssClass: 'successToastClass',
-      icon: 'checkmark-outline',
-    });
-    toast.present();
   }
 }

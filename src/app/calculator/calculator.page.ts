@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ToastController } from '@ionic/angular';
 import { ClientDataService } from '../services/client-data.service';
 
 @Component({
@@ -33,8 +32,7 @@ export class CalculatorPage {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private clientsDataService: ClientDataService,
-    private toastController: ToastController
+    private clientsDataService: ClientDataService
   ) {}
 
   ionViewWillEnter() {
@@ -69,7 +67,9 @@ export class CalculatorPage {
         );
 
         this.showCalculatedData = true;
-        this.presentToast();
+        this.clientsDataService.presentToast(
+          'Interest Calculated Successfully'
+        );
         this.advIntShow = this.interestObj.newInterest ? true : false;
       } else {
         this.showCalculatedData = false;
@@ -85,18 +85,6 @@ export class CalculatorPage {
     alert.buttons = ['Ok'];
     document.body.appendChild(alert);
     return alert.present();
-  }
-
-  async presentToast() {
-    const toast = await this.toastController.create({
-      message: 'Interest Calculated Successfully',
-      duration: 2500,
-      position: 'top',
-      animated: true,
-      cssClass: 'successToastClass',
-      icon: 'checkmark-outline',
-    });
-    toast.present();
   }
 
   currencyFormat(value) {

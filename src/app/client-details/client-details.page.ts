@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, IonAccordionGroup } from '@ionic/angular';
 import { ClientDataService } from 'src/app/services/client-data.service';
 
 @Component({
@@ -9,6 +9,8 @@ import { ClientDataService } from 'src/app/services/client-data.service';
   styleUrls: ['./client-details.page.scss'],
 })
 export class ClientDetailsPage {
+  @ViewChild(IonAccordionGroup, { static: true })
+  accordionGroup: IonAccordionGroup;
   client: any;
   clientId = '';
   today = new Date()
@@ -28,8 +30,7 @@ export class ClientDetailsPage {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private clientsDataService: ClientDataService,
-    private alertController: AlertController,
-    private toastController: ToastController
+    private alertController: AlertController
   ) {}
 
   ionViewWillEnter() {
@@ -113,6 +114,7 @@ export class ClientDetailsPage {
         {
           text: 'Yes',
           handler: () => {
+            this.clientsDataService.presentLoading();
             this.clientsDataService
               .deleteClientData(clientData, clientDataIndex, key)
               .then((res) => {
@@ -132,28 +134,19 @@ export class ClientDetailsPage {
   }
 
   deleteResponseHandler(length) {
-    if (length <= 1) {
-      this.presentToast(
-        'Client deleted completely. <br>Redirecting to Clients list tab'
-      );
-      setTimeout(() => {
+    setTimeout(() => {
+      if (length < 1) {
+        this.clientsDataService.presentToast(
+          'Client deleted completely. <br>Redirecting to Clients list tab'
+        );
         this.router.navigate(['clida', 'clients-list']);
-      }, 1500);
-    } else {
-      this.presentToast('Client record deleted successfully');
-    }
-  }
-
-  async presentToast(message) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2500,
-      position: 'top',
-      animated: true,
-      cssClass: 'successToastClass',
-      icon: 'checkmark-outline',
-    });
-    toast.present();
+      } else {
+        this.clientsDataService.presentToast(
+          'Client record deleted successfully'
+        );
+        this.accordionGroup.value = undefined;
+      }
+    }, 1000);
   }
 
   getColor(detail) {
