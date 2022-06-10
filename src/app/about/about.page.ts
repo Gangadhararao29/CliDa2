@@ -226,4 +226,15 @@ export class AboutPage {
       });
     }
   }
+
+  cleanData() {
+    this.clientDataService.cleanClientsData().then((res) => {
+      this.presentToast(
+        'All the empty Data and errors are fixed.',
+        2000,
+        'successToastClass',
+        'checkmark-outline'
+      );
+    });
+  }
 }

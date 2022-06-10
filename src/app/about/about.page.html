@@ -72,11 +72,15 @@
     </ion-select>
   </ion-item>
 
+  <ion-button (click)="cleanData()" color="warning" expand="block" class="m-2"
+    >Clean Data / Remove Errors</ion-button
+  >
+
   <ion-button
     (click)="presentDeleteAlert()"
     color="danger"
     expand="block"
-    class="mx-2"
+    class="m-2"
     >Remove all clients data</ion-button
   >
 </ion-content>

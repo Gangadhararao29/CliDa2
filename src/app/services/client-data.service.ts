@@ -119,6 +119,13 @@ export class ClientDataService {
     }
   }
 
+  async cleanClientsData() {
+    return this.getAllClientsData().then((res) => {
+      res = res.filter((client) => client.data.length > 0 && client.name);
+      this.db.collection('clientsData').set(res);
+    });
+  }
+
   /**
    * for calculating interests
    */
