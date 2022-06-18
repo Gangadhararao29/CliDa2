@@ -13,8 +13,9 @@ ion-title {
 
 input,
 textarea,
+textarea:focus,
 input:focus {
-  background-color: var(--ion-color-light);
+  background-color: var(--ion-color-light-rgb);
   color: var(--ion-color-dark);
 }
 
