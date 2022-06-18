@@ -46,7 +46,7 @@ export class ClientDetailsPage {
       startDate,
       endDate
     );
-    return `${timeObject.d}d, ${timeObject.m}m, ${timeObject.y}y.`;
+    return `${timeObject.y}y, ${timeObject.m}m, ${timeObject.d}d.`;
   }
 
   totalTimeinMonths(startDate, endDate) {

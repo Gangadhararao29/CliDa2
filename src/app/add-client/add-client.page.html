@@ -6,7 +6,7 @@
 </ion-header>
 
 <ion-content>
-  <div class="m-2 formClass pt-2">
+  <div class="m-2 bgLight pt-2">
     <ion-radio-group value="credit" [(ngModel)]="listType">
       <ion-label position="stacked" class="mx-3">
         <span style="font-size: large; font-weight: 300"
@@ -31,9 +31,9 @@
     <form
       #formRef="ngForm"
       (ngSubmit)="onSubmit(formRef)"
-      class="p-2 formClass rounded-3"
+      class="px-2 pt-1 bgLight rounded-3"
     >
-      <div class="form-floating mb-2">
+      <div class="form-floating mb-2 mt-1">
         <input
           type="text"
           class="form-control"
@@ -117,7 +117,7 @@
         </div>
       </div>
 
-      <div class="form-floating mb-2">
+      <div class="form-floating">
         <textarea
           class="form-control"
           placeholder="Leave a comment here"
@@ -129,25 +129,23 @@
         <label for="comments"><span class="formLabel">Comments</span></label>
       </div>
 
-      <div class="my-0">
-        <ion-item lines="none" color="light">
-          <ion-label>Add multiple records</ion-label>
-          <ion-toggle
-            [(ngModel)]="multiRecordsSelected"
-            name="multiRecordsSelected"
-            color="danger"
-          ></ion-toggle>
-        </ion-item>
-      </div>
-
-      <ion-button
-        color="danger"
-        expand="block"
-        type="submit"
-        [disabled]="isAddBtnDisable"
-      >
-        Add new client
-      </ion-button>
+      <ion-item class="mt-1" lines="none" color="light">
+        <ion-label>Add multiple records</ion-label>
+        <ion-toggle
+          [(ngModel)]="multiRecordsSelected"
+          name="multiRecordsSelected"
+          color="danger"
+        ></ion-toggle>
+      </ion-item>
     </form>
+    <ion-button
+      color="danger"
+      expand="block"
+      type="submit"
+      class="my-2"
+      [disabled]="isAddBtnDisable"
+    >
+      Add new client
+    </ion-button>
   </div>
 </ion-content>

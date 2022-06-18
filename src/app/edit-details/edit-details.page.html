@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content>
-  <div class="m-2 formClass pt-2">
+  <div class="m-2 bgLight pt-2 rounded-3">
     <ion-radio-group value="credit" [(ngModel)]="listType">
       <ion-label position="stacked" class="mx-3">
         <span style="font-size: large; font-weight: 300"
@@ -29,91 +29,101 @@
     </ion-radio-group>
   </div>
 
-  <form
-    #formRef="ngForm"
-    (ngSubmit)="onSubmit(formRef)"
-    class="p-2 mx-2 formClass rounded-3"
-  >
-    <span class="fs-5 fw-2 mx-1 mb-2">Primary details</span>
-
-    <div class="form-floating mb-2">
-      <input
-        type="text"
-        class="form-control"
-        id="name"
-        placeholder="100000"
-        #name="ngModel"
-        name="name"
-        [ngModel]="client.name"
-        required
-        [class.is-valid]="name.valid"
-        [class.is-invalid]="name.invalid &&  formRef.submitted"
-      />
-      <label for="name">Client name</label>
-      <div id="name" class="invalid-feedback">Please enter a Name.</div>
-      <div [hidden]="!name.dirty" class="custom-invalid-tooltip">
-        Caution see below for more details.
-      </div>
-    </div>
-    <div class="mb-2 d-flex justify-content-between">
-      <div class="form-floating d-inline-block">
+  <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
+    <div class="bgLight p-2 mx-2 rounded-3">
+      <span class="fs-5 mx-1">Primary details</span>
+      <div class="form-floating mb-2">
         <input
-          type="number"
+          type="text"
           class="form-control"
-          id="principal"
+          id="name"
           placeholder="100000"
-          #principal="ngModel"
-          name="principal"
-          [ngModel]="client.principal"
+          #name="ngModel"
+          name="name"
+          [ngModel]="client.name"
           required
-          [class.is-valid]="principal.valid"
-          [class.is-invalid]="principal.invalid &&  formRef.submitted"
+          [class.is-valid]="name.valid"
+          [class.is-invalid]="name.invalid &&  formRef.submitted"
         />
-        <label for="principal">Principal</label>
-        <div id="principal" class="invalid-feedback">
-          Please enter Principal amount.
+        <label for="name">Client name</label>
+        <div id="name" class="invalid-feedback">Please enter a Name.</div>
+        <div [hidden]="!name.dirty" class="custom-invalid-tooltip">
+          Caution see below for more details.
         </div>
       </div>
+      <div class="mb-2 d-flex justify-content-between">
+        <div class="form-floating d-inline-block">
+          <input
+            type="number"
+            class="form-control"
+            id="principal"
+            placeholder="100000"
+            #principal="ngModel"
+            name="principal"
+            [ngModel]="client.principal"
+            required
+            [class.is-valid]="principal.valid"
+            [class.is-invalid]="principal.invalid &&  formRef.submitted"
+          />
+          <label for="principal">Principal</label>
+          <div id="principal" class="invalid-feedback">
+            Please enter Principal amount.
+          </div>
+        </div>
 
-      <div class="form-floating d-inline-block">
+        <div class="form-floating d-inline-block">
+          <input
+            type="number"
+            class="form-control"
+            id="interest"
+            placeholder="1.50"
+            [ngModel]="client.interest"
+            name="interest"
+            #interest="ngModel"
+            required
+            [class.is-valid]="interest.valid"
+            [class.is-invalid]="interest.invalid &&  formRef.submitted"
+          />
+          <label for="interest">Interest</label>
+          <div id="interest" class="invalid-feedback">
+            Please enter interest value.
+          </div>
+        </div>
+      </div>
+      <div class="form-floating">
         <input
-          type="number"
+          type="date"
           class="form-control"
-          id="interest"
-          placeholder="1.50"
-          [ngModel]="client.interest"
-          name="interest"
-          #interest="ngModel"
+          id="startDate"
+          [ngModel]="client.startDate"
+          name="startDate"
           required
-          [class.is-valid]="interest.valid"
-          [class.is-invalid]="interest.invalid &&  formRef.submitted"
+          #startDate="ngModel"
+          [class.is-valid]="startDate.valid"
+          [class.is-invalid]="startDate.invalid &&  formRef.submitted"
         />
-        <label for="interest">Interest</label>
-        <div id="interest" class="invalid-feedback">
-          Please enter interest value.
+        <label for="startDate">Start date</label>
+        <div id="startDate" class="invalid-feedback">
+          Please enter start Date.
         </div>
       </div>
     </div>
-    <div class="form-floating mb-2">
-      <input
-        type="date"
+
+    <div class="form-floating m-2">
+      <textarea
         class="form-control"
-        id="startDate"
-        [ngModel]="client.startDate"
-        name="startDate"
-        required
-        #startDate="ngModel"
-        [class.is-valid]="startDate.valid"
-        [class.is-invalid]="startDate.invalid &&  formRef.submitted"
-      />
-      <label for="startDate">Start date</label>
-      <div id="startDate" class="invalid-feedback">
-        Please enter start Date.
-      </div>
+        id="comments"
+        ngModel
+        name="comments"
+        [value]="client.comments"
+        placeholder="Enter comments here"
+        #comments="ngModel"
+      ></textarea>
+      <label for="comments">Comments</label>
     </div>
 
-    <div *ngIf="client.closedOn">
-      <span class="fs-5 fw-2 mx-1">Closed details</span>
+    <div *ngIf="client.closedOn" class="bgLight p-2 m-2 rounded-3">
+      <span class="fs-5 mx-1">Closed details</span>
       <div class="d-flex mb-2 justify-content-between">
         <div class="form-floating">
           <input
@@ -127,8 +137,7 @@
           />
           <label for="closedOn">On</label>
         </div>
-
-        <div class="form-floating">
+        <div class="form-floating w-100">
           <input
             type="number"
             class="form-control"
@@ -141,29 +150,19 @@
           <label for="closedAmount">Amount</label>
         </div>
       </div>
+      <div class="d-grid mt-2">
+        <button
+          class="btn btn-danger"
+          type="button"
+          (click)="resetClosedData()"
+        >
+          Reset closed details
+        </button>
+      </div>
     </div>
 
-    <div class="form-floating mb-2">
-      <textarea
-        class="form-control"
-        id="comments"
-        ngModel
-        name="comments"
-        [value]="client.comments"
-        placeholder="Enter comments here"
-        #comments="ngModel"
-      ></textarea>
-      <label for="comments">Comments</label>
-    </div>
-
-    <div class="d-grid gap-2">
+    <div class="d-grid gap-2 m-2">
       <button class="btn btn-success" type="submit">Confirm</button>
-    </div>
-
-    <div *ngIf="client.closedOn" class="d-grid mt-2">
-      <button class="btn btn-danger" type="button" (click)="resetClosedData()">
-        Reset closed details
-      </button>
     </div>
   </form>
 
