@@ -43,7 +43,7 @@ export class ClientsListPage {
   }
 
   getDisplayData() {
-    this.clientDataService.getAllClientsData().then((data) => {
+    this.clientDataService.getAllClientsDataWithKeys().then((data) => {
       this.clientsData = data;
       this.showEntryText = data.length > 0 ? false : true;
       this.debitData = [];
@@ -118,7 +118,7 @@ export class ClientsListPage {
     }
   }
 
-  setListType(event) {
+  setrecordType(event) {
     this.showDebitList = event.detail.value === 'debits' ? true : false;
     localStorage.setItem('tabSection', event.detail.value);
   }

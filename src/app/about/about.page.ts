@@ -1,7 +1,7 @@
 import { Component, Renderer2 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { ClientDataService } from '../services/client-data.service';
 
@@ -23,14 +23,13 @@ export class AboutPage {
   constructor(
     private sanitizer: DomSanitizer,
     public alertController: AlertController,
-    private toastController: ToastController,
     private router: Router,
     private clientDataService: ClientDataService,
     private renderer: Renderer2
   ) {}
 
   exportData() {
-    this.clientDataService.getRawClients().then((data) => {
+    this.clientDataService.getAllClientsData().then((data) => {
       this.clientsData = JSON.stringify(data);
       this.writeSecretFile(this.clientsData);
       this.downloadJsonHref = this.sanitizer.bypassSecurityTrustUrl(
@@ -51,16 +50,17 @@ export class AboutPage {
       recursive: true,
     })
       .then(() => {
-        this.presentToast(
-          `File saved successfully in <br> Documents/${fileName}.`,
-          2500,
-          'successToastClass',
-          'checkmark-outline'
+        this.clientDataService.presentToast(
+          `File saved successfully in <br> Documents/${fileName}.`
         );
       })
       .catch((err) => {
         const errString = 'No Data found.<br>' + err.toString().slice(6);
-        this.presentToast(errString, 2500, 'failedToastClass', 'alert-outline');
+        this.clientDataService.presentToast(
+          errString,
+          'failedToastClass',
+          'alert-outline'
+        );
       });
   }
 
@@ -79,12 +79,14 @@ export class AboutPage {
         {
           text: 'Replace with new data',
           handler: () => {
+            this.clientDataService.presentLoading();
             this.importHandler(file, true);
           },
         },
         {
           text: 'Merge with new data',
           handler: () => {
+            this.clientDataService.presentLoading();
             this.importHandler(file, false);
           },
         },
@@ -107,31 +109,15 @@ export class AboutPage {
       this.clientDataService
         .saveBulkClients(this.importedJSON, replaceStatus)
         .then((res) => {
-          this.inputClientData = '';
-          this.presentToast(
-            'Data imported succcessfully <br>Redirecting to Clients List Tab',
-            2000,
-            'successToastClass',
-            'checkmark-outline'
-          );
-
           setTimeout(() => {
+            this.inputClientData = '';
+            this.clientDataService.presentToast(
+              'Data imported succcessfully <br>Redirecting to Clients List Tab'
+            );
             this.router.navigate(['clida', 'clients-list']);
-          }, 1500);
+          }, 1000);
         });
     };
-  }
-
-  async presentToast(message, duration, cssClass, icon) {
-    const toast = await this.toastController.create({
-      message,
-      position: 'top',
-      duration,
-      animated: true,
-      cssClass,
-      icon,
-    });
-    toast.present();
   }
 
   async presentDeleteAlert() {
@@ -158,8 +144,7 @@ export class AboutPage {
 
   resetData() {
     this.clientDataService.deleteDataBase();
-    const message = 'Data successfully deleted';
-    this.presentToast(message, 2000, 'successToastClass', 'checkmark-outline');
+    this.clientDataService.presentToast('Data successfully deleted');
   }
 
   changeTheme(event) {
@@ -189,8 +174,9 @@ export class AboutPage {
 
   changeSort(event) {
     if (event.target.value) {
+      this.clientDataService.presentLoading();
       event.target.disabled = true;
-      this.clientDataService.getRawClients().then((clients) => {
+      this.clientDataService.getAllClientsData().then((clients) => {
         clients.map((ele) => {
           ele.data.sort((a, b) => {
             const keyA = new Date(a.startDate);
@@ -212,18 +198,21 @@ export class AboutPage {
         this.clientDataService
           .saveBulkClients(JSON.stringify(clients), true)
           .then((res) => {
-            this.presentToast(
-              'Data sorted successfully',
-              2500,
-              'successToastClass',
-              'checkmark-outline'
-            );
             setTimeout(() => {
+              this.clientDataService.presentToast('Data sorted successfully');
               event.target.disabled = false;
               event.target.value = null;
-            }, 1500);
+            }, 1000);
           });
       });
     }
+  }
+
+  cleanData() {
+    this.clientDataService.cleanClientsData().then((res) => {
+      this.clientDataService.presentToast(
+        'All the empty Data and errors are fixed.'
+      );
+    });
   }
 }

@@ -9,7 +9,7 @@
 
 <ion-content>
   <div class="m-2 bgLight pt-2 rounded-3">
-    <ion-radio-group value="credit" [(ngModel)]="listType">
+    <ion-radio-group value="credit" [(ngModel)]="recordType">
       <ion-label position="stacked" class="mx-3">
         <span style="font-size: large; font-weight: 300"
           >Select Record type</span
@@ -20,7 +20,6 @@
           <ion-label>Debit</ion-label>
           <ion-radio slot="start" value="debit"></ion-radio>
         </ion-item>
-
         <ion-item color="light" class="col">
           <ion-label>Credit</ion-label>
           <ion-radio slot="start" value="credit"></ion-radio>
@@ -36,18 +35,18 @@
         <input
           type="text"
           class="form-control"
-          id="name"
+          id="userName"
           placeholder="100000"
-          #name="ngModel"
-          name="name"
-          [ngModel]="client.name"
+          #userName="ngModel"
+          name="userName"
+          [ngModel]="clientName"
           required
-          [class.is-valid]="name.valid"
-          [class.is-invalid]="name.invalid &&  formRef.submitted"
+          [class.is-valid]="userName.valid"
+          [class.is-invalid]="userName.invalid &&  formRef.submitted"
         />
-        <label for="name">Client name</label>
-        <div id="name" class="invalid-feedback">Please enter a Name.</div>
-        <div [hidden]="!name.dirty" class="custom-invalid-tooltip">
+        <label for="userName">Client name</label>
+        <div id="userName" class="invalid-feedback">Please enter a Name.</div>
+        <div [hidden]="!userName.dirty" class="custom-invalid-tooltip">
           Caution see below for more details.
         </div>
       </div>
@@ -60,7 +59,7 @@
             placeholder="100000"
             #principal="ngModel"
             name="principal"
-            [ngModel]="client.principal"
+            [ngModel]="clientRecord.principal"
             required
             [class.is-valid]="principal.valid"
             [class.is-invalid]="principal.invalid &&  formRef.submitted"
@@ -77,7 +76,7 @@
             class="form-control"
             id="interest"
             placeholder="1.50"
-            [ngModel]="client.interest"
+            [ngModel]="clientRecord.interest"
             name="interest"
             #interest="ngModel"
             required
@@ -95,7 +94,7 @@
           type="date"
           class="form-control"
           id="startDate"
-          [ngModel]="client.startDate"
+          [ngModel]="clientRecord.startDate"
           name="startDate"
           required
           #startDate="ngModel"
@@ -115,14 +114,14 @@
         id="comments"
         ngModel
         name="comments"
-        [value]="client.comments"
+        [value]="clientRecord.comments"
         placeholder="Enter comments here"
         #comments="ngModel"
       ></textarea>
       <label for="comments">Comments</label>
     </div>
 
-    <div *ngIf="client.closedOn" class="bgLight p-2 m-2 rounded-3">
+    <div *ngIf="clientRecord.closedOn" class="bgLight p-2 m-2 rounded-3">
       <span class="fs-5 mx-1">Closed details</span>
       <div class="d-flex mb-2 justify-content-between">
         <div class="form-floating">
@@ -131,7 +130,7 @@
             class="form-control"
             id="closedOn"
             placeholder="29/01/2015"
-            [ngModel]="client.closedOn"
+            [ngModel]="clientRecord.closedOn"
             #closedOn="ngModel"
             name="closedOn"
           />
@@ -143,7 +142,7 @@
             class="form-control"
             id="closedAmount"
             placeholder="100000"
-            [ngModel]="client.closedAmount"
+            [ngModel]="clientRecord.closedAmount"
             name="closedAmount"
             #closedAmount="ngModel"
           />
@@ -166,7 +165,7 @@
     </div>
   </form>
 
-  <ion-card *ngIf="name.dirty" color="light">
+  <ion-card *ngIf="userName.dirty" color="light">
     <ion-item color="warning">
       <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
       <ion-label>Caution</ion-label>
