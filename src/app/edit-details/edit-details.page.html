@@ -17,12 +17,12 @@
       </ion-label>
       <div class="d-flex justify-content-between">
         <ion-item color="light" class="col">
-          <ion-label>Debit</ion-label>
-          <ion-radio slot="start" value="debit"></ion-radio>
-        </ion-item>
-        <ion-item color="light" class="col">
           <ion-label>Credit</ion-label>
           <ion-radio slot="start" value="credit"></ion-radio>
+        </ion-item>
+        <ion-item color="light" class="col">
+          <ion-label>Debit</ion-label>
+          <ion-radio slot="start" value="debit"></ion-radio>
         </ion-item>
       </div>
     </ion-radio-group>
@@ -114,7 +114,7 @@
         id="comments"
         ngModel
         name="comments"
-        [value]="clientRecord.comments"
+        [value]="clientRecord.comments || null"
         placeholder="Enter comments here"
         #comments="ngModel"
       ></textarea>
@@ -149,20 +149,20 @@
           <label for="closedAmount">Amount</label>
         </div>
       </div>
-      <div class="d-grid mt-2">
-        <button
-          class="btn btn-danger"
-          type="button"
-          (click)="resetClosedData()"
-        >
-          Reset closed details
-        </button>
-      </div>
+
+      <ion-button
+        color="danger"
+        expand="block"
+        class="mt-2"
+        (click)="resetClosedData()"
+      >
+        Reset closed details
+      </ion-button>
     </div>
 
-    <div class="d-grid gap-2 m-2">
-      <button class="btn btn-success" type="submit">Confirm</button>
-    </div>
+    <ion-button color="success" expand="block" type="submit" class="m-2">
+      confirm
+    </ion-button>
   </form>
 
   <ion-card *ngIf="userName.dirty" color="light">

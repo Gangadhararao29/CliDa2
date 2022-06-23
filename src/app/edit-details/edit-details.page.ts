@@ -11,9 +11,11 @@ import { ClientDataService } from '../services/client-data.service';
 export class EditDetailsPage {
   clientRecord = {
     principal: 0,
+    interest: 0,
     startDate: '',
     closedAmount: 0,
     closedOn: '',
+    comments: '',
   };
   clientData: any;
   clientRecordId: any;
@@ -130,7 +132,7 @@ export class EditDetailsPage {
       header: 'Confirm',
       backdropDismiss: false,
       animated: true,
-      message: '<strong>Do you want to reset closedOn details?</strong>',
+      message: '<strong>Do you want to reset closed details?</strong>',
       buttons: [
         {
           text: 'Yes',
