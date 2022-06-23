@@ -32,8 +32,8 @@ export class DashboardPage {
       this.totalClients = this.filterData(res);
       this.totalArray = [];
       this.getTotalArray(this.totalClients);
-      this.sortByPrincipal(this.timeGridIcon === 'arrow-down-outline');
-      this.sortByTimePeriod(this.principalGridIcon === 'arrow-down-outline');
+      this.sortByPrincipal(this.principalGridIcon === 'arrow-down-outline');
+      this.sortByTimePeriod(this.timeGridIcon === 'arrow-down-outline');
     });
   }
 
@@ -80,23 +80,24 @@ export class DashboardPage {
     });
   }
 
-  sortByPrincipal(value = true) {
+  sortByPrincipal(value) {
     this.array1 = Array.from(
-      this.totalArray.sort((a, b) => {
-        const keyA = a.totalPrincipal;
-        const keyB = b.totalPrincipal;
-        if (keyA < keyB) {
-          return value ? +1 : -1;
-        }
-        if (keyA > keyB) {
-          return value ? -1 : +1;
-        }
-      })
+      this.totalArray
+        .sort((a, b) => {
+          const keyA = a.totalPrincipal;
+          const keyB = b.totalPrincipal;
+          if (keyA < keyB) {
+            return value ? +1 : -1;
+          }
+          if (keyA > keyB) {
+            return value ? -1 : +1;
+          }
+        })
+        .filter((rec) => rec.finalAmount !== 0)
     );
-    this.array1 = this.array1.filter((rec) => rec.finalAmount !== 0);
   }
 
-  sortByTimePeriod(value = true) {
+  sortByTimePeriod(value) {
     this.array2 = Array.from(
       this.totalArray.sort((a, b) => {
         const keyA = a.greaterTimePeriod;

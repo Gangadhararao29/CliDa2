@@ -8,15 +8,6 @@ import { ClientDataService } from '../services/client-data.service';
   styleUrls: ['./calculator.page.scss'],
 })
 export class CalculatorPage {
-  today = new Date()
-    .toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    })
-    .split('/')
-    .reverse()
-    .join('-');
   clientID = '';
   linkData = {} as any;
   recordId: any;
@@ -44,10 +35,10 @@ export class CalculatorPage {
         this.clientsDataService.getClientByKey(this.clientID).then((res) => {
           this.linkData = res.data.find((record) => record.id == this.recordId);
           this.linkData.name = res.name;
-          this.linkData.endDate = this.today;
+          this.linkData.endDate = this.clientsDataService.today;
         });
       }
-      this.linkData.endDate = this.today;
+      this.linkData.endDate = this.clientsDataService.today;
     });
   }
 
@@ -76,6 +67,11 @@ export class CalculatorPage {
         this.dateInputErrorAlert();
       }
     }
+  }
+
+  resetForm(formRef) {
+    formRef.resetForm();
+    this.showCalculatedData = false;
   }
 
   dateInputErrorAlert() {

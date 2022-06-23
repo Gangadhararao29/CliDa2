@@ -124,7 +124,7 @@
       </div>
 
       <div class="mt-2">
-        <ion-button color="danger" expand="block" type="reset">
+        <ion-button color="danger" expand="block" (click)="resetForm(formRef)">
           Reset
         </ion-button>
       </div>
@@ -163,7 +163,9 @@
         <div class="col">Start Date</div>
         <div class="col-auto">:</div>
         <div class="col">
-          <u style="text-underline-offset: 5px">&nbsp;&nbsp;{{linkData.startDate}}&nbsp;&nbsp;</u>
+          <u style="text-underline-offset: 5px"
+            >&nbsp;&nbsp;{{linkData.startDate}}&nbsp;&nbsp;</u
+          >
         </div>
       </div>
 

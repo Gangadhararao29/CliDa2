@@ -17,6 +17,7 @@ export class ClientsListPage {
   creditData = [];
   showDebitList: boolean;
   tabSection = 'credits';
+  searchIcon = 'search-sharp';
   constructor(
     private router: Router,
     private platform: Platform,
@@ -73,6 +74,8 @@ export class ClientsListPage {
 
   resetSearch() {
     this.clientSearchValue = null;
+    this.searchIcon =
+      this.searchIcon === 'search-sharp' ? 'remove-sharp' : 'search-sharp';
   }
 
   openClientDetails(key) {

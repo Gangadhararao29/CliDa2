@@ -7,7 +7,7 @@ import { ClientDataService } from '../services/client-data.service';
   styleUrls: ['./adv-search.page.scss'],
 })
 export class AdvSearchPage implements OnInit {
-  @ViewChild('formInput') formInputElement: ElementRef;
+  @ViewChild('modal') modal: any;
   sortAndFilterParams = [];
   displayData = [];
   showSortMissingText = false;
@@ -61,7 +61,7 @@ export class AdvSearchPage implements OnInit {
   }
 
   postAdditionNewParams() {
-    this.formInputElement.nativeElement.classList.remove('show');
+    this.modal.dismiss();
     this.clientDataService.presentToast('New model added');
     this.sortAndFilterParams.forEach((ele) => (ele.active = 'light'));
     localStorage.setItem(
@@ -70,27 +70,31 @@ export class AdvSearchPage implements OnInit {
     );
   }
 
-  applyParams(index) {
-    let paramsModel;
-    this.sortAndFilterParams.forEach((ele, i) => {
-      if (i === index) {
-        ele.active = 'primary';
-        paramsModel = ele;
-      } else {
+  async applyParams(index) {
+    const paramsModel = this.sortAndFilterParams[index];
+    if (paramsModel.active === 'light') {
+      this.sortAndFilterParams.forEach((ele) => {
         ele.active = 'light';
-      }
-    });
+      });
+      paramsModel.active = 'primary';
+    } else {
+      paramsModel.active = 'light';
+      this.displayData = [];
+      return;
+    }
 
     if (paramsModel.sort.by === 'name') {
-      this.clientDataService.orderByName(paramsModel.sort.order).then((res) => {
-        this.displayData = res;
-        if (paramsModel.filter.by) {
-          this.filterDataModel(paramsModel);
-        }
-        this.showNoRecords = this.displayData.length ? false : true;
-      });
+      await this.clientDataService
+        .orderByName(paramsModel.sort.order)
+        .then((res) => {
+          this.displayData = res;
+          if (paramsModel.filter.by) {
+            this.filterDataModel(paramsModel);
+          }
+          this.showNoRecords = this.displayData.length ? false : true;
+        });
     } else {
-      this.clientDataService.getAllClientsDataWithKeys().then((res) => {
+      await this.clientDataService.getAllClientsDataWithKeys().then((res) => {
         this.displayData = res;
         this.sortDataModel(paramsModel);
         if (paramsModel.filter.by) {
@@ -133,10 +137,10 @@ export class AdvSearchPage implements OnInit {
         const keyA = new Date(a.startDate);
         const keyB = new Date(b.startDate);
         if (keyA < keyB) {
-          return paramsModel.sort.order === 'des' ? +1 : -1;
+          return paramsModel.sort.order === 'asc' ? +1 : -1;
         }
         if (keyA > keyB) {
-          return paramsModel.sort.order === 'des' ? -1 : +1;
+          return paramsModel.sort.order === 'asc' ? -1 : +1;
         }
       });
     });
@@ -145,10 +149,10 @@ export class AdvSearchPage implements OnInit {
       const keyA = new Date(a.data.data[0].startDate);
       const keyB = new Date(b.data.data[0].startDate);
       if (keyA < keyB) {
-        return paramsModel.sort.order === 'des' ? +1 : -1;
+        return paramsModel.sort.order === 'asc' ? +1 : -1;
       }
       if (keyA > keyB) {
-        return paramsModel.sort.order === 'des' ? -1 : +1;
+        return paramsModel.sort.order === 'asc' ? -1 : +1;
       }
     });
   }
