@@ -1,6 +1,5 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-back-button slot="start"></ion-back-button>
     <ion-title>Interest Calculator</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -192,11 +191,17 @@
       </div>
 
       <div class="row">
-        <div class="col">Interest (I)</div>
+        <div class="col">
+          Interest (I)<span
+            *ngIf="advIntShow"
+            style="font-size: smaller"
+            class="highlight"
+            >(3y)</span
+          >
+        </div>
         <div class="col-auto">:</div>
         <div class="col highlight">
           {{currencyFormat(interestObj?.interest)}}
-          <span *ngIf="advIntShow" style="font-size: smaller">(3y)</span>
         </div>
       </div>
 

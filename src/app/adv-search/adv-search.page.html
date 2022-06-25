@@ -87,7 +87,7 @@
                 *Please select sortBy type
               </small>
             </ion-card>
-  
+
             <ion-card color="light">
               <ion-item color="light">
                 <ion-label position="stacked">Filter by</ion-label>
@@ -102,7 +102,9 @@
                   <ion-select-option value="principal"
                     >Principal</ion-select-option
                   >
-                  <ion-select-option value="time">Time Period</ion-select-option>
+                  <ion-select-option value="time"
+                    >Time Period(Y)</ion-select-option
+                  >
                 </ion-select>
               </ion-item>
               <small
@@ -143,7 +145,7 @@
                 [hidden]="!showfilterRangeErrorText"
                 class="bgLight text-danger mx-2"
               >
-                *Max value should be greater than Min value
+                *Max & Min value both shouldn't be equal to 0
               </small>
             </ion-card>
             <ion-button type="submit" expand="block" class="m-2"

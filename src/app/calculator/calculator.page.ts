@@ -31,7 +31,7 @@ export class CalculatorPage {
       this.clientID = params.key;
       this.recordId = params.id;
 
-      if (this.clientID !== '0') {
+      if (this.clientID !== '0') {  
         this.clientsDataService.getClientByKey(this.clientID).then((res) => {
           this.linkData = res.data.find((record) => record.id == this.recordId);
           this.linkData.name = res.name;

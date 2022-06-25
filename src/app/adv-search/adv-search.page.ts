@@ -22,11 +22,7 @@ export class AdvSearchPage implements OnInit {
   }
 
   addNewParams(formRef) {
-    if (
-      formRef.value.sortBy ||
-      (formRef.value.filterBy &&
-        formRef.value.filterMax > formRef.value.filterMin)
-    ) {
+    if (this.checkFormValidation(formRef.value)) {
       this.removeAllErrors();
       this.sortAndFilterParams.push({
         active: 'light',
@@ -41,16 +37,22 @@ export class AdvSearchPage implements OnInit {
         },
       });
       this.postAdditionNewParams();
+    }
+  }
+
+  checkFormValidation(formValue) {
+    if (formValue.sortBy || formValue.filterBy) {
+      if (formValue.filterBy) {
+        this.showfilterRangeErrorText = !(
+          formValue.filterMax && formValue.filterMin
+        );
+        return !this.showfilterRangeErrorText;
+      }
+      return true;
     } else {
-      if (!formRef.value.sortBy) {
-        this.showSortMissingText = true;
-      }
-      if (!formRef.value.filterBy) {
-        this.showFilterMissingText = true;
-      }
-      if (formRef.value.filterMin >= formRef.value.filterMax) {
-        this.showfilterRangeErrorText = true;
-      }
+      this.showFilterMissingText = true;
+      this.showSortMissingText = true;
+      return false;
     }
   }
 
