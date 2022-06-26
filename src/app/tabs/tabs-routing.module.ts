@@ -66,6 +66,13 @@ const routes: Routes = [
           import('../about/about.module').then((m) => m.AboutPageModule),
       },
       {
+        path: 'about/log',
+        loadChildren: () =>
+          import('../operation-log/operation-log.module').then(
+            (m) => m.OperationLogPageModule
+          ),
+      },
+      {
         path: 'clients-list/add-client',
         loadChildren: () =>
           import('../add-client/add-client.module').then(

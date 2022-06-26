@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { ClientDataService } from '../services/client-data.service';
 
 @Component({
@@ -9,48 +9,45 @@ import { ClientDataService } from '../services/client-data.service';
   styleUrls: ['./edit-details.page.scss'],
 })
 export class EditDetailsPage {
-  client = {
-    name: '',
+  clientRecord = {
     principal: 0,
+    interest: 0,
     startDate: '',
     closedAmount: 0,
     closedOn: '',
+    comments: '',
   };
   clientData: any;
-  clientId: any;
+  clientRecordId: any;
   clientKey: any;
-  allClientData = [];
-  listType = '';
+  recordType = '';
+  clientRecordIndex: number;
+  clientName: string;
   constructor(
     private activatedRoute: ActivatedRoute,
     private clientDataService: ClientDataService,
     public alertController: AlertController,
-    public toastController: ToastController,
     private router: Router
   ) {}
 
   ionViewWillEnter() {
     this.activatedRoute.params.subscribe((params) => {
-      this.clientId = params.clientId;
       this.clientKey = params.key;
+      this.clientRecordId = params.clientId;
       this.clientDataService.getClientByKey(params.key).then((record) => {
         this.clientData = record;
-        this.client = record.data.find((row) => row.id == params.clientId);
-        this.client.name = record.name;
-        this.clientDataService.getRawClients().then((response) => {
-          this.allClientData = response;
-        });
-        this.listType = this.client.principal > 0 ? 'credit' : 'debit';
+        this.clientName = record.name;
+        this.clientRecordIndex = record.data.findIndex(
+          (row) => row.id == params.clientId
+        );
+        this.clientRecord = this.clientData.data[this.clientRecordIndex];
+        this.recordType = this.clientRecord.principal > 0 ? 'credit' : 'debit';
       });
     });
   }
 
   onSubmit(formRef) {
     if (formRef.valid) {
-      formRef.value.name = formRef.value.name.replace(
-        /(^\w|\s\w)(\S*)/g,
-        (_, m1, m2) => m1.toUpperCase() + m2.toLowerCase()
-      );
       this.presentAlertConfirm(formRef);
     }
   }
@@ -70,6 +67,7 @@ export class EditDetailsPage {
         {
           text: 'Yes',
           handler: () => {
+            this.clientDataService.presentLoading();
             this.saveClientsData(formRef);
           },
         },
@@ -85,97 +83,47 @@ export class EditDetailsPage {
   }
 
   saveClientsData(formRef) {
-    if (this.clientData.name == formRef.value.name) {
-      this.clientData.data.forEach((record) => {
-        if (record.id == this.clientId) {
-          record.principal =
-            this.listType === 'credit'
-              ? Math.abs(formRef.value.principal)
-              : -Math.abs(formRef.value.principal);
-          record.interest = formRef.value.interest;
-          record.comments = formRef.value.comments;
-          record.startDate = formRef.value.startDate;
-          record.closedOn = formRef.value.closedOn;
-          record.closedAmount = formRef.value.closedAmount;
-        }
+    this.clientDataService
+      .editClientData(
+        formRef.value,
+        this.recordType,
+        this.clientData,
+        this.clientRecordIndex
+      )
+      .then((res) => {
+        this.responseHandler(res.data.name);
       });
-
-      this.clientDataService
-        .updateClientRecordByName(this.clientData)
-        .then((res) => {
-          this.responseHandler();
-        });
-    } else {
-      const existingClient = this.allClientData.find(
-        (record) => record.name == formRef.value.name
-      );
-      if (existingClient) {
-        existingClient.data.push({
-          id: Date.now(),
-          principal: formRef.value.principal,
-          interest: formRef.value.interest,
-          startDate: formRef.value.startDate,
-          comments: formRef.value.comments,
-          closedOn: formRef.value.closedOn,
-          closedAmount: formRef.value.closedAmount,
-        });
-        this.clientDataService
-          .updateClientRecordByName(existingClient)
-          .then(() => {
-            this.deleteRecord();
-          });
-      } else {
-        this.clientDataService
-          .addNewClient({
-            name: formRef.value.name,
-            data: [
-              {
-                id: Date.now(),
-                principal: formRef.value.principal,
-                interest: formRef.value.interest,
-                startDate: formRef.value.startDate,
-                closedOn: formRef.value.closedOn,
-                comments: formRef.value.comments,
-                closedAmount: formRef.value.closedAmount,
-              },
-            ],
-          })
-          .then(() => {
-            this.deleteRecord();
-          });
-      }
-    }
   }
 
-  deleteRecord() {
-    const index = this.clientData.data.findIndex(
-      (ele) => ele.id == this.clientId
-    );
-    const clientDataLength = this.clientData.data.length;
-    this.clientData.data.splice(index, 1);
-    if (clientDataLength <= 1) {
-      this.clientDataService.deleteClient(this.clientKey).then(() => {
-        this.responseHandler();
-      });
-    } else {
+  responseHandler(name) {
+    if (name !== this.clientName) {
       this.clientDataService
-        .updateClientRecordByName(this.clientData)
+        .deleteClientData(
+          this.clientData,
+          this.clientRecordIndex,
+          this.clientKey
+        )
         .then(() => {
-          this.responseHandler();
+          setTimeout(() => {
+            this.clientDataService.presentToast(
+              'Your changes have been saved.<br>Redirecting to Clients-list tab'
+            );
+            this.router.navigate(['clida', 'clients-list']);
+          }, 1000);
         });
+    } else {
+      setTimeout(() => {
+        this.clientDataService.presentToast(
+          'Your changes have been saved.<br>Redirecting to Client-Details tab'
+        );
+        this.router.navigate([
+          'clida',
+          'clients-list',
+          'client-details',
+          this.clientKey,
+        ]);
+      }, 1000);
     }
-  }
-
-  responseHandler() {
-    this.presentToast();
-    setTimeout(() => {
-      this.router.navigate([
-        'clida',
-        'clients-list',
-        'client-details',
-        this.clientKey,
-      ]);
-    }, 1500);
   }
 
   async resetFieldsConfirmPopup() {
@@ -184,13 +132,13 @@ export class EditDetailsPage {
       header: 'Confirm',
       backdropDismiss: false,
       animated: true,
-      message: '<strong>Do you want to reset closedOn details?</strong>',
+      message: '<strong>Do you want to reset closed details?</strong>',
       buttons: [
         {
           text: 'Yes',
           handler: () => {
-            this.client.closedOn = null;
-            this.client.closedAmount = 0;
+            this.clientRecord.closedOn = null;
+            this.clientRecord.closedAmount = 0;
           },
         },
         {
@@ -201,18 +149,5 @@ export class EditDetailsPage {
       ],
     });
     await alert.present();
-  }
-
-  async presentToast() {
-    const toast = await this.toastController.create({
-      message:
-        'Your changes have been saved.<br>Redirecting to ClientsDetails Menu',
-      duration: 2500,
-      position: 'top',
-      animated: true,
-      cssClass: 'successToastClass',
-      icon: 'checkmark-outline',
-    });
-    toast.present();
   }
 }

@@ -1,5 +1,4 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ToastController } from '@ionic/angular';
 import { ClientDataService } from '../services/client-data.service';
 
 @Component({
@@ -8,14 +7,14 @@ import { ClientDataService } from '../services/client-data.service';
   styleUrls: ['./adv-search.page.scss'],
 })
 export class AdvSearchPage implements OnInit {
-  @ViewChild('formInput') formInputElement: ElementRef;
+  @ViewChild('modal') modal: any;
   sortAndFilterParams = [];
-  showErrorText = false;
   displayData = [];
-  constructor(
-    public toastController: ToastController,
-    private clientDataService: ClientDataService
-  ) {}
+  showSortMissingText = false;
+  showFilterMissingText = false;
+  showfilterRangeErrorText = false;
+  showNoRecords = false;
+  constructor(private clientDataService: ClientDataService) {}
 
   ngOnInit() {
     const storedValue = JSON.parse(localStorage.getItem('sortAndFilterParams'));
@@ -23,58 +22,87 @@ export class AdvSearchPage implements OnInit {
   }
 
   addNewParams(formRef) {
-    if (
-      formRef.value.sortBy ||
-      (formRef.value.filterBy &&
-        formRef.value.filterMax > formRef.value.filterMin)
-    ) {
-      this.showErrorText = false;
+    if (this.checkFormValidation(formRef.value)) {
+      this.removeAllErrors();
       this.sortAndFilterParams.push({
         active: 'light',
-        sort: { by: formRef.value.sortBy, order: formRef.value.sortOrder },
+        sort: {
+          by: formRef.value.sortBy,
+          order: formRef.value.sortOrder,
+        },
         filter: {
           by: formRef.value.filterBy,
           min: formRef.value.filterMin,
           max: formRef.value.filterMax,
         },
       });
-      this.formInputElement.nativeElement.classList.remove('show');
-      this.presentToast('New model added');
-      this.sortAndFilterParams.forEach((ele) => (ele.active = 'light'));
-      localStorage.setItem(
-        'sortAndFilterParams',
-        JSON.stringify(this.sortAndFilterParams)
-      );
-    } else {
-      this.showErrorText = true;
+      this.postAdditionNewParams();
     }
   }
 
-  applyParams(index) {
-    let paramsModel;
-    this.sortAndFilterParams.forEach((ele, i) => {
-      if (i === index) {
-        ele.active = 'primary';
-        paramsModel = ele;
-      } else {
-        ele.active = 'light';
+  checkFormValidation(formValue) {
+    if (formValue.sortBy || formValue.filterBy) {
+      if (formValue.filterBy) {
+        this.showfilterRangeErrorText = !(
+          formValue.filterMax && formValue.filterMin
+        );
+        return !this.showfilterRangeErrorText;
       }
-    });
+      return true;
+    } else {
+      this.showFilterMissingText = true;
+      this.showSortMissingText = true;
+      return false;
+    }
+  }
+
+  removeAllErrors() {
+    this.showSortMissingText = false;
+    this.showFilterMissingText = false;
+    this.showfilterRangeErrorText = false;
+  }
+
+  postAdditionNewParams() {
+    this.modal.dismiss();
+    this.clientDataService.presentToast('New model added');
+    this.sortAndFilterParams.forEach((ele) => (ele.active = 'light'));
+    localStorage.setItem(
+      'sortAndFilterParams',
+      JSON.stringify(this.sortAndFilterParams)
+    );
+  }
+
+  async applyParams(index) {
+    const paramsModel = this.sortAndFilterParams[index];
+    if (paramsModel.active === 'light') {
+      this.sortAndFilterParams.forEach((ele) => {
+        ele.active = 'light';
+      });
+      paramsModel.active = 'primary';
+    } else {
+      paramsModel.active = 'light';
+      this.displayData = [];
+      return;
+    }
 
     if (paramsModel.sort.by === 'name') {
-      this.clientDataService.orderByName(paramsModel.sort.order).then((res) => {
-        this.displayData = res;
-        if (paramsModel.filter.by) {
-          this.filterDataModel(paramsModel);
-        }
-      });
+      await this.clientDataService
+        .orderByName(paramsModel.sort.order)
+        .then((res) => {
+          this.displayData = res;
+          if (paramsModel.filter.by) {
+            this.filterDataModel(paramsModel);
+          }
+          this.showNoRecords = this.displayData.length ? false : true;
+        });
     } else {
-      this.clientDataService.getAllClientsData().then((res) => {
+      await this.clientDataService.getAllClientsDataWithKeys().then((res) => {
         this.displayData = res;
         this.sortDataModel(paramsModel);
         if (paramsModel.filter.by) {
           this.filterDataModel(paramsModel);
         }
+        this.showNoRecords = this.displayData.length ? false : true;
       });
     }
   }
@@ -111,10 +139,10 @@ export class AdvSearchPage implements OnInit {
         const keyA = new Date(a.startDate);
         const keyB = new Date(b.startDate);
         if (keyA < keyB) {
-          return paramsModel.sort.order === 'des' ? +1 : -1;
+          return paramsModel.sort.order === 'asc' ? +1 : -1;
         }
         if (keyA > keyB) {
-          return paramsModel.sort.order === 'des' ? -1 : +1;
+          return paramsModel.sort.order === 'asc' ? -1 : +1;
         }
       });
     });
@@ -123,10 +151,10 @@ export class AdvSearchPage implements OnInit {
       const keyA = new Date(a.data.data[0].startDate);
       const keyB = new Date(b.data.data[0].startDate);
       if (keyA < keyB) {
-        return paramsModel.sort.order === 'des' ? +1 : -1;
+        return paramsModel.sort.order === 'asc' ? +1 : -1;
       }
       if (keyA > keyB) {
-        return paramsModel.sort.order === 'des' ? -1 : +1;
+        return paramsModel.sort.order === 'asc' ? -1 : +1;
       }
     });
   }
@@ -152,17 +180,5 @@ export class AdvSearchPage implements OnInit {
     } else {
       return 'primary';
     }
-  }
-
-  async presentToast(message) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2500,
-      position: 'top',
-      animated: true,
-      cssClass: 'successToastClass',
-      icon: 'checkmark-outline',
-    });
-    toast.present();
   }
 }

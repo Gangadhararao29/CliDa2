@@ -1,0 +1,147 @@
+<ion-header>
+  <ion-toolbar
+    ><ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Operation log</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div
+    *ngIf="!logData.length"
+    class="h-100 d-flex align-items-center justify-content-center"
+  >
+    <div class="p-2 bg-danger">No logs found</div>
+  </div>
+  <ion-accordion-group *ngFor="let log of logData; let i=index;" class="m-2">
+    <ion-accordion>
+      <ion-item
+        class="rounded-3"
+        slot="header"
+        [color]="getColor(log.operation)"
+      >
+        <ion-label>
+          <div class="d-flex">
+            <div>{{log.operation}}</div>
+            <div class="ms-auto">{{log.modifiedOn}}</div>
+          </div>
+        </ion-label>
+      </ion-item>
+      <div class="p-2 bgLight" slot="content">
+        <div [ngSwitch]="log.operation">
+          <div *ngSwitchCase="'new'">
+            <ion-grid>
+              <ion-row>
+                <ion-col>Name</ion-col>
+                <ion-col size="1">:</ion-col>
+                <ion-col size="6">{{log.data.name}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>Principal</ion-col>
+                <ion-col size="1">:</ion-col>
+                <ion-col size="6">{{log.data.principal}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>Interest</ion-col>
+                <ion-col size="1">:</ion-col>
+                <ion-col size="6">{{log.data.interest}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>Start date</ion-col>
+                <ion-col size="1">:</ion-col>
+                <ion-col size="6">{{log.data.startDate}}</ion-col>
+              </ion-row>
+              <ion-row [hidden]="!log.data.comments">
+                <ion-col>comments</ion-col>
+                <ion-col size="1">:</ion-col>
+                <ion-col size="6">{{log.data.comments}}</ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+
+          <div *ngSwitchCase="'edit'">
+            <ion-grid>
+              <ion-row>
+                <ion-col size="4">Name</ion-col>
+                <ion-col size="1">:</ion-col>
+                <ion-col size="7">
+                  {{log.orgData.name}}
+                  <span *ngIf="log.orgData.name !== log.newData.userName">
+                    -> {{log.newData.userName}}</span
+                  >
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="4">Principal</ion-col>
+                <ion-col size="1">:</ion-col>
+                <ion-col size="7"
+                  >{{log.orgData.principal}}
+                  <span *ngIf="log.orgData.principal !== log.newData.principal">
+                    -> {{log.newData.principal}}</span
+                  ></ion-col
+                >
+              </ion-row>
+              <ion-row>
+                <ion-col size="4">Interest</ion-col>
+                <ion-col size="1">:</ion-col>
+                <ion-col size="7"
+                  >{{log.orgData.interest}}
+                  <span *ngIf="log.orgData.interest !== log.newData.interest">
+                    -> {{log.newData.interest}}</span
+                  >
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="4">Start date</ion-col>
+                <ion-col size="1">:</ion-col>
+                <ion-col size="7"
+                  >{{log.orgData.startDate}}
+                  <span *ngIf="log.orgData.startDate !== log.newData.startDate">
+                    -> {{log.newData.startDate}}</span
+                  ></ion-col
+                >
+              </ion-row>
+              <ion-row [hidden]="log.orgData.comments === log.newData.comments">
+                <ion-col>comments</ion-col>
+                <ion-col size="1">:</ion-col>
+                <ion-col size="6"
+                  >{{log.orgData.comments}}-> {{log.newData.comments}}</ion-col
+                >
+              </ion-row>
+            </ion-grid>
+          </div>
+          <div *ngSwitchCase="'delete'">
+            <ion-grid>
+              <ion-row>
+                <ion-col>Name</ion-col>
+                <ion-col size="1">:</ion-col>
+                <ion-col size="6">{{log.data.name}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>Principal</ion-col>
+                <ion-col size="1">:</ion-col>
+                <ion-col size="6">{{log.data.principal}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>Interest</ion-col>
+                <ion-col size="1">:</ion-col>
+                <ion-col size="6">{{log.data.interest}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>Start date</ion-col>
+                <ion-col size="1">:</ion-col>
+                <ion-col size="6">{{log.data.startDate}}</ion-col>
+              </ion-row>
+              <ion-row [hidden]="!log.data.comments">
+                <ion-col>comments</ion-col>
+                <ion-col size="1">:</ion-col>
+                <ion-col size="6">{{log.data.comments}}</ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+        </div>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
+</ion-content>

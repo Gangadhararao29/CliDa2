@@ -1,6 +1,11 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Share</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button routerLink="log">
+        <ion-icon name="receipt-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -72,15 +77,17 @@
     </ion-select>
   </ion-item>
 
+  <ion-button (click)="cleanData()" color="warning" expand="block" class="m-2"
+    >Empty Errors fix</ion-button
+  >
+
   <ion-button
     (click)="presentDeleteAlert()"
     color="danger"
     expand="block"
-    class="mx-2"
+    class="m-2"
     >Remove all clients data</ion-button
   >
 </ion-content>
 
-<ion-footer>
-  <!-- <div class="text-center">CliDa beta-2.0</div> -->
-</ion-footer>
+<ion-footer> </ion-footer>

@@ -55,8 +55,8 @@
       class="text-end"
       (pageChange)="grid1Page = $event"
       id="grid1"
-      responsive="true"
-      autoHide="true"
+      [responsive]="true"
+      [autoHide]="true"
     ></pagination-controls>
   </ion-card>
 
@@ -83,8 +83,8 @@
       class="text-end"
       (pageChange)="grid2Page = $event"
       id="grid2"
-      responsive="true"
-      autoHide="true"
+      [responsive]="true"
+      [autoHide]="true"
     ></pagination-controls>
   </ion-card>
 </ion-content>

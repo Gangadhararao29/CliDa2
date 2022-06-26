@@ -9,7 +9,7 @@
 
 <ion-content>
   <div class="mx-2 mt-1">
-    <ion-accordion toggle-icon="none">
+    <ion-accordion toggle-icon="none" readonly="true">
       <ion-item slot="header" color="primary" class="rounded-1">
         <ion-label class="d-flex ms-2">
           <span class="fw-bolder">Principal</span>
@@ -29,7 +29,7 @@
             >
           </ion-item>
 
-          <ion-list slot="content">
+          <ion-list slot="content" class="rounded-3">
             <div class="bgLight p-2 rounded-3 mt-0">
               <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-1"></div>
@@ -99,7 +99,7 @@
 
             <div
               *ngIf="data?.comments"
-              class="text-muted rounded-3 px-3 py-1 mt-2 bgLight"
+              class="rounded-3 px-3 py-1 mt-2 bgLight"
             >
               <small class="fw-bolder">Comments: </small>
               <small>{{data?.comments}}</small>
@@ -141,9 +141,12 @@
               </div>
             </div>
 
-            <div *ngIf="showCloseDiv" class="my-2 p-1 border rounded-3 bgLight">
+            <div
+              *ngIf="showCloseDiv"
+              class="my-2 px-2 py-1 border rounded-3 bgLight"
+            >
               <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
-                <div class="fs-5 fw-2 mx-1 mb-1">Enter closed details</div>
+                <div class="fw-bolder mx-1 mb-1">Enter closed details</div>
                 <div class="d-flex">
                   <div class="form-floating mb-2">
                     <input
@@ -163,7 +166,7 @@
                     </div>
                   </div>
 
-                  <div class="form-floating mb-2">
+                  <div class="form-floating mb-2 w-100">
                     <input
                       type="number"
                       class="form-control"
@@ -182,7 +185,13 @@
                   </div>
                 </div>
                 <div class="d-grid gap-2 mb-1">
-                  <button class="btn btn-success" type="submit">Submit</button>
+                  <button
+                    class="btn btn-success"
+                    type="submit"
+                    [disabled]="data?.closedOn"
+                  >
+                    Submit
+                  </button>
                 </div>
               </form>
             </div>

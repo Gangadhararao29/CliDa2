@@ -3,103 +3,103 @@
     <ion-title>Interest Calculator</ion-title>
   </ion-toolbar>
 </ion-header>
-
+<!-- class="p-2 formClass rounded-3" -->
 <ion-content [fullscreen]="true">
   <div class="m-2">
-    <form
-      #formRef="ngForm"
-      (ngSubmit)="onSubmit(formRef)"
-      class="p-2 formClass rounded-3"
-    >
-      <div class="fs-5 fw-2 m-1">Enter details to calculate</div>
-
-      <div class="form-floating mb-2">
-        <input
-          type="text"
-          class="form-control"
-          id="name"
-          placeholder="name"
-          name="clientName"
-          [ngModel]="linkData.name"
-          disabled
-        />
-        <label for="name"><span class="formLabel">Client name</span></label>
-      </div>
-      <div class="mb-2 d-flex justify-content-between">
-        <div class="form-floating d-inline-block">
+    <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
+      <div class="bgLight p-2 rounded-3 mb-2">
+        <div class="fs-5 fw-2 m-1">Enter details to calculate</div>
+        <div class="form-floating mb-2">
           <input
-            type="number"
+            type="text"
             class="form-control"
-            id="principal"
-            placeholder="100000"
-            #principal="ngModel"
-            name="principal"
-            [(ngModel)]="linkData.principal"
-            required
-            [class.is-valid]="principal.valid"
-            [class.is-invalid]="principal.invalid &&  formRef.submitted"
+            id="name"
+            placeholder="name"
+            name="clientName"
+            [ngModel]="linkData.name"
+            disabled
           />
-          <label for="principal"
-            ><span class="formLabel">Principal</span></label
-          >
-          <div id="principal" class="invalid-feedback">
-            Please enter Principal amount.
+          <label for="name"><span class="formLabel">Client name</span></label>
+        </div>
+        <div class="mb-2 d-flex justify-content-between">
+          <div class="form-floating d-inline-block">
+            <input
+              type="number"
+              class="form-control"
+              id="principal"
+              placeholder="100000"
+              #principal="ngModel"
+              name="principal"
+              [(ngModel)]="linkData.principal"
+              required
+              [class.is-valid]="principal.valid"
+              [class.is-invalid]="principal.invalid &&  formRef.submitted"
+            />
+            <label for="principal"
+              ><span class="formLabel">Principal</span></label
+            >
+            <div id="principal" class="invalid-feedback">
+              Please enter Principal amount.
+            </div>
+          </div>
+
+          <div class="form-floating d-inline-block">
+            <input
+              type="number"
+              class="form-control"
+              id="interest"
+              placeholder="1.50"
+              [(ngModel)]="linkData.interest"
+              name="interest"
+              #interest="ngModel"
+              required
+              [class.is-valid]="interest.valid"
+              [class.is-invalid]="interest.invalid &&  formRef.submitted"
+            />
+            <label for="interest"
+              ><span class="formLabel">Interest rate</span></label
+            >
+            <div id="interest" class="invalid-feedback">
+              Please enter interest value.
+            </div>
           </div>
         </div>
-
-        <div class="form-floating d-inline-block">
+        <div class="form-floating mb-2">
           <input
-            type="number"
+            type="date"
             class="form-control"
-            id="interest"
-            placeholder="1.50"
-            [(ngModel)]="linkData.interest"
-            name="interest"
-            #interest="ngModel"
+            id="startDate"
+            [(ngModel)]="linkData.startDate"
+            name="startDate"
             required
-            [class.is-valid]="interest.valid"
-            [class.is-invalid]="interest.invalid &&  formRef.submitted"
+            #startDate="ngModel"
+            [class.is-valid]="startDate.valid"
+            [class.is-invalid]="startDate.invalid &&  formRef.submitted"
           />
-          <label for="interest"
-            ><span class="formLabel">Interest rate</span></label
+          <label for="startDate"
+            ><span class="formLabel">Start date</span></label
           >
-          <div id="interest" class="invalid-feedback">
-            Please enter interest value.
+          <div id="startDate" class="invalid-feedback">
+            Please enter start Date.
           </div>
         </div>
-      </div>
-
-      <div class="form-floating mb-2">
-        <input
-          type="date"
-          class="form-control"
-          id="startDate"
-          [(ngModel)]="linkData.startDate"
-          name="startDate"
-          required
-          #startDate="ngModel"
-          [class.is-valid]="startDate.valid"
-          [class.is-invalid]="startDate.invalid &&  formRef.submitted"
-        />
-        <label for="startDate"><span class="formLabel">Start date</span></label>
-        <div id="startDate" class="invalid-feedback">
-          Please enter start Date.
+        <div class="form-floating">
+          <input
+            type="date"
+            class="form-control"
+            id="endDate"
+            [(ngModel)]="linkData.endDate"
+            name="endDate"
+            required
+            #endDate="ngModel"
+            [class.is-valid]="endDate.valid"
+            [class.is-invalid]="endDate.invalid &&  formRef.submitted"
+          />
+          <label for="endDate"><span class="formLabel">End date</span></label>
+          <div id="endDate" class="invalid-feedback">
+            Please enter end Date.
+          </div>
         </div>
-      </div>
-      <div class="form-floating mb-2">
-        <input
-          type="date"
-          class="form-control"
-          id="endDate"
-          [(ngModel)]="linkData.endDate"
-          name="endDate"
-          required
-          #endDate="ngModel"
-          [class.is-valid]="endDate.valid"
-          [class.is-invalid]="endDate.invalid &&  formRef.submitted"
-        />
-        <label for="endDate"><span class="formLabel">End date</span></label>
-        <div id="endDate" class="invalid-feedback">Please enter end Date.</div>
       </div>
 
       <div
@@ -123,7 +123,7 @@
       </div>
 
       <div class="mt-2">
-        <ion-button color="danger" expand="block" type="reset">
+        <ion-button color="danger" expand="block" (click)="resetForm(formRef)">
           Reset
         </ion-button>
       </div>
@@ -134,22 +134,22 @@
     <ion-item
       lines="none"
       color="success"
-      style="font-size: larger; font-weight: bolder"
+      style="font-size: large; font-weight: bold"
       >Calculated Data</ion-item
     >
     <div class="m-2 text-center" style="font-size: 110%">
       <div class="row">
         <div class="col">Name</div>
         <div class="col-auto">:</div>
-        <div class="col-auto">{{linkData.name}}</div>
+        <div class="col">{{linkData.name}}</div>
       </div>
       <div class="row">
-        <div class="col">Principal(P)</div>
+        <div class="col">Principal (P)</div>
         <div class="col-auto">:</div>
         <div class="col highlight">{{currencyFormat(linkData.principal)}}</div>
       </div>
       <div class="row">
-        <div class="col">Int Rate(R)</div>
+        <div class="col">Int. Rate (R)</div>
         <div class="col-auto">:</div>
         <div class="col highlight">{{linkData.interest}}</div>
       </div>
@@ -162,11 +162,13 @@
         <div class="col">Start Date</div>
         <div class="col-auto">:</div>
         <div class="col">
-          <u style="text-underline-offset: 8px">{{linkData.startDate}}</u>
+          <u style="text-underline-offset: 5px"
+            >&nbsp;&nbsp;{{linkData.startDate}}&nbsp;&nbsp;</u
+          >
         </div>
       </div>
 
-      <div class="row mt-1">
+      <div class="row">
         <div class="col">Time Period</div>
         <div class="col-auto">:</div>
         <div class="col highlight">
@@ -177,23 +179,29 @@
         </div>
       </div>
 
-      <div class="row mt-2">
+      <div class="row mt-2 mb-1">
         <div>
           T = 12x{{timePeriodObject?.y}} + {{timePeriodObject?.m}} +
           {{timePeriodObject?.d}}/30 = {{timePeriodObject.tm.toFixed(2)}}
         </div>
         <div>
           I = {{linkData.principal}} x {{timePeriodObject.tm
-          >36?36:timePeriodObject.tm}} x {{linkData.interest}}/100
+          >36?36:timePeriodObject.tm.toFixed(3)}} x {{linkData.interest}}/100
         </div>
       </div>
 
       <div class="row">
-        <div class="col">Interest(I)</div>
+        <div class="col">
+          Interest (I)<span
+            *ngIf="advIntShow"
+            style="font-size: smaller"
+            class="highlight"
+            >(3y)</span
+          >
+        </div>
         <div class="col-auto">:</div>
         <div class="col highlight">
           {{currencyFormat(interestObj?.interest)}}
-          <span *ngIf="advIntShow" style="font-size: smaller">(3y)</span>
         </div>
       </div>
 

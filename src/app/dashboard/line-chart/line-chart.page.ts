@@ -7,7 +7,7 @@ import { ChartConfiguration } from 'chart.js';
   styleUrls: ['./line-chart.page.scss'],
 })
 export class LineChartPage implements OnChanges {
-  @Input() responseData: [];
+  @Input() responseData: any[];
 
   public lineChartData: ChartConfiguration['data'];
 

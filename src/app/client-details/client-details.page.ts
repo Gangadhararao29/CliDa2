@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, IonAccordionGroup } from '@ionic/angular';
 import { ClientDataService } from 'src/app/services/client-data.service';
 
 @Component({
@@ -9,6 +9,8 @@ import { ClientDataService } from 'src/app/services/client-data.service';
   styleUrls: ['./client-details.page.scss'],
 })
 export class ClientDetailsPage {
+  @ViewChild(IonAccordionGroup, { static: true })
+  accordionGroup: IonAccordionGroup;
   client: any;
   clientId = '';
   today = new Date()
@@ -28,8 +30,7 @@ export class ClientDetailsPage {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private clientsDataService: ClientDataService,
-    private alertController: AlertController,
-    private toastController: ToastController
+    private alertController: AlertController
   ) {}
 
   ionViewWillEnter() {
@@ -46,7 +47,7 @@ export class ClientDetailsPage {
       startDate,
       endDate
     );
-    return `${timeObject.d}d, ${timeObject.m}m, ${timeObject.y}y.`;
+    return `${timeObject.y}y, ${timeObject.m}m, ${timeObject.d}d.`;
   }
 
   totalTimeinMonths(startDate, endDate) {
@@ -80,8 +81,9 @@ export class ClientDetailsPage {
           ele.closedAmount = formRef.value.closedAmount;
         }
       });
-      this.clientsDataService.updateClientRecordByName(this.client);
-      this.showCloseDiv = false;
+      this.clientsDataService.updateClientRecordByName(this.client).then(() => {
+        this.showCloseDiv = false;
+      });
     }
   }
 
@@ -98,11 +100,10 @@ export class ClientDetailsPage {
 
   deleteData(id) {
     const clientDataIndex = this.client.data.findIndex((data) => data.id == id);
-    const clientDataLength = this.client.data.length;
-    this.presentAlertConfirm(clientDataIndex, clientDataLength);
+    this.presentAlertConfirm(clientDataIndex, this.client, this.clientId);
   }
 
-  async presentAlertConfirm(clientDataIndex, dataLength) {
+  async presentAlertConfirm(clientDataIndex, clientData, key) {
     const alert = await this.alertController.create({
       header: 'Confirm',
       cssClass: 'alertStyle',
@@ -113,19 +114,12 @@ export class ClientDetailsPage {
         {
           text: 'Yes',
           handler: () => {
-            this.client.data.splice(clientDataIndex, 1);
-            if (dataLength == 1) {
-              this.clientsDataService.deleteClient(this.clientId);
-              this.presentToast(
-                'Client deleted completely. <br>Redirecting to Clients list tab'
-              );
-              setTimeout(() => {
-                this.router.navigate(['clida', 'clients-list']);
-              }, 1500);
-            } else {
-              this.clientsDataService.updateClientRecordByName(this.client);
-              this.presentToast('Client record deleted successfully');
-            }
+            this.clientsDataService.presentLoading();
+            this.clientsDataService
+              .deleteClientData(clientData, clientDataIndex, key)
+              .then((res) => {
+                this.deleteResponseHandler(clientData.data.length);
+              });
           },
         },
         {
@@ -139,16 +133,20 @@ export class ClientDetailsPage {
     await alert.present();
   }
 
-  async presentToast(message) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2500,
-      position: 'top',
-      animated: true,
-      cssClass: 'successToastClass',
-      icon: 'checkmark-outline',
-    });
-    toast.present();
+  deleteResponseHandler(length) {
+    setTimeout(() => {
+      if (length < 1) {
+        this.clientsDataService.presentToast(
+          'Client deleted completely. <br>Redirecting to Clients list tab'
+        );
+        this.router.navigate(['clida', 'clients-list']);
+      } else {
+        this.clientsDataService.presentToast(
+          'Client record deleted successfully'
+        );
+        this.accordionGroup.value = undefined;
+      }
+    }, 1000);
   }
 
   getColor(detail) {

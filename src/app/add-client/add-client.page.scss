@@ -2,10 +2,14 @@ ion-content {
   --ion-background-color: var(--ion-color-medium);
 }
 
-.formLabel {
-  color: black;
+input,
+textarea,
+textarea:focus,
+input:focus {
+  background-color: var(--ion-color-dark-contrast);
+  color: var(--ion-color-dark);
 }
 
-.formClass {
+.bgLight {
   background-color: var(--ion-color-light);
 }

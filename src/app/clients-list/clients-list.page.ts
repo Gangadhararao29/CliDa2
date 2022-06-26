@@ -1,10 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, IonRouterOutlet, Platform } from '@ionic/angular';
-import { Plugins } from '@capacitor/core';
+import { App } from '@capacitor/app';
 import { ClientDataService } from '../services/client-data.service';
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const { App } = Plugins;
 
 @Component({
   selector: 'app-clients-list',
@@ -19,6 +17,7 @@ export class ClientsListPage {
   creditData = [];
   showDebitList: boolean;
   tabSection = 'credits';
+  searchIcon = 'search-sharp';
   constructor(
     private router: Router,
     private platform: Platform,
@@ -45,9 +44,9 @@ export class ClientsListPage {
   }
 
   getDisplayData() {
-    this.clientDataService.getAllClientsData().then((data) => {
+    this.clientDataService.getAllClientsDataWithKeys().then((data) => {
       this.clientsData = data;
-      this.showEntryText = this.clientsData.length > 0 ? false : true;
+      this.showEntryText = data.length > 0 ? false : true;
       this.debitData = [];
       this.creditData = [];
 
@@ -75,6 +74,8 @@ export class ClientsListPage {
 
   resetSearch() {
     this.clientSearchValue = null;
+    this.searchIcon =
+      this.searchIcon === 'search-sharp' ? 'remove-sharp' : 'search-sharp';
   }
 
   openClientDetails(key) {
@@ -120,7 +121,7 @@ export class ClientsListPage {
     }
   }
 
-  setListType(event) {
+  setrecordType(event) {
     this.showDebitList = event.detail.value === 'debits' ? true : false;
     localStorage.setItem('tabSection', event.detail.value);
   }
