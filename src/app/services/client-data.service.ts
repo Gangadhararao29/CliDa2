@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { LoadingController, ToastController } from '@ionic/angular';
 import LocalBase from 'localbase';
 @Injectable({
   providedIn: 'root',
@@ -16,28 +17,39 @@ export class ClientDataService {
     .reverse()
     .join('-');
 
-  constructor() {
+  constructor(
+    private toastController: ToastController,
+    private loadingController: LoadingController
+  ) {
     this.db.config.debug = false;
   }
 
-  async getAllClientsData() {
+  async getAllClientsDataWithKeys() {
     return await this.db.collection('clientsData').get({ keys: true });
+  }
+
+  async getAllClientsData() {
+    return await this.db.collection('clientsData').get();
+  }
+
+  async getClientByName(name) {
+    return await this.db.collection('clientsData').doc({ name }).get();
   }
 
   async getClientByKey(key) {
     return await this.db.collection('clientsData').doc(key).get();
   }
 
-  async getRawClients() {
-    return await this.db.collection('clientsData').get();
-  }
-
-  async addNewClient(newClient) {
+  async saveNewClient(newClient) {
     return await this.db.collection('clientsData').add(newClient);
   }
 
-  async getClientByName(name) {
-    return await this.db.collection('clientsData').doc({ name }).get();
+  async deleteClientByKey(id) {
+    return await this.db.collection('clientsData').doc(id).delete();
+  }
+
+  async deleteDataBase() {
+    return await this.db.delete();
   }
 
   async updateClientRecordByName(clientData) {
@@ -45,6 +57,52 @@ export class ClientDataService {
       .collection('clientsData')
       .doc({ name: clientData.name })
       .update(clientData);
+  }
+
+  async addNewClientData(formData, recordType, includeClosedDetails = false) {
+    const payLoad = this.generatePayLoad(
+      formData,
+      recordType,
+      includeClosedDetails
+    );
+    this.addNewLogData('new', null, payLoad);
+    return await this.getClientByName(payLoad.name).then((res) => {
+      if (res) {
+        res.data.push(payLoad.data[0]);
+        return this.updateClientRecordByName(res);
+      } else {
+        return this.saveNewClient(payLoad);
+      }
+    });
+  }
+
+  async editClientData(formData, recordType, clientData, index) {
+    formData.userName = this.formatToCamelCase(formData.userName);
+    formData.principal =
+      recordType === 'credit'
+        ? Math.abs(formData.principal)
+        : -Math.abs(formData.principal);
+
+    this.addNewLogData('edit', clientData, formData, index);
+
+    if (formData.userName == clientData.name) {
+      delete formData.userName;
+      formData.id = clientData.data[index].id;
+      clientData.data[index] = formData;
+      return await this.updateClientRecordByName(clientData);
+    } else {
+      return await this.addNewClientData(formData, recordType, true);
+    }
+  }
+
+  async deleteClientData(clientData, index, key) {
+    this.addNewLogData('delete', clientData, [], index);
+    clientData.data.splice(index, 1);
+    if (clientData.data.length < 1) {
+      return this.deleteClientByKey(key);
+    } else {
+      return this.updateClientRecordByName(clientData);
+    }
   }
 
   async saveBulkClients(clientsDataGroupString, replaceStatus) {
@@ -55,41 +113,28 @@ export class ClientDataService {
       clientsDataGroup.forEach((client) => {
         this.getClientByName(client.name).then((res) => {
           if (res) {
-            const recordExisted = res.data.filter(
+            const recordIndex = res.data.findIndex(
               (clientData) => clientData.id === res.id
             );
-            if (!recordExisted) {
+            if (recordIndex > -1) {
               res.push(client.data);
-              this.updateClientRecordByName(res);
+            } else {
+              res.data[recordIndex] = client.data;
             }
+            this.updateClientRecordByName(res);
           } else {
-            this.addNewClient(client);
+            this.saveNewClient(client);
           }
         });
       });
     }
   }
 
-  async deleteClient(id) {
-    return await this.db.collection('clientsData').doc(id).delete();
-  }
-
-  async deleteDataBase() {
-    return await this.db.delete();
-  }
-
-  async orderByName(orderKey) {
-    if (orderKey === 'asc') {
-      return await this.db
-        .collection('clientsData')
-        .orderBy('name')
-        .get({ keys: true });
-    } else {
-      return await this.db
-        .collection('clientsData')
-        .orderBy('name', 'desc')
-        .get({ keys: true });
-    }
+  async cleanClientsData() {
+    return this.getAllClientsData().then((res) => {
+      res = res.filter((client) => client.data.length > 0 && client.name);
+      this.db.collection('clientsData').set(res);
+    });
   }
 
   /**
@@ -97,12 +142,14 @@ export class ClientDataService {
    */
 
   calculateTimeperiod(startDate, endDate = this.today) {
-    const d1 = new Date(startDate).getDate();
-    const m1 = new Date(startDate).getMonth() + 1;
-    const y1 = new Date(startDate).getFullYear();
-    const d2 = new Date(endDate).getDate();
-    const m2 = new Date(endDate).getMonth() + 1;
-    const y2 = new Date(endDate).getFullYear();
+    const sd = new Date(startDate);
+    const ed = new Date(endDate);
+    const d1 = sd.getDate();
+    const m1 = sd.getMonth() + 1;
+    const y1 = sd.getFullYear();
+    const d2 = ed.getDate();
+    const m2 = ed.getMonth() + 1;
+    const y2 = ed.getFullYear();
 
     let d = d2 - d1;
     let m = m2 - m1;
@@ -135,5 +182,115 @@ export class ClientDataService {
       const newInterest = (newPrincipal * timeInMonths * rate) / 100.0;
       return { interest, newPrincipal, newInterest, timeInMonths };
     }
+  }
+
+  /**
+   * utilities here
+   */
+
+  generatePayLoad(formData, recordType, includeClosedDetails) {
+    return {
+      name: this.formatToCamelCase(formData.userName),
+      data: [
+        {
+          id: Date.now(),
+          principal:
+            recordType === 'credit' ? formData.principal : -formData.principal,
+          interest: formData.interest,
+          startDate: formData.startDate,
+          comments: formData.comments,
+          closedOn: includeClosedDetails ? formData.closedOn : null,
+          closedAmount: includeClosedDetails ? formData.closedAmount : null,
+        },
+      ],
+    };
+  }
+
+  formatToCamelCase(name: string) {
+    return name.replace(
+      /(^\w|\s\w)(\S*)/g,
+      (_, m1, m2) => m1.toUpperCase() + m2.toLowerCase()
+    );
+  }
+
+  async orderByName(orderKey) {
+    if (orderKey === 'asc') {
+      return await this.db
+        .collection('clientsData')
+        .orderBy('name')
+        .get({ keys: true });
+    } else {
+      return await this.db
+        .collection('clientsData')
+        .orderBy('name', 'desc')
+        .get({ keys: true });
+    }
+  }
+
+  async presentToast(
+    message,
+    cssClass = 'successToastClass',
+    icon = 'checkmark-outline'
+  ) {
+    const toast = await this.toastController.create({
+      message,
+      position: 'top',
+      duration: 2500,
+      animated: true,
+      cssClass,
+      icon,
+    });
+    toast.present();
+  }
+
+  async presentLoading() {
+    const loading = await this.loadingController.create({
+      animated: true,
+      message: 'loading...',
+      duration: 1000,
+    });
+    await loading.present();
+  }
+
+  /**
+   * Operation Log functions
+   */
+
+  addNewLogData(operation, oldData, newData, index = null) {
+    const logData = localStorage.getItem('logs')
+      ? JSON.parse(localStorage.getItem('logs'))
+      : [];
+    switch (operation) {
+      case 'new': {
+        logData.push({
+          operation,
+          modifiedOn: this.today,
+          data: { name: newData.name, ...newData.data[0] },
+        });
+        break;
+      }
+
+      case 'edit': {
+        logData.push({
+          operation,
+          modifiedOn: this.today,
+          orgData: { name: oldData.name, ...oldData.data[index] },
+          newData,
+        });
+        break;
+      }
+
+      case 'delete': {
+        console.log(newData, oldData);
+        logData.push({
+          operation,
+          modifiedOn: this.today,
+          data: { name: oldData.name, ...oldData.data[0] },
+        });
+        break;
+      }
+    }
+
+    localStorage.setItem('logs', JSON.stringify(logData));
   }
 }

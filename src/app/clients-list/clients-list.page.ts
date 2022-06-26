@@ -1,10 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, IonRouterOutlet, Platform } from '@ionic/angular';
-import { Plugins } from '@capacitor/core';
+import { App } from '@capacitor/app';
 import { ClientDataService } from '../services/client-data.service';
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const { App } = Plugins;
 
 @Component({
   selector: 'app-clients-list',
@@ -15,6 +13,11 @@ export class ClientsListPage {
   clientsData: any;
   clientSearchValue = '';
   showEntryText: boolean;
+  debitData = [];
+  creditData = [];
+  showDebitList: boolean;
+  tabSection = 'credits';
+  searchIcon = 'search-sharp';
   constructor(
     private router: Router,
     private platform: Platform,
@@ -30,14 +33,49 @@ export class ClientsListPage {
   }
 
   ionViewWillEnter() {
-    this.clientDataService.getAllClientsData().then((data) => {
+    this.getDisplayData();
+    if (localStorage.getItem('tabSection') === 'debits') {
+      this.tabSection = 'debits';
+      this.showDebitList = true;
+    } else {
+      this.tabSection = 'credits';
+      this.showDebitList = false;
+    }
+  }
+
+  getDisplayData() {
+    this.clientDataService.getAllClientsDataWithKeys().then((data) => {
       this.clientsData = data;
-      this.showEntryText = this.clientsData.length > 0 ? false : true;
+      this.showEntryText = data.length > 0 ? false : true;
+      this.debitData = [];
+      this.creditData = [];
+
+      this.clientsData.forEach((client) => {
+        const name = client.data.name;
+        const key = client.key;
+        const tempDebitData = [];
+        const tempCreditData = [];
+        client.data.data.forEach((record) => {
+          if (record.principal < 0) {
+            tempDebitData.push(record);
+          } else {
+            tempCreditData.push(record);
+          }
+        });
+        if (tempDebitData.length) {
+          this.debitData.push({ key, data: { name, data: tempDebitData } });
+        }
+        if (tempCreditData.length) {
+          this.creditData.push({ key, data: { name, data: tempCreditData } });
+        }
+      });
     });
   }
 
   resetSearch() {
     this.clientSearchValue = null;
+    this.searchIcon =
+      this.searchIcon === 'search-sharp' ? 'remove-sharp' : 'search-sharp';
   }
 
   openClientDetails(key) {
@@ -81,5 +119,10 @@ export class ClientsListPage {
     } else {
       return 'primary';
     }
+  }
+
+  setrecordType(event) {
+    this.showDebitList = event.detail.value === 'debits' ? true : false;
+    localStorage.setItem('tabSection', event.detail.value);
   }
 }

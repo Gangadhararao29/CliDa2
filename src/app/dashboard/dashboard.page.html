@@ -1,11 +1,16 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Dashboard</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button routerLink="adv-search">
+        <ion-icon name="color-wand" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div class="rounded-3 p-2 m-2 ionBgLight">
+  <div class="rounded-3 p-2 m-2 bgLight">
     <div class="d-flex px-2 py-1">
       <div class="me-2">Number of Clients:</div>
       <div class="ms-auto me-1">{{totalClients?.length}}</div>
@@ -26,7 +31,7 @@
 
   <app-line-chart [responseData]="totalClients" class="my-2"></app-line-chart>
 
-  <ion-card>
+  <ion-card color="light">
     <ion-item color="success" class="text-center">
       Sorting by Time
       <ion-icon
@@ -35,11 +40,10 @@
         (click)="sortTimeGridChange()"
       ></ion-icon>
     </ion-item>
-    <span *ngFor="let client of array2 | slice:0:4;">
-      <ion-item
-        [routerLink]="getClientsDetailsPageUrl(client.key)"
-        color="light"
-      >
+    <span
+      *ngFor="let client of array2 | paginate: { itemsPerPage: 4, currentPage: grid1Page, id:'grid1'}"
+    >
+      <ion-item [routerLink]="'client-details/' + client.key" color="light">
         <ion-label>{{client.name}}</ion-label>
         <ion-label slot="end" class="fw-bolder">
           {{math.trunc((client.greaterTimePeriod)/12) + "Y " +
@@ -47,9 +51,16 @@
         >
       </ion-item>
     </span>
+    <pagination-controls
+      class="text-end"
+      (pageChange)="grid1Page = $event"
+      id="grid1"
+      [responsive]="true"
+      [autoHide]="true"
+    ></pagination-controls>
   </ion-card>
 
-  <ion-card>
+  <ion-card color="light">
     <ion-item color="success" class="text-center"
       >Sorting by Principal
       <ion-icon
@@ -58,16 +69,22 @@
         (click)="sortPrincipalGridChange()"
       ></ion-icon
     ></ion-item>
-    <span *ngFor="let client of array1 | slice:0:4;">
-      <ion-item
-        [routerLink]="getClientsDetailsPageUrl(client.key)"
-        color="light"
-      >
+    <span
+      *ngFor="let client of array1 | paginate: { itemsPerPage: 4, currentPage: grid2Page, id:'grid2'}"
+    >
+      <ion-item [routerLink]="'client-details/' + client.key" color="light">
         <ion-label class="ion-text-wrap">{{client.name}}</ion-label>
         <ion-label slot="end" class="fw-bolder">
           ₹{{isd.format(client.totalPrincipal)}}</ion-label
         >
       </ion-item>
     </span>
+    <pagination-controls
+      class="text-end"
+      (pageChange)="grid2Page = $event"
+      id="grid2"
+      [responsive]="true"
+      [autoHide]="true"
+    ></pagination-controls>
   </ion-card>
 </ion-content>
