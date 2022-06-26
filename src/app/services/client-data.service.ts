@@ -65,6 +65,7 @@ export class ClientDataService {
       recordType,
       includeClosedDetails
     );
+    this.addNewLogData('new', null, payLoad);
     return await this.getClientByName(payLoad.name).then((res) => {
       if (res) {
         res.data.push(payLoad.data[0]);
@@ -81,6 +82,9 @@ export class ClientDataService {
       recordType === 'credit'
         ? Math.abs(formData.principal)
         : -Math.abs(formData.principal);
+
+    this.addNewLogData('edit', clientData, formData, index);
+
     if (formData.userName == clientData.name) {
       delete formData.userName;
       formData.id = clientData.data[index].id;
@@ -92,6 +96,7 @@ export class ClientDataService {
   }
 
   async deleteClientData(clientData, index, key) {
+    this.addNewLogData('delete', clientData, [], index);
     clientData.data.splice(index, 1);
     if (clientData.data.length < 1) {
       return this.deleteClientByKey(key);
@@ -245,5 +250,47 @@ export class ClientDataService {
       duration: 1000,
     });
     await loading.present();
+  }
+
+  /**
+   * Operation Log functions
+   */
+
+  addNewLogData(operation, oldData, newData, index = null) {
+    const logData = localStorage.getItem('logs')
+      ? JSON.parse(localStorage.getItem('logs'))
+      : [];
+    switch (operation) {
+      case 'new': {
+        logData.push({
+          operation,
+          modifiedOn: this.today,
+          data: { name: newData.name, ...newData.data[0] },
+        });
+        break;
+      }
+
+      case 'edit': {
+        logData.push({
+          operation,
+          modifiedOn: this.today,
+          orgData: { name: oldData.name, ...oldData.data[index] },
+          newData,
+        });
+        break;
+      }
+
+      case 'delete': {
+        console.log(newData, oldData);
+        logData.push({
+          operation,
+          modifiedOn: this.today,
+          data: { name: oldData.name, ...oldData.data[0] },
+        });
+        break;
+      }
+    }
+
+    localStorage.setItem('logs', JSON.stringify(logData));
   }
 }
