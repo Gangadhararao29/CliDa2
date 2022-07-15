@@ -46,10 +46,9 @@
           <label for="name"><span class="formLabel">Name</span></label>
           <div id="name" class="invalid-feedback">Please enter a Name.</div>
           <datalist id="nameRef" #nameList>
-            <option
-              *ngFor="let client of clientsData"
-              [value]="client.name"
-            ></option>
+            <option *ngFor="let client of clientsData" [value]="client.name">
+              {{client.name}}
+            </option>
           </datalist>
         </div>
         <div class="mb-2 justify-content-between d-flex">
@@ -87,7 +86,9 @@
               [class.is-valid]="interest.valid"
               [class.is-invalid]="interest.invalid &&  formRef.submitted"
             />
-            <label for="interest"><span class="formLabel">Interest</span></label>
+            <label for="interest"
+              ><span class="formLabel">Interest</span></label
+            >
             <div id="interest" class="invalid-feedback">
               Please enter Interest rate.
             </div>
@@ -107,7 +108,9 @@
             [class.is-valid]="startDate.valid"
             [class.is-invalid]="startDate.invalid &&  formRef.submitted"
           />
-          <label for="startDate"><span class="formLabel">Start date</span></label>
+          <label for="startDate"
+            ><span class="formLabel">Start date</span></label
+          >
           <div id="startDate" class="invalid-feedback">
             Please enter start Date.
           </div>

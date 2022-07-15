@@ -18,6 +18,7 @@ export class ClientsListPage {
   showDebitList: boolean;
   tabSection = 'credits';
   searchIcon = 'search-sharp';
+  hideSkeletonText: boolean;
   constructor(
     private router: Router,
     private platform: Platform,
@@ -69,6 +70,7 @@ export class ClientsListPage {
           this.creditData.push({ key, data: { name, data: tempCreditData } });
         }
       });
+      this.hideSkeletonText = true;
     });
   }
 

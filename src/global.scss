@@ -108,3 +108,8 @@
   --background: #dc3545;
   --color: whitesmoke;
 }
+
+.ngx-pagination a:hover,
+.ngx-pagination button:hover {
+  background: #198754 !important;
+}

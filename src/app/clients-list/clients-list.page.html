@@ -84,6 +84,10 @@
     ></ion-searchbar>
   </div>
 
+  <div [hidden]="hideSkeletonText" class="mx-2">
+    <ion-progress-bar type="indeterminate"></ion-progress-bar>
+  </div>
+
   <div [hidden]="showEntryText">
     <div class="debitList" [hidden]="!showDebitList">
       <ion-item
@@ -133,7 +137,7 @@
   <ion-item color="medium" lines="none"></ion-item>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button color="danger" routerLink="add-client" class="me-1 mb-1" size="small">
+    <ion-fab-button color="danger" routerLink="add-client" class="me-1 mb-1">
       <ion-icon name="add" size="large"></ion-icon>
     </ion-fab-button>
   </ion-fab>

@@ -1,5 +1,4 @@
 import { Component, Renderer2 } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
@@ -21,7 +20,6 @@ export class AboutPage {
   sortValue: any;
 
   constructor(
-    private sanitizer: DomSanitizer,
     public alertController: AlertController,
     private router: Router,
     private clientDataService: ClientDataService,
@@ -32,10 +30,16 @@ export class AboutPage {
     this.clientDataService.getAllClientsData().then((data) => {
       this.clientsData = JSON.stringify(data);
       this.writeSecretFile(this.clientsData);
-      this.downloadJsonHref = this.sanitizer.bypassSecurityTrustUrl(
-        'data:text/json;charset=UTF-8,' + encodeURIComponent(this.clientsData)
-      );
+      this.nativeSaveByUrl();
     });
+  }
+
+  nativeSaveByUrl() {
+    const a = document.createElement('a');
+    const file = new Blob([this.clientsData], { type: 'text/plain' });
+    a.href = URL.createObjectURL(file);
+    a.download = 'clientsData.json';
+    a.click();
   }
 
   async writeSecretFile(clientsDataString: string) {
