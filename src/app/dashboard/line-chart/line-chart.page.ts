@@ -1,11 +1,5 @@
-import {
-  Component,
-  Input,
-  OnChanges,
-  SimpleChanges,
-} from '@angular/core';
-import { ChartConfiguration, ChartType } from 'chart.js';
-import { ClientDataService } from 'src/app/services/client-data.service';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChartConfiguration } from 'chart.js';
 
 @Component({
   selector: 'app-line-chart',
@@ -13,24 +7,21 @@ import { ClientDataService } from 'src/app/services/client-data.service';
   styleUrls: ['./line-chart.page.scss'],
 })
 export class LineChartPage implements OnChanges {
-  @Input() responseData: [];
+  @Input() responseData: any[];
 
   public lineChartData: ChartConfiguration['data'];
 
   public lineChartOptions: ChartConfiguration['options'] = {
-    elements: {
-      line: {
-        tension: 0.5,
-      },
-    },
+    elements: { line: { tension: 0.5 } },
     scales: {
       x: {},
       interestScale: {
         position: 'right',
         ticks: {
           color: 'green',
-          callback: (label: number) => label / 1000 + 'k',
+          callback: (label: number) => label / 1000 + 'K',
         },
+        grid: { drawOnChartArea: false },
       },
       principalScale: {
         position: 'left',
@@ -42,10 +33,11 @@ export class LineChartPage implements OnChanges {
     },
     interaction: {
       mode: 'index',
+      intersect: false,
     },
+    aspectRatio: 1.45,
   };
 
-  public lineChartType: ChartType = 'line';
   labels = [];
   dataSet1 = [0];
   dataSet2 = [0];
@@ -59,68 +51,57 @@ export class LineChartPage implements OnChanges {
       this.dataSet1 = [0];
       this.dataSet2 = [0];
       this.dataArray = [];
-      this.sortByYear(changes.responseData.currentValue);
+      this.groupByYear(changes.responseData.currentValue);
     }
   }
 
-  sortByYear(response) {
-    const combinedData = [];
-    const dateSet = new Set();
+  groupByYear(response) {
+    const yearObject = {};
     response.forEach((record) => {
-      record.data.forEach((data) => {
-        combinedData.push(data);
-        dateSet.add(new Date(data.startDate).getFullYear());
+      record.data.data.forEach((ele) => {
+        const startDateObj = new Date(ele.startDate);
+        const year = startDateObj.getFullYear();
+        const month = startDateObj.getMonth() + 1;
+        if (!yearObject[year]) {
+          yearObject[year] = [[], []];
+        }
+        if (month <= 6) {
+          yearObject[year][0].push(ele);
+        } else {
+          yearObject[year][1].push(ele);
+        }
       });
     });
+    this.calculateGraphData(yearObject);
+  }
 
-    const filteredDataForYear = {};
-    dateSet.forEach((date) => {
-      filteredDataForYear[`${date}`] = combinedData.filter(
-        (objectData) => new Date(objectData.startDate).getFullYear() == date
-      );
-    });
-
-    const filteredDataByMonth = {};
-    for (const year in filteredDataForYear) {
-      if (year) {
-        const monthArray = (filteredDataByMonth[year] = [[], []]);
-        filteredDataForYear[year].filter((element) => {
-          if (new Date(element.startDate).getMonth() + 1 < 6) {
-            monthArray[0].push(element);
-          } else {
-            monthArray[1].push(element);
-          }
-        });
-      }
-    }
-
-    const graphObject = {};
-    for (const halfYearlyData in filteredDataByMonth) {
-      if (halfYearlyData) {
-        graphObject[halfYearlyData] = { prin1: 0, tot1: 0, prin2: 0, tot2: 0 };
-        filteredDataByMonth[halfYearlyData][0].forEach((record) => {
-          graphObject[halfYearlyData].prin1 += record.principal;
-          graphObject[halfYearlyData].tot1 +=
+  calculateGraphData(yearObject) {
+    const graphData = [];
+    for (const fullYear in yearObject) {
+      if (fullYear) {
+        graphData[fullYear] = { prin1: 0, tot1: 0, prin2: 0, tot2: 0 };
+        yearObject[fullYear][0].forEach((record) => {
+          graphData[fullYear].prin1 += record.principal;
+          graphData[fullYear].tot1 +=
             (record.principal * record.interest) / 100.0;
         });
 
-        filteredDataByMonth[halfYearlyData][1].forEach((record) => {
-          graphObject[halfYearlyData].prin2 += record.principal;
-          graphObject[halfYearlyData].tot2 +=
+        yearObject[fullYear][1].forEach((record) => {
+          graphData[fullYear].prin2 += record.principal;
+          graphData[fullYear].tot2 +=
             (record.principal * record.interest) / 100.0;
         });
       }
     }
-    this.renderGraph(graphObject);
+    this.renderGraph(graphData);
   }
 
   renderGraph(graphData) {
     Object.entries(graphData).forEach((ele: any) => {
-      this.labels.push(ele[0], ele[0].toString() + '-06');
+      this.labels.push(ele[0], ele[0] + '-06');
       this.dataSet1.push(ele[1].prin1, ele[1].prin2);
       this.dataSet2.push(ele[1].tot1, ele[1].tot2);
     });
-
     this.labels.push(this.labels[this.labels.length - 2] * 1 + 1);
 
     for (let i = 1; i < this.dataSet2.length; i++) {
@@ -136,10 +117,7 @@ export class LineChartPage implements OnChanges {
           backgroundColor: 'rgba(148,159,177,0.2)',
           borderColor: 'blue',
           pointBackgroundColor: 'blue',
-          pointBorderColor: '#fff',
-          pointHoverBackgroundColor: '#fff',
-          pointHoverBorderColor: 'rgba(148,159,177,0.8)',
-          // fill: 'origin',
+          pointHoverBorderColor: 'blue',
         },
         {
           data: this.dataSet2,
@@ -148,8 +126,6 @@ export class LineChartPage implements OnChanges {
           backgroundColor: '#20ad2069',
           borderColor: 'green',
           pointBackgroundColor: 'green',
-          pointBorderColor: '#fff',
-          pointHoverBackgroundColor: '#fff',
           pointHoverBorderColor: 'green',
           fill: 'start',
         },

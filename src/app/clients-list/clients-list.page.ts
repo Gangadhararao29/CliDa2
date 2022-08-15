@@ -1,10 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, IonRouterOutlet, Platform } from '@ionic/angular';
-import { Plugins } from '@capacitor/core';
+import { App } from '@capacitor/app';
 import { ClientDataService } from '../services/client-data.service';
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const { App } = Plugins;
 
 @Component({
   selector: 'app-clients-list',
@@ -15,6 +13,12 @@ export class ClientsListPage {
   clientsData: any;
   clientSearchValue = '';
   showEntryText: boolean;
+  debitData = [];
+  creditData = [];
+  showDebitList: boolean;
+  tabSection = 'credits';
+  searchIcon = 'search-sharp';
+  hideSkeletonText: boolean;
   constructor(
     private router: Router,
     private platform: Platform,
@@ -30,36 +34,62 @@ export class ClientsListPage {
   }
 
   ionViewWillEnter() {
-    this.clientDataService.getAllClientsData().then((data) => {
-      this.clientsData = data;
-      this.showEntryText = this.clientsData.length > 0 ? false : true;
-    });
+    this.getDisplayData();
+    if (localStorage.getItem('tabSection') === 'debits') {
+      this.tabSection = 'debits';
+      this.showDebitList = true;
+    } else {
+      this.tabSection = 'credits';
+      this.showDebitList = false;
+    }
   }
 
-  getRecordsInfo(data) {
-    let closed = 0;
-    data.forEach((record) => {
-      if (record.closedOn) {
-        closed++;
-      }
+  getDisplayData() {
+    this.clientDataService.getAllClientsDataWithKeys().then((data) => {
+      this.clientsData = data;
+      this.showEntryText = data.length > 0 ? false : true;
+      this.debitData = [];
+      this.creditData = [];
+
+      this.clientsData.forEach((client) => {
+        const name = client.data.name;
+        const key = client.key;
+        const tempDebitData = [];
+        const tempCreditData = [];
+        client.data.data.forEach((record) => {
+          if (record.principal < 0) {
+            tempDebitData.push(record);
+          } else {
+            tempCreditData.push(record);
+          }
+        });
+        if (tempDebitData.length) {
+          this.debitData.push({ key, data: { name, data: tempDebitData } });
+        }
+        if (tempCreditData.length) {
+          this.creditData.push({ key, data: { name, data: tempCreditData } });
+        }
+      });
+      this.hideSkeletonText = true;
     });
-    return closed ? closed : null;
   }
 
   resetSearch() {
     this.clientSearchValue = null;
+    this.searchIcon =
+      this.searchIcon === 'search-sharp' ? 'remove-sharp' : 'search-sharp';
   }
 
-  openClientDetails(name) {
-    this.router.navigate(['clida/clients-list/client-details', name]);
+  openClientDetails(key) {
+    this.router.navigate(['clida/clients-list/client-details', key]);
   }
 
   async presentAlertConfirm() {
     const alert = await this.alertController.create({
       header: 'Exit',
       cssClass: 'alertStyle',
-      backdropDismiss:false,
-      animated:true,
+      backdropDismiss: false,
+      animated: true,
       message: '<strong>Do you want to close the app?</strong>',
       buttons: [
         {
@@ -76,5 +106,25 @@ export class ClientsListPage {
       ],
     });
     await alert.present();
+  }
+
+  getColor(detail) {
+    const tm = this.clientDataService.calculateTimeperiod(detail?.startDate).tm;
+    if (detail?.closedOn) {
+      return 'success';
+    } else if (tm >= 30) {
+      return 'danger';
+    } else if (tm >= 24) {
+      return 'warning';
+    } else if (tm >= 12) {
+      return 'secondary';
+    } else {
+      return 'primary';
+    }
+  }
+
+  setrecordType(event) {
+    this.showDebitList = event.detail.value === 'debits' ? true : false;
+    localStorage.setItem('tabSection', event.detail.value);
   }
 }

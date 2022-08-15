@@ -8,43 +8,29 @@
 </ion-header>
 
 <ion-content>
-  <div class="container">
-    <div class="accordian-item sticky-top bg-info p-2 rounded-3 mt-2 mb-1">
-      <div class="d-flex fw-bolder">
-        <div class="mx-3 col-5">Principal</div>
-        <div class="mx-3">Start Date</div>
-      </div>
-    </div>
+  <div class="mx-2 mt-1">
+    <ion-accordion toggle-icon="none" readonly="true">
+      <ion-item slot="header" color="primary" class="rounded-1">
+        <ion-label class="d-flex ms-2">
+          <span class="fw-bolder">Principal</span>
+          <span class="ms-auto fw-bolder">Start date</span>
+        </ion-label>
+      </ion-item>
+    </ion-accordion>
+    <ion-accordion-group class="mb-2">
+      <div *ngFor="let data of client?.data; let i=index;" class="mt-2">
+        <ion-accordion [value]="i">
+          <ion-item slot="header" [color]="getColor(data)" class="rounded-3">
+            <ion-label class="d-flex ms-2">
+              <span class="fw-bolder">₹ {{ isd.format(data?.principal) }}</span>
+              <span class="ms-auto fw-bolder"
+                >{{data?.startDate.split('-').reverse().join('/')}}</span
+              ></ion-label
+            >
+          </ion-item>
 
-    <div class="accordion" id="accordionPanelsStayOpenExample">
-      <div
-        class="accordion-item"
-        *ngFor="let data of client?.data; let i=index;"
-      >
-        <h2 class="accordion-header" id="panelsStayOpen-heading{{i}}">
-          <button
-            class="accordion-button collapsed ionColorBgLight"
-            type="button"
-            data-bs-toggle="collapse"
-            [attr.data-bs-target]="'#panelsStayOpen-collapse'+i"
-            aria-expanded="true"
-          >
-            <span class="d-block ms-1 me-3 fw-bolder col-5"
-              >₹ {{ isd.format(data?.principal) }}</span
-            >
-            <span class="d-block mx-3 fw-bolder"
-              >{{data?.startDate.split('-').reverse().join('/')}}</span
-            >
-          </button>
-        </h2>
-        <!-- remove data-bs-parent for accordians to stay open -->
-        <div
-          id="panelsStayOpen-collapse{{i}}"
-          class="accordion-collapse collapse"
-          data-bs-parent="#accordionPanelsStayOpenExample"
-        >
-          <div class="accordion-body ionColorBgSilver">
-            <div class="container ionColorBgLight p-2 rounded-3 mt-0">
+          <ion-list slot="content" class="rounded-3">
+            <div class="bgLight p-2 rounded-3 mt-0">
               <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-1"></div>
                 <div class="col-4">Principal</div>
@@ -53,7 +39,7 @@
               </div>
               <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-1"></div>
-                <div class="col-4">Interest Rate</div>
+                <div class="col-4">Interest</div>
                 <div class="col-1">:</div>
                 <div class="col-6">{{data?.interest}}</div>
               </div>
@@ -65,7 +51,7 @@
                   {{data?.startDate.split('-').reverse().join('/')}}
                 </div>
               </div>
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex justify-content-between fw-bolder fs-6">
                 <div class="col-1"></div>
                 <div class="col-4">End Date</div>
                 <div class="col-1">:</div>
@@ -75,7 +61,7 @@
               </div>
             </div>
 
-            <div class="container ionColorBgLight p-2 rounded-3 mt-2">
+            <div class="bgLight p-2 rounded-3 mt-2">
               <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-1"></div>
                 <div class="col-4">Time Period</div>
@@ -84,18 +70,7 @@
                   {{calculateDateDifference(data?.startDate,today)}}
                 </div>
               </div>
-              <div
-                class="bg-warning rounded-3"
-                *ngIf="totalTimeinMonths(data?.startDate,today)>36"
-              >
-                <div class="text-center py-1">
-                  <ion-icon name="warning-sharp"></ion-icon>
-                  Please use calculator option
-                  <ion-icon name="warning-sharp"></ion-icon>
-                  <br />
-                  Interest calculated for only 3 years
-                </div>
-              </div>
+
               <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-1"></div>
                 <div class="col-4">in months</div>
@@ -123,8 +98,16 @@
             </div>
 
             <div
+              *ngIf="data?.comments"
+              class="rounded-3 px-3 py-1 mt-2 bgLight"
+            >
+              <small class="fw-bolder">Comments: </small>
+              <small>{{data?.comments}}</small>
+            </div>
+
+            <div
               *ngIf="data?.closedOn"
-              class="container ionColorBgLight py-2 rounded-3 mt-2 border-success border-3 border"
+              class="bgLight py-2 rounded-3 mt-2 border-success border-3 border"
             >
               <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-1"></div>
@@ -137,58 +120,34 @@
 
               <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
                 <div class="col-1"></div>
-                <div class="col-4">Paid amount</div>
+                <div class="col-4">Paid Amt</div>
                 <div class="col-1">:</div>
                 <div class="col-6">₹ {{isd.format(data?.closedAmount)}}</div>
               </div>
             </div>
 
-            <div class="container ionColorBgLight py-2 rounded-3 mt-2">
-              <div class="d-flex mt-1">
-                <div class="col">
-                  <button
-                    class="btn btn-primary w-100"
-                    (click)="editClientData(data?.id)"
-                  >
-                    Edit
-                  </button>
-                </div>
-                <div class="col ms-2">
-                  <button
-                    class="btn btn-danger w-100"
-                    (click)="deleteData(data?.id)"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-
-              <div class="d-flex mt-2 mb-1">
-                <div class="col me-1">
-                  <button
-                    class="btn btn-success w-100"
-                    (click)="approveData(data?.id)"
-                    [disabled]="data?.closedOn"
-                  >
-                    Approve
-                  </button>
-                </div>
-
-                <div class="col ms-1">
-                  <button
-                    class="btn btn-warning w-100"
-                    (click)="openCalculator(data?.id)"
-                  >
-                    Calculator
-                  </button>
-                </div>
+            <div
+              *ngIf="totalTimeinMonths(data?.startDate,today)>36"
+              class="d-flex mt-2 p-2 justify-content-around align-items-center bg-warning rounded-3"
+            >
+              <ion-icon
+                name="alert-circle-outline"
+                size="large"
+                slot="start"
+              ></ion-icon>
+              <div>
+                Interest calculated for 3 years only.<br />
+                Please use calculate option.
               </div>
             </div>
 
-            <div *ngIf="showCloseDiv" class="my-2 p-2 border rounded-3">
+            <div
+              *ngIf="showCloseDiv"
+              class="my-2 px-2 py-1 border rounded-3 bgLight"
+            >
               <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
-                <p class="text-center mt-0 mb-2 fs-5">Enter closed details</p>
-                <div class="mb-2">
+                <div class="fw-bolder mx-1 mb-1">Enter closed details</div>
+                <div class="d-flex">
                   <div class="form-floating mb-2">
                     <input
                       type="date"
@@ -207,7 +166,7 @@
                     </div>
                   </div>
 
-                  <div class="form-floating mb-2">
+                  <div class="form-floating mb-2 w-100">
                     <input
                       type="number"
                       class="form-control"
@@ -225,80 +184,70 @@
                     </div>
                   </div>
                 </div>
-                <div class="d-grid gap-2 mb-2">
-                  <button class="btn btn-success" type="submit">Submit</button>
+                <div class="d-grid gap-2 mb-1">
+                  <button
+                    class="btn btn-success"
+                    type="submit"
+                    [disabled]="data?.closedOn"
+                  >
+                    Submit
+                  </button>
                 </div>
               </form>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- <div>
-    <ion-accordion-group
-      *ngFor="let data of client?.data; let i=index;"
-      class="m-2"
-    >
-      <ion-accordion value="i">
-        <ion-item color="light" slot="header">
-          <ion-label value="i">
-            <div class="row">
-              <div class="col ms-2">₹ {{ isd.format(data?.principal) }}</div>
-              <div class="col">
-                {{data?.startDate.split('-').reverse().join('/')}}
+            <div class="bgLight rounded-3 py-2 px-1 mt-2">
+              <div class="d-flex">
+                <div class="col mx-1">
+                  <button
+                    class="btn btn-primary block w-100"
+                    (click)="editClientData(data?.id)"
+                  >
+                    Edit
+                  </button>
+                </div>
+                <div class="col mx-1">
+                  <button
+                    class="btn btn-warning w-100"
+                    (click)="openCalculator(data?.id)"
+                  >
+                    Calculate
+                  </button>
+                </div>
+              </div>
+
+              <div class="d-flex mt-2">
+                <div class="col mx-1">
+                  <button
+                    class="btn btn-success w-100"
+                    (click)="approveData(data?.id)"
+                    [disabled]="data?.closedOn"
+                  >
+                    Approve
+                  </button>
+                </div>
+                <div class="col mx-1">
+                  <button
+                    class="btn btn-danger w-100"
+                    (click)="deleteData(data?.id)"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
-          </ion-label>
-        </ion-item>
-
-        <ion-list slot="content">
-          <ion-item color="light">
-            <ion-label>Red</ion-label>
-          </ion-item>
-          <ion-item color="light">
-            <ion-label>Green</ion-label>
-          </ion-item>
-          <ion-item color="light">
-            <ion-label>Blue</ion-label>
-          </ion-item>
-        </ion-list>
-      </ion-accordion>
-      <ion-accordion value="shapes">
-        <ion-item slot="header">
-          <ion-label>Shapes</ion-label>
-        </ion-item>
-
-        <ion-list slot="content">
-          <ion-item>
-            <ion-label>Circle</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label>Triangle</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label>Square</ion-label>
-          </ion-item>
-        </ion-list>
-      </ion-accordion>
-      <ion-accordion value="numbers">
-        <ion-item slot="header">
-          <ion-label>Numbers</ion-label>
-        </ion-item>
-
-        <ion-list slot="content">
-          <ion-item>
-            <ion-label>1</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label>2</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label>3</ion-label>
-          </ion-item>
-        </ion-list>
-      </ion-accordion>
+          </ion-list>
+        </ion-accordion>
+      </div>
     </ion-accordion-group>
-  </div> -->
+
+    <ion-item
+      color="light"
+      class="rounded-3 text-center mb-2"
+      routerLink="/clida/clients-list/add-client"
+      ><ion-label class="text-danger fw-bolder"
+        >+ Add new record</ion-label
+      ></ion-item
+    >
+  </div>
 </ion-content>

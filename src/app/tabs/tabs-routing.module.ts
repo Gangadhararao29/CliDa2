@@ -22,10 +22,31 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'dashboard/adv-search',
+        loadChildren: () =>
+          import('../adv-search/adv-search.module').then(
+            (m) => m.AdvSearchPageModule
+          ),
+      },
+      {
+        path: 'dashboard/adv-search/client-details/:key',
+        loadChildren: () =>
+          import('../client-details/client-details.module').then(
+            (m) => m.ClientDetailsPageModule
+          ),
+      },
+      {
         path: 'dashboard',
         loadChildren: () =>
           import('../dashboard/dashboard.module').then(
             (m) => m.DashboardPageModule
+          ),
+      },
+      {
+        path: 'dashboard/client-details/:key',
+        loadChildren: () =>
+          import('../client-details/client-details.module').then(
+            (m) => m.ClientDetailsPageModule
           ),
       },
       {
@@ -43,6 +64,13 @@ const routes: Routes = [
         path: 'about',
         loadChildren: () =>
           import('../about/about.module').then((m) => m.AboutPageModule),
+      },
+      {
+        path: 'about/log',
+        loadChildren: () =>
+          import('../operation-log/operation-log.module').then(
+            (m) => m.OperationLogPageModule
+          ),
       },
       {
         path: 'clients-list/add-client',

@@ -1,6 +1,11 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Share</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button routerLink="log">
+        <ion-icon name="receipt-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -29,8 +34,8 @@
 
     <ion-card-content>
       <div class="mb-2 pb-2">
-        To load your clients data into the app, Choose .json file in the below
-        input feild
+        To load your clients data into the app, Click on Choose file and select
+        .json file from internal storage.
       </div>
       <div>
         <ion-item color="primary">
@@ -40,12 +45,24 @@
             type="file"
             accept="application/JSON"
             (change)="importData($event.target)"
-            [ngModel]="inputClientData"
+            [(ngModel)]="inputClientData"
           ></ion-input>
         </ion-item>
       </div>
     </ion-card-content>
   </ion-card>
+
+  <ion-item class="m-2 border rounded-3" color="light" lines="none">
+    <ion-label>Sort main list by</ion-label>
+    <ion-select
+      (ionChange)="changeSort($event)"
+      interface="action"
+      placeholder="Year/Name"
+    >
+      <ion-select-option value="year">Year</ion-select-option>
+      <ion-select-option value="name">Name</ion-select-option>
+    </ion-select>
+  </ion-item>
 
   <ion-item class="m-2 border rounded-3" color="light" lines="none">
     <ion-label>Select Theme</ion-label>
@@ -60,57 +77,17 @@
     </ion-select>
   </ion-item>
 
+  <ion-button (click)="cleanData()" color="warning" expand="block" class="m-2"
+    >Empty Errors fix</ion-button
+  >
+
   <ion-button
     (click)="presentDeleteAlert()"
     color="danger"
     expand="block"
-    class="mx-2"
-    >Remove clients data</ion-button
+    class="m-2"
+    >Remove all clients data</ion-button
   >
-
-  <!-- <div class="container my-3 mx-auto">
-    <div class="my-2 p-2 text-center rounded-3 border-3 border bg-light">
-      <span class="d-block mb-1">
-        To export your Data into json file. <br />
-        Click on export button
-      </span>
-      <a
-        class="btn btn-primary"
-        title="Download JSON"
-        [href]="downloadJsonHref"
-        download="download.json"
-        (click)="exportData()"
-        >Export <ion-icon name="share-outline"></ion-icon
-      ></a>
-    </div>
-    <div class="my-2 p-2 text-center rounded-3 border-3 border bg-light">
-      <span class="d-block mb-1">
-        To import your data into the app. <br />
-        Choose .json file in the input feild
-      </span>
-      <div class="my-1">
-        <input
-          class="btn btn-primary w-100"
-          #fileInput
-          type="file"
-          accept="application/JSON"
-          (change)="importData($event.target)"
-        />
-      </div>
-    </div>
-
-    <div class="d-grid gap-2 bg-light">
-      <button
-        class="btn btn-danger"
-        type="reset"
-        (click)="presentDeleteAlert()"
-      >
-        Reset Data
-      </button>
-    </div>
-  </div> -->
 </ion-content>
 
-<ion-footer>
-  <!-- <div class="text-center">CliDa 2.0</div> -->
-</ion-footer>
+<ion-footer> </ion-footer>

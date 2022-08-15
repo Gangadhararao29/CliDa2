@@ -1,119 +1,148 @@
 <ion-header>
   <ion-toolbar>
     <ion-back-button slot="start"></ion-back-button>
-    <ion-title>Add new client</ion-title>
+    <ion-title>Add new record</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-item lines="none" color="light" class="mx-2 mt-1 rounded-3">
-    <ion-label class="fs-5 fw-2"> Enter client details </ion-label>
-  </ion-item>
-
-  <div class="mx-2 my-1">
-    <form
-      #formRef="ngForm"
-      (ngSubmit)="onSubmit(formRef)"
-      class="p-2 formClass rounded-3"
-    >
-      <div class="form-floating mb-2">
-        <input
-          type="text"
-          class="form-control"
-          id="name"
-          placeholder="Enter name"
-          list="nameRef"
-          name="userName"
-          ngModel
-          #userName="ngModel"
-          required
-          [class.is-valid]="userName.valid"
-          [class.is-invalid]="userName.invalid && formRef.submitted"
-        />
-        <label for="name"><span class="formLabel">Name</span></label>
-        <div id="name" class="invalid-feedback">Please enter a Name.</div>
-        <datalist id="nameRef" #nameList>
-          <option
-            *ngFor="let client of clientsData"
-            [value]="client.name"
-          ></option>
-        </datalist>
-      </div>
-      <div class="mb-2 justify-content-between d-flex">
-        <div class="form-floating d-inline-block">
-          <input
-            type="number"
-            class="form-control"
-            id="principal"
-            placeholder="100000"
-            ngModel
-            #principal="ngModel"
-            name="principal"
-            required
-            [class.is-valid]="principal.valid"
-            [class.is-invalid]="principal.invalid &&  formRef.submitted"
-          />
-          <label for="principal"
-            ><span class="formLabel">Principal</span></label
-          >
-          <div id="principal" class="invalid-feedback">
-            Please enter Principal amount.
-          </div>
-        </div>
-
-        <div class="form-floating d-inline-block">
-          <input
-            type="number"
-            class="form-control"
-            id="interest"
-            placeholder="1.50"
-            ngModel
-            name="interest"
-            #interest="ngModel"
-            required
-            [class.is-valid]="interest.valid"
-            [class.is-invalid]="interest.invalid &&  formRef.submitted"
-          />
-          <label for="interest"><span class="formLabel">Interest</span></label>
-          <div id="interest" class="invalid-feedback">
-            Please enter Interest rate.
-          </div>
-        </div>
-      </div>
-
-      <div class="form-floating mb-2">
-        <input
-          type="date"
-          class="form-control"
-          id="startDate"
-          ngModel
-          name="startDate"
-          required
-          #startDate="ngModel"
-          [class.is-valid]="startDate.valid"
-          [class.is-invalid]="startDate.invalid &&  formRef.submitted"
-        />
-        <label for="startDate"><span class="formLabel">Start date</span></label>
-        <div id="startDate" class="invalid-feedback">
-          Please enter start Date.
-        </div>
-      </div>
-
-      <div class="my-0">
-        <ion-item lines="none" color="light">
-          <ion-label>Add multiple records</ion-label>
-          <ion-toggle
-            [(ngModel)]="multiRecordsSelected"
-            name="multiRecordsSelected"
-            color="danger"
-          ></ion-toggle>
+  <div class="mx-2 my-2 bgLight pt-2 rounded-3">
+    <ion-radio-group value="credit" [(ngModel)]="recordType">
+      <ion-label position="stacked" class="mx-3">
+        <span style="font-size: large; font-weight: 300"
+          >Select Record type</span
+        >
+      </ion-label>
+      <div class="d-flex justify-content-between">
+        <ion-item color="light" class="col rounded-3">
+          <ion-label>Credit</ion-label>
+          <ion-radio slot="start" value="credit"></ion-radio>
+        </ion-item>
+        <ion-item color="light" class="col rounded-3">
+          <ion-label>Debit</ion-label>
+          <ion-radio slot="start" value="debit"></ion-radio>
         </ion-item>
       </div>
+    </ion-radio-group>
+  </div>
+
+  <div class="mx-2">
+    <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
+      <div class="p-2 bgLight rounded-3">
+        <div class="form-floating mt-1 mb-2">
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            placeholder="Enter name"
+            list="nameRef"
+            name="userName"
+            ngModel
+            #userName="ngModel"
+            required
+            [class.is-valid]="userName.valid"
+            [class.is-invalid]="userName.invalid && formRef.submitted"
+          />
+          <label for="name"><span class="formLabel">Name</span></label>
+          <div id="name" class="invalid-feedback">Please enter a Name.</div>
+          <datalist id="nameRef" #nameList>
+            <option *ngFor="let client of clientsData" [value]="client.name">
+              {{client.name}}
+            </option>
+          </datalist>
+        </div>
+        <div class="mb-2 justify-content-between d-flex">
+          <div class="form-floating d-inline-block">
+            <input
+              type="number"
+              class="form-control"
+              id="principal"
+              placeholder="100000"
+              ngModel
+              #principal="ngModel"
+              name="principal"
+              required
+              [class.is-valid]="principal.valid"
+              [class.is-invalid]="principal.invalid &&  formRef.submitted"
+            />
+            <label for="principal"
+              ><span class="formLabel">Principal</span></label
+            >
+            <div id="principal" class="invalid-feedback">
+              Please enter Principal amount.
+            </div>
+          </div>
+
+          <div class="form-floating d-inline-block">
+            <input
+              type="number"
+              class="form-control"
+              id="interest"
+              placeholder="1.50"
+              ngModel
+              name="interest"
+              #interest="ngModel"
+              required
+              [class.is-valid]="interest.valid"
+              [class.is-invalid]="interest.invalid &&  formRef.submitted"
+            />
+            <label for="interest"
+              ><span class="formLabel">Interest</span></label
+            >
+            <div id="interest" class="invalid-feedback">
+              Please enter Interest rate.
+            </div>
+          </div>
+        </div>
+
+        <div class="form-floating mb-1">
+          <input
+            type="date"
+            class="form-control"
+            id="startDate"
+            ngModel
+            name="startDate"
+            required
+            #startDate="ngModel"
+            [ngModel]="today"
+            [class.is-valid]="startDate.valid"
+            [class.is-invalid]="startDate.invalid &&  formRef.submitted"
+          />
+          <label for="startDate"
+            ><span class="formLabel">Start date</span></label
+          >
+          <div id="startDate" class="invalid-feedback">
+            Please enter start Date.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-floating mt-2">
+        <textarea
+          class="form-control"
+          placeholder="Leave a comment here"
+          id="comments"
+          ngModel
+          name="comments"
+          #comments="ngModel"
+        ></textarea>
+        <label for="comments"><span class="formLabel">Comments</span></label>
+      </div>
+
+      <ion-item class="mt-2 rounded-3" lines="none" color="light">
+        <ion-label>Add multiple records</ion-label>
+        <ion-toggle
+          color="danger"
+          [ngModel]="false"
+          name="multiRecordsSelected"
+        ></ion-toggle>
+      </ion-item>
 
       <ion-button
         color="danger"
         expand="block"
         type="submit"
+        class="my-2"
         [disabled]="isAddBtnDisable"
       >
         Add new client

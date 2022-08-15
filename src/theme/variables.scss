@@ -60,12 +60,12 @@
   --ion-color-dark-tint: #383a3e;
 
   /** medium **/
-  --ion-color-medium: #92949c;
-  --ion-color-medium-rgb: 146, 148, 156;
-  --ion-color-medium-contrast: #ffffff;
-  --ion-color-medium-contrast-rgb: 255, 255, 255;
-  --ion-color-medium-shade: #808289;
-  --ion-color-medium-tint: #9d9fa6;
+  --ion-color-medium: #d7d8da;
+  --ion-color-medium-rgb: 215, 216, 218;
+  --ion-color-medium-contrast: #000000;
+  --ion-color-medium-contrast-rgb: 0, 0, 0;
+  --ion-color-medium-shade: #bdbec0;
+  --ion-color-medium-tint: #dbdcde;
 
   /** light **/
   --ion-color-light: #f4f5f8;
@@ -74,21 +74,7 @@
   --ion-color-light-contrast-rgb: 0, 0, 0;
   --ion-color-light-shade: #d7d8da;
   --ion-color-light-tint: #f5f6f9;
-
-  /** silver **/
-  --ion-color-silver: #c5cae9;
-  --ion-color-silver-rgb: 197, 202, 233;
-  --ion-color-silver-contrast: #000000;
-  --ion-color-silver-contrast-rgb: 0, 0, 0;
-  --ion-color-silver-shade: #adb2cd;
-  --ion-color-silver-tint: #cbcfeb;
 }
-
-  @media (prefers-color-scheme: dark) {
-/*
-   * Dark Colors
-   * -------------------------------------------
-   */
 
 body.dark {
   --ion-color-primary: #6a64ff;
@@ -140,12 +126,12 @@ body.dark {
   --ion-color-dark-shade: #d7d8da;
   --ion-color-dark-tint: #f5f6f9;
 
-  --ion-color-medium: #989aa2;
-  --ion-color-medium-rgb: 152, 154, 162;
-  --ion-color-medium-contrast: #000000;
-  --ion-color-medium-contrast-rgb: 0, 0, 0;
-  --ion-color-medium-shade: #86888f;
-  --ion-color-medium-tint: #a2a4ab;
+  --ion-color-medium: #656565;
+  --ion-color-medium-rgb: 101, 101, 101;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #595959;
+  --ion-color-medium-tint: #747474;
 
   --ion-color-light: #222428;
   --ion-color-light-rgb: 34, 36, 40;
@@ -153,13 +139,6 @@ body.dark {
   --ion-color-light-contrast-rgb: 255, 255, 255;
   --ion-color-light-shade: #1e2023;
   --ion-color-light-tint: #383a3e;
-
-  --ion-color-silver: #6b6d76;
-  --ion-color-silver-rgb: 107, 109, 118;
-  --ion-color-silver-contrast: #ffffff;
-  --ion-color-silver-contrast-rgb: 255, 255, 255;
-  --ion-color-silver-shade: #5e6068;
-  --ion-color-silver-tint: #7a7c84;
 }
 
 /*
@@ -246,5 +225,4 @@ body.dark {
   --ion-tab-bar-background: #1f1f1f;
 
   --ion-card-background: #1e1e1e;
-}
 }
