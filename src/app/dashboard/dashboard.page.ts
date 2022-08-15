@@ -123,6 +123,10 @@ export class DashboardPage {
     return this.totalArray.reduce((prev, curr) => prev + curr.finalAmount, 0);
   }
 
+  getClientsDetailsPageUrl(key) {
+    return 'client-details/' + key;
+  }
+
   sortTimeGridChange() {
     if (this.timeGridIcon === 'arrow-down-outline') {
       this.timeGridIcon = 'arrow-up-outline';
