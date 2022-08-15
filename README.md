@@ -8,11 +8,11 @@ A simple app to manage and maintain your financial clients data.
 App consists of 4 main tabs
 
 **1. ClientList** <br>
-    In this tab, list of clients wil be shown along with individual principal amounts with respective color tags. <br>
-      blue   - <1 years <br>
-      cyan   - >1 years <br>
-      yellow - >2 years <br>
-      red    - >2.5 years <br>
+    In this tab, list of clients wil be shown along with individual principal amounts with respective color tags based on the timeperiods. <br>
+      blue   -> 1 years <br>
+      cyan   -> 1 years <br>
+      yellow -> 2 years <br>
+      red    -> 2.5 years <br>
       
 **2. Dashboard** <br>
     *Click on magic wand icon on top right to filter and sort data to your preference.
@@ -27,6 +27,7 @@ App consists of 4 main tabs
       If the client exceeds timeLimit of 3 years , user must use tis tab to calculate Interest.
       
 **4. Share** <br>
+      *Records log can be found by pressing the top right button.
       In this tab you can export or import data into tab.
       Remove entire data from the app.
       Change theme of the app.
