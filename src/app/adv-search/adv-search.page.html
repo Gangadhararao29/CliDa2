@@ -30,7 +30,7 @@
     <ion-card
       color="light"
       class="cardFilterClass align-items-center"
-      id="open-modal"
+      id="addParamsScreen"
     >
       <span class="text-danger py-1">
         <br />+ Add new params<br />
@@ -41,7 +41,7 @@
 
   <ion-modal
     #modal
-    trigger="open-modal"
+    trigger="addParamsScreen"
     [initialBreakpoint]="0.5"
     [breakpoints]="[0, 0.25, 0.5, 0.75]"
   >
@@ -157,7 +157,7 @@
     </ng-template>
   </ion-modal>
 
-  <div class="mx-2">
+  <div class="m-2">
     <div
       [hidden]="!showNoRecords"
       class="my-3 p-3 text-center bgLight rounded-3 text-danger"

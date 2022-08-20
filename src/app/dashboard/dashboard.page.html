@@ -10,23 +10,26 @@
 </ion-header>
 
 <ion-content>
-  <div class="rounded-3 p-2 m-2 bgLight">
-    <div class="d-flex px-2 py-1">
-      <div class="me-2">Number of Clients :</div>
-      <div class="ms-auto me-1">{{totalClients?.length}}</div>
-    </div>
-    <div class="d-flex px-2 py-1">
-      <div class="me-2">Total principal :</div>
-      <div class="ms-auto me-1">
-        ₹ {{isd.format(getTotalPrincipalAmount())}}
-      </div>
-    </div>
-    <div class="d-flex px-2 py-1">
-      <div class="me-2">Final Amount :</div>
-      <div class="ms-auto me-1">
-        ₹ {{(isd.format(getFinalAmount().toFixed()))}}
-      </div>
-    </div>
+  <div class="m-2 p-2 bgLight rounded-3">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6">Number of clients</ion-col>
+        <ion-col>:</ion-col>
+        <ion-col size="4">{{totalClients?.length}}</ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="6">Total principal</ion-col>
+        <ion-col>:</ion-col>
+        <ion-col size="4"> ₹ {{isd.format(getTotalPrincipalAmount())}}</ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="6">Final amount</ion-col>
+        <ion-col>:</ion-col>
+        <ion-col size="4">
+          ₹ {{(isd.format(getFinalAmount().toFixed()))}}</ion-col
+        >
+      </ion-row>
+    </ion-grid>
   </div>
 
   <app-line-chart [responseData]="totalClients" class="my-2"></app-line-chart>

@@ -15,8 +15,15 @@ ion-title {
   background-color: var(--ion-color-light);
 }
 
-input,
-input:focus {
+#closedOn,
+#closedAmount,
+#closedOn:focus,
+#closedAmount:focus,
+#comments {
   background-color: var(--ion-color-dark-contrast);
   color: var(--ion-color-dark);
+}
+
+ion-col {
+  --ion-grid-column-padding: 2px;
 }

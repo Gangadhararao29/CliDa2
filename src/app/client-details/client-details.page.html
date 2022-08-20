@@ -31,19 +31,19 @@
 
           <ion-list slot="content" class="rounded-3">
             <div class="bgLight p-2 rounded-3 mt-0">
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex justify-content-between fw-bolder">
                 <div class="col-1"></div>
                 <div class="col-4">Principal</div>
                 <div class="col-1">:</div>
                 <div class="col-6">₹ {{isd.format(data?.principal)}}</div>
               </div>
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex justify-content-between fw-bolder">
                 <div class="col-1"></div>
                 <div class="col-4">Interest</div>
                 <div class="col-1">:</div>
                 <div class="col-6">{{data?.interest}}</div>
               </div>
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex justify-content-between fw-bolder">
                 <div class="col-1"></div>
                 <div class="col-4">Start Date</div>
                 <div class="col-1">:</div>
@@ -51,7 +51,7 @@
                   {{data?.startDate.split('-').reverse().join('/')}}
                 </div>
               </div>
-              <div class="d-flex justify-content-between fw-bolder fs-6">
+              <div class="d-flex justify-content-between fw-bolder">
                 <div class="col-1"></div>
                 <div class="col-4">End Date</div>
                 <div class="col-1">:</div>
@@ -62,7 +62,7 @@
             </div>
 
             <div class="bgLight p-2 rounded-3 mt-2">
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex justify-content-between fw-bolder">
                 <div class="col-1"></div>
                 <div class="col-4">Time Period</div>
                 <div class="col-1">:</div>
@@ -71,7 +71,7 @@
                 </div>
               </div>
 
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex justify-content-between fw-bolder">
                 <div class="col-1"></div>
                 <div class="col-4">in months</div>
                 <div class="col-1">:</div>
@@ -79,37 +79,40 @@
                   {{totalTimeinMonths(data?.startDate,today).toFixed(2)}}m
                 </div>
               </div>
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex justify-content-between fw-bolder">
                 <div class="col-1"></div>
                 <div class="col-4">Interest Amt</div>
                 <div class="col-1">:</div>
                 <div class="col-6">
-                  ₹ {{isd.format(calculateInterest(data))}}
+                  ₹ {{isd.format(calculateInterest(data, today))}}
                 </div>
               </div>
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex justify-content-between fw-bolder">
                 <div class="col-1"></div>
                 <div class="col-4">Total Amt</div>
                 <div class="col-1">:</div>
                 <div class="col-6">
-                  ₹ {{isd.format(data?.principal + calculateInterest(data))}}
+                  ₹ {{isd.format(data?.principal + calculateInterest(data,
+                  today))}}
                 </div>
               </div>
             </div>
 
             <div
               *ngIf="data?.comments"
-              class="rounded-3 px-3 py-1 mt-2 bgLight"
+              class="rounded-3 px-2 py-1 mt-2 bgLight d-flex align-items-center"
             >
-              <small class="fw-bolder">Comments: </small>
-              <small>{{data?.comments}}</small>
+              <div><small class="fw-bolder">Comments : </small></div>
+              <div class="px-2">
+                <small style="white-space: pre-line">{{data?.comments}}</small>
+              </div>
             </div>
 
             <div
               *ngIf="data?.closedOn"
               class="bgLight py-2 rounded-3 mt-2 border-success border-3 border"
             >
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex justify-content-between fw-bolder">
                 <div class="col-1"></div>
                 <div class="col-4">Closed on</div>
                 <div class="col-1">:</div>
@@ -118,7 +121,7 @@
                 </div>
               </div>
 
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
+              <div class="d-flex justify-content-between fw-bolder">
                 <div class="col-1"></div>
                 <div class="col-4">Paid Amt</div>
                 <div class="col-1">:</div>
@@ -141,103 +144,191 @@
               </div>
             </div>
 
-            <div
-              *ngIf="showCloseDiv"
-              class="my-2 px-2 py-1 border rounded-3 bgLight"
-            >
-              <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
-                <div class="fw-bolder mx-1 mb-1">Enter closed details</div>
-                <div class="d-flex">
-                  <div class="form-floating mb-2">
-                    <input
-                      type="date"
-                      class="form-control"
-                      id="closedOn"
-                      [ngModel]="today"
-                      #closedOn="ngModel"
-                      name="closedOn"
-                      required
-                      [class.is-valid]="closedOn.valid"
-                      [class.is-invalid]="closedOn.invalid &&  formRef.submitted"
-                    />
-                    <label for="closedOn">On</label>
-                    <div id="closedOn" class="invalid-feedback">
-                      Please enter On-date.
-                    </div>
-                  </div>
-
-                  <div class="form-floating mb-2 w-100">
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="closedAmount"
-                      [ngModel]="(data?.principal + calculateInterest(data))"
-                      name="closedAmount"
-                      #closedAmount="ngModel"
-                      required
-                      [class.is-valid]="closedAmount.valid"
-                      [class.is-invalid]="closedAmount.invalid &&  formRef.submitted"
-                    />
-                    <label for="closedAmount">Amount</label>
-                    <div id="closedAmount" class="invalid-feedback">
-                      Please enter Amount.
-                    </div>
-                  </div>
-                </div>
-                <div class="d-grid gap-2 mb-1">
-                  <button
-                    class="btn btn-success"
-                    type="submit"
-                    [disabled]="data?.closedOn"
-                  >
-                    Submit
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            <div class="bgLight rounded-3 py-2 px-1 mt-2">
-              <div class="d-flex">
-                <div class="col mx-1">
-                  <button
-                    class="btn btn-primary block w-100"
-                    (click)="editClientData(data?.id)"
-                  >
-                    Edit
-                  </button>
-                </div>
-                <div class="col mx-1">
-                  <button
-                    class="btn btn-warning w-100"
-                    (click)="openCalculator(data?.id)"
-                  >
-                    Calculate
-                  </button>
-                </div>
-              </div>
-
-              <div class="d-flex mt-2">
-                <div class="col mx-1">
-                  <button
-                    class="btn btn-success w-100"
-                    (click)="approveData(data?.id)"
-                    [disabled]="data?.closedOn"
-                  >
-                    Approve
-                  </button>
-                </div>
-                <div class="col mx-1">
-                  <button
-                    class="btn btn-danger w-100"
-                    (click)="deleteData(data?.id)"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
+            <div class="bgLight rounded-3 mt-2">
+              <ion-grid>
+                <ion-row>
+                  <ion-col>
+                    <ion-button
+                      color="primary"
+                      expand="block"
+                      (click)="editClientData(data?.id)"
+                      >Edit</ion-button
+                    >
+                  </ion-col>
+                  <ion-col>
+                    <ion-button
+                      color="warning"
+                      expand="block"
+                      (click)="openCalculator(data?.id)"
+                      >Calculate</ion-button
+                    >
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    <ion-button
+                      color="success"
+                      expand="block"
+                      [id]="'approveScreen'+i"
+                      (click)="approveData(data)"
+                      [disabled]="data?.closedOn"
+                      >Approve</ion-button
+                    >
+                  </ion-col>
+                  <ion-col>
+                    <ion-button
+                      color="danger"
+                      expand="block"
+                      (click)="deleteData(data?.id)"
+                      >Delete</ion-button
+                    >
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
             </div>
           </ion-list>
         </ion-accordion>
+
+        <ion-modal
+          #modal
+          [trigger]="'approveScreen'+i"
+          [initialBreakpoint]="0.4"
+          [breakpoints]="[0, 0.4, 0.6, 0.8]"
+        >
+          <ng-template>
+            <ion-content>
+              <form
+                #formRef="ngForm"
+                (ngSubmit)="onSubmit(formRef)"
+                (keypress)="stopDefaultSubmit($event)"
+              >
+                <div class="mx-1 mt-3 px-2 pt-2 rounded-3 bgLight">
+                  <div class="fw-bolder mx-1 mb-1">Enter closed details</div>
+                  <div class="d-flex">
+                    <div class="form-floating">
+                      <input
+                        type="date"
+                        class="form-control"
+                        id="closedOn"
+                        [ngModel]="today"
+                        (change)="onchangeClosedDetails($event,data)"
+                        #closedOn="ngModel"
+                        name="closedOn"
+                        required
+                        [class.is-valid]="closedOn.valid"
+                        [class.is-invalid]="closedOn.invalid &&  formRef.submitted"
+                      />
+                      <label for="closedOn">On</label>
+                      <div id="closedOn" class="invalid-feedback">
+                        Please enter On-date.
+                      </div>
+                    </div>
+                    <!-- getClosedAmount2(data,closedOn) -->
+                    <div class="form-floating">
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="closedAmount"
+                        [ngModel]="data?.principal + calculateInterest(data,today)"
+                        name="closedAmount"
+                        (input)="onchangeClosedDetails($event,data,closedOn)"
+                        #closedAmount="ngModel"
+                        required
+                        [class.is-valid]="closedAmount.valid"
+                        [class.is-invalid]="closedAmount.invalid &&  formRef.submitted"
+                      />
+                      <label for="closedAmount">Amount</label>
+                      <div id="closedAmount" class="invalid-feedback">
+                        Please enter Amount.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    [hidden]="approvedAmount===0"
+                    class="text-danger mx-1 bgLight"
+                  >
+                    <small
+                      >**Required amount is ₹
+                      {{isd.format(approvedAmount)}}</small
+                    >
+                  </div>
+
+                  <div
+                    class="form-check form-switch m-1"
+                    [hidden]="hideAppprovedControls"
+                  >
+                    <label class="form-check-label" for="updateComments">
+                      Auto update comments
+                    </label>
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="updateComments"
+                      name="updateComments"
+                      [ngModel]="true"
+                      ngModel
+                    />
+                  </div>
+
+                  <div
+                    class="form-check form-switch m-1"
+                    [hidden]="hideAppprovedControls"
+                  >
+                    <label class="form-check-label" for="closeCurrentRecord">
+                      Close current record
+                    </label>
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="closeCurrentRecord"
+                      name="closeCurrentRecord"
+                      [ngModel]="false"
+                      #closeCurrentRecord="ngModel"
+                    />
+                  </div>
+
+                  <div
+                    class="form-check form-switch m-1"
+                    [hidden]="hideAppprovedControls"
+                  >
+                    <label class="form-check-label" for="addNewRecord">
+                      Add new record with remaining balance
+                    </label>
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="addNewRecord"
+                      name="addNewRecord"
+                      [ngModel]="false"
+                      ngModel
+                      [disabled]="!closeCurrentRecord.value"
+                    />
+                  </div>
+                </div>
+
+                <ion-button
+                  class="mx-1 my-2"
+                  type="submit"
+                  color="success"
+                  [disabled]="data?.closedOn"
+                  (click)="modal.dismiss()"
+                  expand="block"
+                >
+                  close record
+                </ion-button>
+                <ion-button
+                  class="mx-1 my-2"
+                  color="warning"
+                  (click)="modal.dismiss()"
+                  expand="block"
+                >
+                  Cancel
+                </ion-button>
+              </form>
+            </ion-content>
+          </ng-template>
+        </ion-modal>
       </div>
     </ion-accordion-group>
 

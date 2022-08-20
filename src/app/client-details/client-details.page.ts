@@ -9,6 +9,7 @@ import { ClientDataService } from 'src/app/services/client-data.service';
   styleUrls: ['./client-details.page.scss'],
 })
 export class ClientDetailsPage {
+  @ViewChild('modal') modal: any;
   @ViewChild(IonAccordionGroup, { static: true })
   accordionGroup: IonAccordionGroup;
   client: any;
@@ -23,9 +24,10 @@ export class ClientDetailsPage {
     .reverse()
     .join('-');
   isd = Intl.NumberFormat('en-IN');
-  showCloseDiv = false;
   showClosedData = false;
+  hideAppprovedControls = true;
   approveDataId: any;
+  approvedAmount = 0;
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -54,12 +56,12 @@ export class ClientDetailsPage {
     return this.clientsDataService.calculateTimeperiod(startDate, endDate).tm;
   }
 
-  calculateInterest(data) {
+  calculateInterest(data, endDate) {
     const interestObject = this.clientsDataService.calculateInterest(
       data.principal,
       data.interest,
       data.startDate,
-      this.today
+      endDate
     );
     return Number.parseInt(interestObject.interest.toFixed(2), 10);
   }
@@ -68,21 +70,61 @@ export class ClientDetailsPage {
     this.router.navigate(['clida', 'calculator', this.clientId, recordId]);
   }
 
-  approveData(id) {
-    this.showCloseDiv = !this.showCloseDiv;
-    this.approveDataId = id;
+  approveData(data) {
+    this.hideAppprovedControls = true;
+    this.approvedAmount = 0;
+    this.approveDataId = data.id;
   }
 
   onSubmit(formRef) {
     if (formRef.valid) {
-      this.client.data.forEach((ele) => {
-        if (ele.id == this.approveDataId) {
-          ele.closedOn = formRef.value.closedOn;
-          ele.closedAmount = formRef.value.closedAmount;
+      const clientRecord = this.client.data.find(
+        (ele) => ele.id == this.approveDataId
+      );
+
+      if (this.hideAppprovedControls) {
+        clientRecord.closedOn = formRef.value.closedOn;
+        clientRecord.closedAmount = formRef.value.closedAmount;
+      } else {
+        if (formRef.value.updateComments) {
+          clientRecord.comments += clientRecord.comments ? `\n` : '';
+          if (formRef.value.closeCurrentRecord) {
+            clientRecord.comments += `Pending Amt: ₹ ${this.isd.format(
+              this.approvedAmount - formRef.value.closedAmount
+            )}`;
+
+            clientRecord.comments += formRef.value.addNewRecord
+              ? `\nNew record added.`
+              : '';
+          } else {
+            clientRecord.comments += `Paid: ${formRef.value.closedOn
+              .split('-')
+              .reverse()
+              .join('/')} => ₹ ${this.isd.format(
+              formRef.value.closedAmount
+            )}\nPending Amt: ₹ ${this.isd.format(
+              this.approvedAmount - formRef.value.closedAmount
+            )} `;
+          }
         }
-      });
+
+        if (formRef.value.closeCurrentRecord) {
+          clientRecord.closedOn = formRef.value.closedOn;
+          clientRecord.closedAmount = formRef.value.closedAmount;
+          if (formRef.value.addNewRecord) {
+            this.client.data.push({
+              id: Date.now(),
+              principal: this.approvedAmount - formRef.value.closedAmount,
+              interest: clientRecord.interest,
+              startDate: formRef.value.closedOn,
+            });
+          }
+        }
+      }
+
       this.clientsDataService.updateClientRecordByName(this.client).then(() => {
-        this.showCloseDiv = false;
+        this.clientsDataService.presentLoading();
+        this.modal.dismiss();
       });
     }
   }
@@ -161,6 +203,29 @@ export class ClientDetailsPage {
       return 'warning';
     } else {
       return 'light';
+    }
+  }
+
+  onchangeClosedDetails(event, data, closedOn?) {
+    if (event.target.name === 'closedOn') {
+      this.approvedAmount =
+        data.principal + this.calculateInterest(data, event.target.value);
+    }
+
+    if (event.target.name === 'closedAmount') {
+      this.approvedAmount =
+        data.principal + this.calculateInterest(data, closedOn.value);
+      if (Math.round(event.target.value) !== Math.round(this.approvedAmount)) {
+        this.hideAppprovedControls = false;
+      } else {
+        this.hideAppprovedControls = true;
+      }
+    }
+  }
+
+  stopDefaultSubmit(e) {
+    if (e.keyCode == 13) {
+      e.preventDefault();
     }
   }
 }
