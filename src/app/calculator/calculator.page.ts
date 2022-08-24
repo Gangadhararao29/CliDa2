@@ -7,7 +7,7 @@ import { ClientDataService } from '../services/client-data.service';
   templateUrl: './calculator.page.html',
   styleUrls: ['./calculator.page.scss'],
 })
-export class CalculatorPage {
+export class CalculatorPage  {
   clientID = '';
   linkData = {} as any;
   recordId: any;
@@ -27,19 +27,17 @@ export class CalculatorPage {
   ) {}
 
   ionViewWillEnter() {
-    this.activatedRoute.params.subscribe((params) => {
-      this.clientID = params.key;
-      this.recordId = params.id;
+    this.clientID = this.activatedRoute.snapshot.params.key;
+    this.recordId = this.activatedRoute.snapshot.params.id;
 
-      if (this.clientID !== '0') {  
-        this.clientsDataService.getClientByKey(this.clientID).then((res) => {
-          this.linkData = res.data.find((record) => record.id == this.recordId);
-          this.linkData.name = res.name;
-          this.linkData.endDate = this.clientsDataService.today;
-        });
-      }
-      this.linkData.endDate = this.clientsDataService.today;
-    });
+    if (this.clientID !== '0') {
+      this.clientsDataService.getClientByKey(this.clientID).then((res) => {
+        this.linkData = res.data.find((record) => record.id == this.recordId);
+        this.linkData.name = res.name;
+        this.linkData.endDate = this.clientsDataService.today;
+      });
+    }
+    this.linkData.endDate = this.clientsDataService.today;
   }
 
   onSubmit(formRef) {

@@ -10,6 +10,10 @@
 </ion-header>
 
 <ion-content>
+  <div [hidden]="hideSkeletonText" class="mx-2">
+    <ion-progress-bar type="indeterminate"></ion-progress-bar>
+  </div>
+
   <div class="m-2 p-2 bgLight rounded-3">
     <ion-grid>
       <ion-row>

@@ -9,6 +9,10 @@
 
 <ion-content>
   <div class="mx-2 mt-1">
+    <div [hidden]="hideSkeletonText" class="mx-2">
+      <ion-progress-bar type="indeterminate"></ion-progress-bar>
+    </div>
+
     <ion-accordion toggle-icon="none" readonly="true">
       <ion-item slot="header" color="primary" class="rounded-1">
         <ion-label class="d-flex ms-2">
@@ -17,7 +21,8 @@
         </ion-label>
       </ion-item>
     </ion-accordion>
-    <ion-accordion-group class="mb-2">
+
+    <ion-accordion-group class="my-2">
       <div *ngFor="let data of client?.data; let i=index;" class="mt-2">
         <ion-accordion [value]="i">
           <ion-item slot="header" [color]="getColor(data)" class="rounded-3">
@@ -28,7 +33,6 @@
               ></ion-label
             >
           </ion-item>
-
           <ion-list slot="content" class="rounded-3">
             <div class="bgLight p-2 rounded-3 mt-0">
               <div class="d-flex justify-content-between fw-bolder">

@@ -21,7 +21,7 @@ export class ClientDataService {
     private toastController: ToastController,
     private loadingController: LoadingController
   ) {
-    this.db.config.debug = false;
+     this.db.config.debug = false;
   }
 
   async getAllClientsDataWithKeys() {
@@ -281,13 +281,20 @@ export class ClientDataService {
       }
 
       case 'delete': {
-        console.log(newData, oldData);
         logData.push({
           operation,
           modifiedOn: this.today,
           data: { name: oldData.name, ...oldData.data[0] },
         });
         break;
+      }
+
+      case 'approve': {
+        logData.push({
+          operation,
+          modifiedOn: this.today,
+          data: { name: oldData.name },
+        });
       }
     }
 

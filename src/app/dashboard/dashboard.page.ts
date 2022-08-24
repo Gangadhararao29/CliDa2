@@ -23,17 +23,24 @@ export class DashboardPage {
   totalClients: Array<any>;
   timeGridIcon = 'arrow-down-outline';
   principalGridIcon = 'arrow-down-outline';
+  hideSkeletonText = false;
   constructor(private clientDataService: ClientDataService) {
     this.math = Math;
   }
 
-  ionViewWillEnter() {
+  ionViewDidEnter() {
     this.clientDataService.getAllClientsDataWithKeys().then((res) => {
-      this.totalClients = this.filterData(res);
-      this.totalArray = [];
-      this.getTotalArray(this.totalClients);
-      this.sortByPrincipal(this.principalGridIcon === 'arrow-down-outline');
-      this.sortByTimePeriod(this.timeGridIcon === 'arrow-down-outline');
+      if (
+        JSON.stringify(this.totalClients) !==
+        JSON.stringify(this.filterData(res))
+      ) {
+        this.totalClients = this.filterData(res);
+        this.totalArray = [];
+        this.getTotalArray(this.totalClients);
+        this.sortByPrincipal(this.principalGridIcon === 'arrow-down-outline');
+        this.sortByTimePeriod(this.timeGridIcon === 'arrow-down-outline');
+      }
+      this.hideSkeletonText = true;
     });
   }
 

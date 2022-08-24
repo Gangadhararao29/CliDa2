@@ -50,11 +50,11 @@
       </div>
     </div>
 
-    <div class="mt-2">
+    <div class="mt-2 rounded-3">
       <div class="text-center bg-warning rounded-3 mt-2 pt-2">
         <ion-icon name="alert-circle-outline" size="large"></ion-icon>
       </div>
-      <div class="justifyText bgLight py-2 px-3 rounded-3">
+      <div class="justifyText bgLight py-2 px-3">
         Please save your data periodically using the Share tab. The data will be
         saved in the documents folder in your phone's internal storage, when you
         click on export button.
@@ -62,8 +62,8 @@
     </div>
   </div>
 
-  <div [hidden]="showEntryText" class="m-1">
-    <ion-segment [value]="tabSection" (ionChange)="setrecordType($event)">
+  <div [hidden]="showEntryText" class="mx-1 mt-2">
+    <ion-segment [value]="tabSection" (ionChange)="setrecordType($event)" mode="md">
       <ion-segment-button value="credits">
         <ion-label>Credits</ion-label>
       </ion-segment-button>

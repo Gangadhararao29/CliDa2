@@ -46,31 +46,33 @@ export class ClientsListPage {
 
   getDisplayData() {
     this.clientDataService.getAllClientsDataWithKeys().then((data) => {
-      this.clientsData = data;
-      this.showEntryText = data.length > 0 ? false : true;
-      this.debitData = [];
-      this.creditData = [];
+      if (JSON.stringify(this.clientsData) !== JSON.stringify(data)) {
+        this.clientsData = data;
+        this.showEntryText = data.length > 0 ? false : true;
+        this.debitData = [];
+        this.creditData = [];
 
-      this.clientsData.forEach((client) => {
-        const name = client.data.name;
-        const key = client.key;
-        const tempDebitData = [];
-        const tempCreditData = [];
-        client.data.data.forEach((record) => {
-          if (record.principal < 0) {
-            tempDebitData.push(record);
-          } else {
-            tempCreditData.push(record);
+        this.clientsData.forEach((client) => {
+          const name = client.data.name;
+          const key = client.key;
+          const tempDebitData = [];
+          const tempCreditData = [];
+          client.data.data.forEach((record) => {
+            if (record.principal < 0) {
+              tempDebitData.push(record);
+            } else {
+              tempCreditData.push(record);
+            }
+          });
+          if (tempDebitData.length) {
+            this.debitData.push({ key, data: { name, data: tempDebitData } });
+          }
+          if (tempCreditData.length) {
+            this.creditData.push({ key, data: { name, data: tempCreditData } });
           }
         });
-        if (tempDebitData.length) {
-          this.debitData.push({ key, data: { name, data: tempDebitData } });
-        }
-        if (tempCreditData.length) {
-          this.creditData.push({ key, data: { name, data: tempCreditData } });
-        }
-      });
-      this.hideSkeletonText = true;
+        this.hideSkeletonText = true;
+      }
     });
   }
 

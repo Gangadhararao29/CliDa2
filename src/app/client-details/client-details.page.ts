@@ -28,6 +28,7 @@ export class ClientDetailsPage {
   hideAppprovedControls = true;
   approveDataId: any;
   approvedAmount = 0;
+  hideSkeletonText: boolean;
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -36,11 +37,12 @@ export class ClientDetailsPage {
   ) {}
 
   ionViewWillEnter() {
-    this.activatedRoute.params.subscribe((params) => {
-      this.clientId = params.key;
-      this.clientsDataService.getClientByKey(params.key).then((res) => {
-        this.client = res;
-      });
+    this.hideSkeletonText = false;
+    this.clientId = this.activatedRoute.snapshot.params.key;
+    this.clientsDataService.getClientByKey(this.clientId).then((res) => {
+      this.client =
+        JSON.stringify(this.client) !== JSON.stringify(res) ? res : this.client;
+      this.hideSkeletonText = true;
     });
   }
 
