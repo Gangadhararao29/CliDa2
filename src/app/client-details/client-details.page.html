@@ -34,68 +34,60 @@
             >
           </ion-item>
           <ion-list slot="content" class="rounded-3">
-            <div class="bgLight p-2 rounded-3 mt-0">
-              <div class="d-flex justify-content-between fw-bolder">
-                <div class="col-1"></div>
-                <div class="col-4">Principal</div>
-                <div class="col-1">:</div>
-                <div class="col-6">₹ {{isd.format(data?.principal)}}</div>
+            <div class="bgLight px-3 py-2 rounded-3 mt-0 mx-1">
+              <div class="row fw-bolder">
+                <div class="col-5">Principal</div>
+                <div class="col-2">:</div>
+                <div class="col-5">₹ {{isd.format(data?.principal)}}</div>
               </div>
-              <div class="d-flex justify-content-between fw-bolder">
-                <div class="col-1"></div>
-                <div class="col-4">Interest</div>
-                <div class="col-1">:</div>
-                <div class="col-6">{{data?.interest}}</div>
+              <div class="row fw-bolder">
+                <div class="col-5">Interest</div>
+                <div class="col-2">:</div>
+                <div class="col-5">{{data?.interest}}</div>
               </div>
-              <div class="d-flex justify-content-between fw-bolder">
-                <div class="col-1"></div>
-                <div class="col-4">Start Date</div>
-                <div class="col-1">:</div>
-                <div class="col-6">
+              <div class="row fw-bolder">
+                <div class="col-5">Start date</div>
+                <div class="col-2">:</div>
+                <div class="col-5">
                   {{data?.startDate.split('-').reverse().join('/')}}
                 </div>
               </div>
-              <div class="d-flex justify-content-between fw-bolder">
-                <div class="col-1"></div>
-                <div class="col-4">End Date</div>
-                <div class="col-1">:</div>
-                <div class="col-6">
+              <div class="row fw-bolder">
+                <div class="col-5">End date</div>
+                <div class="col-2">:</div>
+                <div class="col-5">
                   {{today.split('-').reverse().join('/')}}
                 </div>
               </div>
             </div>
 
-            <div class="bgLight p-2 rounded-3 mt-2">
-              <div class="d-flex justify-content-between fw-bolder">
-                <div class="col-1"></div>
-                <div class="col-4">Time Period</div>
-                <div class="col-1">:</div>
-                <div class="col-6">
+            <div class="bgLight px-3 py-2 rounded-3 mt-2 mx-1">
+              <div class="row fw-bolder">
+                <div class="col-5">Time period</div>
+                <div class="col-2">:</div>
+                <div class="col-5">
                   {{calculateDateDifference(data?.startDate,today)}}
                 </div>
               </div>
 
-              <div class="d-flex justify-content-between fw-bolder">
-                <div class="col-1"></div>
-                <div class="col-4">in months</div>
-                <div class="col-1">:</div>
-                <div class="col-6">
+              <div class="row fw-bolder">
+                <div class="col-5">in months</div>
+                <div class="col-2">:</div>
+                <div class="col-5">
                   {{totalTimeinMonths(data?.startDate,today).toFixed(2)}}m
                 </div>
               </div>
-              <div class="d-flex justify-content-between fw-bolder">
-                <div class="col-1"></div>
-                <div class="col-4">Interest Amt</div>
-                <div class="col-1">:</div>
-                <div class="col-6">
+              <div class="row fw-bolder">
+                <div class="col-5">Interest amt</div>
+                <div class="col-2">:</div>
+                <div class="col-5">
                   ₹ {{isd.format(calculateInterest(data, today))}}
                 </div>
               </div>
-              <div class="d-flex justify-content-between fw-bolder">
-                <div class="col-1"></div>
-                <div class="col-4">Total Amt</div>
-                <div class="col-1">:</div>
-                <div class="col-6">
+              <div class="row fw-bolder">
+                <div class="col-5">Total amt</div>
+                <div class="col-2">:</div>
+                <div class="col-5">
                   ₹ {{isd.format(data?.principal + calculateInterest(data,
                   today))}}
                 </div>
@@ -104,38 +96,34 @@
 
             <div
               *ngIf="data?.comments"
-              class="rounded-3 px-2 py-1 mt-2 bgLight d-flex align-items-center"
+              class="bgLight p-2 rounded-3 mt-2 mx-1 align-items-center"
             >
-              <div><small class="fw-bolder">Comments : </small></div>
-              <div class="px-2">
-                <small style="white-space: pre-line">{{data?.comments}}</small>
-              </div>
+              <small class="fw-bolder d-block">Comments : </small>
+              <small style="white-space: pre-line">{{data?.comments}}</small>
             </div>
 
             <div
               *ngIf="data?.closedOn"
-              class="bgLight py-2 rounded-3 mt-2 border-success border-3 border"
+              class="bgLight px-3 py-2 rounded-3 mt-2 mx-1 border-success border-3 border"
             >
-              <div class="d-flex justify-content-between fw-bolder">
-                <div class="col-1"></div>
-                <div class="col-4">Closed on</div>
-                <div class="col-1">:</div>
-                <div class="col-6">
+              <div class="row fw-bolder">
+                <div class="col-5">Closed on</div>
+                <div class="col-2">:</div>
+                <div class="col-5">
                   {{data?.closedOn.split('-').reverse().join('/')}}
                 </div>
               </div>
 
-              <div class="d-flex justify-content-between fw-bolder">
-                <div class="col-1"></div>
-                <div class="col-4">Paid Amt</div>
-                <div class="col-1">:</div>
-                <div class="col-6">₹ {{isd.format(data?.closedAmount)}}</div>
+              <div class="row fw-bolder">
+                <div class="col-5">Paid amt</div>
+                <div class="col-2">:</div>
+                <div class="col-5">₹ {{isd.format(data?.closedAmount)}}</div>
               </div>
             </div>
 
             <div
               *ngIf="totalTimeinMonths(data?.startDate,today)>36"
-              class="d-flex mt-2 p-2 justify-content-around align-items-center bg-warning rounded-3"
+              class="d-flex mt-2 mx-1 p-1 justify-content-around align-items-center bg-warning rounded-3"
             >
               <ion-icon
                 name="alert-circle-outline"
@@ -148,7 +136,7 @@
               </div>
             </div>
 
-            <div class="bgLight rounded-3 mt-2">
+            <div class="bgLight rounded-3 mt-2 mx-1">
               <ion-grid>
                 <ion-row>
                   <ion-col>
