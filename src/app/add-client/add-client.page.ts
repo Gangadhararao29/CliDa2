@@ -55,9 +55,15 @@ export class AddClientPage {
         this.isAddBtnDisable = false;
         this.clientDataService.presentToast(message);
         this.router.navigateByUrl('/clida/clients-list').then(() => {
-          formRef.resetForm();
+          // formRef.resetForm();
         });
       }, 1000);
+    }
+  }
+
+  ionViewDidLeave() {
+    if (this.formRefVariable) {
+      this.formRefVariable.resetForm();
     }
   }
 }
