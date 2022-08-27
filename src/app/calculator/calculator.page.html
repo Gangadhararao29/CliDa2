@@ -137,7 +137,7 @@
       style="font-size: large; font-weight: bold"
       >Calculated Data</ion-item
     >
-    <div class="m-2 text-center" style="font-size: 110%">
+    <div class="m-2 p-2 fw-bolder" style="font-size: 110%">
       <div class="row">
         <div class="col">Name</div>
         <div class="col-auto">:</div>
@@ -149,21 +149,21 @@
         <div class="col highlight">{{currencyFormat(linkData.principal)}}</div>
       </div>
       <div class="row">
-        <div class="col">Int. Rate (R)</div>
+        <div class="col">Interst rate(R)</div>
         <div class="col-auto">:</div>
         <div class="col highlight">{{linkData.interest}}</div>
       </div>
       <div class="row">
-        <div class="col">End Date</div>
+        <div class="col">End date</div>
         <div class="col-auto">:</div>
         <div class="col">{{linkData.endDate}}</div>
       </div>
       <div class="row">
-        <div class="col">Start Date</div>
+        <div class="col">Start date</div>
         <div class="col-auto">:</div>
         <div class="col">
-          <u style="text-underline-offset: 5px"
-            >&nbsp;&nbsp;{{linkData.startDate}}&nbsp;&nbsp;</u
+          <u style="text-underline-offset: 5px; text-decoration-color: green"
+            >{{linkData.startDate}}</u
           >
         </div>
       </div>
@@ -172,14 +172,14 @@
         <div class="col">Time Period</div>
         <div class="col-auto">:</div>
         <div class="col highlight">
-          <u style="text-underline-offset: 8px"
-            >&nbsp; {{timePeriodObject?.y}}y&nbsp;
-            {{timePeriodObject?.m}}m&nbsp; {{timePeriodObject?.d}}d&nbsp;
+          <u style="text-underline-offset: 5px">
+            {{timePeriodObject?.y}}y&nbsp; {{timePeriodObject?.m}}m&nbsp;
+            {{timePeriodObject?.d}}d&nbsp;
           </u>
         </div>
       </div>
 
-      <div class="row mt-2 mb-1">
+      <div class="row mt-2 mb-1 text-center">
         <div>
           T = 12x{{timePeriodObject?.y}} + {{timePeriodObject?.m}} +
           {{timePeriodObject?.d}}/30 = {{timePeriodObject.tm.toFixed(2)}}
@@ -206,7 +206,7 @@
       </div>
 
       <div class="row">
-        <div class="col">Total Amount</div>
+        <div class="col">Total amount</div>
         <div class="col-auto">:</div>
         <div class="col highlight">
           {{currencyFormat(interestObj?.interest + linkData?.principal)}}
@@ -218,27 +218,27 @@
           Time taken greater than 3 years
         </h6>
         <div class="row">
-          <div class="col">New Principal</div>
-          :
+          <div class="col">New principal</div>
+          <div class="col-auto">:</div>
           <div class="col">{{currencyFormat(interestObj?.newPrincipal)}}</div>
         </div>
         <div class="row">
-          <div class="col">Pending Time</div>
-          :
+          <div class="col">Pending time</div>
+          <div class="col-auto">:</div>
           <div class="col">
             {{timePeriodObject?.y - 3}}y, {{timePeriodObject?.m}}m,
             {{timePeriodObject?.d}}d
           </div>
         </div>
         <div class="row">
-          <div class="col">New Interest</div>
+          <div class="col">New interest</div>
           <div class="col-auto">:</div>
           <div class="col highlight">
             {{currencyFormat(interestObj?.newInterest)}}
           </div>
         </div>
         <div class="row">
-          <div class="col">Final Amount</div>
+          <div class="col">Final amount</div>
           <div class="col-auto">:</div>
           <div class="col highlight">
             {{currencyFormat(interestObj?.newPrincipal +
