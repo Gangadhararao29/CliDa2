@@ -302,11 +302,12 @@ export class ClientDataService {
         break;
       }
 
-      case 'approve': {
+      case 'edit - approve': {
         logData.push({
           operation,
           modifiedOn: this.today,
-          data: { name: oldData.name },
+          orgData: oldData,
+          newData,
         });
       }
     }

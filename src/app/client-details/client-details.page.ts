@@ -84,6 +84,8 @@ export class ClientDetailsPage {
         (ele) => ele.id == this.approveDataId
       );
 
+      const oldData = Object.assign({}, clientRecord);
+
       if (this.hideAppprovedControls) {
         clientRecord.closedOn = formRef.value.closedOn;
         clientRecord.closedAmount = formRef.value.closedAmount;
@@ -125,6 +127,11 @@ export class ClientDetailsPage {
       }
 
       this.clientsDataService.updateClientRecordByName(this.client).then(() => {
+        this.clientsDataService.addNewLogData(
+          'edit - approve',
+          { name: this.client.name, ...oldData },
+          clientRecord
+        );
         this.clientsDataService.presentLoading();
         this.modal.dismiss();
       });

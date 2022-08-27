@@ -5,3 +5,7 @@ ion-content {
 .bgLight {
   background-color: var(--ion-color-light);
 }
+
+ion-col {
+  --ion-grid-column-padding: 1px;
+}
