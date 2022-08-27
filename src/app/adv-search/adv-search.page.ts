@@ -12,7 +12,7 @@ export class AdvSearchPage implements OnInit {
   displayData = [];
   showSortMissingText = false;
   showFilterMissingText = false;
-  showfilterRangeErrorText = false;
+  showfilterRangeErrorText = true;
   showNoRecords = false;
   constructor(private clientDataService: ClientDataService) {}
 
@@ -43,10 +43,9 @@ export class AdvSearchPage implements OnInit {
   checkFormValidation(formValue) {
     if (formValue.sortBy || formValue.filterBy) {
       if (formValue.filterBy) {
-        this.showfilterRangeErrorText = !(
-          formValue.filterMax && formValue.filterMin
-        );
-        return !this.showfilterRangeErrorText;
+        this.showfilterRangeErrorText =
+          formValue.filterMin || formValue.filterMax;
+        return this.showfilterRangeErrorText;
       }
       return true;
     } else {
@@ -59,7 +58,7 @@ export class AdvSearchPage implements OnInit {
   removeAllErrors() {
     this.showSortMissingText = false;
     this.showFilterMissingText = false;
-    this.showfilterRangeErrorText = false;
+    this.showfilterRangeErrorText = true;
   }
 
   postAdditionNewParams() {
@@ -161,6 +160,7 @@ export class AdvSearchPage implements OnInit {
 
   deleteAllParams() {
     this.sortAndFilterParams.pop();
+    this.displayData = [];
     localStorage.setItem(
       'sortAndFilterParams',
       JSON.stringify(this.sortAndFilterParams)
