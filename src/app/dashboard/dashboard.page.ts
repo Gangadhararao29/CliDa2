@@ -30,10 +30,7 @@ export class DashboardPage {
 
   ionViewDidEnter() {
     this.clientDataService.getAllClientsDataWithKeys().then((res) => {
-      if (
-        JSON.stringify(this.totalClients) !==
-        JSON.stringify(this.filterData(res))
-      ) {
+      if (this.clientDataService.dashbardRefresh) {
         this.totalClients = this.filterData(res);
         this.totalArray = [];
         this.getTotalArray(this.totalClients);
@@ -41,6 +38,7 @@ export class DashboardPage {
         this.sortByTimePeriod(this.timeGridIcon === 'arrow-down-outline');
       }
       this.hideSkeletonText = true;
+      this.clientDataService.dashbardRefresh = false;
     });
   }
 

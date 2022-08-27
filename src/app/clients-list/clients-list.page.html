@@ -63,7 +63,7 @@
   </div>
 
   <div [hidden]="showEntryText" class="mx-1 mt-2">
-    <ion-segment [value]="tabSection" (ionChange)="setrecordType($event)" mode="md">
+    <ion-segment [value]="tabSection" (ionChange)="setrecordType($event)">
       <ion-segment-button value="credits">
         <ion-label>Credits</ion-label>
       </ion-segment-button>
@@ -77,7 +77,7 @@
     <ion-searchbar
       animated
       color="light"
-      placeholder="Type to search clients..."
+      placeholder="type to search clients..."
       [(ngModel)]="clientSearchValue"
       enterkeyhint="search"
       search-icon="search-outline"

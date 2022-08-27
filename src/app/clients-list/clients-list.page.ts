@@ -46,7 +46,7 @@ export class ClientsListPage {
 
   getDisplayData() {
     this.clientDataService.getAllClientsDataWithKeys().then((data) => {
-      if (JSON.stringify(this.clientsData) !== JSON.stringify(data)) {
+      if (this.clientDataService.clientsListRefresh) {
         this.clientsData = data;
         this.showEntryText = data.length > 0 ? false : true;
         this.debitData = [];
@@ -72,6 +72,7 @@ export class ClientsListPage {
           }
         });
         this.hideSkeletonText = true;
+        this.clientDataService.clientsListRefresh = false;
       }
     });
   }

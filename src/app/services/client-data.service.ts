@@ -6,7 +6,6 @@ import LocalBase from 'localbase';
 })
 export class ClientDataService {
   db = new LocalBase('clida');
-
   today = new Date()
     .toLocaleDateString('en-GB', {
       day: '2-digit',
@@ -16,12 +15,15 @@ export class ClientDataService {
     .split('/')
     .reverse()
     .join('-');
+  clientsListRefresh = true;
+  dashbardRefresh = true;
+  editClientRefresh = true;
 
   constructor(
     private toastController: ToastController,
     private loadingController: LoadingController
   ) {
-     this.db.config.debug = false;
+    this.db.config.debug = false;
   }
 
   async getAllClientsDataWithKeys() {
@@ -53,6 +55,7 @@ export class ClientDataService {
   }
 
   async updateClientRecordByName(clientData) {
+    this.setDataModified();
     return await this.db
       .collection('clientsData')
       .doc({ name: clientData.name })
@@ -60,6 +63,7 @@ export class ClientDataService {
   }
 
   async addNewClientData(formData, recordType, includeClosedDetails = false) {
+    this.setDataModified();
     const payLoad = this.generatePayLoad(
       formData,
       recordType,
@@ -77,6 +81,7 @@ export class ClientDataService {
   }
 
   async editClientData(formData, recordType, clientData, index) {
+    this.setDataModified();
     formData.userName = this.formatToCamelCase(formData.userName);
     formData.principal =
       recordType === 'credit'
@@ -96,6 +101,7 @@ export class ClientDataService {
   }
 
   async deleteClientData(clientData, index, key) {
+    this.setDataModified();
     this.addNewLogData('delete', clientData, [], index);
     clientData.data.splice(index, 1);
     if (clientData.data.length < 1) {
@@ -106,6 +112,7 @@ export class ClientDataService {
   }
 
   async saveBulkClients(clientsDataGroupString, replaceStatus) {
+    this.setDataModified();
     const clientsDataGroup = JSON.parse(clientsDataGroupString);
     if (replaceStatus) {
       return await this.db.collection('clientsData').set(clientsDataGroup);
@@ -135,6 +142,12 @@ export class ClientDataService {
       res = res.filter((client) => client.data.length > 0 && client.name);
       this.db.collection('clientsData').set(res);
     });
+  }
+
+  setDataModified() {
+    this.clientsListRefresh = true;
+    this.dashbardRefresh = true;
+    this.editClientRefresh = true;
   }
 
   /**
