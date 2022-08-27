@@ -8,7 +8,7 @@
   <div class="m-2">
     <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
       <div class="bgLight p-2 rounded-3 mb-2">
-        <div class="fs-5 fw-2 m-1">Enter details to calculate</div>
+        <div class="fs-5 fw-2 mb-1 mx-1">Enter details to calculate</div>
         <div class="form-floating mb-2">
           <input
             type="text"
@@ -123,7 +123,12 @@
       </div>
 
       <div class="mt-2">
-        <ion-button color="danger" expand="block" (click)="resetForm(formRef)">
+        <ion-button
+          type="reset"
+          color="danger"
+          expand="block"
+          (click)="resetForm()"
+        >
           Reset
         </ion-button>
       </div>

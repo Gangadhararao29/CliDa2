@@ -7,7 +7,7 @@ import { ClientDataService } from '../services/client-data.service';
   templateUrl: './calculator.page.html',
   styleUrls: ['./calculator.page.scss'],
 })
-export class CalculatorPage  {
+export class CalculatorPage {
   clientID = '';
   linkData = {} as any;
   recordId: any;
@@ -67,8 +67,10 @@ export class CalculatorPage  {
     }
   }
 
-  resetForm(formRef) {
-    formRef.resetForm();
+  resetForm() {
+    setTimeout(() => {
+      this.linkData.endDate = this.clientsDataService.today;
+    }, 0);
     this.showCalculatedData = false;
   }
 
