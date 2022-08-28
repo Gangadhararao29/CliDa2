@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ClientDataService } from '../services/client-data.service';
 
@@ -8,9 +8,10 @@ import { ClientDataService } from '../services/client-data.service';
   styleUrls: ['./add-client.page.scss'],
 })
 export class AddClientPage {
+  @ViewChild('formRef') formRefVariable: any;
+  @ViewChild('submitButton') submitButton: any;
   isAddBtnDisable: boolean;
   clientsData = [];
-  formRefVariable: any;
   today: any;
   recordType = 'credit';
 
@@ -20,15 +21,16 @@ export class AddClientPage {
   ) {}
 
   ionViewWillEnter() {
+    this.submitButton.el.click();
     this.isAddBtnDisable = false;
     this.clientDataService.getAllClientsData().then((res) => {
       this.clientsData = res;
     });
     this.today = this.clientDataService.today;
+    this.formRefVariable.resetForm();
   }
 
   onSubmit(formRef) {
-    this.formRefVariable = formRef;
     if (formRef.valid) {
       this.isAddBtnDisable = true;
       this.clientDataService
@@ -55,15 +57,9 @@ export class AddClientPage {
         this.isAddBtnDisable = false;
         this.clientDataService.presentToast(message);
         this.router.navigateByUrl('/clida/clients-list').then(() => {
-          // formRef.resetForm();
+          formRef.resetForm();
         });
       }, 1000);
-    }
-  }
-
-  ionViewDidLeave() {
-    if (this.formRefVariable) {
-      this.formRefVariable.resetForm();
     }
   }
 }
