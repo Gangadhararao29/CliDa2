@@ -125,7 +125,9 @@ export class DashboardPage {
   }
 
   getFinalAmount() {
-    return this.totalArray.reduce((prev, curr) => prev + curr.finalAmount, 0);
+    return Math.round(
+      this.totalArray.reduce((prev, curr) => prev + curr.finalAmount, 0)
+    );
   }
 
   getClientsDetailsPageUrl(key) {

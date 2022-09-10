@@ -85,7 +85,7 @@ export class CalculatorPage {
 
   currencyFormat(value) {
     const formattedValue = new Intl.NumberFormat('en-IN').format(
-      value.toFixed(2)
+      Math.round(value * 100) / 100
     );
     return `₹ ${formattedValue}`;
   }

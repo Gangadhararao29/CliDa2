@@ -55,7 +55,11 @@ export class ClientDetailsPage {
   }
 
   totalTimeinMonths(startDate, endDate) {
-    return this.clientsDataService.calculateTimeperiod(startDate, endDate).tm;
+    return (
+      Math.round(
+        this.clientsDataService.calculateTimeperiod(startDate, endDate).tm * 100
+      ) / 100.0
+    );
   }
 
   calculateInterest(data, endDate) {
@@ -65,7 +69,7 @@ export class ClientDetailsPage {
       data.startDate,
       endDate
     );
-    return Number.parseInt(interestObject.interest.toFixed(2), 10);
+    return Math.round(interestObject.interest * 100) / 100;
   }
 
   openCalculator(recordId) {
