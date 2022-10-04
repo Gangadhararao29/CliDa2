@@ -16,22 +16,20 @@
 <ion-content>
   <div [hidden]="!showEntryText" class="container my-2">
     <ion-item
-      color="light"
+      color="primary"
       lines="none"
-      class="border border-primary border-3 text-center rounded-3"
+      class="border border-3 text-center rounded-3"
     >
-      <ion-label class="fs-5"> Clida says Hello 👋</ion-label>
+      <ion-label class="fs-5 text-warning"> Clida says Hello 👋</ion-label>
     </ion-item>
 
     <div class="bgLight rounded-3 px-3 py-2 my-2">
       <div class="justifyText mb-2">
-        To load already saved data from json file, click on Export/Import button
-        or go to the Share tab from the bottom navigation bar.
+        To load previously saved data from a json file, click the Export/Import
+        button or navigate to the Share tab in the bottom navigation bar.
       </div>
-      <div class="text-center mb-1">
-        <button class="btn btn-primary" routerLink="/clida/about">
-          Export / Import
-        </button>
+      <div class="text-center">
+        <ion-button routerLink="/clida/about"> Export / Import </ion-button>
       </div>
     </div>
 
@@ -40,13 +38,10 @@
         To add the clients manually, click on the below button or click on the
         bottom right add button.
       </div>
-      <div class="text-center mb-1">
-        <button
-          class="btn btn-danger"
-          routerLink="/clida/clients-list/add-client"
-        >
+      <div class="text-center">
+        <ion-button color="danger" routerLink="/clida/clients-list/add-client">
           Add new Client
-        </button>
+        </ion-button>
       </div>
     </div>
 

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { ClientDataService } from '../services/client-data.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-about',
@@ -18,13 +19,38 @@ export class AboutPage {
   themeName = localStorage.getItem('theme');
   inputClientData: any;
   sortValue: any;
+  latestRelease: any;
+  isUpdateLoading = false;
+  isModalOpen = false;
+  updateVersion = 0;
+  currentVersion = 3.4;
+  gitHubResponse = [];
 
   constructor(
     public alertController: AlertController,
     private router: Router,
     private clientDataService: ClientDataService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private httpClient: HttpClient
   ) {}
+
+  checkForUpdate() {
+    this.isUpdateLoading = true;
+    this.httpClient
+      .get('https://api.github.com/repos/gangadhararao29/clida2/releases')
+      .subscribe((res: Array<any>) => {
+        console.log(res);
+        this.gitHubResponse = res;
+        this.latestRelease = res.find((release) => !release.draft);
+        this.updateVersion = this.latestRelease.tag_name.slice(1) * 1;
+        this.isUpdateLoading = false;
+        this.isModalOpen = true;
+      });
+  }
+
+  setOpen(isOpen: boolean) {
+    this.isModalOpen = isOpen;
+  }
 
   exportData() {
     this.clientDataService.getAllClientsData().then((data) => {
@@ -217,6 +243,14 @@ export class AboutPage {
       this.clientDataService.presentToast(
         'All the empty Data and errors are fixed.'
       );
+    });
+  }
+
+  getDateString(dateString) {
+    return new Date(dateString).toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
     });
   }
 }
