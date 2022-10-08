@@ -10,7 +10,6 @@ import { ClientDataService } from '../services/client-data.service';
   styleUrls: ['./clients-list.page.scss'],
 })
 export class ClientsListPage {
-  clientsData: any;
   clientSearchValue = '';
   showEntryText: boolean;
   debitData = [];
@@ -47,12 +46,11 @@ export class ClientsListPage {
   getDisplayData() {
     this.clientDataService.getAllClientsDataWithKeys().then((data) => {
       if (this.clientDataService.clientsListRefresh) {
-        this.clientsData = data;
         this.showEntryText = data.length > 0 ? false : true;
         this.debitData = [];
         this.creditData = [];
 
-        this.clientsData.forEach((client) => {
+        data.forEach((client) => {
           const name = client.data.name;
           const key = client.key;
           const tempDebitData = [];
@@ -80,7 +78,9 @@ export class ClientsListPage {
   resetSearch() {
     this.clientSearchValue = null;
     this.searchIcon =
-      this.searchIcon === 'search-sharp' ? 'remove-sharp' : 'search-sharp';
+      this.searchIcon === 'search-sharp'
+        ? 'remove-circle-outline'
+        : 'search-sharp';
   }
 
   openClientDetails(key) {
@@ -120,9 +120,9 @@ export class ClientsListPage {
     } else if (tm >= 24) {
       return 'warning';
     } else if (tm >= 12) {
-      return 'secondary';
-    } else {
       return 'primary';
+    } else {
+      return 'medium';
     }
   }
 
