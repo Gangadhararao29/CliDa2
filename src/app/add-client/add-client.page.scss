@@ -13,3 +13,7 @@ input:focus {
 .bgLight {
   background-color: var(--ion-color-light);
 }
+
+textarea {
+  overflow-y: hidden;
+}

@@ -6,28 +6,28 @@
 </ion-header>
 
 <ion-content>
-  <div class="mx-2 my-2 bgLight pt-2 rounded-3">
-    <ion-radio-group value="credit" [(ngModel)]="recordType">
-      <ion-label position="stacked" class="mx-3">
-        <span style="font-size: large; font-weight: 300"
-          >Select Record type</span
-        >
-      </ion-label>
-      <div class="d-flex justify-content-between">
-        <ion-item color="light" class="col rounded-3">
-          <ion-label>Credit</ion-label>
-          <ion-radio slot="start" value="credit"></ion-radio>
-        </ion-item>
-        <ion-item color="light" class="col rounded-3">
-          <ion-label>Debit</ion-label>
-          <ion-radio slot="start" value="debit"></ion-radio>
-        </ion-item>
-      </div>
-    </ion-radio-group>
-  </div>
+  <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
+    <div class="mx-2 my-2 bgLight pt-2 rounded-3">
+      <ion-radio-group name="recordType" ngModel #recordType="ngModel">
+        <ion-label position="stacked" class="mx-3">
+          <span style="font-size: large; font-weight: 300"
+            >Select Record type</span
+          >
+        </ion-label>
+        <div class="d-flex justify-content-between">
+          <ion-item color="light" class="col rounded-3">
+            <ion-label>Credit</ion-label>
+            <ion-radio slot="start" value="credit"></ion-radio>
+          </ion-item>
+          <ion-item color="light" class="col rounded-3">
+            <ion-label>Debit</ion-label>
+            <ion-radio slot="start" value="debit"></ion-radio>
+          </ion-item>
+        </div>
+      </ion-radio-group>
+    </div>
 
-  <div class="mx-2">
-    <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
+    <div class="mx-2">
       <div class="p-2 bgLight rounded-3">
         <div class="form-floating mt-1 mb-2">
           <input
@@ -122,6 +122,7 @@
           class="form-control"
           placeholder="Leave a comment here"
           id="comments"
+          (input)="getCommentHeight($event)"
           ngModel
           name="comments"
           #comments="ngModel"
@@ -148,6 +149,6 @@
       >
         Add new client
       </ion-button>
-    </form>
-  </div>
+    </div>
+  </form>
 </ion-content>

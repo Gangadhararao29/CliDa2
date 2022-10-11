@@ -8,27 +8,31 @@
 </ion-header>
 
 <ion-content>
-  <div class="m-2 bgLight pt-2 rounded-3">
-    <ion-radio-group value="credit" [(ngModel)]="recordType">
-      <ion-label position="stacked" class="mx-3">
-        <span style="font-size: large; font-weight: 300"
-          >Select Record type</span
-        >
-      </ion-label>
-      <div class="d-flex justify-content-between">
-        <ion-item color="light" class="col rounded-3">
-          <ion-label>Credit</ion-label>
-          <ion-radio slot="start" value="credit"></ion-radio>
-        </ion-item>
-        <ion-item color="light" class="col rounded-3">
-          <ion-label>Debit</ion-label>
-          <ion-radio slot="start" value="debit"></ion-radio>
-        </ion-item>
-      </div>
-    </ion-radio-group>
-  </div>
-
   <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
+    <div class="m-2 bgLight pt-2 rounded-3">
+      <ion-radio-group
+        name="recordType"
+        [ngModel]="clientRecord.principal > 0?'credit':'debit'"
+        #recordType="ngModel"
+      >
+        <ion-label position="stacked" class="mx-3">
+          <span style="font-size: large; font-weight: 300"
+            >Select Record type</span
+          >
+        </ion-label>
+        <div class="d-flex justify-content-between">
+          <ion-item color="light" class="col rounded-3">
+            <ion-label>Credit</ion-label>
+            <ion-radio slot="start" value="credit"></ion-radio>
+          </ion-item>
+          <ion-item color="light" class="col rounded-3">
+            <ion-label>Debit</ion-label>
+            <ion-radio slot="start" value="debit"></ion-radio>
+          </ion-item>
+        </div>
+      </ion-radio-group>
+    </div>
+
     <div class="bgLight p-2 mx-2 rounded-3">
       <span class="fs-5 mx-1">Primary details</span>
       <div class="form-floating mb-2">
@@ -113,11 +117,12 @@
         class="form-control"
         id="comments"
         ngModel
-        style="height: 4rem"
+        (input)="getCommentHeight($event)"
         name="comments"
         [value]="clientRecord.comments || null"
         placeholder="Enter comments here"
         #comments="ngModel"
+        #commentHeight
       ></textarea>
       <label for="comments">Comments</label>
     </div>

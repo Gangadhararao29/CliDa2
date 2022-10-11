@@ -23,6 +23,10 @@ input:focus {
   background-color: var(--ion-color-light);
 }
 
+textarea {
+  overflow-y: hidden;
+}
+
 .custom-invalid-tooltip {
   padding: 0rem 0.5rem;
   margin-top: 0.1rem;
