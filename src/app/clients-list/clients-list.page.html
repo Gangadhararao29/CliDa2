@@ -30,18 +30,18 @@
 
     <div class="bgLight rounded-3 px-3 py-2 my-2">
       <div class="justifyText mb-2">
-        To load previously saved data from a json file, click the Export/Import
-        button or navigate to the Share tab in the bottom navigation bar.
+        Click the Export/Import button or go to the Share tab in the bottom
+        navigation bar to load previously saved data from a json file.
       </div>
       <div class="text-center">
         <ion-button routerLink="/clida/about"> Export / Import </ion-button>
       </div>
     </div>
 
-    <div class="bgLight rounded-3 px-3 py-2 mb-2">
+    <div class="bgLight rounded-3 px-3 py-2 my-2">
       <div class="justifyText mb-2">
-        To add the clients manually, click on the below button or click on the
-        bottom right add button.
+        To manually add clients, use the button below or the bottom right add
+        button on the screen.
       </div>
       <div class="text-center">
         <ion-button color="danger" routerLink="/clida/clients-list/add-client">
@@ -50,14 +50,12 @@
       </div>
     </div>
 
-    <div class="mt-2 rounded-3">
-      <div class="text-center bg-warning rounded-3 mt-2 pt-2">
-        <ion-icon name="alert-circle-outline" size="large"></ion-icon>
-      </div>
-      <div class="justifyText bgLight py-2 px-3">
-        Please save your data periodically using the Share tab. The data will be
-        saved in the documents folder in your phone's internal storage, when you
-        click on export button.
+    <div class="d-flex my-2 bgLight align-items-center rounded-3 bg-warning">
+      <div class="fs-1 p-3 text-dark">!</div>
+      <div class="justifyText bgLight p-2 rounded-end">
+        Please save your data on a regular basis using the Share tab. When you
+        click the export button, the data will be saved in the documents folder
+        in your phone's internal storage.
       </div>
     </div>
   </div>
@@ -90,11 +88,11 @@
         *ngFor="let client of debitData | clientsSearch:clientSearchValue"
         (click)="openClientDetails(client.key)"
         color="light"
-        class="m-2 rounded"
+        class="m-2 rounded-3"
         lines="none"
       >
         <div>{{client?.data.name}}</div>
-        <div class="ms-auto text-end">
+        <div class="ms-auto text-end mt-1">
           <ion-badge
             *ngFor="let clientDetail of client.data.data"
             class="ms-1"
@@ -111,11 +109,11 @@
         *ngFor="let client of creditData | clientsSearch:clientSearchValue"
         (click)="openClientDetails(client.key)"
         color="light"
-        class="m-2 rounded"
+        class="m-2 rounded-3"
         lines="none"
       >
         <div>{{client?.data.name}}</div>
-        <div class="ms-auto text-end">
+        <div class="ms-auto text-end mt-1">
           <ion-badge
             *ngFor="let clientDetail of client.data.data"
             class="ms-1"

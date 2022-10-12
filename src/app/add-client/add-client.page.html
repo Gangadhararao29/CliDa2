@@ -7,7 +7,7 @@
 
 <ion-content>
   <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
-    <div class="mx-2 my-2 bgLight pt-2 rounded-3">
+    <div class="m-2 bgLight pt-2 rounded">
       <ion-radio-group name="recordType" ngModel #recordType="ngModel">
         <ion-label position="stacked" class="mx-3">
           <span style="font-size: large; font-weight: 300"
@@ -15,11 +15,11 @@
           >
         </ion-label>
         <div class="d-flex justify-content-between">
-          <ion-item color="light" class="col rounded-3">
+          <ion-item color="light" class="col rounded">
             <ion-label>Credit</ion-label>
             <ion-radio slot="start" value="credit"></ion-radio>
           </ion-item>
-          <ion-item color="light" class="col rounded-3">
+          <ion-item color="light" class="col rounded">
             <ion-label>Debit</ion-label>
             <ion-radio slot="start" value="debit"></ion-radio>
           </ion-item>
@@ -28,7 +28,7 @@
     </div>
 
     <div class="mx-2">
-      <div class="p-2 bgLight rounded-3">
+      <div class="p-2 bgLight rounded">
         <div class="form-floating mt-1 mb-2">
           <input
             type="text"
@@ -130,7 +130,7 @@
         <label for="comments"><span class="formLabel">Comments</span></label>
       </div>
 
-      <ion-item class="mt-2 rounded-3" lines="none" color="light">
+      <ion-item class="mt-2 rounded" lines="none" color="light">
         <ion-label>Add multiple records</ion-label>
         <ion-toggle
           color="danger"
