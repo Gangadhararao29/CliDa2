@@ -13,6 +13,7 @@ export class LineChartPage implements OnChanges {
 
   public lineChartOptions: ChartConfiguration['options'] = {
     elements: { line: { tension: 0.5 } },
+    locale: 'en-IN',
     scales: {
       x: {},
       interestScale: {
@@ -35,7 +36,7 @@ export class LineChartPage implements OnChanges {
       mode: 'index',
       intersect: false,
     },
-    aspectRatio: 1.45,
+    aspectRatio: 1.2,
   };
 
   labels = [];

@@ -9,6 +9,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 
 import { DashboardPage } from './dashboard.page';
 import { LineChartPage } from './line-chart/line-chart.page';
+import { PieChartComponent } from './pie-chart/pie-chart.component';
 import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
@@ -20,6 +21,6 @@ import { NgChartsModule } from 'ng2-charts';
     NgChartsModule,
     NgxPaginationModule,
   ],
-  declarations: [DashboardPage, LineChartPage],
+  declarations: [DashboardPage, LineChartPage, PieChartComponent],
 })
 export class DashboardPageModule {}
