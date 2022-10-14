@@ -1,157 +1,207 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Share</ion-title>
-    <ion-buttons slot="primary">
-      <ion-button routerLink="log">
-        <ion-icon name="receipt-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+    <ion-title>Information</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-card color="light" class="m-2">
+  <ion-card color="light">
     <ion-card-header>
-      <ion-card-title>Export section</ion-card-title>
+      <ion-card-title class="d-flex"
+        ><div>Backup / Restore</div>
+        <ion-icon
+          id="help-section"
+          name="help-sharp"
+          size="small"
+          class="ms-auto border border-dark bg-warning rounded-circle text-dark p-1"
+        ></ion-icon>
+      </ion-card-title>
     </ion-card-header>
 
     <ion-card-content>
-      <div class="mb-2 pb-2">
-        To save your clients data into internal storage, Click on export button.
-      </div>
-      <div>
-        <ion-button expand="block" (click)="exportData()"
-          >Export <ion-icon name="share-outline"></ion-icon
-        ></ion-button>
-      </div>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card color="light" class="m-2">
-    <ion-card-header>
-      <ion-card-title>Import section</ion-card-title>
-    </ion-card-header>
-
-    <ion-card-content>
-      <div class="mb-2 pb-2">
-        To load your clients data into the app, Click on Choose file and select
-        .json file from internal storage.
-      </div>
-      <div>
-        <ion-item color="primary">
-          <ion-input
-            background="primary"
-            #fileInput
-            type="file"
-            accept="application/JSON"
-            (change)="importData($event.target)"
-            [(ngModel)]="inputClientData"
-          ></ion-input>
-        </ion-item>
-      </div>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-item class="m-2 border rounded-3" color="light" lines="none">
-    <ion-label>Sort main list by</ion-label>
-    <ion-select
-      (ionChange)="changeSort($event)"
-      interface="action"
-      placeholder="Year/Name"
-    >
-      <ion-select-option value="year">Year</ion-select-option>
-      <ion-select-option value="name">Name</ion-select-option>
-    </ion-select>
-  </ion-item>
-
-  <ion-item class="m-2 border rounded-3" color="light" lines="none">
-    <ion-label>Select Theme</ion-label>
-    <ion-select
-      [value]="themeName"
-      (ionChange)="changeTheme($event)"
-      interface="popover"
-    >
-      <ion-select-option value="light">Light</ion-select-option>
-      <ion-select-option value="dark">Dark</ion-select-option>
-      <ion-select-option value="auto">Auto</ion-select-option>
-    </ion-select>
-  </ion-item>
-
-  <ion-button (click)="cleanData()" color="warning" expand="block" class="m-2"
-    >Empty Errors fix</ion-button
-  >
-
-  <ion-button
-    (click)="presentDeleteAlert()"
-    color="danger"
-    expand="block"
-    class="m-2"
-    >Remove all clients data
-  </ion-button>
-
-  <ion-button
-    (click)="checkForUpdate()"
-    color="success"
-    expand="block"
-    class="m-2"
-    [disabled]="isUpdateLoading"
-    >Check for update
-  </ion-button>
-</ion-content>
-
-<ion-modal [isOpen]="isModalOpen">
-  <ng-template>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Check for update</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="setOpen(false)">Close</ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content>
-      <div class="bgLight m-2 rounded">
-        <ion-grid>
-          <ion-row>
-            <ion-col size="6">Current version</ion-col>
-            <ion-col>:</ion-col>
-            <ion-col>{{currentVersion}}</ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size="6">Latest version</ion-col>
-            <ion-col>:</ion-col>
-            <ion-col>{{updateVersion}}</ion-col>
-          </ion-row>
-          <ion-row class="text-center">
-            <ion-col>
-              <ion-button
-                [href]="latestRelease.assets[0].browser_download_url"
-                expand="block"
-                >Download latest apk</ion-button
-              >
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </div>
-
-      <div class="m-2 p-2 bgLight rounded">
-        <div *ngFor="let release of gitHubResponse">
-          <div class="d-flex">
-            <div class="fs-3 text-primary">{{release.tag_name}}</div>
-            <a class="ms-2" [href]="release.assets[0].browser_download_url">
-              <ion-icon name="download-outline" size="large"></ion-icon>
-            </a>
-            <a class="ms-2" [href]="release.html_url">
-              <ion-icon name="logo-github" size="large"></ion-icon>
-            </a>
-            <div class="ms-auto fs-3 text-primary">
-              {{getDateString(release.published_at)}}
-            </div>
-          </div>
-          <small style="white-space: pre-line">{{release.body}}</small>
-          <hr />
+      <div class="d-flex align-items-center pb-1 justify-content-between">
+        <div class="justifyText pe-2">
+          To save data in your local storage, click the Backup button.
+        </div>
+        <div>
+          <ion-button expand="block" (click)="exportData()"
+            >&nbsp;Backup&nbsp;</ion-button
+          >
         </div>
       </div>
-    </ion-content>
-  </ng-template>
-</ion-modal>
+      <hr class="my-1 mx-0 p-0" />
+      <div class="d-flex align-items-center pt-1 justify-content-between">
+        <div class="justifyText pe-2">
+          To load data from your local storage, click the Restore button.
+        </div>
+        <div>
+          <ion-button expand="block" (click)="handleRestore()"
+            >Restore</ion-button
+          >
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-popover trigger="help-section" side="bottom" alignment="end" size="auto">
+    <ng-template>
+      <ion-content class="ion-padding">
+        <div>
+          The Backup button will save your data as a JSON file in the file path
+          format shown below.
+          <i class="text-primary"
+            >Internal_storage/Documents/CliDa/filename.json</i
+          >.
+          <hr class="mx-0 my-1 p-0" />
+          When you click the Restore button and select a valid json file, you
+          will be given two options. We recommend using the replace option, but
+          you can also try merge.
+          <hr class="mx-0 my-1 p-0" />
+          You can also import a json file into Excel by following this
+          <a href="https://www.javatpoint.com/how-to-open-json-file-in-excel"
+            >tutorial</a
+          >.
+          <hr class="mx-0 my-1 p-0" />
+          A guide for importing from Excel will be available soon.
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-popover>
+
+  <input
+    hidden
+    #fileInput2
+    type="file"
+    accept="application/JSON"
+    (change)="importData($event.target)"
+    [(ngModel)]="inputClientData"
+  />
+
+  <ion-card color="light">
+    <ion-card-header>
+      <ion-card-title class="d-flex">Data settings</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-item expand="block" color="primary rounded-3 mt-1">
+        <ion-label>Sort main list by</ion-label>
+        <ion-select
+          (ionChange)="changeSort($event)"
+          interface="action"
+          placeholder="Year/Name"
+        >
+          <ion-select-option value="year">Year</ion-select-option>
+          <ion-select-option value="name">Name</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-button
+        (click)="cleanData()"
+        color="warning"
+        expand="block"
+        class="my-2"
+        >Data Errors fix</ion-button
+      >
+      <ion-button (click)="presentDeleteAlert()" color="danger" expand="block"
+        >Remove all clients data
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card color="light">
+    <ion-card-header>
+      <ion-card-title class="d-flex">App settings</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-item class="rounded-3 mt-1" color="primary">
+        <ion-label>Theme</ion-label>
+        <ion-select
+          [value]="themeName"
+          (ionChange)="changeTheme($event)"
+          interface="popover"
+        >
+          <ion-select-option value="light">Light</ion-select-option>
+          <ion-select-option value="dark">Dark</ion-select-option>
+          <ion-select-option value="auto">Auto</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-button
+        (click)="checkForUpdate()"
+        color="success"
+        expand="block"
+        class="my-2"
+        [disabled]="isUpdateLoading"
+        >Check for update
+      </ion-button>
+      <div class="d-flex mt-0">
+        <ion-button class="w-50" color="secondary" routerLink="logs"
+          >Show logs</ion-button
+        >
+        <ion-button
+          class="w-50"
+          color="danger"
+          href="mailto:gangadhararao29@gmail.com?Subject=CliDa2_Bugs"
+          >Report bug</ion-button
+        >
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-modal [isOpen]="isModalOpen">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Check for update</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="setOpen(false)">Close</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <div class="bgLight m-2 rounded p-1">
+          <ion-grid>
+            <ion-row>
+              <ion-col size="6">Current version</ion-col>
+              <ion-col>:</ion-col>
+              <ion-col>{{currentVersion}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="6">Latest version</ion-col>
+              <ion-col>:</ion-col>
+              <ion-col>{{latestVersion}}</ion-col>
+            </ion-row>
+            <ion-row class="text-center">
+              <ion-col>
+                <ion-button
+                  [href]="gitHubResponse[0].assets[0].browser_download_url"
+                  expand="block"
+                  [disabled]="latestVersion <= currentVersion"
+                  [innerHTML]="latestVersion <= currentVersion ? 'No updates found' : 'Download latest apk'"
+                ></ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+
+        <div class="m-2 p-2 bgLight rounded">
+          <div *ngFor="let release of gitHubResponse">
+            <div class="d-flex">
+              <div class="fs-3 text-primary">{{release.tag_name}}</div>
+              <a class="ms-2" [href]="release.assets[0].browser_download_url">
+                <ion-icon name="download-outline" size="large"></ion-icon>
+              </a>
+              <a class="ms-2" [href]="release.html_url">
+                <ion-icon name="logo-github" size="large"></ion-icon>
+              </a>
+              <div class="ms-auto fs-3 text-primary">
+                {{getDateString(release.published_at)}}
+              </div>
+            </div>
+            <small [innerHTML]="release.body"></small>
+            <hr class="subDivision" />
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

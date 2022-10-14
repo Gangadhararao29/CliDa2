@@ -62,13 +62,9 @@ export class ClientDataService {
       .update(clientData);
   }
 
-  async addNewClientData(formData, recordType, includeClosedDetails = false) {
+  async addNewClientData(formData, includeClosedDetails = false) {
     this.setDataModified();
-    const payLoad = this.generatePayLoad(
-      formData,
-      recordType,
-      includeClosedDetails
-    );
+    const payLoad = this.generatePayLoad(formData, includeClosedDetails);
     this.addNewLogData('new', null, payLoad);
     return await this.getClientByName(payLoad.name).then((res) => {
       if (res) {
@@ -80,23 +76,22 @@ export class ClientDataService {
     });
   }
 
-  async editClientData(formData, recordType, clientData, index) {
+  async editClientData(formData, clientData, index) {
     this.setDataModified();
     formData.userName = this.formatToCamelCase(formData.userName);
     formData.principal =
-      recordType === 'credit'
+      formData.recordType === 'credit'
         ? Math.abs(formData.principal)
         : -Math.abs(formData.principal);
 
     this.addNewLogData('edit', clientData, formData, index);
-
     if (formData.userName == clientData.name) {
       delete formData.userName;
       formData.id = clientData.data[index].id;
       clientData.data[index] = formData;
       return await this.updateClientRecordByName(clientData);
     } else {
-      return await this.addNewClientData(formData, recordType, true);
+      return await this.addNewClientData(formData, true);
     }
   }
 
@@ -201,14 +196,16 @@ export class ClientDataService {
    * utilities here
    */
 
-  generatePayLoad(formData, recordType, includeClosedDetails) {
+  generatePayLoad(formData, includeClosedDetails) {
     return {
       name: this.formatToCamelCase(formData.userName),
       data: [
         {
           id: Date.now(),
           principal:
-            recordType === 'credit' ? formData.principal : -formData.principal,
+            formData.recordType === 'credit'
+              ? Math.abs(formData.principal)
+              : -Math.abs(formData.principal),
           interest: formData.interest,
           startDate: formData.startDate,
           comments: formData.comments,

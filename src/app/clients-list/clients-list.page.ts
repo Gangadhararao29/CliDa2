@@ -33,6 +33,7 @@ export class ClientsListPage {
   }
 
   ionViewWillEnter() {
+    this.hideSkeletonText = false;
     this.getDisplayData();
     if (localStorage.getItem('tabSection') === 'debits') {
       this.tabSection = 'debits';
@@ -69,9 +70,9 @@ export class ClientsListPage {
             this.creditData.push({ key, data: { name, data: tempCreditData } });
           }
         });
-        this.hideSkeletonText = true;
         this.clientDataService.clientsListRefresh = false;
       }
+      this.hideSkeletonText = true;
     });
   }
 

@@ -1,9 +1,10 @@
-import { Component, Renderer2 } from '@angular/core';
+import { Component, Renderer2, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { ClientDataService } from '../services/client-data.service';
 import { HttpClient } from '@angular/common/http';
+import { App } from '@capacitor/app';
 
 @Component({
   selector: 'app-about',
@@ -11,18 +12,13 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./about.page.scss'],
 })
 export class AboutPage {
-  downloadJsonHref: any;
-  importedJSON: any;
-  jsonFile: any;
-  clientsData: string;
-  darkModeFlag = false;
+  @ViewChild('fileInput2') fileInput: any;
+
   themeName = localStorage.getItem('theme');
   inputClientData: any;
-  sortValue: any;
-  latestRelease: any;
   isUpdateLoading = false;
   isModalOpen = false;
-  updateVersion = 0;
+  latestVersion = 0;
   currentVersion = 3.4;
   gitHubResponse = [];
 
@@ -36,13 +32,16 @@ export class AboutPage {
 
   checkForUpdate() {
     this.isUpdateLoading = true;
+    App.getInfo().then((suc) => {
+      this.currentVersion = parseFloat(suc.version);
+    });
     this.httpClient
       .get('https://api.github.com/repos/gangadhararao29/clida2/releases')
       .subscribe((res: Array<any>) => {
-        console.log(res);
-        this.gitHubResponse = res;
-        this.latestRelease = res.find((release) => !release.draft);
-        this.updateVersion = this.latestRelease.tag_name.slice(1) * 1;
+        this.gitHubResponse = res.filter((release) => !release.draft);
+        this.latestVersion = parseFloat(
+          this.gitHubResponse[0].tag_name.slice(1)
+        );
         this.isUpdateLoading = false;
         this.isModalOpen = true;
       });
@@ -54,15 +53,15 @@ export class AboutPage {
 
   exportData() {
     this.clientDataService.getAllClientsData().then((data) => {
-      this.clientsData = JSON.stringify(data);
-      this.writeSecretFile(this.clientsData);
-      this.nativeSaveByUrl();
+      const clientDataString = JSON.stringify(data);
+      this.writeSecretFile(clientDataString);
+      this.nativeSaveByUrl(clientDataString);
     });
   }
 
-  nativeSaveByUrl() {
+  nativeSaveByUrl(clientsDataString) {
     const a = document.createElement('a');
-    const file = new Blob([this.clientsData], { type: 'text/plain' });
+    const file = new Blob([clientsDataString], { type: 'text/plain' });
     a.href = URL.createObjectURL(file);
     a.download = 'clientsData.json';
     a.click();
@@ -95,8 +94,7 @@ export class AboutPage {
   }
 
   importData(target) {
-    this.jsonFile = target.files.item(0);
-    this.presentImportDataAlert(this.jsonFile);
+    this.presentImportDataAlert(target.files.item(0));
   }
 
   async presentImportDataAlert(file) {
@@ -135,9 +133,8 @@ export class AboutPage {
     const fileReader = new FileReader();
     fileReader.readAsText(file);
     fileReader.onload = (e) => {
-      this.importedJSON = fileReader.result;
       this.clientDataService
-        .saveBulkClients(this.importedJSON, replaceStatus)
+        .saveBulkClients(fileReader.result, replaceStatus)
         .then((res) => {
           setTimeout(() => {
             this.inputClientData = '';
@@ -173,6 +170,7 @@ export class AboutPage {
   }
 
   resetData() {
+    this.clientDataService.setDataModified();
     this.clientDataService.deleteDataBase();
     this.clientDataService.presentToast('Data successfully deleted');
   }
@@ -252,5 +250,9 @@ export class AboutPage {
       month: '2-digit',
       year: 'numeric',
     });
+  }
+
+  handleRestore() {
+    this.fileInput.nativeElement.click();
   }
 }
