@@ -1,9 +1,15 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Dashboard</ion-title>
-    <ion-buttons slot="primary">
+    <ion-buttons slot="primary" class="mx-2">
+      <ion-button (click)="scrollToElement(chart1)">
+        <ion-icon name="stats-chart-sharp"></ion-icon>
+      </ion-button>
+      <ion-button (click)="scrollToElement(chart2)">
+        <ion-icon name="pie-chart-sharp"></ion-icon>
+      </ion-button>
       <ion-button routerLink="adv-search">
-        <ion-icon name="color-wand" slot="icon-only"></ion-icon>
+        <ion-icon name="color-wand-sharp" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -41,23 +47,6 @@
     </div>
     <div #chart2>
       <app-pie-chart [responseData]="totalArray"></app-pie-chart>
-    </div>
-  </div>
-
-  <div class="d-flex justify-content-evenly mt-2">
-    <div
-      class="align-items-center bgLight rounded p-2"
-      (click)="scrollToElement(chart1)"
-    >
-      <ion-icon name="stats-chart"></ion-icon>
-      Principal / Years
-    </div>
-    <div
-      class="align-items-center bgLight rounded p-2"
-      (click)="scrollToElement(chart2)"
-    >
-      <ion-icon name="pie-chart"></ion-icon>
-      Credits / Debits
     </div>
   </div>
 

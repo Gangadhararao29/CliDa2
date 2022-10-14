@@ -84,10 +84,6 @@ export class ClientsListPage {
         : 'search-sharp';
   }
 
-  openClientDetails(key) {
-    this.router.navigate(['clida/clients-list/client-details', key]);
-  }
-
   async presentAlertConfirm() {
     const alert = await this.alertController.create({
       header: 'Exit',
