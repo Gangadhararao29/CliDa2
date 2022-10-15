@@ -8,9 +8,7 @@ import { ClientDataService } from '../services/client-data.service';
   styleUrls: ['./calculator.page.scss'],
 })
 export class CalculatorPage {
-  clientID = '';
   linkData = {} as any;
-  recordId: any;
   timePeriodObject: { d: number; m: number; y: number; tm: number };
   interestObj: {
     interest: number;
@@ -27,12 +25,12 @@ export class CalculatorPage {
   ) {}
 
   ionViewWillEnter() {
-    this.clientID = this.activatedRoute.snapshot.params.key;
-    this.recordId = this.activatedRoute.snapshot.params.id;
+    const clientID = this.activatedRoute.snapshot.params.key;
+    const recordId = this.activatedRoute.snapshot.params.id;
 
-    if (this.clientID !== '0') {
-      this.clientsDataService.getClientByKey(this.clientID).then((res) => {
-        this.linkData = res.data.find((record) => record.id == this.recordId);
+    if (clientID !== '0') {
+      this.clientsDataService.getClientByKey(clientID).then((res) => {
+        this.linkData = res.data.find((record) => record.id == recordId);
         this.linkData.name = res.name;
         this.linkData.endDate = this.clientsDataService.today;
       });
@@ -67,10 +65,9 @@ export class CalculatorPage {
     }
   }
 
-  resetForm() {
-    setTimeout(() => {
-      this.linkData.endDate = this.clientsDataService.today;
-    }, 0);
+  resetForm(formRef) {
+    formRef.form.reset();
+    formRef.form.controls.endDate.setValue(this.clientsDataService.today);
     this.showCalculatedData = false;
   }
 
