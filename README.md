@@ -10,7 +10,6 @@ App consists of 4 main tabs
 **1. ClientList** <br>
     In this tab, list of clients wil be shown along with individual principal amounts with respective color tags based on the timeperiods. <br>
       blue   -> 1 years <br>
-      cyan   -> 1 years <br>
       yellow -> 2 years <br>
       red    -> 2.5 years <br>
       
@@ -26,9 +25,8 @@ App consists of 4 main tabs
       In this tab, it is used to calculate simple interest and generate the creditSlip accordingly.
       If the client exceeds timeLimit of 3 years , user must use tis tab to calculate Interest.
       
-**4. Share** <br>
-      *Records log can be found by pressing the top right button.
-      In this tab you can export or import data into tab.
+**4. Info** <br>
+      In this tab you can backup or Restore data into the app.
       Remove entire data from the app.
       Change theme of the app.
       Sort Main List etc.
