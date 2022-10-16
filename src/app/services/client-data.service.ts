@@ -133,8 +133,14 @@ export class ClientDataService {
   }
 
   async cleanClientsData() {
-    return this.getAllClientsData().then((res) => {
-      res = res.filter((client) => client.data.length > 0 && client.name);
+    this.setDataModified();
+    return await this.getAllClientsData().then((res) => {
+      res = res.filter((client) => {
+        client.data = client.data?.filter(
+          (record) => record?.principal && record?.interest && record?.startDate
+        );
+        return client?.name && client.data?.length;
+      });
       this.db.collection('clientsData').set(res);
     });
   }

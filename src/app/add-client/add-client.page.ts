@@ -20,7 +20,7 @@ export class AddClientPage {
 
   ionViewWillEnter() {
     this.isAddBtnDisable = false;
-    this.formRefVariable.form.reset();
+    this.formRefVariable.resetForm();
     this.clientDataService.getAllClientsData().then((res) => {
       this.clientsData = res;
     });

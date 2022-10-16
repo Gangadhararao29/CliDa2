@@ -66,7 +66,7 @@ export class CalculatorPage {
   }
 
   resetForm(formRef) {
-    formRef.form.reset();
+    formRef.resetForm();
     formRef.form.controls.endDate.setValue(this.clientsDataService.today);
     this.showCalculatedData = false;
   }
