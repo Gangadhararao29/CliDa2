@@ -256,8 +256,9 @@ export class ClientDataService {
   async presentLoading() {
     const loading = await this.loadingController.create({
       animated: true,
-      message: 'loading...',
+      message: 'Loading...',
       duration: 1000,
+      spinner: 'lines',
     });
     await loading.present();
   }

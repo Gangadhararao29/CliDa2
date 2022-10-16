@@ -73,8 +73,9 @@ export class CalculatorPage {
 
   dateInputErrorAlert() {
     const alert = document.createElement('ion-alert');
+    alert.cssClass = 'alertStyle';
     alert.header = 'Please check the dates';
-    alert.message = 'End date should be greater than Start Date';
+    alert.message = 'The end date should be greater than the start date.';
     alert.buttons = ['Ok'];
     document.body.appendChild(alert);
     return alert.present();
