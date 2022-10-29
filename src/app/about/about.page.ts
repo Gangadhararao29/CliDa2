@@ -12,8 +12,6 @@ import { App } from '@capacitor/app';
   styleUrls: ['./about.page.scss'],
 })
 export class AboutPage {
-  @ViewChild('fileInput2') fileInput: any;
-
   themeName = localStorage.getItem('theme');
   inputClientData: any;
   isUpdateLoading = false;
@@ -238,9 +236,11 @@ export class AboutPage {
 
   cleanData() {
     this.clientDataService.cleanClientsData().then((res) => {
-      this.clientDataService.presentToast(
-        'All the empty Data and errors are fixed.'
-      );
+      this.clientDataService.presentLoading().then(() => {
+        this.clientDataService.presentToast(
+          'All the empty Data and errors are fixed.'
+        );
+      });
     });
   }
 
@@ -250,9 +250,5 @@ export class AboutPage {
       month: '2-digit',
       year: 'numeric',
     });
-  }
-
-  handleRestore() {
-    this.fileInput.nativeElement.click();
   }
 }

@@ -90,6 +90,7 @@ export class AdvSearchPage implements OnInit {
     } else {
       paramsModel.active = 'light';
       this.displayData = [];
+      this.hideSkeletonText = true;
       return;
     }
     this.clientDataService.getAllClientsDataWithKeys().then((res) => {

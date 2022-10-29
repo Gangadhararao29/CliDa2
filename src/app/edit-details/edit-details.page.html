@@ -12,7 +12,7 @@
     <div class="m-2 bgLight pt-2 rounded">
       <ion-radio-group
         name="recordType"
-        [ngModel]="clientRecord.principal > 0?'credit':'debit'"
+        [ngModel]="clientRecord.principal < 0?'debit':'credit'"
         #recordType="ngModel"
       >
         <ion-label position="stacked" class="mx-3">

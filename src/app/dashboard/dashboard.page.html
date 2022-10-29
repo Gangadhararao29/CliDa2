@@ -12,15 +12,14 @@
         <ion-icon name="color-wand-sharp" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
+    <ion-progress-bar
+      [hidden]="hideSkeletonText"
+      type="indeterminate"
+    ></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-progress-bar
-    [hidden]="hideSkeletonText"
-    type="indeterminate"
-  ></ion-progress-bar>
-
   <div class="m-2 p-1 bgLight rounded">
     <ion-grid>
       <ion-row>

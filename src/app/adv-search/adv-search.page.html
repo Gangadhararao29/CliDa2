@@ -12,14 +12,14 @@
         <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
+    <ion-progress-bar
+      [hidden]="hideSkeletonText"
+      type="indeterminate"
+    ></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-progress-bar
-    [hidden]="hideSkeletonText"
-    type="indeterminate"
-  ></ion-progress-bar>
   <div
     class="d-flex align-items-center overflow-auto flex-nowrap mt-1"
     style="height: max-content"

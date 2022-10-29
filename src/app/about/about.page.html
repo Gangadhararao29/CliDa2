@@ -35,7 +35,7 @@
           To load data from your local storage, click the Restore button.
         </div>
         <div>
-          <ion-button expand="block" (click)="handleRestore()"
+          <ion-button expand="block" (click)="fileInput.click()"
             >Restore</ion-button
           >
         </div>
@@ -70,7 +70,7 @@
 
   <input
     hidden
-    #fileInput2
+    #fileInput
     type="file"
     accept="application/JSON"
     (change)="importData($event.target)"
@@ -83,17 +83,23 @@
     </ion-card-header>
 
     <ion-card-content>
-      <ion-item expand="block" color="primary rounded-3 mt-1">
-        <ion-label>Sort main list by</ion-label>
+      <ion-button
+        expand="block"
+        color="primary"
+        (click)="selectSort.el.click()"
+      >
+        <ion-label>Sort Data list by</ion-label>
         <ion-select
+          #selectSort
+          [interfaceOptions]="{header:'Sort main clients list by'}"
+          interface="alert"
           (ionChange)="changeSort($event)"
-          interface="action"
-          placeholder="Year/Name"
+          placeholder="Yr/Nm"
         >
           <ion-select-option value="year">Year</ion-select-option>
           <ion-select-option value="name">Name</ion-select-option>
         </ion-select>
-      </ion-item>
+      </ion-button>
       <ion-button
         (click)="cleanData()"
         color="warning"
@@ -113,9 +119,14 @@
     </ion-card-header>
 
     <ion-card-content>
-      <ion-item class="rounded-3 mt-1" color="primary">
-        <ion-label>Theme</ion-label>
+      <ion-button
+        expand="block"
+        color="primary"
+        (click)="selectTheme.el.click()"
+      >
+        <ion-label>Select theme :</ion-label>
         <ion-select
+          #selectTheme
           [value]="themeName"
           (ionChange)="changeTheme($event)"
           interface="popover"
@@ -124,25 +135,28 @@
           <ion-select-option value="dark">Dark</ion-select-option>
           <ion-select-option value="auto">Auto</ion-select-option>
         </ion-select>
-      </ion-item>
+      </ion-button>
+
       <ion-button
         (click)="checkForUpdate()"
         color="success"
+        class="mt-2 mb-1"
         expand="block"
-        class="my-2"
         [disabled]="isUpdateLoading"
         >Check for update
       </ion-button>
-      <div class="d-flex mt-0">
-        <ion-button class="w-50" color="secondary" routerLink="logs"
-          >Show logs</ion-button
-        >
+
+      <div class="d-flex">
+        <ion-button class="w-100" color="secondary" routerLink="logs">
+          Show logs
+        </ion-button>
         <ion-button
-          class="w-50"
+          class="w-100"
           color="danger"
           href="mailto:gangadhararao29@gmail.com?Subject=CliDa2_Bugs"
-          >Report bug</ion-button
         >
+          Report bug
+        </ion-button>
       </div>
     </ion-card-content>
   </ion-card>

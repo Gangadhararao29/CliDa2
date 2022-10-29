@@ -4,16 +4,15 @@
       <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-title>{{client?.name}}</ion-title>
+    <ion-progress-bar
+      [hidden]="hideSkeletonText"
+      type="indeterminate"
+    ></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <div class="mx-2 mt-1">
-    <ion-progress-bar
-      [hidden]="hideSkeletonText"
-      type="indeterminate"
-    ></ion-progress-bar>
-
     <ion-accordion toggle-icon="none" readonly="true">
       <ion-item slot="header" color="primary" class="rounded">
         <ion-label class="d-flex ms-2">

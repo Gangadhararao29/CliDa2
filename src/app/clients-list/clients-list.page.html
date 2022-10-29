@@ -10,15 +10,14 @@
         ><ion-icon [name]="searchIcon" slot="icon-only"></ion-icon
       ></ion-button>
     </ion-buttons>
+    <ion-progress-bar
+      [hidden]="hideSkeletonText"
+      type="indeterminate"
+    ></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-progress-bar
-    [hidden]="hideSkeletonText"
-    type="indeterminate"
-  ></ion-progress-bar>
-
   <div [hidden]="!showEntryText" class="container my-2">
     <ion-item
       color="primary"
@@ -53,14 +52,14 @@
     <div class="d-flex my-2 bgLight align-items-center rounded-3 bg-warning">
       <div class="fs-1 p-3 text-dark">!</div>
       <div class="justifyText bgLight p-2 rounded-end">
-        Please save your data on a regular basis using the Share tab. When you
-        click the export button, the data will be saved in the documents folder
-        in your phone's internal storage.
+        Please save your data on a regular basis using the Info tab. When you
+        click the Backup button, the data will be saved under CliDa in the
+        documents folder of your phone's internal storage.
       </div>
     </div>
   </div>
 
-  <div [hidden]="showEntryText" class="mx-1 mt-2">
+  <div [hidden]="showEntryText" class="mx-1 mt-1">
     <ion-segment [value]="tabSection" (ionChange)="setrecordType($event)">
       <ion-segment-button value="credits">
         <ion-label>Credits</ion-label>

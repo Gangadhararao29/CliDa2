@@ -27,9 +27,23 @@ export class ClientsListPage {
   ) {
     this.platform.backButton.subscribeWithPriority(-1, () => {
       if (!this.routerOutlet.canGoBack()) {
-        this.presentAlertConfirm();
+        this.backButtonAction();
       }
     });
+  }
+
+  async backButtonAction() {
+    this.alertController.getTop().then((alrt) => {
+      if (alrt) {
+        alrt.dismiss();
+      }
+    });
+    if (this.router.url === '/clida/clients-list') {
+      const alert = await this.getCloseAlert();
+      alert.present();
+    } else {
+      this.router.navigate(['/clida/clients-list']);
+    }
   }
 
   ionViewWillEnter() {
@@ -84,8 +98,8 @@ export class ClientsListPage {
         : 'search-sharp';
   }
 
-  async presentAlertConfirm() {
-    const alert = await this.alertController.create({
+  async getCloseAlert() {
+    return await this.alertController.create({
       header: 'Exit',
       cssClass: 'alertStyle',
       backdropDismiss: false,
@@ -105,7 +119,6 @@ export class ClientsListPage {
         },
       ],
     });
-    await alert.present();
   }
 
   getColor(detail) {
