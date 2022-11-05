@@ -18,13 +18,13 @@ ion-segment-button {
   --color:var(--ion-color-primary);
   --background-checked: var(--ion-color-primary);
   --color-checked: white;
-  border-radius: .60rem !important;
+  border-radius: .5rem !important;
   margin: 2.5px;
   height: 40px;
   min-height: 40px;
 }
 
 ion-searchbar {
-    --border-radius: 10px;
+    --border-radius: 0.5rem;
 }
 

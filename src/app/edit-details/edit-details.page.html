@@ -51,7 +51,7 @@
         <label for="userName">Client name</label>
         <div id="userName" class="invalid-feedback">Please enter a Name.</div>
         <div [hidden]="!userName.dirty" class="custom-invalid-tooltip">
-          Caution see below for more details.
+          Caution: See below for more details.
         </div>
       </div>
       <div class="mb-2 d-flex justify-content-between">
@@ -166,22 +166,25 @@
       </ion-button>
     </div>
 
-    <ion-button color="success" expand="block" type="submit" class="m-2">
+    <ion-button
+      color="success"
+      expand="block"
+      type="submit"
+      class="mt-2 mb-3 mx-2"
+    >
       confirm
     </ion-button>
   </form>
 
-  <ion-card *ngIf="userName.dirty" color="light">
-    <ion-item color="warning">
-      <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
-      <ion-label>Caution</ion-label>
-    </ion-item>
-
-    <ion-card-content>
-      If the name of the client is changed here, It will search for the existing
-      records and if found it will add it there or else it will add as a new
-      record.
-      <b><i>Existing record will be deleted from the current client.</i></b>
-    </ion-card-content>
-  </ion-card>
+  <div
+    *ngIf="userName.dirty"
+    class="d-flex m-2 bgLight align-items-center rounded-3 bg-warning"
+  >
+    <div class="fs-1 p-3 text-dark">!</div>
+    <small class="justifyText bgLight p-2 rounded-end">
+      If the client's name is changed here, it will search for existing records
+      and, if found, will add it there, otherwise it will create a new record.
+      <b><i>The current client's existing record will be deleted.</i></b>
+    </small>
+  </div>
 </ion-content>

@@ -11,6 +11,11 @@ ion-title {
   text-align: center;
 }
 
+.justifyText {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
 input,
 textarea,
 textarea:focus,
@@ -34,4 +39,9 @@ textarea {
   color: black;
   background-color: #ffc409;
   border-radius: 0.25rem;
+}
+
+ion-button {
+  --padding-top: 1.35rem;
+  --padding-bottom: 1.35rem;
 }
