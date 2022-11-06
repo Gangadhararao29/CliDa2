@@ -1,7 +1,9 @@
 # CliDa - Manage your clients with ease.
 
-Ionic + Capacitor project => build for android only. <br>
+<a href="https://clida2-850b1.web.app" target="_blank">Clida website</a> (best suited for mobile)
+
 **No data is saved in the servers, make sure you save data periodically into your phones storage**
+
 
 A simple app to manage and maintain your financial clients data.
 
