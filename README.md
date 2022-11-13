@@ -1,6 +1,6 @@
 # CliDa - Manage your clients with ease.
 
-<a href="https://clida2-850b1.web.app" target="_blank">Clida website</a> (best suited for mobile)
+<a href="https://clida3.web.app" target="_blank">Clida website</a>
 
 **No data is saved in the servers, make sure you save data periodically into your phones storage**
 
