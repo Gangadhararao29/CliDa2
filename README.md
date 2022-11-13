@@ -1,9 +1,15 @@
 # CliDa - Manage your clients with ease.
 
-<a href="https://clida3.web.app" target="_blank">Clida website</a>
+<a href="https://clida3.web.app" target="_blank">Visit CliDa website</a>
 
-**No data is saved in the servers, make sure you save data periodically into your phones storage**
-
+<div style="display:flex">
+<img src="https://user-images.githubusercontent.com/81372414/201507102-f40e9ab2-e88d-4b20-9c68-ab4383d4cc3e.png">
+<img src="https://user-images.githubusercontent.com/81372414/201507265-af769dc5-95e1-40f7-8e5d-07d8d9958065.png">
+<img src="https://user-images.githubusercontent.com/81372414/201507310-dbe2f64e-c6ce-4f66-84b5-5d475bb9f9bf.png">
+<img src="https://user-images.githubusercontent.com/81372414/201507423-e6e062f4-796d-4984-a854-cd614281a71f.png">
+<img src="https://user-images.githubusercontent.com/81372414/201507189-9eb659e6-a07b-4e04-a906-bdbca88d3c40.png">
+<img src="https://user-images.githubusercontent.com/81372414/201507216-283eef8d-6ab1-479f-9aa6-fc9c359196a7.png">
+</div>
 
 A simple app to manage and maintain your financial clients data.
 
