@@ -10,16 +10,17 @@
 <img src="https://user-images.githubusercontent.com/81372414/201507189-9eb659e6-a07b-4e04-a906-bdbca88d3c40.png">
 <img src="https://user-images.githubusercontent.com/81372414/201507216-283eef8d-6ab1-479f-9aa6-fc9c359196a7.png">
 </div>
+<br>
 
-A simple app to manage and maintain your financial clients data.
+A lightweight application to track your clients in real time and simple interest calculator.
 
-App consists of 4 main tabs
+App consists of 4 main tabs <br>
 
 **1. ClientList** <br>
     In this tab, list of clients wil be shown along with individual principal amounts with respective color tags based on the timeperiods. <br>
       blue   -> 1 years <br>
       yellow -> 2 years <br>
-      red    -> 2.5 years <br>
+      red    -> 2.5 years <br> 
       
 **2. Dashboard** <br>
     *Click on magic wand icon on top right to filter and sort data to your preference.
