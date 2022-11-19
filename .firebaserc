@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "clida3"
+  },
+  "targets": {
+    "clida3": {
+      "hosting": {
+        "app": [
+          "clida3"
+        ]
+      }
+    }
+  }
+}
