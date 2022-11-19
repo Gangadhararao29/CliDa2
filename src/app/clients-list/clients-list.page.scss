@@ -11,21 +11,20 @@ ion-content {
   background-color: var(--ion-color-light);
 }
 
-ion-segment {
-  border-radius: 0.65rem;
-  height: 2.5rem;
-  align-items: center;
-}
-
 ion-segment-button {
-  margin: 2.5px;
-  background-color: var(--ion-color-light);
-  border-radius: 0.65rem;
   --indicator-color: transparent !important;
-  --indicator-color-checked: transparent !important;
+  --indicator-box-shadow: transparent !important;
+  --background:var(--ion-color-light);
+  --color:var(--ion-color-primary);
+  --background-checked: var(--ion-color-primary);
+  --color-checked: white;
+  border-radius: .5rem !important;
+  margin: 2.5px;
+  height: 40px;
+  min-height: 40px;
 }
 
-.segment-button-checked {
-  background-color: var(--ion-color-primary);
-  color: white;
+ion-searchbar {
+    --border-radius: 0.5rem;
 }
+

@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
-  <ion-toolbar class="d-flex">
-    <ion-title> Clients list </ion-title>
+  <ion-toolbar>
+    <ion-title> Clients List </ion-title>
     <ion-buttons slot="primary">
       <ion-button
         [hidden]="showEntryText"
@@ -10,59 +10,60 @@
         ><ion-icon [name]="searchIcon" slot="icon-only"></ion-icon
       ></ion-button>
     </ion-buttons>
+    <ion-progress-bar
+      [hidden]="hideSkeletonText"
+      type="indeterminate"
+    ></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div [hidden]="!showEntryText" class="container my-2">
+  <div *ngIf="showEntryText" class="container my-2">
     <ion-item
-      color="light"
+      color="primary"
       lines="none"
-      class="border border-primary border-3 text-center rounded-3"
+      class="border border-3 text-center rounded-3"
     >
-      <ion-label class="fs-5"> Clida says Hello 👋</ion-label>
+      <ion-label class="fs-5 text-warning"> Clida says Hello 👋</ion-label>
     </ion-item>
 
     <div class="bgLight rounded-3 px-3 py-2 my-2">
       <div class="justifyText mb-2">
-        To load already saved data from json file, click on Export/Import button
-        or go to the Share tab from the bottom navigation bar.
+        Click the Backup/Restore button or go to the Info tab in the bottom
+        navigation bar to load previously saved data from a json file.
       </div>
-      <div class="text-center mb-1">
-        <button class="btn btn-primary" routerLink="/clida/about">
-          Export / Import
-        </button>
+      <div class="text-center">
+        <ion-button routerLink="/clida/about"> Backup / Restore </ion-button>
       </div>
     </div>
 
-    <div class="bgLight rounded-3 px-3 py-2 mb-2">
+    <div class="bgLight rounded-3 px-3 py-2 my-2">
       <div class="justifyText mb-2">
-        To add the clients manually, click on the below button or click on the
-        bottom right add button.
+        To manually add clients, use the button below or the bottom right add
+        button on the screen.
       </div>
-      <div class="text-center mb-1">
-        <button
-          class="btn btn-danger"
-          routerLink="/clida/clients-list/add-client"
-        >
+      <div class="text-center">
+        <ion-button color="danger" routerLink="/clida/clients-list/add-client">
           Add new Client
-        </button>
+        </ion-button>
       </div>
     </div>
 
-    <div class="mt-2 rounded-3">
-      <div class="text-center bg-warning rounded-3 mt-2 pt-2">
-        <ion-icon name="alert-circle-outline" size="large"></ion-icon>
-      </div>
-      <div class="justifyText bgLight py-2 px-3">
-        Please save your data periodically using the Share tab. The data will be
-        saved in the documents folder in your phone's internal storage, when you
-        click on export button.
+    <ion-button expand="block" (click)="loadSampleData()"
+      >Load sample data</ion-button
+    >
+
+    <div class="d-flex my-2 bgLight align-items-center rounded-3 bg-warning">
+      <div class="fs-1 p-3 text-dark">!</div>
+      <div class="justifyText bgLight p-2 rounded-end">
+        Please save your data on a regular basis using the Info tab. When you
+        click the Backup button, the data will be saved under CliDa in the
+        documents folder of your phone's internal storage.
       </div>
     </div>
   </div>
 
-  <div [hidden]="showEntryText" class="mx-1 mt-2">
+  <div [hidden]="showEntryText" class="mx-1 mt-1">
     <ion-segment [value]="tabSection" (ionChange)="setrecordType($event)">
       <ion-segment-button value="credits">
         <ion-label>Credits</ion-label>
@@ -77,59 +78,51 @@
     <ion-searchbar
       animated
       color="light"
-      placeholder="type to search clients..."
+      placeholder="Search clients here..."
       [(ngModel)]="clientSearchValue"
       enterkeyhint="search"
       search-icon="search-outline"
     ></ion-searchbar>
   </div>
 
-  <div [hidden]="hideSkeletonText" class="mx-2">
-    <ion-progress-bar type="indeterminate"></ion-progress-bar>
-  </div>
-
   <div [hidden]="showEntryText">
     <div class="debitList" [hidden]="!showDebitList">
       <ion-item
         *ngFor="let client of debitData | clientsSearch:clientSearchValue"
-        (click)="openClientDetails(client.key)"
+        [routerLink]="'client-details/' + client.key"
         color="light"
         class="m-2 rounded-3"
         lines="none"
       >
         <div>{{client?.data.name}}</div>
-        <div class="ms-auto d-flex text-end">
-          <div class="mt-1">
-            <ion-badge
-              *ngFor="let clientDetail of client.data.data"
-              class="ms-1"
-              [color]="getColor(clientDetail)"
-              slot="end"
-              >{{(clientDetail.principal/1000).toFixed() + 'K'}}
-            </ion-badge>
-          </div>
+        <div class="ms-auto text-end mt-1">
+          <ion-badge
+            *ngFor="let clientDetail of client.data.data"
+            class="ms-1"
+            [color]="getColor(clientDetail)"
+            slot="end"
+            >{{(clientDetail.principal/1000).toFixed() + 'K'}}
+          </ion-badge>
         </div>
       </ion-item>
     </div>
+
     <div class="creditList" [hidden]="showDebitList">
       <ion-item
         *ngFor="let client of creditData | clientsSearch:clientSearchValue"
-        (click)="openClientDetails(client.key)"
+        [routerLink]="'client-details/' + client.key"
         color="light"
         class="m-2 rounded-3"
         lines="none"
       >
         <div>{{client?.data.name}}</div>
-        <div class="ms-auto d-flex text-end">
-          <div class="mt-1">
-            <ion-badge
-              *ngFor="let clientDetail of client.data.data"
-              class="ms-1"
-              [color]="getColor(clientDetail)"
-              slot="end"
-              >{{(clientDetail.principal/1000).toFixed() + 'K'}}
-            </ion-badge>
-          </div>
+        <div class="ms-auto text-end mt-1">
+          <ion-badge
+            *ngFor="let clientDetail of client.data.data"
+            class="ms-1"
+            [color]="getColor(clientDetail)"
+            >{{(clientDetail.principal/1000).toFixed() + 'K'}}
+          </ion-badge>
         </div>
       </ion-item>
     </div>

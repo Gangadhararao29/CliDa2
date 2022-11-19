@@ -66,7 +66,7 @@ const routes: Routes = [
           import('../about/about.module').then((m) => m.AboutPageModule),
       },
       {
-        path: 'about/log',
+        path: 'about/logs',
         loadChildren: () =>
           import('../operation-log/operation-log.module').then(
             (m) => m.OperationLogPageModule

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { ClientDataService } from '../services/client-data.service';
@@ -9,6 +9,7 @@ import { ClientDataService } from '../services/client-data.service';
   styleUrls: ['./edit-details.page.scss'],
 })
 export class EditDetailsPage {
+  @ViewChild('commentHeight') commentSection: any;
   clientRecord = {
     principal: 0,
     interest: 0,
@@ -20,7 +21,6 @@ export class EditDetailsPage {
   clientData: any;
   clientRecordId: any;
   clientKey: any;
-  recordType = '';
   clientRecordIndex: number;
   clientName: string;
   constructor(
@@ -41,9 +41,20 @@ export class EditDetailsPage {
           (row) => row.id == params.clientId
         );
         this.clientRecord = this.clientData.data[this.clientRecordIndex];
-        this.recordType = this.clientRecord.principal > 0 ? 'credit' : 'debit';
+        this.setCommentHeight();
       });
     });
+  }
+
+  setCommentHeight() {
+    setTimeout(() => {
+      this.commentSection.nativeElement.style.height = `${this.commentSection.nativeElement.scrollHeight}px`;
+    });
+  }
+
+  getCommentHeight(event) {
+    event.target.style.height = 0;
+    event.target.style.height = `${event.target.scrollHeight}px`;
   }
 
   onSubmit(formRef) {
@@ -84,12 +95,7 @@ export class EditDetailsPage {
 
   saveClientsData(formRef) {
     this.clientDataService
-      .editClientData(
-        formRef.value,
-        this.recordType,
-        this.clientData,
-        this.clientRecordIndex
-      )
+      .editClientData(formRef.value, this.clientData, this.clientRecordIndex)
       .then((res) => {
         this.responseHandler(res.data.name);
       });

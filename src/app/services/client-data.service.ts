@@ -62,13 +62,9 @@ export class ClientDataService {
       .update(clientData);
   }
 
-  async addNewClientData(formData, recordType, includeClosedDetails = false) {
+  async addNewClientData(formData, includeClosedDetails = false) {
     this.setDataModified();
-    const payLoad = this.generatePayLoad(
-      formData,
-      recordType,
-      includeClosedDetails
-    );
+    const payLoad = this.generatePayLoad(formData, includeClosedDetails);
     this.addNewLogData('new', null, payLoad);
     return await this.getClientByName(payLoad.name).then((res) => {
       if (res) {
@@ -80,23 +76,22 @@ export class ClientDataService {
     });
   }
 
-  async editClientData(formData, recordType, clientData, index) {
+  async editClientData(formData, clientData, index) {
     this.setDataModified();
     formData.userName = this.formatToCamelCase(formData.userName);
     formData.principal =
-      recordType === 'credit'
+      formData.recordType === 'credit'
         ? Math.abs(formData.principal)
         : -Math.abs(formData.principal);
 
     this.addNewLogData('edit', clientData, formData, index);
-
     if (formData.userName == clientData.name) {
       delete formData.userName;
       formData.id = clientData.data[index].id;
       clientData.data[index] = formData;
       return await this.updateClientRecordByName(clientData);
     } else {
-      return await this.addNewClientData(formData, recordType, true);
+      return await this.addNewClientData(formData, true);
     }
   }
 
@@ -111,13 +106,12 @@ export class ClientDataService {
     }
   }
 
-  async saveBulkClients(clientsDataGroupString, replaceStatus) {
+  async saveBulkClients(clientsData, replaceStatus) {
     this.setDataModified();
-    const clientsDataGroup = JSON.parse(clientsDataGroupString);
     if (replaceStatus) {
-      return await this.db.collection('clientsData').set(clientsDataGroup);
+      return await this.db.collection('clientsData').set(clientsData);
     } else {
-      clientsDataGroup.forEach((client) => {
+      clientsData.forEach((client) => {
         this.getClientByName(client.name).then((res) => {
           if (res) {
             const recordIndex = res.data.findIndex(
@@ -138,8 +132,14 @@ export class ClientDataService {
   }
 
   async cleanClientsData() {
-    return this.getAllClientsData().then((res) => {
-      res = res.filter((client) => client.data.length > 0 && client.name);
+    this.setDataModified();
+    return await this.getAllClientsData().then((res) => {
+      res = res.filter((client) => {
+        client.data = client.data?.filter(
+          (record) => record?.principal && record?.interest && record?.startDate
+        );
+        return client?.name && client.data?.length;
+      });
       this.db.collection('clientsData').set(res);
     });
   }
@@ -201,14 +201,16 @@ export class ClientDataService {
    * utilities here
    */
 
-  generatePayLoad(formData, recordType, includeClosedDetails) {
+  generatePayLoad(formData, includeClosedDetails) {
     return {
       name: this.formatToCamelCase(formData.userName),
       data: [
         {
           id: Date.now(),
           principal:
-            recordType === 'credit' ? formData.principal : -formData.principal,
+            formData.recordType === 'credit'
+              ? Math.abs(formData.principal)
+              : -Math.abs(formData.principal),
           interest: formData.interest,
           startDate: formData.startDate,
           comments: formData.comments,
@@ -259,8 +261,9 @@ export class ClientDataService {
   async presentLoading() {
     const loading = await this.loadingController.create({
       animated: true,
-      message: 'loading...',
+      message: 'Loading...',
       duration: 1000,
+      spinner: 'lines',
     });
     await loading.present();
   }
@@ -313,5 +316,9 @@ export class ClientDataService {
     }
 
     localStorage.setItem('logs', JSON.stringify(logData));
+  }
+
+  async loadSampleData(data) {
+    await this.db.collection('clientsData').set(data);
   }
 }
