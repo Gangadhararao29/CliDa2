@@ -14,6 +14,7 @@ export class AdvSearchPage implements OnInit {
   showFilterMissingText = false;
   showfilterRangeErrorText = true;
   showNoRecords = false;
+  hideSkeletonText = true;
   constructor(private clientDataService: ClientDataService) {}
 
   ngOnInit() {
@@ -24,7 +25,7 @@ export class AdvSearchPage implements OnInit {
   addNewParams(formRef) {
     if (this.checkFormValidation(formRef.value)) {
       this.removeAllErrors();
-      this.sortAndFilterParams.push({
+      this.sortAndFilterParams.unshift({
         active: 'light',
         sort: {
           by: formRef.value.sortBy,
@@ -69,9 +70,17 @@ export class AdvSearchPage implements OnInit {
       'sortAndFilterParams',
       JSON.stringify(this.sortAndFilterParams)
     );
+    const firstCard = document.getElementById('paramscard0');
+    if (firstCard) {
+      firstCard.scrollIntoView({
+        inline: 'end',
+        block: 'center',
+      });
+    }
   }
 
-  async applyParams(index) {
+  applyParams(index) {
+    this.hideSkeletonText = false;
     const paramsModel = this.sortAndFilterParams[index];
     if (paramsModel.active === 'light') {
       this.sortAndFilterParams.forEach((ele) => {
@@ -81,29 +90,19 @@ export class AdvSearchPage implements OnInit {
     } else {
       paramsModel.active = 'light';
       this.displayData = [];
+      this.hideSkeletonText = true;
       return;
     }
-
-    if (paramsModel.sort.by === 'name') {
-      await this.clientDataService
-        .orderByName(paramsModel.sort.order)
-        .then((res) => {
-          this.displayData = res;
-          if (paramsModel.filter.by) {
-            this.filterDataModel(paramsModel);
-          }
-          this.showNoRecords = this.displayData.length ? false : true;
-        });
-    } else {
-      await this.clientDataService.getAllClientsDataWithKeys().then((res) => {
-        this.displayData = res;
+    this.clientDataService.getAllClientsDataWithKeys().then((res) => {
+      this.displayData = res;
+      if (paramsModel.filter.by) {
+        this.filterDataModel(paramsModel);
+      }
+      if (paramsModel.sort.by) {
         this.sortDataModel(paramsModel);
-        if (paramsModel.filter.by) {
-          this.filterDataModel(paramsModel);
-        }
-        this.showNoRecords = this.displayData.length ? false : true;
-      });
-    }
+      }
+      this.hideSkeletonText = true;
+    });
   }
 
   filterDataModel(paramsModel) {
@@ -133,10 +132,23 @@ export class AdvSearchPage implements OnInit {
   }
 
   sortDataModel(paramsModel) {
-    this.displayData.forEach((ele) => {
-      ele.data.data.sort((a, b) => {
-        const keyA = new Date(a.startDate);
-        const keyB = new Date(b.startDate);
+    if (paramsModel.sort.by === 'time') {
+      this.displayData.forEach((ele) => {
+        ele.data.data.sort((a, b) => {
+          const keyA = new Date(a.startDate);
+          const keyB = new Date(b.startDate);
+          if (keyA < keyB) {
+            return paramsModel.sort.order === 'asc' ? +1 : -1;
+          }
+          if (keyA > keyB) {
+            return paramsModel.sort.order === 'asc' ? -1 : +1;
+          }
+        });
+      });
+
+      this.displayData.sort((a, b) => {
+        const keyA = new Date(a.data.data[0].startDate);
+        const keyB = new Date(b.data.data[0].startDate);
         if (keyA < keyB) {
           return paramsModel.sort.order === 'asc' ? +1 : -1;
         }
@@ -144,27 +156,39 @@ export class AdvSearchPage implements OnInit {
           return paramsModel.sort.order === 'asc' ? -1 : +1;
         }
       });
-    });
+    }
 
-    this.displayData.sort((a, b) => {
-      const keyA = new Date(a.data.data[0].startDate);
-      const keyB = new Date(b.data.data[0].startDate);
-      if (keyA < keyB) {
-        return paramsModel.sort.order === 'asc' ? +1 : -1;
-      }
-      if (keyA > keyB) {
-        return paramsModel.sort.order === 'asc' ? -1 : +1;
-      }
-    });
+    if (paramsModel.sort.by === 'name') {
+      this.displayData.sort((a, b) => {
+        if (a.data.name < b.data.name) {
+          return paramsModel.sort.order === 'des' ? +1 : -1;
+        }
+        if (a.data.name > b.data.name) {
+          return paramsModel.sort.order === 'des' ? -1 : +1;
+        }
+      });
+    }
   }
 
-  deleteAllParams() {
-    this.sortAndFilterParams.pop();
-    this.displayData = [];
-    localStorage.setItem(
-      'sortAndFilterParams',
-      JSON.stringify(this.sortAndFilterParams)
+  deleteActiveParam() {
+    const paramIndex = this.sortAndFilterParams.findIndex(
+      (ele) => ele.active === 'primary'
     );
+    if (paramIndex > -1) {
+      this.sortAndFilterParams.splice(paramIndex, 1);
+      this.displayData = [];
+      localStorage.setItem(
+        'sortAndFilterParams',
+        JSON.stringify(this.sortAndFilterParams)
+      );
+      this.clientDataService.presentToast('Params deleted successfuly');
+    } else {
+      this.clientDataService.presentToast(
+        'Select any params to delete',
+        'failedToastClass',
+        'alert-outline'
+      );
+    }
   }
 
   getColor(detail) {
@@ -176,9 +200,9 @@ export class AdvSearchPage implements OnInit {
     } else if (tm >= 24) {
       return 'warning';
     } else if (tm >= 12) {
-      return 'secondary';
-    } else {
       return 'primary';
+    } else {
+      return 'medium';
     }
   }
 }

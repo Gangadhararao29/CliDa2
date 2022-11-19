@@ -1,9 +1,11 @@
 .cardFilterClass {
   box-sizing: border-box;
-  width: 46vw;
+  min-width: 120px;
+
   display: inline-block;
-  padding: 5px;
-  margin: 0 5px;
+  padding: 8px;
+  margin: 2px 2px 2px 2px;
+  font-weight: 500;
 }
 
 ion-content {

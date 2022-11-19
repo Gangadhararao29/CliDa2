@@ -17,5 +17,14 @@ input:disabled {
 }
 
 .highlight {
-  color: #198754;
+  color: var(--ion-color-success);
+}
+
+ion-col {
+  --ion-grid-column-padding: 0.15rem;
+}
+
+ion-button {
+  --padding-top: 1.25rem;
+  --padding-bottom: 1.25rem;
 }

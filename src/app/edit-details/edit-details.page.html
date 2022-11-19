@@ -8,28 +8,32 @@
 </ion-header>
 
 <ion-content>
-  <div class="m-2 bgLight pt-2 rounded-3">
-    <ion-radio-group value="credit" [(ngModel)]="recordType">
-      <ion-label position="stacked" class="mx-3">
-        <span style="font-size: large; font-weight: 300"
-          >Select Record type</span
-        >
-      </ion-label>
-      <div class="d-flex justify-content-between">
-        <ion-item color="light" class="col rounded-3">
-          <ion-label>Credit</ion-label>
-          <ion-radio slot="start" value="credit"></ion-radio>
-        </ion-item>
-        <ion-item color="light" class="col rounded-3">
-          <ion-label>Debit</ion-label>
-          <ion-radio slot="start" value="debit"></ion-radio>
-        </ion-item>
-      </div>
-    </ion-radio-group>
-  </div>
-
   <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
-    <div class="bgLight p-2 mx-2 rounded-3">
+    <div class="m-2 bgLight pt-2 rounded">
+      <ion-radio-group
+        name="recordType"
+        [ngModel]="clientRecord.principal < 0?'debit':'credit'"
+        #recordType="ngModel"
+      >
+        <ion-label position="stacked" class="mx-3">
+          <span style="font-size: large; font-weight: 300"
+            >Select Record type</span
+          >
+        </ion-label>
+        <div class="d-flex justify-content-between">
+          <ion-item color="light" class="col rounded">
+            <ion-label>Credit</ion-label>
+            <ion-radio slot="start" value="credit"></ion-radio>
+          </ion-item>
+          <ion-item color="light" class="col rounded">
+            <ion-label>Debit</ion-label>
+            <ion-radio slot="start" value="debit"></ion-radio>
+          </ion-item>
+        </div>
+      </ion-radio-group>
+    </div>
+
+    <div class="bgLight p-2 mx-2 rounded">
       <span class="fs-5 mx-1">Primary details</span>
       <div class="form-floating mb-2">
         <input
@@ -47,11 +51,11 @@
         <label for="userName">Client name</label>
         <div id="userName" class="invalid-feedback">Please enter a Name.</div>
         <div [hidden]="!userName.dirty" class="custom-invalid-tooltip">
-          Caution see below for more details.
+          Caution: See below for more details.
         </div>
       </div>
       <div class="mb-2 d-flex justify-content-between">
-        <div class="form-floating d-inline-block">
+        <div class="form-floating d-inline-block w-100">
           <input
             type="number"
             class="form-control"
@@ -70,7 +74,7 @@
           </div>
         </div>
 
-        <div class="form-floating d-inline-block">
+        <div class="form-floating d-inline-block w-100">
           <input
             type="number"
             class="form-control"
@@ -113,16 +117,17 @@
         class="form-control"
         id="comments"
         ngModel
-        style="height: 4rem"
+        (input)="getCommentHeight($event)"
         name="comments"
         [value]="clientRecord.comments || null"
         placeholder="Enter comments here"
         #comments="ngModel"
+        #commentHeight
       ></textarea>
       <label for="comments">Comments</label>
     </div>
 
-    <div *ngIf="clientRecord.closedOn" class="bgLight p-2 m-2 rounded-3">
+    <div *ngIf="clientRecord.closedOn" class="bgLight p-2 mx-2 rounded">
       <span class="fs-5 mx-1">Closed details</span>
       <div class="d-flex mb-2 justify-content-between">
         <div class="form-floating">
@@ -161,22 +166,25 @@
       </ion-button>
     </div>
 
-    <ion-button color="success" expand="block" type="submit" class="m-2">
+    <ion-button
+      color="success"
+      expand="block"
+      type="submit"
+      class="mt-2 mb-3 mx-2"
+    >
       confirm
     </ion-button>
   </form>
 
-  <ion-card *ngIf="userName.dirty" color="light">
-    <ion-item color="warning">
-      <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
-      <ion-label>Caution</ion-label>
-    </ion-item>
-
-    <ion-card-content>
-      If the name of the client is changed here, It will search for the existing
-      records and if found it will add it there or else it will add as a new
-      record.
-      <b><i>Existing record will be deleted from the current client.</i></b>
-    </ion-card-content>
-  </ion-card>
+  <div
+    *ngIf="userName.dirty"
+    class="d-flex m-2 bgLight align-items-center rounded-3 bg-warning"
+  >
+    <div class="fs-1 p-3 text-dark">!</div>
+    <small class="justifyText bgLight p-2 rounded-end">
+      If the client's name is changed here, it will search for existing records
+      and, if found, will add it there, otherwise it will create a new record.
+      <b><i>The current client's existing record will be deleted.</i></b>
+    </small>
+  </div>
 </ion-content>

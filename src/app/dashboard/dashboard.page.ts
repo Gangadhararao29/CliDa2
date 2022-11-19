@@ -10,14 +10,8 @@ export class DashboardPage {
   grid1Page = 1;
   grid2Page = 1;
   totalArray = [];
-  name: any;
-  key: any;
-  principal: any;
-  interestObj: any;
-  total: number;
   isd = Intl.NumberFormat('en-IN');
   array1: any[];
-  timeObject: any;
   array2: any[];
   math;
   totalClients: Array<any>;
@@ -31,18 +25,18 @@ export class DashboardPage {
   ionViewDidEnter() {
     this.clientDataService.getAllClientsDataWithKeys().then((res) => {
       if (this.clientDataService.dashbardRefresh) {
-        this.totalClients = this.filterData(res);
+        this.totalClients = this.filterOpenData(res);
         this.totalArray = [];
         this.getTotalArray(this.totalClients);
         this.sortByPrincipal(this.principalGridIcon === 'arrow-down-outline');
         this.sortByTimePeriod(this.timeGridIcon === 'arrow-down-outline');
       }
-      this.hideSkeletonText = true;
       this.clientDataService.dashbardRefresh = false;
+      this.hideSkeletonText = true;
     });
   }
 
-  filterData(res) {
+  filterOpenData(res) {
     return res.filter((ele) => {
       ele.data.data = ele.data.data.filter((record) => !record.closedOn);
       return ele.data.data.length;
@@ -51,32 +45,30 @@ export class DashboardPage {
 
   getTotalArray(response) {
     response.forEach((client) => {
-      this.name = client.data.name;
-      this.key = client.key;
+      const name = client.data.name;
+      const key = client.key;
       let totalPrincipal = 0;
       let greaterTimePeriod = 0;
       let totalInterest = 0;
       client.data.data.forEach((record) => {
-        this.principal = record.principal;
-        this.timeObject = this.clientDataService.calculateTimeperiod(
+        const timeObject = this.clientDataService.calculateTimeperiod(
           record.startDate
         );
-        this.interestObj = this.clientDataService.calculateInterest(
-          this.principal,
+        const interestObj = this.clientDataService.calculateInterest(
+          record.principal,
           record.interest,
           record.startDate
         );
-        this.total = this.principal + this.interestObj.interest;
-        totalPrincipal += this.principal;
-        totalInterest += this.interestObj.interest;
-        if (this.timeObject.tm > greaterTimePeriod) {
-          greaterTimePeriod = this.timeObject.tm;
+        totalPrincipal += record.principal;
+        totalInterest += interestObj.interest;
+        if (timeObject.tm > greaterTimePeriod) {
+          greaterTimePeriod = timeObject.tm;
         }
       });
 
       this.totalArray.push({
-        key: this.key,
-        name: this.name,
+        key,
+        name,
         totalPrincipal,
         totalInterest,
         greaterTimePeriod,
@@ -152,5 +144,13 @@ export class DashboardPage {
       this.principalGridIcon = 'arrow-down-outline';
       this.sortByPrincipal(true);
     }
+  }
+
+  scrollToElement($element) {
+    $element.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+      inline: 'nearest',
+    });
   }
 }

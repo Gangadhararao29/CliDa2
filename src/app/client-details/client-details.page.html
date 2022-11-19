@@ -4,139 +4,131 @@
       <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-title>{{client?.name}}</ion-title>
+    <ion-progress-bar
+      [hidden]="hideSkeletonText"
+      type="indeterminate"
+    ></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <div class="mx-2 mt-1">
-    <div [hidden]="hideSkeletonText" class="mx-2">
-      <ion-progress-bar type="indeterminate"></ion-progress-bar>
-    </div>
-
-    <ion-accordion toggle-icon="none" readonly="true">
-      <ion-item slot="header" color="primary" class="rounded-1">
-        <ion-label class="d-flex ms-2">
-          <span class="fw-bolder">Principal</span>
-          <span class="ms-auto fw-bolder">Start date</span>
-        </ion-label>
-      </ion-item>
-    </ion-accordion>
+    <div class="bgLight p-2 rounded text-center">Present Transactions</div>
 
     <ion-accordion-group class="my-2">
       <div *ngFor="let data of client?.data; let i=index;" class="mt-2">
         <ion-accordion [value]="i">
-          <ion-item slot="header" [color]="getColor(data)" class="rounded-3">
-            <ion-label class="d-flex ms-2">
+          <ion-item slot="header" class="rounded" color="light">
+            <ion-label class="d-flex ms-2" [color]="getColor(data)">
               <span class="fw-bolder">₹ {{ isd.format(data?.principal) }}</span>
               <span class="ms-auto fw-bolder"
                 >{{data?.startDate.split('-').reverse().join('/')}}</span
               ></ion-label
             >
           </ion-item>
-          <ion-list slot="content" class="rounded-3">
-            <div class="bgLight px-3 py-2 rounded-3 mt-0 mx-1">
-              <div class="row fw-bolder">
-                <div class="col-5">Principal</div>
-                <div class="col-2">:</div>
-                <div class="col-5">₹ {{isd.format(data?.principal)}}</div>
-              </div>
-              <div class="row fw-bolder">
-                <div class="col-5">Interest</div>
-                <div class="col-2">:</div>
-                <div class="col-5">{{data?.interest}}</div>
-              </div>
-              <div class="row fw-bolder">
-                <div class="col-5">Start date</div>
-                <div class="col-2">:</div>
-                <div class="col-5">
-                  {{data?.startDate.split('-').reverse().join('/')}}
-                </div>
-              </div>
-              <div class="row fw-bolder">
-                <div class="col-5">End date</div>
-                <div class="col-2">:</div>
-                <div class="col-5">
-                  {{today.split('-').reverse().join('/')}}
-                </div>
-              </div>
+          <ion-list slot="content" lines="none" class="rounded mx-auto">
+            <div class="bgLight mx-2 rounded ps-2 py-1 fw-bolder">
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="5">Principal</ion-col>
+                  <ion-col size="2">:</ion-col>
+                  <ion-col size="5">₹ {{isd.format(data?.principal)}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">Interest</ion-col>
+                  <ion-col size="2">:</ion-col>
+                  <ion-col size="5">{{data?.interest}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">Start date</ion-col>
+                  <ion-col size="2">:</ion-col>
+                  <ion-col size="5">
+                    {{data?.startDate.split('-').reverse().join('/')}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">End date</ion-col>
+                  <ion-col size="2">:</ion-col>
+                  <ion-col size="5">
+                    {{today.split('-').reverse().join('/')}}
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
             </div>
 
-            <div class="bgLight px-3 py-2 rounded-3 mt-2 mx-1">
-              <div class="row fw-bolder">
-                <div class="col-5">Time period</div>
-                <div class="col-2">:</div>
-                <div class="col-5">
-                  {{calculateDateDifference(data?.startDate,today)}}
-                </div>
-              </div>
-
-              <div class="row fw-bolder">
-                <div class="col-5">in months</div>
-                <div class="col-2">:</div>
-                <div class="col-5">
-                  {{totalTimeinMonths(data?.startDate,today)}}m
-                </div>
-              </div>
-              <div class="row fw-bolder">
-                <div class="col-5">Interest amt</div>
-                <div class="col-2">:</div>
-                <div class="col-5">
-                  ₹ {{isd.format(calculateInterest(data, today))}}
-                </div>
-              </div>
-              <div class="row fw-bolder">
-                <div class="col-5">Total amt</div>
-                <div class="col-2">:</div>
-                <div class="col-5">
-                  ₹ {{isd.format(data?.principal + calculateInterest(data,
-                  today))}}
-                </div>
-              </div>
+            <div class="bgLight m-2 rounded ps-2 py-1 fw-bolder">
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="5">Time period</ion-col>
+                  <ion-col size="2">:</ion-col>
+                  <ion-col size="5">
+                    {{calculateDateDifference(data?.startDate,today)}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">in months</ion-col>
+                  <ion-col size="2">:</ion-col>
+                  <ion-col size="5"
+                    >{{totalTimeinMonths(data?.startDate,today)}}m</ion-col
+                  >
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">Interest amt</ion-col>
+                  <ion-col size="2">:</ion-col>
+                  <ion-col size="5">
+                    ₹ {{isd.format(calculateInterest(data, today))}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">Total amt</ion-col>
+                  <ion-col size="2">:</ion-col>
+                  <ion-col size="5">
+                    ₹ {{isd.format(data?.principal +
+                    calculateInterest(data,today))}}
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
             </div>
 
-            <div
-              *ngIf="data?.comments"
-              class="bgLight p-2 rounded-3 mt-2 mx-1 align-items-center"
-            >
+            <div *ngIf="data?.comments" class="bgLight p-2 rounded mx-2">
               <small class="fw-bolder d-block">Comments : </small>
               <small style="white-space: pre-line">{{data?.comments}}</small>
             </div>
 
             <div
               *ngIf="data?.closedOn"
-              class="bgLight px-3 py-2 rounded-3 mt-2 mx-1 border-success border-3 border"
+              class="bgLight m-2 rounded ps-2 py-1 fw-bolder border-success border-3 border"
             >
-              <div class="row fw-bolder">
-                <div class="col-5">Closed on</div>
-                <div class="col-2">:</div>
-                <div class="col-5">
-                  {{data?.closedOn.split('-').reverse().join('/')}}
-                </div>
-              </div>
-
-              <div class="row fw-bolder">
-                <div class="col-5">Paid amt</div>
-                <div class="col-2">:</div>
-                <div class="col-5">₹ {{isd.format(data?.closedAmount)}}</div>
-              </div>
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="5">Closed on</ion-col>
+                  <ion-col size="2">:</ion-col>
+                  <ion-col size="5">
+                    {{data?.closedOn.split('-').reverse().join('/')}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="5">Paid amt</ion-col>
+                  <ion-col size="2">:</ion-col>
+                  <ion-col size="5">
+                    ₹ {{isd.format(data?.closedAmount)}}
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
             </div>
 
             <div
               *ngIf="totalTimeinMonths(data?.startDate,today)>36"
-              class="d-flex mt-2 mx-1 p-1 justify-content-around align-items-center bg-warning rounded-3"
+              class="d-flex m-2 p-1 justify-content-around align-items-center bgWarning rounded"
             >
-              <ion-icon
-                name="alert-circle-outline"
-                size="large"
-                slot="start"
-              ></ion-icon>
+              <ion-icon name="alert" size="large" slot="start"></ion-icon>
               <div>
                 Interest calculated for 3 years only.<br />
                 Please use calculate option.
               </div>
             </div>
 
-            <div class="bgLight rounded-3 mt-2 mx-1">
+            <div class="bgLight rounded m-2">
               <ion-grid>
                 <ion-row>
                   <ion-col>
@@ -184,8 +176,8 @@
         <ion-modal
           #modal
           [trigger]="'approveScreen'+i"
-          [initialBreakpoint]="0.45"
-          [breakpoints]="[0, 0.45, 0.65, 0.8]"
+          [initialBreakpoint]="0.5"
+          [breakpoints]="[0, 0.5, 0.75, 1]"
         >
           <ng-template>
             <ion-content>
@@ -194,60 +186,51 @@
                 (ngSubmit)="onSubmit(formRef)"
                 (keypress)="stopDefaultSubmit($event)"
               >
-                <div class="mx-1 mt-3 px-2 pt-2 rounded-3 bgLight">
-                  <div class="fw-bolder mx-1 mb-1">Enter closed details</div>
-                  <div class="d-flex">
-                    <div class="form-floating">
-                      <input
-                        type="date"
-                        class="form-control"
-                        id="closedOn"
-                        [ngModel]="today"
-                        (change)="onchangeClosedDetails($event,data)"
-                        #closedOn="ngModel"
-                        name="closedOn"
-                        required
-                        [class.is-valid]="closedOn.valid"
-                        [class.is-invalid]="closedOn.invalid &&  formRef.submitted"
-                      />
-                      <label for="closedOn">On</label>
-                      <div id="closedOn" class="invalid-feedback">
-                        Please enter On-date.
-                      </div>
+                <div class="rounded bgLight m-2 p-2">
+                  <div class="fw-bolder my-1 px-1">Enter closed details</div>
+
+                  <div class="form-floating mb-2">
+                    <input
+                      type="date"
+                      class="form-control darkInput"
+                      id="closedOn"
+                      [ngModel]="today"
+                      (change)="calculateClosedDetails($event,data)"
+                      #closedOn="ngModel"
+                      name="closedOn"
+                      required
+                      [class.is-valid]="closedOn.valid"
+                      [class.is-invalid]="closedOn.invalid &&  formRef.submitted"
+                    />
+                    <label for="closedOn">On</label>
+                    <div id="closedOn" class="invalid-feedback">
+                      Please enter On-date.
                     </div>
-                    <!-- getClosedAmount2(data,closedOn) -->
-                    <div class="form-floating">
-                      <input
-                        type="number"
-                        class="form-control"
-                        id="closedAmount"
-                        [ngModel]="data?.principal + calculateInterest(data,today)"
-                        name="closedAmount"
-                        (input)="onchangeClosedDetails($event,data,closedOn)"
-                        #closedAmount="ngModel"
-                        required
-                        [class.is-valid]="closedAmount.valid"
-                        [class.is-invalid]="closedAmount.invalid &&  formRef.submitted"
-                      />
-                      <label for="closedAmount">Amount</label>
-                      <div id="closedAmount" class="invalid-feedback">
-                        Please enter Amount.
-                      </div>
+                  </div>
+                  <div class="form-floating">
+                    <input
+                      type="number"
+                      class="form-control darkInput"
+                      id="closedAmount"
+                      [ngModel]="(data?.principal + calculateInterest(data,today)).toFixed(2)"
+                      name="closedAmount"
+                      (input)="calculateClosedDetails($event,data,closedOn)"
+                      #closedAmount="ngModel"
+                      required
+                      [class.is-valid]="closedAmount.valid"
+                      [class.is-invalid]="closedAmount.invalid &&  formRef.submitted"
+                    />
+                    <label for="closedAmount">Amount</label>
+                    <div id="closedAmount" class="invalid-feedback">
+                      Please enter Amount.
+                    </div>
+                    <div [hidden]="approvedAmount===0" class="amtIndicator">
+                      *Required amount is ₹ {{isd.format(approvedAmount)}}
                     </div>
                   </div>
 
                   <div
-                    [hidden]="approvedAmount===0"
-                    class="text-danger mx-1 bgLight"
-                  >
-                    <small
-                      >**Required amount is ₹
-                      {{isd.format(approvedAmount)}}</small
-                    >
-                  </div>
-
-                  <div
-                    class="form-check form-switch m-1"
+                    class="form-check form-switch"
                     [hidden]="hideAppprovedControls"
                   >
                     <label class="form-check-label" for="updateComments">
@@ -300,17 +283,17 @@
                 </div>
 
                 <ion-button
-                  class="mx-1 my-2"
+                  class="m-2"
                   type="submit"
                   color="success"
                   [disabled]="data?.closedOn"
-                  (click)="modal.dismiss()"
+                  (click)="formRef.valid && modal.dismiss()"
                   expand="block"
                 >
                   close record
                 </ion-button>
                 <ion-button
-                  class="mx-1 my-2"
+                  class="m-2"
                   color="warning"
                   (click)="modal.dismiss()"
                   expand="block"
@@ -326,11 +309,10 @@
 
     <ion-item
       color="light"
-      class="rounded-3 text-center mb-2"
+      class="rounded text-center mb-2"
       routerLink="/clida/clients-list/add-client"
-      ><ion-label class="text-danger fw-bolder"
-        >+ Add new record</ion-label
-      ></ion-item
-    >
+      [queryParams]="{name:client?.name}"
+      ><ion-label class="text-danger fw-bolder"> + Add new record </ion-label>
+    </ion-item>
   </div>
 </ion-content>

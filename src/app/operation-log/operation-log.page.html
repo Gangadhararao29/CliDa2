@@ -17,19 +17,15 @@
     *ngIf="!logData.length"
     class="h-100 d-flex align-items-center justify-content-center"
   >
-    <div class="p-2 bg-danger rounded-3 text-light">No logs found</div>
+    <div class="p-2 bg-danger rounded text-light">No logs found</div>
   </div>
   <ion-accordion-group
     *ngFor="let log of logData; let i=index;"
     class="m-2"
-    value="2"
+    value="0"
   >
-    <ion-accordion [value]="i" class="rounded-3">
-      <ion-item
-        class="rounded-3"
-        slot="header"
-        [color]="getColor(log.operation)"
-      >
+    <ion-accordion [value]="i" class="rounded">
+      <ion-item class="rounded" slot="header" [color]="getColor(log.operation)">
         <ion-label>
           <div class="d-flex">
             <div>{{log.operation}}</div>
@@ -37,17 +33,17 @@
           </div>
         </ion-label>
       </ion-item>
-      <div class="px-2 py-1 bgLight" slot="content">
+      <div class="bgLight" slot="content">
         <div [ngSwitch]="log.operation" class="mx-2">
           <div *ngSwitchCase="'new'">
             <ion-grid>
               <ion-row>
-                <ion-col>Name</ion-col>
+                <ion-col size="5">Name</ion-col>
                 <ion-col size="1">:</ion-col>
-                <ion-col size="6">{{log.data.name}}</ion-col>
+                <ion-col>{{log.data.name}}</ion-col>
               </ion-row>
               <ion-row>
-                <ion-col>Principal</ion-col>
+                <ion-col size="5">Principal</ion-col>
                 <ion-col size="1">:</ion-col>
                 <ion-col size="6">{{log.data.principal}}</ion-col>
               </ion-row>
@@ -115,10 +111,12 @@
               <ion-row [hidden]="log.orgData.comments === log.newData.comments">
                 <ion-col size="4">comments</ion-col>
                 <ion-col size="1">:</ion-col>
-                <ion-col size="6" style="white-space: pre-line"
+              </ion-row>
+              <ion-row [hidden]="log.orgData.comments === log.newData.comments">
+                <ion-col size="" style="white-space: pre-line"
                   >{{log.orgData.comments}}
                   <span class="text-primary"
-                    >=> {{log.newData.comments}}</span
+                    >=> {{'\n' + log.newData.comments}}</span
                   ></ion-col
                 >
               </ion-row>
@@ -127,7 +125,7 @@
               >
                 <ion-col size="4">closedOn</ion-col>
                 <ion-col size="1">:</ion-col>
-                <ion-col size="6"
+                <ion-col size="7"
                   >{{log.orgData.closedOn}}
                   <span class="text-primary text-end d-block"
                     >=> {{log.newData.closedOn}}</span
@@ -137,9 +135,9 @@
               <ion-row
                 [hidden]="log.orgData.closedAmount === log.newData.closedAmount || !(log.orgData.closedAmount || log.newData.closedAmount)"
               >
-                <ion-col size="4">closedAmount</ion-col>
+                <ion-col size="4">closedAmt</ion-col>
                 <ion-col size="1">:</ion-col>
-                <ion-col size="6"
+                <ion-col size="7"
                   >{{log.orgData.closedAmount}} =>
                   {{log.newData.closedAmount}}</ion-col
                 >

@@ -87,47 +87,37 @@ export class ClientDetailsPage {
       const clientRecord = this.client.data.find(
         (ele) => ele.id == this.approveDataId
       );
-
       const oldData = Object.assign({}, clientRecord);
 
-      if (this.hideAppprovedControls) {
+      if (this.hideAppprovedControls || formRef.value.closeCurrentRecord) {
         clientRecord.closedOn = formRef.value.closedOn;
         clientRecord.closedAmount = formRef.value.closedAmount;
-      } else {
-        if (formRef.value.updateComments) {
-          clientRecord.comments += clientRecord.comments ? `\n` : '';
-          if (formRef.value.closeCurrentRecord) {
-            clientRecord.comments += `Pending Amt: ₹ ${this.isd.format(
-              this.approvedAmount - formRef.value.closedAmount
-            )}`;
+        if (formRef.value.addNewRecord) {
+          this.client.data.push({
+            id: Date.now(),
+            principal: this.approvedAmount - formRef.value.closedAmount,
+            interest: clientRecord.interest,
+            startDate: formRef.value.closedOn,
+          });
+        }
+      }
 
-            clientRecord.comments += formRef.value.addNewRecord
-              ? `\nNew record added.`
-              : '';
-          } else {
-            clientRecord.comments += `Paid: ${formRef.value.closedOn
-              .split('-')
-              .reverse()
-              .join('/')} => ₹ ${this.isd.format(
+      if (!this.hideAppprovedControls && formRef.value.updateComments) {
+        clientRecord.comments += clientRecord.comments ? `\n` : '';
+        clientRecord.comments += formRef.value.closeCurrentRecord
+          ? ''
+          : `Paid ₹ ${this.isd.format(
               formRef.value.closedAmount
-            )}\nPending Amt: ₹ ${this.isd.format(
-              this.approvedAmount - formRef.value.closedAmount
-            )} `;
-          }
-        }
+            )} on ${formRef.value.closedOn.split('-').reverse().join('/')}\n`;
 
-        if (formRef.value.closeCurrentRecord) {
-          clientRecord.closedOn = formRef.value.closedOn;
-          clientRecord.closedAmount = formRef.value.closedAmount;
-          if (formRef.value.addNewRecord) {
-            this.client.data.push({
-              id: Date.now(),
-              principal: this.approvedAmount - formRef.value.closedAmount,
-              interest: clientRecord.interest,
-              startDate: formRef.value.closedOn,
-            });
-          }
-        }
+        clientRecord.comments += `Balance Amt: ₹ ${this.isd.format(
+          this.approvedAmount - formRef.value.closedAmount
+        )}`;
+
+        clientRecord.comments +=
+          formRef.value.addNewRecord && formRef.value.closeCurrentRecord
+            ? `\nNew record added.`
+            : '';
       }
 
       this.clientsDataService.updateClientRecordByName(this.client).then(() => {
@@ -192,7 +182,7 @@ export class ClientDetailsPage {
     setTimeout(() => {
       if (length < 1) {
         this.clientsDataService.presentToast(
-          'Client deleted completely. <br>Redirecting to Clients list tab'
+          'Client deleted completely.<br>Redirecting to Clients list tab'
         );
         this.router.navigate(['clida', 'clients-list']);
       } else {
@@ -214,12 +204,14 @@ export class ClientDetailsPage {
       return 'danger';
     } else if (tm >= 24) {
       return 'warning';
+    } else if (tm >= 12) {
+      return 'primary';
     } else {
-      return 'light';
+      return 'dark';
     }
   }
 
-  onchangeClosedDetails(event, data, closedOn?) {
+  calculateClosedDetails(event, data, closedOn?) {
     if (event.target.name === 'closedOn') {
       this.approvedAmount =
         data.principal + this.calculateInterest(data, event.target.value);

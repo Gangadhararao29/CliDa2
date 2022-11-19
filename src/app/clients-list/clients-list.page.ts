@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AlertController, IonRouterOutlet, Platform } from '@ionic/angular';
 import { App } from '@capacitor/app';
 import { ClientDataService } from '../services/client-data.service';
+import * as sampleData from '../../assets/clientsData.json';
 
 @Component({
   selector: 'app-clients-list',
@@ -10,7 +11,6 @@ import { ClientDataService } from '../services/client-data.service';
   styleUrls: ['./clients-list.page.scss'],
 })
 export class ClientsListPage {
-  clientsData: any;
   clientSearchValue = '';
   showEntryText: boolean;
   debitData = [];
@@ -28,12 +28,27 @@ export class ClientsListPage {
   ) {
     this.platform.backButton.subscribeWithPriority(-1, () => {
       if (!this.routerOutlet.canGoBack()) {
-        this.presentAlertConfirm();
+        this.backButtonAction();
       }
     });
   }
 
+  async backButtonAction() {
+    this.alertController.getTop().then((alrt) => {
+      if (alrt) {
+        alrt.dismiss();
+      }
+    });
+    if (this.router.url === '/clida/clients-list') {
+      const alert = await this.getCloseAlert();
+      alert.present();
+    } else {
+      this.router.navigate(['/clida/clients-list']);
+    }
+  }
+
   ionViewWillEnter() {
+    this.hideSkeletonText = false;
     this.getDisplayData();
     if (localStorage.getItem('tabSection') === 'debits') {
       this.tabSection = 'debits';
@@ -47,12 +62,11 @@ export class ClientsListPage {
   getDisplayData() {
     this.clientDataService.getAllClientsDataWithKeys().then((data) => {
       if (this.clientDataService.clientsListRefresh) {
-        this.clientsData = data;
         this.showEntryText = data.length > 0 ? false : true;
         this.debitData = [];
         this.creditData = [];
 
-        this.clientsData.forEach((client) => {
+        data.forEach((client) => {
           const name = client.data.name;
           const key = client.key;
           const tempDebitData = [];
@@ -71,24 +85,20 @@ export class ClientsListPage {
             this.creditData.push({ key, data: { name, data: tempCreditData } });
           }
         });
-        this.hideSkeletonText = true;
         this.clientDataService.clientsListRefresh = false;
       }
+      this.hideSkeletonText = true;
     });
   }
 
   resetSearch() {
     this.clientSearchValue = null;
     this.searchIcon =
-      this.searchIcon === 'search-sharp' ? 'remove-sharp' : 'search-sharp';
+      this.searchIcon === 'search-sharp' ? 'remove' : 'search-sharp';
   }
 
-  openClientDetails(key) {
-    this.router.navigate(['clida/clients-list/client-details', key]);
-  }
-
-  async presentAlertConfirm() {
-    const alert = await this.alertController.create({
+  async getCloseAlert() {
+    return await this.alertController.create({
       header: 'Exit',
       cssClass: 'alertStyle',
       backdropDismiss: false,
@@ -108,7 +118,6 @@ export class ClientsListPage {
         },
       ],
     });
-    await alert.present();
   }
 
   getColor(detail) {
@@ -120,14 +129,22 @@ export class ClientsListPage {
     } else if (tm >= 24) {
       return 'warning';
     } else if (tm >= 12) {
-      return 'secondary';
-    } else {
       return 'primary';
+    } else {
+      return 'medium';
     }
   }
 
   setrecordType(event) {
     this.showDebitList = event.detail.value === 'debits' ? true : false;
     localStorage.setItem('tabSection', event.detail.value);
+  }
+
+  async loadSampleData() {
+    const data = sampleData['default'];
+    await this.clientDataService.loadSampleData(data).then(() => {
+      this.clientDataService.setDataModified();
+      this.ionViewWillEnter();
+    });
   }
 }
