@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ClientDataService } from '../services/client-data.service';
 
 @Component({
@@ -15,7 +15,8 @@ export class AddClientPage {
 
   constructor(
     private clientDataService: ClientDataService,
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute
   ) {}
 
   ionViewWillEnter() {
@@ -24,7 +25,9 @@ export class AddClientPage {
     this.clientDataService.getAllClientsData().then((res) => {
       this.clientsData = res;
     });
+
     this.formRefVariable.form.patchValue({
+      userName: this.activatedRoute.snapshot.queryParamMap.get('name'),
       startDate: this.clientDataService.today,
       recordType: 'credit',
     });
@@ -55,7 +58,7 @@ export class AddClientPage {
       this.isAddBtnDisable = false;
       this.clientDataService.presentToast(message);
       if (!formRef.value.multiRecordsSelected) {
-        this.router.navigateByUrl('/clida/clients-list').then(() => {
+        this.router.navigate(['..']).then(() => {
           formRef.resetForm();
         });
       }

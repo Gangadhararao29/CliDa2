@@ -106,13 +106,12 @@ export class ClientDataService {
     }
   }
 
-  async saveBulkClients(clientsDataGroupString, replaceStatus) {
+  async saveBulkClients(clientsData, replaceStatus) {
     this.setDataModified();
-    const clientsDataGroup = JSON.parse(clientsDataGroupString);
     if (replaceStatus) {
-      return await this.db.collection('clientsData').set(clientsDataGroup);
+      return await this.db.collection('clientsData').set(clientsData);
     } else {
-      clientsDataGroup.forEach((client) => {
+      clientsData.forEach((client) => {
         this.getClientByName(client.name).then((res) => {
           if (res) {
             const recordIndex = res.data.findIndex(
@@ -317,5 +316,9 @@ export class ClientDataService {
     }
 
     localStorage.setItem('logs', JSON.stringify(logData));
+  }
+
+  async loadSampleData(data) {
+    await this.db.collection('clientsData').set(data);
   }
 }

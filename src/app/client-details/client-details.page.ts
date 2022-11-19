@@ -204,8 +204,10 @@ export class ClientDetailsPage {
       return 'danger';
     } else if (tm >= 24) {
       return 'warning';
+    } else if (tm >= 12) {
+      return 'primary';
     } else {
-      return 'light';
+      return 'dark';
     }
   }
 

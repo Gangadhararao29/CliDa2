@@ -17,7 +17,7 @@ export class AboutPage {
   isUpdateLoading = false;
   isModalOpen = false;
   latestVersion = 0;
-  currentVersion = 3.4;
+  currentVersion = 3.6;
   gitHubResponse = [];
 
   constructor(
@@ -92,10 +92,14 @@ export class AboutPage {
   }
 
   importData(target) {
-    this.presentImportDataAlert(target.files.item(0));
+    const fileReader = new FileReader();
+    fileReader.readAsText(target.files.item(0));
+    fileReader.onload = (e) => {
+      this.importDataAlert(JSON.parse(fileReader.result.toString()));
+    };
   }
 
-  async presentImportDataAlert(file) {
+  async importDataAlert(clientsData) {
     const alert = await this.alertController.create({
       header: 'Existing Data will?',
       cssClass: 'alertMultiStyle',
@@ -106,14 +110,14 @@ export class AboutPage {
           text: 'Replace with new data',
           handler: () => {
             this.clientDataService.presentLoading();
-            this.importHandler(file, true);
+            this.importHandler(clientsData, true);
           },
         },
         {
           text: 'Merge with new data',
           handler: () => {
             this.clientDataService.presentLoading();
-            this.importHandler(file, false);
+            this.importHandler(clientsData, false);
           },
         },
         {
@@ -127,12 +131,9 @@ export class AboutPage {
     await alert.present();
   }
 
-  importHandler(file, replaceStatus) {
-    const fileReader = new FileReader();
-    fileReader.readAsText(file);
-    fileReader.onload = (e) => {
+  importHandler(clientsData, replaceStatus) {
       this.clientDataService
-        .saveBulkClients(fileReader.result, replaceStatus)
+      .saveBulkClients(clientsData, replaceStatus)
         .then((res) => {
           setTimeout(() => {
             this.inputClientData = '';
@@ -142,7 +143,6 @@ export class AboutPage {
             this.router.navigate(['clida', 'clients-list']);
           }, 1000);
         });
-    };
   }
 
   async presentDeleteAlert() {
@@ -221,9 +221,7 @@ export class AboutPage {
           });
         }
 
-        this.clientDataService
-          .saveBulkClients(JSON.stringify(clients), true)
-          .then((res) => {
+        this.clientDataService.saveBulkClients(clients, true).then((res) => {
             setTimeout(() => {
               this.clientDataService.presentToast('Data sorted successfully');
               event.target.disabled = false;

@@ -13,20 +13,13 @@
 
 <ion-content>
   <div class="mx-2 mt-1">
-    <ion-accordion toggle-icon="none" readonly="true">
-      <ion-item slot="header" color="primary" class="rounded">
-        <ion-label class="d-flex ms-2">
-          <span class="fw-bolder">Principal</span>
-          <span class="ms-auto fw-bolder">Start date</span>
-        </ion-label>
-      </ion-item>
-    </ion-accordion>
+    <div class="bgLight p-2 rounded text-center">Present Transactions</div>
 
     <ion-accordion-group class="my-2">
       <div *ngFor="let data of client?.data; let i=index;" class="mt-2">
         <ion-accordion [value]="i">
-          <ion-item slot="header" [color]="getColor(data)" class="rounded">
-            <ion-label class="d-flex ms-2">
+          <ion-item slot="header" class="rounded" color="light">
+            <ion-label class="d-flex ms-2" [color]="getColor(data)">
               <span class="fw-bolder">₹ {{ isd.format(data?.principal) }}</span>
               <span class="ms-auto fw-bolder"
                 >{{data?.startDate.split('-').reverse().join('/')}}</span
@@ -318,6 +311,7 @@
       color="light"
       class="rounded text-center mb-2"
       routerLink="/clida/clients-list/add-client"
+      [queryParams]="{name:client?.name}"
       ><ion-label class="text-danger fw-bolder"> + Add new record </ion-label>
     </ion-item>
   </div>

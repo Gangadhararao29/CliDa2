@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AlertController, IonRouterOutlet, Platform } from '@ionic/angular';
 import { App } from '@capacitor/app';
 import { ClientDataService } from '../services/client-data.service';
+import * as sampleData from '../../assets/clientsData.json';
 
 @Component({
   selector: 'app-clients-list',
@@ -93,9 +94,7 @@ export class ClientsListPage {
   resetSearch() {
     this.clientSearchValue = null;
     this.searchIcon =
-      this.searchIcon === 'search-sharp'
-        ? 'remove-circle-outline'
-        : 'search-sharp';
+      this.searchIcon === 'search-sharp' ? 'remove' : 'search-sharp';
   }
 
   async getCloseAlert() {
@@ -139,5 +138,13 @@ export class ClientsListPage {
   setrecordType(event) {
     this.showDebitList = event.detail.value === 'debits' ? true : false;
     localStorage.setItem('tabSection', event.detail.value);
+  }
+
+  async loadSampleData() {
+    const data = sampleData['default'];
+    await this.clientDataService.loadSampleData(data).then(() => {
+      this.clientDataService.setDataModified();
+      this.ionViewWillEnter();
+    });
   }
 }
