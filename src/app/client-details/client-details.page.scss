@@ -45,5 +45,8 @@ ion-list {
 
 .listItem {
   width: 98%;
-  max-width: 350px;
+  margin: auto 1%;
+  @media screen and (min-width: 732px) {
+    max-width: 350px;
+  }
 }
