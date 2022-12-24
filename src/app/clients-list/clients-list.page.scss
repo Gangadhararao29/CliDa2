@@ -29,9 +29,16 @@ ion-searchbar {
 }
 
 .listItem {
-  width: 98%;
-  margin: auto 1%;
-  max-width: 350px;
+  @media screen and (max-width: 747px) {
+    width: 96%;
+    margin: auto 2%;
+  }
+
+  @media screen and (min-width: 747px) {
+    width: 98%;
+    margin: auto 1%;
+    max-width: 350px;
+  }
 }
 
 .tabActive {
