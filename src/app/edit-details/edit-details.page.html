@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
@@ -167,11 +167,11 @@
     </div>
 
     <ion-button color="success" expand="block" type="submit" class="my-2">
-      confirm
+      Confirm
     </ion-button>
   </form>
 
-  <div class="container my-3"  *ngIf="userName.dirty">
+  <div class="container my-3" *ngIf="userName.dirty">
     <div class="d-flex bgLight align-items-center align-items-md-stretch rounded-3 bg-warning">
       <div class="fs-1 px-3 py-2 text-dark">!</div>
       <small class="justifyText bgLight p-2 rounded-end">
