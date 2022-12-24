@@ -22,6 +22,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'dashboard',
+        loadChildren: () =>
+          import('../dashboard/dashboard.module').then(
+            (m) => m.DashboardPageModule
+          ),
+      },
+      {
         path: 'dashboard/adv-search',
         loadChildren: () =>
           import('../adv-search/adv-search.module').then(
@@ -33,13 +40,6 @@ const routes: Routes = [
         loadChildren: () =>
           import('../client-details/client-details.module').then(
             (m) => m.ClientDetailsPageModule
-          ),
-      },
-      {
-        path: 'dashboard',
-        loadChildren: () =>
-          import('../dashboard/dashboard.module').then(
-            (m) => m.DashboardPageModule
           ),
       },
       {
@@ -89,9 +89,9 @@ const routes: Routes = [
     ],
   },
   {
-    path: '',
+    path: '**',
     redirectTo: '/clida/clients-list',
-    pathMatch: 'full',
+    pathMatch: 'prefix',
   },
 ];
 
