@@ -14,17 +14,27 @@ ion-content {
 ion-segment-button {
   --indicator-color: transparent !important;
   --indicator-box-shadow: transparent !important;
-  --background:var(--ion-color-light);
-  --color:var(--ion-color-primary);
+  --background: var(--ion-color-light);
+  --color: var(--ion-color-primary);
   --background-checked: var(--ion-color-primary);
   --color-checked: white;
-  border-radius: .5rem !important;
+  border-radius: 0.5rem !important;
   margin: 2.5px;
   height: 40px;
   min-height: 40px;
 }
 
 ion-searchbar {
-    --border-radius: 0.5rem;
+  --border-radius: 0.5rem;
 }
 
+.listItem {
+  width: 98%;
+  margin: auto 1%;
+  max-width: 350px;
+}
+
+.tabActive {
+  background-color: var(--ion-color-primary);
+  color: white;
+}

@@ -102,6 +102,7 @@ export class AdvSearchPage implements OnInit {
         this.sortDataModel(paramsModel);
       }
       this.hideSkeletonText = true;
+      this.showNoRecords = this.displayData.length ? false : true;
     });
   }
 

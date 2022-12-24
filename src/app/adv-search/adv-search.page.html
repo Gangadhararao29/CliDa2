@@ -21,7 +21,7 @@
 
 <ion-content>
   <div
-    class="d-flex align-items-center overflow-auto flex-nowrap mt-1"
+    class="d-flex align-items-center overflow-auto flex-nowrap mt-1 px-1"
     style="height: max-content"
   >
     <div *ngFor="let params of sortAndFilterParams;let i = index" class="ms-1">
@@ -160,16 +160,16 @@
   <div class="m-2">
     <div
       [hidden]="!showNoRecords"
-      class="my-3 p-3 text-center bgLight rounded-3 text-danger"
+      class="p-3 text-center bgLight rounded-3 text-danger"
     >
       No Records found
     </div>
-    <div class="displayList">
+    <div class="text-center">
       <ion-item
         *ngFor="let client of displayData"
         [routerLink]="'client-details/' + client.key"
         color="light"
-        class="mt-2 rounded-3"
+        class="rounded-3 listItem d-inline-block"
       >
         <div>{{client?.data.name}}</div>
         <div class="ms-auto d-flex text-end">

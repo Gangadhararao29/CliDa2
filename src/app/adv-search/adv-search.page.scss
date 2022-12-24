@@ -1,7 +1,6 @@
 .cardFilterClass {
   box-sizing: border-box;
   min-width: 120px;
-
   display: inline-block;
   padding: 8px;
   margin: 2px 2px 2px 2px;
@@ -14,4 +13,10 @@ ion-content {
 
 .bgLight {
   background-color: var(--ion-color-light);
+}
+
+.listItem {
+  width: 98%;
+  margin: auto 1%;
+  max-width: 350px;
 }

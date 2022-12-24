@@ -96,7 +96,8 @@
 }
 
 .ngx-pagination a:hover,
-.ngx-pagination button:hover {
+.ngx-pagination button:hover,
+.ngx-pagination .current {
   background: #198754 !important;
   border-radius: 8px;
 }
