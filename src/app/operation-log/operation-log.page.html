@@ -19,7 +19,9 @@
   >
     <div class="p-2 bg-danger rounded text-light">No logs found</div>
   </div>
-  <ion-accordion-group
+
+  <div class="container">
+    <ion-accordion-group
     *ngFor="let log of logData; let i=index;"
     class="m-2"
     value="0"
@@ -177,4 +179,5 @@
       </div>
     </ion-accordion>
   </ion-accordion-group>
+  </div>
 </ion-content>

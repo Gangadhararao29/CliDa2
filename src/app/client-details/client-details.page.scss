@@ -40,5 +40,10 @@ ion-col {
 }
 
 ion-list {
-  padding-bottom :0px !important;
+  padding-bottom: 0px !important;
+}
+
+.listItem {
+  width: 98%;
+  max-width: 350px;
 }

@@ -153,7 +153,6 @@ export class ClientDataService {
   /**
    * for calculating interests
    */
-
   calculateTimeperiod(startDate, endDate = this.today) {
     const sd = new Date(startDate);
     const ed = new Date(endDate);
@@ -183,24 +182,35 @@ export class ClientDataService {
     }
   }
 
-  calculateInterest(principal, rate, startDate, endDate = this.today) {
-    let timeInMonths = this.calculateTimeperiod(startDate, endDate).tm;
-    if (timeInMonths <= 36) {
-      const interest = (principal * timeInMonths * rate) / 100.0;
-      return { interest };
-    } else {
-      const interest = (principal * 36 * rate) / 100.0;
-      timeInMonths = timeInMonths - 36;
-      const newPrincipal = principal + interest;
-      const newInterest = (newPrincipal * timeInMonths * rate) / 100.0;
-      return { interest, newPrincipal, newInterest, timeInMonths };
+  calculateTotalInterest(data, endDate = this.today, ci = 3) {
+    let tm = this.calculateTimeperiod(data.startDate, endDate).tm;
+    let start = 0;
+    const resultArray = [];
+    while (tm > ci * 12) {
+      tm -= ci * 12;
+      const intAmt = data.principal * data.rate * 0.12 * ci;
+      resultArray.push({
+        start,
+        end: start + ci,
+        principal: data.principal,
+        intAmt,
+      });
+      data.principal += intAmt;
+      start += ci;
     }
+    const remInt = (data.principal * data.rate * tm) / 100.0;
+    resultArray.push({
+      start,
+      end: (start + tm / 12.0).toFixed(2),
+      principal: data.principal,
+      intAmt: remInt,
+    });
+    return resultArray;
   }
 
   /**
    * utilities here
    */
-
   generatePayLoad(formData, includeClosedDetails) {
     return {
       name: this.formatToCamelCase(formData.userName),
@@ -226,20 +236,6 @@ export class ClientDataService {
       /(^\w|\s\w)(\S*)/g,
       (_, m1, m2) => m1.toUpperCase() + m2.toLowerCase()
     );
-  }
-
-  async orderByName(orderKey) {
-    if (orderKey === 'asc') {
-      return await this.db
-        .collection('clientsData')
-        .orderBy('name')
-        .get({ keys: true });
-    } else {
-      return await this.db
-        .collection('clientsData')
-        .orderBy('name', 'desc')
-        .get({ keys: true });
-    }
   }
 
   async presentToast(
@@ -271,7 +267,6 @@ export class ClientDataService {
   /**
    * Operation Log functions
    */
-
   addNewLogData(operation, oldData, newData, index = null) {
     const logData = localStorage.getItem('logs')
       ? JSON.parse(localStorage.getItem('logs'))
@@ -285,7 +280,6 @@ export class ClientDataService {
         });
         break;
       }
-
       case 'edit': {
         logData.push({
           operation,
@@ -295,7 +289,6 @@ export class ClientDataService {
         });
         break;
       }
-
       case 'delete': {
         logData.push({
           operation,
@@ -304,7 +297,6 @@ export class ClientDataService {
         });
         break;
       }
-
       case 'edit - approve': {
         logData.push({
           operation,

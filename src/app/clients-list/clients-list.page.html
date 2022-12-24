@@ -1,6 +1,18 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title> Clients List </ion-title>
+    <ion-title>
+      CliDa 
+      <ion-chip
+        [ngClass]="{'tabActive': !showDebitList}"
+        (click)="setListType('credits')"
+        >Credits</ion-chip
+      >
+      <ion-chip
+        [ngClass]="{'tabActive': showDebitList}"
+        (click)="setListType('debits')"
+        >Debits</ion-chip
+      >
+    </ion-title>
     <ion-buttons slot="primary">
       <ion-button
         [hidden]="showEntryText"
@@ -53,8 +65,8 @@
       >Load sample data</ion-button
     >
 
-    <div class="d-flex my-2 bgLight align-items-center rounded-3 bg-warning">
-      <div class="fs-1 p-3 text-dark">!</div>
+    <div class="d-flex my-2 bgLight align-items-center align-items-lg-stretch rounded-3 bg-warning">
+      <div class="fs-1 px-3 py-2 text-dark">!</div>
       <div class="justifyText bgLight p-2 rounded-end">
         Please save your data on a regular basis using the Info tab. When you
         click the Backup button, the data will be saved under CliDa in the
@@ -63,7 +75,8 @@
     </div>
   </div>
 
-  <div [hidden]="showEntryText" class="mx-1 mt-1">
+  <!-- 
+      <div [hidden]="showEntryText" class="mx-1 mt-1">
     <ion-segment [value]="tabSection" (ionChange)="setrecordType($event)">
       <ion-segment-button value="credits">
         <ion-label>Credits</ion-label>
@@ -73,10 +86,12 @@
       </ion-segment-button>
     </ion-segment>
   </div>
+   -->
 
   <div class="collapse sticky-top" id="collapseExample">
     <ion-searchbar
       animated
+      class="pb-1"
       color="light"
       placeholder="Search clients here..."
       [(ngModel)]="clientSearchValue"
@@ -86,12 +101,12 @@
   </div>
 
   <div [hidden]="showEntryText">
-    <div class="debitList" [hidden]="!showDebitList">
+    <div class="debitList mt-2 text-center" [hidden]="!showDebitList">
       <ion-item
         *ngFor="let client of debitData | clientsSearch:clientSearchValue"
         [routerLink]="'client-details/' + client.key"
         color="light"
-        class="m-2 rounded-3"
+        class="rounded-3 listItem d-inline-block"
         lines="none"
       >
         <div>{{client?.data.name}}</div>
@@ -107,12 +122,12 @@
       </ion-item>
     </div>
 
-    <div class="creditList" [hidden]="showDebitList">
+    <div class="creditList mt-2 text-center" [hidden]="showDebitList">
       <ion-item
         *ngFor="let client of creditData | clientsSearch:clientSearchValue"
         [routerLink]="'client-details/' + client.key"
         color="light"
-        class="m-2 rounded-3"
+        class="rounded-3 listItem d-inline-block"
         lines="none"
       >
         <div>{{client?.data.name}}</div>

@@ -54,13 +54,13 @@ export class DashboardPage {
         const timeObject = this.clientDataService.calculateTimeperiod(
           record.startDate
         );
-        const interestObj = this.clientDataService.calculateInterest(
-          record.principal,
-          record.interest,
-          record.startDate
-        );
+        const intArr = this.clientDataService.calculateTotalInterest({
+          principal: record.principal,
+          rate: record.interest,
+          startDate: record.startDate,
+        });
         totalPrincipal += record.principal;
-        totalInterest += interestObj.interest;
+        totalInterest += intArr[0].intAmt;
         if (timeObject.tm > greaterTimePeriod) {
           greaterTimePeriod = timeObject.tm;
         }

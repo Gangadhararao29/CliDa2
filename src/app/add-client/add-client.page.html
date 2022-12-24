@@ -6,8 +6,8 @@
 </ion-header>
 
 <ion-content>
-  <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
-    <div class="m-2 bgLight pt-2 rounded">
+  <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)" class="container my-2">
+    <div class="mb-2 bgLight pt-2 rounded">
       <ion-radio-group name="recordType" ngModel #recordType="ngModel">
         <ion-label position="stacked" class="mx-3">
           <span style="font-size: large; font-weight: 300"
@@ -27,128 +27,122 @@
       </ion-radio-group>
     </div>
 
-    <div class="mx-2">
-      <div class="p-2 bgLight rounded">
-        <div class="form-floating mt-1 mb-2">
-          <input
-            type="text"
-            class="form-control"
-            id="name"
-            placeholder="Enter name"
-            list="nameRef"
-            name="userName"
-            ngModel
-            #userName="ngModel"
-            required
-            [class.is-valid]="userName.valid"
-            [class.is-invalid]="userName.invalid && formRef.submitted"
-          />
-          <label for="name"><span class="formLabel">Name</span></label>
-          <div id="name" class="invalid-feedback">Please enter a Name.</div>
-          <datalist id="nameRef" #nameList>
-            <option *ngFor="let client of clientsData" [value]="client.name">
-              {{client.name}}
-            </option>
-          </datalist>
-        </div>
-        <div class="mb-2 justify-content-between d-flex">
-          <div class="form-floating d-inline-block w-100">
-            <input
-              type="number"
-              class="form-control"
-              id="principal"
-              placeholder="100000"
-              ngModel
-              #principal="ngModel"
-              name="principal"
-              required
-              [class.is-valid]="principal.valid"
-              [class.is-invalid]="principal.invalid &&  formRef.submitted"
-            />
-            <label for="principal"
-              ><span class="formLabel">Principal</span></label
-            >
-            <div id="principal" class="invalid-feedback">
-              Please enter Principal amount.
-            </div>
-          </div>
-
-          <div class="form-floating d-inline-block w-100">
-            <input
-              type="number"
-              class="form-control"
-              id="interest"
-              placeholder="1.50"
-              ngModel
-              name="interest"
-              #interest="ngModel"
-              required
-              [class.is-valid]="interest.valid"
-              [class.is-invalid]="interest.invalid &&  formRef.submitted"
-            />
-            <label for="interest"
-              ><span class="formLabel">Interest</span></label
-            >
-            <div id="interest" class="invalid-feedback">
-              Please enter Interest rate.
-            </div>
-          </div>
-        </div>
-
-        <div class="form-floating mb-1">
-          <input
-            type="date"
-            class="form-control"
-            id="startDate"
-            ngModel
-            name="startDate"
-            required
-            #startDate="ngModel"
-            [ngModel]="today"
-            [class.is-valid]="startDate.valid"
-            [class.is-invalid]="startDate.invalid &&  formRef.submitted"
-          />
-          <label for="startDate"
-            ><span class="formLabel">Start date</span></label
-          >
-          <div id="startDate" class="invalid-feedback">
-            Please enter start Date.
-          </div>
-        </div>
-      </div>
-
-      <div class="form-floating mt-2">
-        <textarea
+    <div class="p-2 bgLight rounded">
+      <div class="form-floating mt-1 mb-2">
+        <input
+          type="text"
           class="form-control"
-          placeholder="Leave a comment here"
-          id="comments"
-          (input)="getCommentHeight($event)"
+          id="name"
+          placeholder="Enter name"
+          list="nameRef"
+          name="userName"
           ngModel
-          name="comments"
-          #comments="ngModel"
-        ></textarea>
-        <label for="comments"><span class="formLabel">Comments</span></label>
+          #userName="ngModel"
+          required
+          [class.is-valid]="userName.valid"
+          [class.is-invalid]="userName.invalid && formRef.submitted"
+        />
+        <label for="name"><span class="formLabel">Name</span></label>
+        <div id="name" class="invalid-feedback">Please enter a Name.</div>
+        <datalist id="nameRef" #nameList>
+          <option *ngFor="let client of clientsData" [value]="client.name">
+            {{client.name}}
+          </option>
+        </datalist>
+      </div>
+      <div class="mb-2 justify-content-between d-flex">
+        <div class="form-floating d-inline-block w-100">
+          <input
+            type="number"
+            class="form-control"
+            id="principal"
+            placeholder="100000"
+            ngModel
+            #principal="ngModel"
+            name="principal"
+            required
+            [class.is-valid]="principal.valid"
+            [class.is-invalid]="principal.invalid &&  formRef.submitted"
+          />
+          <label for="principal"
+            ><span class="formLabel">Principal</span></label
+          >
+          <div id="principal" class="invalid-feedback">
+            Please enter Principal amount.
+          </div>
+        </div>
+
+        <div class="form-floating d-inline-block w-100">
+          <input
+            type="number"
+            class="form-control"
+            id="interest"
+            placeholder="1.50"
+            ngModel
+            name="interest"
+            #interest="ngModel"
+            required
+            [class.is-valid]="interest.valid"
+            [class.is-invalid]="interest.invalid &&  formRef.submitted"
+          />
+          <label for="interest"><span class="formLabel">Interest</span></label>
+          <div id="interest" class="invalid-feedback">
+            Please enter Interest rate.
+          </div>
+        </div>
       </div>
 
-      <ion-item class="mt-2 rounded" lines="none" color="light">
-        <ion-label>Add multiple records</ion-label>
-        <ion-toggle
-          color="danger"
-          [ngModel]="false"
-          name="multiRecordsSelected"
-        ></ion-toggle>
-      </ion-item>
-
-      <ion-button
-        #submitButton
-        color="danger"
-        expand="block"
-        type="submit"
-        class="mt-2 mb-3"
-        [disabled]="isAddBtnDisable"
-      >
-        Add new client
-      </ion-button>
+      <div class="form-floating mb-1">
+        <input
+          type="date"
+          class="form-control"
+          id="startDate"
+          ngModel
+          name="startDate"
+          required
+          #startDate="ngModel"
+          [ngModel]="today"
+          [class.is-valid]="startDate.valid"
+          [class.is-invalid]="startDate.invalid &&  formRef.submitted"
+        />
+        <label for="startDate"><span class="formLabel">Start date</span></label>
+        <div id="startDate" class="invalid-feedback">
+          Please enter start Date.
+        </div>
+      </div>
     </div>
+
+    <div class="form-floating mt-2">
+      <textarea
+        class="form-control"
+        placeholder="Leave a comment here"
+        id="comments"
+        (input)="getCommentHeight($event)"
+        ngModel
+        name="comments"
+        #comments="ngModel"
+      ></textarea>
+      <label for="comments"><span class="formLabel">Comments</span></label>
+    </div>
+
+    <ion-item class="mt-2 rounded" lines="none" color="light">
+      <ion-label>Add multiple records</ion-label>
+      <ion-toggle
+        color="danger"
+        [ngModel]="false"
+        name="multiRecordsSelected"
+      ></ion-toggle>
+    </ion-item>
+
+    <ion-button
+      #submitButton
+      color="danger"
+      expand="block"
+      type="submit"
+      class="mt-2 mb-3"
+      [disabled]="isAddBtnDisable"
+    >
+      Add new client
+    </ion-button>
   </form>
 </ion-content>
