@@ -135,9 +135,14 @@ export class ClientsListPage {
     }
   }
 
-  setrecordType(event) {
-    this.showDebitList = event.detail.value === 'debits' ? true : false;
-    localStorage.setItem('tabSection', event.detail.value);
+  // setrecordType(event) {
+  //   this.showDebitList = event.detail.value === 'debits' ? true : false;
+  //   localStorage.setItem('tabSection', event.detail.value);
+  // }
+
+  setListType(type) {
+    this.showDebitList = type === 'debits' ? true : false;
+    localStorage.setItem('tabSection', type);
   }
 
   async loadSampleData() {
