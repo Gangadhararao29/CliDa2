@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="m-2">
+  <div class="container my-2">
     <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
       <div class="bgLight p-2 rounded mb-2">
         <div class="fs-5 fw-2 mb-1 mx-1">Enter details to calculate</div>
@@ -35,9 +35,9 @@
               [class.is-valid]="principal.valid"
               [class.is-invalid]="principal.invalid &&  formRef.submitted"
             />
-            <label for="principal"
-              ><span class="formLabel">Principal</span></label
-            >
+            <label for="principal">
+              <span class="formLabel">Principal</span>
+            </label>
             <div id="principal" class="invalid-feedback">
               Please enter Principal amount.
             </div>
@@ -76,9 +76,9 @@
             [class.is-valid]="startDate.valid"
             [class.is-invalid]="startDate.invalid &&  formRef.submitted"
           />
-          <label for="startDate"
-            ><span class="formLabel">Start date</span></label
-          >
+          <label for="startDate">
+            <span class="formLabel">Start date</span>
+          </label>
           <div id="startDate" class="invalid-feedback">
             Please enter start Date.
           </div>
@@ -100,6 +100,23 @@
             Please enter end Date.
           </div>
         </div>
+
+        <div>
+          Compound Interest for every
+          <b>{{linkData.compInt}}</b>
+          years
+        </div>
+        <ion-range
+          class="formControl"
+          id="compInt"
+          name="compInt"
+          [(ngModel)]="linkData.compInt"
+          [min]="1"
+          [max]="5"
+          [value]="3"
+          [ticks]="true"
+          [snaps]="true"
+        ></ion-range>
       </div>
 
       <div
@@ -135,11 +152,55 @@
     </form>
   </div>
 
-  <div class="rounded m-2 fw-bolder" *ngIf="showCalculatedData">
-    <div class="fs-5 bg-success py-2 px-3 rounded-top text-light">
-      Calculated Data
+  <div
+    class="rounded fw-bolder container my-2"
+    *ngIf="showCalculatedData"
+  >
+    <div
+      class="d-flex px-2 bg-success rounded-top text-light align-items-center"
+    >
+      <div class="py-2">Calculated Result</div>
+      <ion-icon
+        id="calcInfo"
+        name="information-sharp"
+        size="small"
+        class="ms-auto border border-dark bg-warning rounded-circle text-dark p-1"
+      ></ion-icon>
     </div>
-    <div class="bgLight px-2 py-1 rounded-bottom" style="font-size: 95%">
+
+    <ion-popover trigger="calcInfo" side="left" alignment="start">
+      <ng-template>
+        <ion-content class="ion-padding">
+          <div>
+            Tm = 12x{{timePeriodObject?.y}} + {{timePeriodObject?.m}} +
+            {{timePeriodObject?.d}}/30 <br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+            {{timePeriodObject.tm.toFixed(4)}}m <br />
+            <hr class="m-1" />
+            SI = {{linkData.principal/100}} x {{timePeriodObject.tm.toFixed(3)}}
+            x {{linkData.interest}} <br />
+            SI = {{(linkData.principal/100 * timePeriodObject.tm *
+            linkData.interest).toFixed(2)}}
+            <hr class="m-1" />
+
+            <table class="table">
+              <tr>
+                <th>Time(m)</th>
+                <th>Principal</th>
+                <th>Interest</th>
+              </tr>
+              <tr *ngFor="let intObj of intArray">
+                <td>{{intObj.start * 12}} - {{(intObj.end *12).toFixed()}}</td>
+                <td>{{intObj.principal.toFixed()}}</td>
+                <td>{{intObj.intAmt.toFixed()}}</td>
+              </tr>
+            </table>
+          </div>
+        </ion-content>
+      </ng-template>
+    </ion-popover>
+
+    <div class="bgLight rounded-bottom px-2" style="font-size: 95%">
       <ion-grid>
         <ion-row>
           <ion-col size="5"> Name </ion-col>
@@ -147,24 +208,24 @@
           <ion-col size="6">{{linkData.name}}</ion-col>
         </ion-row>
         <ion-row>
-          <ion-col size="5"> Principal (P) </ion-col>
+          <ion-col size="5"> Principal</ion-col>
           <ion-col size="1">:</ion-col>
           <ion-col size="6" class="highlight"
             >{{currencyFormat(linkData.principal)}}</ion-col
           >
         </ion-row>
         <ion-row>
-          <ion-col size="5"> Int. rate (R) </ion-col>
+          <ion-col size="5"> Interest rate</ion-col>
           <ion-col size="1">:</ion-col>
           <ion-col size="6" class="highlight">{{linkData.interest}}</ion-col>
         </ion-row>
         <ion-row>
-          <ion-col size="5"> End Date </ion-col>
+          <ion-col size="5"> Close date </ion-col>
           <ion-col size="1">:</ion-col>
           <ion-col size="6">{{linkData.endDate}}</ion-col>
         </ion-row>
         <ion-row>
-          <ion-col size="5"> Start Date </ion-col>
+          <ion-col size="5"> Start date </ion-col>
           <ion-col size="1">:</ion-col>
           <ion-col size="6">
             <u style="text-underline-offset: 5px; text-decoration-color: green">
@@ -173,7 +234,7 @@
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col size="5"> Time Period </ion-col>
+          <ion-col size="5"> Time taken </ion-col>
           <ion-col size="1">:</ion-col>
           <ion-col size="6" class="highlight">
             <u style="text-underline-offset: 5px">
@@ -182,77 +243,29 @@
             </u>
           </ion-col>
         </ion-row>
-        <ion-row>
-          <ion-col class="text-center my-1">
-            <div>
-              T = 12x{{timePeriodObject?.y}} + {{timePeriodObject?.m}} +
-              {{timePeriodObject?.d}}/30 = {{timePeriodObject.tm.toFixed(2)}} m
-            </div>
-            <div>
-              I = {{linkData.principal}} x {{timePeriodObject.tm
-              >36?36:timePeriodObject.tm.toFixed(3)}} x
-              {{linkData.interest}}/100
-            </div>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="5">
-            Interest (I)
-            <span
-              *ngIf="advIntShow"
-              style="font-size: smaller"
-              class="highlight"
-              >(3y)</span
-            >
-          </ion-col>
+        <div *ngFor="let intObj of intArray">
+          <ion-row>
+            <ion-col size="5">
+              Int amt <small>({{intObj.start}} - {{intObj.end}})y</small>
+            </ion-col>
+            <ion-col size="1">:</ion-col>
+            <ion-col sizez="6">{{currencyFormat(intObj?.intAmt)}}</ion-col>
+          </ion-row>
+        </div>
+        <ion-row class="border-bottom border-success border-1">
+          <ion-col size="5"> Total Interest </ion-col>
           <ion-col size="1">:</ion-col>
           <ion-col sizez="6" class="highlight"
-            >{{currencyFormat(interestObj?.interest)}}</ion-col
+            >{{currencyFormat(finalInterest)}}</ion-col
           >
         </ion-row>
         <ion-row>
-          <ion-col size="5"> Total amount </ion-col>
+          <ion-col size="5"> Final amount </ion-col>
           <ion-col size="1">:</ion-col>
-          <ion-col sizez="6" class="highlight">
-            {{currencyFormat(interestObj?.interest+ linkData?.principal)}}
+          <ion-col size="6" class="highlight">
+            {{currencyFormat(finalInterest + linkData?.principal)}}
           </ion-col>
         </ion-row>
-        <div *ngIf="advIntShow">
-          <ion-row>
-            <ion-col class="text-center text-light bg-danger rounded p-1 my-1">
-              Time taken greater than 3 years
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size="5">New principal</ion-col>
-            <ion-col size="1">:</ion-col>
-            <ion-col size="6">
-              {{currencyFormat(interestObj?.newPrincipal)}}
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size="5">Pending time</ion-col>
-            <ion-col size="1">:</ion-col>
-            <ion-col size="6">
-              {{timePeriodObject?.y - 3}}y, {{timePeriodObject?.m}}m,
-              {{timePeriodObject?.d}}d
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size="5">New Interest</ion-col>
-            <ion-col size="1">:</ion-col>
-            <ion-col size="6" class="highlight">
-              {{currencyFormat(interestObj?.newInterest)}}
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size="5">Final amount</ion-col>
-            <ion-col size="1">:</ion-col>
-            <ion-col size="6" class="highlight">
-              {{currencyFormat(interestObj?.newPrincipal+interestObj?.newInterest)}}
-            </ion-col>
-          </ion-row>
-        </div>
       </ion-grid>
     </div>
   </div>

@@ -63,13 +63,15 @@ export class ClientDetailsPage {
   }
 
   calculateInterest(data, endDate) {
-    const interestObject = this.clientsDataService.calculateInterest(
-      data.principal,
-      data.interest,
-      data.startDate,
+    const intArr = this.clientsDataService.calculateTotalInterest(
+      {
+        principal: data.principal,
+        rate: data.interest,
+        startDate: data.startDate,
+      },
       endDate
     );
-    return Math.round(interestObject.interest * 100) / 100;
+    return Math.round(intArr[0].intAmt * 100) / 100;
   }
 
   openCalculator(recordId) {

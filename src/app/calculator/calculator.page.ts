@@ -10,14 +10,11 @@ import { ClientDataService } from '../services/client-data.service';
 export class CalculatorPage {
   linkData = {} as any;
   timePeriodObject: { d: number; m: number; y: number; tm: number };
-  interestObj: {
-    interest: number;
-    newPrincipal?: number;
-    newInterest?: number;
-    tm?: number;
-  };
+  interestObj = {} as any;
   advIntShow = false;
   showCalculatedData = false;
+  intArray = [];
+  finalInterest = 0;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -33,9 +30,12 @@ export class CalculatorPage {
         this.linkData = res.data.find((record) => record.id == recordId);
         this.linkData.name = res.name;
         this.linkData.endDate = this.clientsDataService.today;
+        this.linkData.compInt = 3;
       });
+    } else {
+      this.linkData.endDate = this.clientsDataService.today;
+      this.linkData.compInt = 3;
     }
-    this.linkData.endDate = this.clientsDataService.today;
   }
 
   onSubmit(formRef) {
@@ -46,18 +46,24 @@ export class CalculatorPage {
       );
 
       if (!isNaN(this.timePeriodObject.d)) {
-        this.interestObj = this.clientsDataService.calculateInterest(
-          formRef.value.principal,
-          formRef.value.interest,
-          formRef.value.startDate,
-          formRef.value.endDate
+        this.intArray = this.clientsDataService.calculateTotalInterest(
+          {
+            principal: formRef.value.principal,
+            rate: formRef.value.interest,
+            startDate: formRef.value.startDate,
+          },
+          formRef.value.endDate,
+          formRef.value.compInt
+        );
+        this.finalInterest = this.intArray.reduce(
+          (prev, curr) => prev + curr.intAmt,
+          0
         );
 
         this.showCalculatedData = true;
         this.clientsDataService.presentToast(
           'Interest Calculated Successfully'
         );
-        this.advIntShow = this.interestObj.newInterest ? true : false;
       } else {
         this.showCalculatedData = false;
         this.dateInputErrorAlert();
@@ -68,6 +74,7 @@ export class CalculatorPage {
   resetForm(formRef) {
     formRef.resetForm();
     formRef.form.controls.endDate.setValue(this.clientsDataService.today);
+    formRef.form.controls.compInt.setValue(3);
     this.showCalculatedData = false;
   }
 
