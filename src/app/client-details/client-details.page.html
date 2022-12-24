@@ -15,8 +15,11 @@
   <div class="mx-2 mt-1">
     <div class="bgLight p-2 rounded text-center">Present Transactions</div>
 
-    <ion-accordion-group class="my-2">
-      <div *ngFor="let data of client?.data; let i=index;" class="mt-2">
+    <ion-accordion-group class="my-2 text-center d-flex flex-wrap justify-content-center">
+      <div
+        *ngFor="let data of client?.data; let i=index;"
+        class="m-1 listItem text-start"
+      >
         <ion-accordion [value]="i">
           <ion-item slot="header" class="rounded" color="light">
             <ion-label class="d-flex ms-2" [color]="getColor(data)">
@@ -27,7 +30,7 @@
             >
           </ion-item>
           <ion-list slot="content" lines="none" class="rounded mx-auto">
-            <div class="bgLight mx-2 rounded ps-2 py-1 fw-bolder">
+            <div class="bgLight mx-2 ps-2 rounded py-1 fw-bolder">
               <ion-grid>
                 <ion-row>
                   <ion-col size="5">Principal</ion-col>
