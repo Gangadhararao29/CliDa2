@@ -30,8 +30,9 @@
   border-radius: 6px;
   .alert-head {
     background: var(--ion-color-primary);
-    padding: 12px;
+    padding: 10px;
     margin: 0;
+    text-align: center;
   }
   h2 {
     color: white;
@@ -39,13 +40,14 @@
 
   .alert-button-group {
     display: flex;
-    justify-content: space-between;
-    width: 100%;
-
+    justify-content: center;
+    padding-left: 2.5px;
+    padding-right: 2.5px;
+    padding-bottom: 10px;
+    padding-top: 2px;
     button {
-      border: 1px solid var(--ion-color-primary);
+      border: 2px solid var(--ion-color-primary);
       border-radius: 5px;
-      width: 48%;
       background: var(--ion-color-primary);
       color: white;
       &:last-child {
@@ -53,7 +55,6 @@
         color: var(--ion-color-dark);
       }
     }
-
     span {
       display: flex;
       justify-content: center;
@@ -63,24 +64,27 @@
 
 .alertStyle .alert-wrapper {
   .alert-message {
-    padding: 0 12px;
-    margin-top: 8px;
+    margin-top: 6px;
+    padding: 5px 15px;
   }
 
   .alert-button-group {
-    margin: 0.5px;
     button {
-      margin: 0px;
+      margin: 1%;
       width: 48%;
     }
   }
 }
 
 .alertMultiStyle .alert-wrapper {
+  .alert-message {
+    margin-top: 4px;
+  }
+
   .alert-button-group {
     button {
-      width: 100%;
-      margin: 3px 0;
+      width: 98%;
+      margin: 5px 1%;
     }
   }
 }

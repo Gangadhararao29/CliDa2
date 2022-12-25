@@ -132,17 +132,17 @@ export class AboutPage {
   }
 
   importHandler(clientsData, replaceStatus) {
-      this.clientDataService
+    this.clientDataService
       .saveBulkClients(clientsData, replaceStatus)
-        .then((res) => {
-          setTimeout(() => {
-            this.inputClientData = '';
-            this.clientDataService.presentToast(
-              'Data imported succcessfully <br>Redirecting to Clients List Tab'
-            );
-            this.router.navigate(['clida', 'clients-list']);
-          }, 1000);
-        });
+      .then((res) => {
+        setTimeout(() => {
+          this.inputClientData = '';
+          this.clientDataService.presentToast(
+            'Data imported succcessfully <br>Redirecting to Clients List Tab'
+          );
+          this.router.navigate(['clida', 'clients-list']);
+        }, 1000);
+      });
   }
 
   async presentDeleteAlert() {
@@ -222,12 +222,12 @@ export class AboutPage {
         }
 
         this.clientDataService.saveBulkClients(clients, true).then((res) => {
-            setTimeout(() => {
-              this.clientDataService.presentToast('Data sorted successfully');
-              event.target.disabled = false;
-              event.target.value = null;
-            }, 1000);
-          });
+          setTimeout(() => {
+            this.clientDataService.presentToast('Data sorted successfully');
+            event.target.disabled = false;
+            event.target.value = null;
+          }, 1000);
+        });
       });
     }
   }
