@@ -1,13 +1,15 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-      CliDa 
+      CliDa
       <ion-chip
+        [hidden]="showEntryText"
         [ngClass]="{'tabActive': !showDebitList}"
         (click)="setListType('credits')"
         >Credits</ion-chip
       >
       <ion-chip
+        [hidden]="showEntryText"
         [ngClass]="{'tabActive': showDebitList}"
         (click)="setListType('debits')"
         >Debits</ion-chip
@@ -65,9 +67,11 @@
       >Load sample data</ion-button
     >
 
-    <div class="d-flex my-2 bgLight align-items-center align-items-lg-stretch rounded-3 bg-warning">
+    <div
+      class="d-flex my-2 bgLight align-items-center align-items-lg-stretch rounded-3 bg-warning"
+    >
       <div class="fs-1 px-3 py-2 text-dark">!</div>
-      <div class="justifyText bgLight p-2 rounded-end">
+      <div class="justifyText bgLight px-3 py-2 rounded-end">
         Please save your data on a regular basis using the Info tab. When you
         click the Backup button, the data will be saved under CliDa in the
         documents folder of your phone's internal storage.
