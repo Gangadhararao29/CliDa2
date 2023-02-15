@@ -25,7 +25,10 @@ export class PieChartComponent implements OnChanges {
   constructor() {}
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.responseData.currentValue) {
+    if (
+      JSON.stringify(changes.responseData.currentValue) !==
+      JSON.stringify(changes.responseData.previousValue)
+    ) {
       let debit = 0;
       let credit = 0;
       changes.responseData.currentValue.forEach((ele) => {

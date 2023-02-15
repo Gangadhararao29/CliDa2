@@ -246,10 +246,12 @@
               Int amt <small>({{intObj.start}} - {{intObj.end}})y</small>
             </ion-col>
             <ion-col size="1">:</ion-col>
-            <ion-col sizez="6">{{currencyFormat(intObj?.intAmt)}}</ion-col>
+            <ion-col sizez="6" [ngClass]="{'highlight': intArray.length ===1}"
+              >{{currencyFormat(intObj?.intAmt)}}</ion-col
+            >
           </ion-row>
         </div>
-        <ion-row>
+        <ion-row [hidden]="intArray.length < 2">
           <ion-col size="5"> Total Interest </ion-col>
           <ion-col size="1">:</ion-col>
           <ion-col sizez="6" class="highlight"

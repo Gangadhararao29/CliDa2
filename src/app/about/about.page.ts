@@ -195,7 +195,6 @@ export class AboutPage {
   }
 
   resetData() {
-    this.clientDataService.setDataModified();
     this.clientDataService.deleteDataBase();
     this.clientDataService.presentToast('Data successfully deleted');
   }
