@@ -23,17 +23,19 @@ export class DashboardPage {
   }
 
   ionViewDidEnter() {
+    this.hideSkeletonText = false;
     this.clientDataService.getAllClientsDataWithKeys().then((res) => {
-      if (this.clientDataService.dashbardRefresh) {
-        this.totalClients = this.filterOpenData(res);
-        this.totalArray = [];
-        this.getTotalArray(this.totalClients);
-        this.sortByPrincipal(this.principalGridIcon === 'arrow-down-outline');
-        this.sortByTimePeriod(this.timeGridIcon === 'arrow-down-outline');
-      }
-      this.clientDataService.dashbardRefresh = false;
+      this.totalClients = this.filterOpenData(res);
+      this.totalArray = [];
+      this.getTotalArray(this.totalClients);
+      this.sortByPrincipal(this.principalGridIcon === 'arrow-down-outline');
+      this.sortByTimePeriod(this.timeGridIcon === 'arrow-down-outline');
       this.hideSkeletonText = true;
     });
+  }
+
+  trackData(index, client) {
+    return client.key;
   }
 
   filterOpenData(res) {
@@ -78,35 +80,31 @@ export class DashboardPage {
   }
 
   sortByPrincipal(value) {
-    this.array1 = Array.from(
-      this.totalArray
-        .sort((a, b) => {
-          const keyA = a.totalPrincipal;
-          const keyB = b.totalPrincipal;
-          if (keyA < keyB) {
-            return value ? +1 : -1;
-          }
-          if (keyA > keyB) {
-            return value ? -1 : +1;
-          }
-        })
-        .filter((rec) => rec.finalAmount !== 0)
-    );
-  }
-
-  sortByTimePeriod(value) {
-    this.array2 = Array.from(
-      this.totalArray.sort((a, b) => {
-        const keyA = a.greaterTimePeriod;
-        const keyB = b.greaterTimePeriod;
+    this.array1 = [...this.totalArray]
+      .filter((rec) => rec.finalAmount !== 0)
+      .sort((a, b) => {
+        const keyA = a.totalPrincipal;
+        const keyB = b.totalPrincipal;
         if (keyA < keyB) {
           return value ? +1 : -1;
         }
         if (keyA > keyB) {
           return value ? -1 : +1;
         }
-      })
-    );
+      });
+  }
+
+  sortByTimePeriod(value) {
+    this.array2 = [...this.totalArray].sort((a, b) => {
+      const keyA = a.greaterTimePeriod;
+      const keyB = b.greaterTimePeriod;
+      if (keyA < keyB) {
+        return value ? +1 : -1;
+      }
+      if (keyA > keyB) {
+        return value ? -1 : +1;
+      }
+    });
   }
 
   getTotalPrincipalAmount() {

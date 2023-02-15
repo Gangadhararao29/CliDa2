@@ -17,7 +17,7 @@
 
     <ion-accordion-group class="mb-2 mt-1 text-center d-flex flex-wrap justify-content-center">
       <div
-        *ngFor="let data of client?.data; let i=index;"
+        *ngFor="let data of client?.data; let i=index; trackBy:trackData"
         class="m-1 listItem text-start"
       >
         <ion-accordion [value]="i">

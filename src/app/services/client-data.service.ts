@@ -15,9 +15,6 @@ export class ClientDataService {
     .split('/')
     .reverse()
     .join('-');
-  clientsListRefresh = true;
-  dashbardRefresh = true;
-  editClientRefresh = true;
 
   constructor(
     private toastController: ToastController,
@@ -55,7 +52,6 @@ export class ClientDataService {
   }
 
   async updateClientRecordByName(clientData) {
-    this.setDataModified();
     return await this.db
       .collection('clientsData')
       .doc({ name: clientData.name })
@@ -63,7 +59,6 @@ export class ClientDataService {
   }
 
   async addNewClientData(formData, includeClosedDetails = false) {
-    this.setDataModified();
     const payLoad = this.generatePayLoad(formData, includeClosedDetails);
     this.addNewLogData('new', null, payLoad);
     return await this.getClientByName(payLoad.name).then((res) => {
@@ -77,7 +72,6 @@ export class ClientDataService {
   }
 
   async editClientData(formData, clientData, index) {
-    this.setDataModified();
     formData.userName = this.formatToCamelCase(formData.userName);
     formData.principal =
       formData.recordType === 'credit'
@@ -96,7 +90,6 @@ export class ClientDataService {
   }
 
   async deleteClientData(clientData, index, key) {
-    this.setDataModified();
     this.addNewLogData('delete', clientData, [], index);
     clientData.data.splice(index, 1);
     if (clientData.data.length < 1) {
@@ -107,7 +100,6 @@ export class ClientDataService {
   }
 
   async saveBulkClients(clientsData, replaceStatus) {
-    this.setDataModified();
     if (replaceStatus) {
       return await this.db.collection('clientsData').set(clientsData);
     } else {
@@ -132,7 +124,6 @@ export class ClientDataService {
   }
 
   async cleanClientsData() {
-    this.setDataModified();
     return await this.getAllClientsData().then((res) => {
       res = res.filter((client) => {
         client.data = client.data?.filter(
@@ -142,12 +133,6 @@ export class ClientDataService {
       });
       this.db.collection('clientsData').set(res);
     });
-  }
-
-  setDataModified() {
-    this.clientsListRefresh = true;
-    this.dashbardRefresh = true;
-    this.editClientRefresh = true;
   }
 
   /**

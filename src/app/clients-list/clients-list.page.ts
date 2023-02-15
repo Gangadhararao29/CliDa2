@@ -61,34 +61,35 @@ export class ClientsListPage {
 
   getDisplayData() {
     this.clientDataService.getAllClientsDataWithKeys().then((data) => {
-      if (this.clientDataService.clientsListRefresh) {
-        this.showEntryText = data.length > 0 ? false : true;
-        this.debitData = [];
-        this.creditData = [];
+      this.showEntryText = data.length > 0 ? false : true;
+      this.debitData = [];
+      this.creditData = [];
 
-        data.forEach((client) => {
-          const name = client.data.name;
-          const key = client.key;
-          const tempDebitData = [];
-          const tempCreditData = [];
-          client.data.data.forEach((record) => {
-            if (record.principal < 0) {
-              tempDebitData.push(record);
-            } else {
-              tempCreditData.push(record);
-            }
-          });
-          if (tempDebitData.length) {
-            this.debitData.push({ key, data: { name, data: tempDebitData } });
-          }
-          if (tempCreditData.length) {
-            this.creditData.push({ key, data: { name, data: tempCreditData } });
+      data.forEach((client) => {
+        const name = client.data.name;
+        const key = client.key;
+        const tempDebitData = [];
+        const tempCreditData = [];
+        client.data.data.forEach((record) => {
+          if (record.principal < 0) {
+            tempDebitData.push(record);
+          } else {
+            tempCreditData.push(record);
           }
         });
-        this.clientDataService.clientsListRefresh = false;
-      }
+        if (tempDebitData.length) {
+          this.debitData.push({ key, data: { name, data: tempDebitData } });
+        }
+        if (tempCreditData.length) {
+          this.creditData.push({ key, data: { name, data: tempCreditData } });
+        }
+      });
       this.hideSkeletonText = true;
     });
+  }
+
+  trackData(index, client) {
+    return client.key;
   }
 
   resetSearch() {
@@ -148,7 +149,6 @@ export class ClientsListPage {
   async loadSampleData() {
     const data = sampleData['default'];
     await this.clientDataService.loadSampleData(data).then(() => {
-      this.clientDataService.setDataModified();
       this.ionViewWillEnter();
     });
   }

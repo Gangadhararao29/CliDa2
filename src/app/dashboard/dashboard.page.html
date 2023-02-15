@@ -66,7 +66,7 @@
         ></ion-icon>
       </ion-item>
       <span
-        *ngFor="let client of array2 | paginate: { itemsPerPage: 4, currentPage: grid1Page, id:'grid1'}"
+        *ngFor="let client of array2 | paginate: { itemsPerPage: 4, currentPage: grid1Page, id:'grid1'}; trackBy:trackData"
       >
         <ion-item [routerLink]="'client-details/' + client.key" color="light">
           <ion-label>{{client.name}}</ion-label>
@@ -95,7 +95,7 @@
         ></ion-icon
       ></ion-item>
       <span
-        *ngFor="let client of array1 | paginate: { itemsPerPage: 4, currentPage: grid2Page, id:'grid2'}"
+        *ngFor="let client of array1 | paginate: { itemsPerPage: 4, currentPage: grid2Page, id:'grid2'}; trackBy:trackData"
       >
         <ion-item [routerLink]="'client-details/' + client.key" color="light">
           <ion-label class="ion-text-wrap">{{client.name}}</ion-label>
