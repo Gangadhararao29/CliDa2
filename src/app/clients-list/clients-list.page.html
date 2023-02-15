@@ -107,7 +107,7 @@
   <div [hidden]="showEntryText">
     <div class="debitList mt-2 text-center" [hidden]="!showDebitList">
       <ion-item
-        *ngFor="let client of debitData | clientsSearch:clientSearchValue"
+        *ngFor="let client of debitData | clientsSearch:clientSearchValue; trackBy:trackData"
         [routerLink]="'client-details/' + client.key"
         color="light"
         class="rounded-3 listItem d-inline-block"
@@ -128,7 +128,7 @@
 
     <div class="creditList mt-2 text-center" [hidden]="showDebitList">
       <ion-item
-        *ngFor="let client of creditData | clientsSearch:clientSearchValue"
+        *ngFor="let client of creditData | clientsSearch:clientSearchValue; trackBy:trackData"
         [routerLink]="'client-details/' + client.key"
         color="light"
         class="rounded-3 listItem d-inline-block"

@@ -40,10 +40,13 @@ export class ClientDetailsPage {
     this.hideSkeletonText = false;
     this.clientId = this.activatedRoute.snapshot.params.key;
     this.clientsDataService.getClientByKey(this.clientId).then((res) => {
-      this.client =
-        JSON.stringify(this.client) !== JSON.stringify(res) ? res : this.client;
+      this.client = res;
       this.hideSkeletonText = true;
     });
+  }
+
+  trackData(index, record) {
+    return record.id;
   }
 
   calculateDateDifference(startDate, endDate) {

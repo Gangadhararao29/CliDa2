@@ -47,7 +47,10 @@ export class LineChartPage implements OnChanges {
   constructor() {}
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.responseData.currentValue) {
+    if (
+      JSON.stringify(changes.responseData.currentValue) !==
+      JSON.stringify(changes.responseData.previousValue)
+    ) {
       this.labels = [];
       this.dataSet1 = [0];
       this.dataSet2 = [0];
