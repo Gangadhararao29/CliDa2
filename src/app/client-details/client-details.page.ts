@@ -29,6 +29,7 @@ export class ClientDetailsPage {
   approveDataId: any;
   approvedAmount = 0;
   hideSkeletonText: boolean;
+  totalAmount = 0;
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -41,12 +42,21 @@ export class ClientDetailsPage {
     this.clientId = this.activatedRoute.snapshot.params.key;
     this.clientsDataService.getClientByKey(this.clientId).then((res) => {
       this.client = res;
+      this.calculateTotalPrincipal(this.client);
       this.hideSkeletonText = true;
     });
   }
 
   trackData(index, record) {
     return record.id;
+  }
+
+  calculateTotalPrincipal(res) {
+    this.totalAmount = res.data.reduce(
+      (a, b) =>
+        a + (b.hasOwnProperty('closedOn') && b.closedOn ? 0 : b.principal),
+      0
+    );
   }
 
   calculateDateDifference(startDate, endDate) {
