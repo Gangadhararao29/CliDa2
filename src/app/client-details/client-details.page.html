@@ -15,7 +15,9 @@
   <div class="mx-2 mt-1">
     <div class="bgLight p-2 rounded text-center">Present Transactions</div>
 
-    <ion-accordion-group class="mb-2 mt-1 text-center d-flex flex-wrap justify-content-center">
+    <ion-accordion-group
+      class="mb-2 mt-1 text-center d-flex flex-wrap justify-content-center"
+    >
       <div
         *ngFor="let data of client?.data; let i=index; trackBy:trackData"
         class="m-1 listItem text-start"
@@ -317,5 +319,9 @@
       [queryParams]="{name:client?.name}"
       ><ion-label class="text-danger fw-bolder"> + Add new record </ion-label>
     </ion-item>
+
+    <div class="text-muted text-center">
+      Total Principal : ₹ {{isd.format(totalAmount)}}
+    </div>
   </div>
 </ion-content>
