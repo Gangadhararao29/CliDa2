@@ -170,9 +170,6 @@ export class DashboardPage {
       const chart1Right =
         this.chart1.nativeElement.getBoundingClientRect().right;
       const chart2Left = this.chart2.nativeElement.getBoundingClientRect().left;
-
-      console.log('this is exected', container.scrollLeft >= chart2Left);
-
       if (container.scrollLeft >= chart2Left) {
         this.isPieChartVisible = true;
       } else if (container.scrollLeft <= chart1Right) {
