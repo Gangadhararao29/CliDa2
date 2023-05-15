@@ -44,7 +44,11 @@
     </div>
   </div>
 
-  <div class="scrollable-container" #scrollableContainer (scroll)="onScroll()">
+  <div
+    class="scrollable-container justify-content-lg-around"
+    #scrollableContainer
+    (scroll)="onScroll()"
+  >
     <div class="chart" #chart1>
       <app-line-chart [responseData]="totalClients"></app-line-chart>
     </div>

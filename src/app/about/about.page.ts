@@ -1,4 +1,4 @@
-import { Component, Renderer2, ViewChild } from '@angular/core';
+import { Component, Renderer2 } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
@@ -6,21 +6,6 @@ import { ClientDataService } from '../services/client-data.service';
 import { HttpClient } from '@angular/common/http';
 import { App } from '@capacitor/app';
 import { read, utils, writeFileXLSX } from 'xlsx';
-import {
-  Auth,
-  getAuth,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithPopup,
-} from '@angular/fire/auth';
-import { Subscription } from 'rxjs';
-import {
-  collectionData,
-  doc,
-  Firestore,
-  setDoc,
-} from '@angular/fire/firestore';
-import { collection } from '@firebase/firestore';
 
 @Component({
   selector: 'app-about',
@@ -273,57 +258,6 @@ export class AboutPage {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
-    });
-  }
-
-  signInWithGoogle() {
-    signInWithPopup(this.auth, new GoogleAuthProvider())
-      .then((res) => {
-        this.clientDataService.presentToast('Signed in successfully');
-      })
-      .catch((err) => {
-        this.clientDataService.presentToast(
-          err.message,
-          'failedToastClass',
-          'alert-outline'
-        );
-      });
-  }
-
-  logOutUser() {
-    this.auth.signOut();
-    this.user = null;
-    this.clientDataService.presentToast('Signed out successfully');
-  }
-
-  loadCloudData() {
-    const cdRef = collection(this.firestore, this.user.uid);
-    const infoSub = new Subscription();
-    infoSub.add(
-      collectionData(cdRef).subscribe((res) => {
-        if (res.length) {
-          this.importDataAlert(res);
-        } else {
-          this.clientDataService.presentToast('No data found');
-        }
-        infoSub.unsubscribe();
-      })
-    );
-  }
-
-  uploadToCloud() {
-    this.clientDataService.getAllClientsData().then((res) => {
-      res.forEach((record) => {
-        const clientRef = doc(
-          this.firestore,
-          `${this.user.uid}/${record.name}`
-        );
-        setDoc(clientRef, record);
-      });
-      this.clientDataService.presentLoading();
-      setTimeout(() => {
-        this.clientDataService.presentToast('Upload successful');
-      }, 1500);
     });
   }
 
