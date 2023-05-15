@@ -5,6 +5,22 @@ import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { ClientDataService } from '../services/client-data.service';
 import { HttpClient } from '@angular/common/http';
 import { App } from '@capacitor/app';
+import { read, utils, writeFileXLSX } from 'xlsx';
+import {
+  Auth,
+  getAuth,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+} from '@angular/fire/auth';
+import { Subscription } from 'rxjs';
+import {
+  collectionData,
+  doc,
+  Firestore,
+  setDoc,
+} from '@angular/fire/firestore';
+import { collection } from '@firebase/firestore';
 
 @Component({
   selector: 'app-about',
@@ -19,6 +35,9 @@ export class AboutPage {
   latestVersion = 0;
   currentVersion = 3.6;
   gitHubResponse = [];
+  loadingData = true;
+  user: any = null;
+  fileType = 'json';
 
   constructor(
     public alertController: AlertController,
@@ -51,9 +70,13 @@ export class AboutPage {
 
   exportData() {
     this.clientDataService.getAllClientsData().then((data) => {
-      const clientDataString = JSON.stringify(data);
-      this.writeSecretFile(clientDataString);
-      this.nativeSaveByUrl(clientDataString);
+      if (this.fileType === 'json') {
+        const clientDataString = JSON.stringify(data);
+        this.writeSecretFile(clientDataString);
+        this.nativeSaveByUrl(clientDataString);
+      } else {
+        this.excelExport(data);
+      }
     });
   }
 
@@ -92,11 +115,15 @@ export class AboutPage {
   }
 
   importData(target) {
-    const fileReader = new FileReader();
-    fileReader.readAsText(target.files.item(0));
-    fileReader.onload = (e) => {
-      this.importDataAlert(JSON.parse(fileReader.result.toString()));
-    };
+    if (this.fileType === 'excel') {
+      this.excelImport(target);
+    } else {
+      const fileReader = new FileReader();
+      fileReader.readAsText(target.files.item(0));
+      fileReader.onload = (e) => {
+        this.importDataAlert(JSON.parse(fileReader.result.toString()));
+      };
+    }
   }
 
   async importDataAlert(clientsData) {
@@ -246,6 +273,109 @@ export class AboutPage {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
+    });
+  }
+
+  signInWithGoogle() {
+    signInWithPopup(this.auth, new GoogleAuthProvider())
+      .then((res) => {
+        this.clientDataService.presentToast('Signed in successfully');
+      })
+      .catch((err) => {
+        this.clientDataService.presentToast(
+          err.message,
+          'failedToastClass',
+          'alert-outline'
+        );
+      });
+  }
+
+  logOutUser() {
+    this.auth.signOut();
+    this.user = null;
+    this.clientDataService.presentToast('Signed out successfully');
+  }
+
+  loadCloudData() {
+    const cdRef = collection(this.firestore, this.user.uid);
+    const infoSub = new Subscription();
+    infoSub.add(
+      collectionData(cdRef).subscribe((res) => {
+        if (res.length) {
+          this.importDataAlert(res);
+        } else {
+          this.clientDataService.presentToast('No data found');
+        }
+        infoSub.unsubscribe();
+      })
+    );
+  }
+
+  uploadToCloud() {
+    this.clientDataService.getAllClientsData().then((res) => {
+      res.forEach((record) => {
+        const clientRef = doc(
+          this.firestore,
+          `${this.user.uid}/${record.name}`
+        );
+        setDoc(clientRef, record);
+      });
+      this.clientDataService.presentLoading();
+      setTimeout(() => {
+        this.clientDataService.presentToast('Upload successful');
+      }, 1500);
+    });
+  }
+
+  excelExport(res) {
+    const fileName = `clientsData_${new Date().toJSON().slice(0, 10)}.xlsx`;
+    const excelArray = [];
+    res.forEach((client) => {
+      client.data.forEach((record) => {
+        excelArray.push({
+          name: client.name,
+          principal: record.principal,
+          interest: record.interest,
+          startDate: record.startDate,
+          comments: record.comments,
+          closedOn: record.closedOn,
+          closedAmount: record.closedAmount,
+        });
+      });
+    });
+    const ws = utils.json_to_sheet(excelArray);
+    const wb = utils.book_new();
+    utils.book_append_sheet(wb, ws, 'Clients Data');
+    writeFileXLSX(wb, fileName);
+  }
+
+  async excelImport(target) {
+    const wb = read(await target.files[0].arrayBuffer());
+    const data = utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+    const clientsData = [];
+    let id = Date.now();
+    data.forEach((record: any) => {
+      record.id = id++;
+      const clientIndex = clientsData.findIndex(
+        (client) => client.name === record.name
+      );
+      if (clientIndex > -1) {
+        delete record.name;
+        clientsData[clientIndex].data.push(record);
+      } else {
+        const newClient = record.name;
+        delete record.name;
+        clientsData.push({ name: newClient, data: [record] });
+      }
+    });
+    this.clientDataService.saveBulkClients(clientsData, true).then(() => {
+      setTimeout(() => {
+        this.inputClientData = '';
+        this.clientDataService.presentToast(
+          'Data imported succcessfully <br>Redirecting to Clients List Tab'
+        );
+        this.router.navigate(['clida', 'clients-list']);
+      }, 1000);
     });
   }
 }
