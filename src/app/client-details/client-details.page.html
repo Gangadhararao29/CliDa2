@@ -234,56 +234,47 @@
                     </div>
                   </div>
 
-                  <div
-                    class="form-check form-switch"
-                    [hidden]="hideAppprovedControls"
-                  >
-                    <label class="form-check-label" for="updateComments">
-                      Auto update comments
-                    </label>
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      id="updateComments"
-                      name="updateComments"
-                      [ngModel]="true"
-                      ngModel
-                    />
-                  </div>
-
-                  <div
-                    class="form-check form-switch m-1"
-                    [hidden]="hideAppprovedControls"
-                  >
-                    <label class="form-check-label" for="closeCurrentRecord">
-                      Close current record
-                    </label>
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      id="closeCurrentRecord"
-                      name="closeCurrentRecord"
-                      [ngModel]="false"
-                      #closeCurrentRecord="ngModel"
-                    />
-                  </div>
-
-                  <div
-                    class="form-check form-switch m-1"
-                    [hidden]="hideAppprovedControls"
-                  >
-                    <label class="form-check-label" for="addNewRecord">
-                      Add new record with remaining balance
-                    </label>
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      id="addNewRecord"
-                      name="addNewRecord"
-                      [ngModel]="false"
-                      ngModel
-                      [disabled]="!closeCurrentRecord.value"
-                    />
+                  <div [hidden]="hideAppprovedControls">
+                    <div class="px-2 py-1">
+                      <input
+                        type="checkbox"
+                        class="checkboxClass"
+                        id="updateComments"
+                        name="updateComments"
+                        [ngModel]="true"
+                        ngModel
+                      />
+                      <label class="mx-2" for="updateComments">
+                        Update comments automatically
+                      </label>
+                    </div>
+                    <div class="px-2 py-1">
+                      <input
+                        type="checkbox"
+                        id="closeCurrentRecord"
+                        class="checkboxClass"
+                        name="closeCurrentRecord"
+                        [ngModel]="false"
+                        #closeCurrentRecord="ngModel"
+                      />
+                      <label class="mx-2" for="closeCurrentRecord">
+                        Close current record
+                      </label>
+                    </div>
+                    <div class="px-2 py-1">
+                      <input
+                        class="checkboxClass"
+                        type="checkbox"
+                        id="addNewRecord"
+                        name="addNewRecord"
+                        [ngModel]="false"
+                        ngModel
+                        [disabled]="!closeCurrentRecord.value"
+                      />
+                      <label class="mx-2" for="addNewRecord">
+                        Add new record with remaining balance
+                      </label>
+                    </div>
                   </div>
                 </div>
 

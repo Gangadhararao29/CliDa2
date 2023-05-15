@@ -20,6 +20,34 @@
       </ion-card-header>
 
       <ion-card-content>
+        <div class="mb-1 d-flex align-items-center justify-content-between">
+          <div>Select file type :</div>
+          <div class="form-check">
+            <input
+              type="radio"
+              name="fileType"
+              id="json"
+              class="form-check-input"
+              value="json"
+              [(ngModel)]="fileType"
+            />
+            <label for="json" class="px-2 form-check-label">Json</label>
+          </div>
+          <div class="form-check">
+            <input
+              type="radio"
+              name="fileType"
+              id="excel"
+              class="form-check-input"
+              value="excel"
+              [(ngModel)]="fileType"
+            />
+            <label for="excel" class="px-2 form-check-label"
+              >Excel (beta)</label
+            >
+          </div>
+        </div>
+
         <div class="d-flex align-items-center pb-1 justify-content-between">
           <div class="justifyText pe-2">
             To save data in your local storage, click the Backup button.
@@ -48,22 +76,16 @@
       <ng-template>
         <ion-content class="ion-padding">
           <div>
-            The Backup button will save your data as a JSON file in the file
-            path format shown below.
+            The backup button will save your data in the selected file type in
+            the file path format shown below.
             <i class="text-primary"
               >Internal_storage/Documents/CliDa/filename.json</i
             >.
             <hr class="mx-0 my-1 p-0" />
-            When you click the Restore button and select a valid json file, you
-            will be given two options. We recommend using the replace option,
-            but you can also try merge.
+            When you click the Restore button and select a valid json file, or
+            select a excel with correct columns, you will be given two options.
+            We recommend using the replace option, but you can also try merge.
             <hr class="mx-0 my-1 p-0" />
-            You can also import a json file into Excel by following this
-            <a href="https://www.javatpoint.com/how-to-open-json-file-in-excel"
-              >tutorial</a
-            >.
-            <hr class="mx-0 my-1 p-0" />
-            A guide for importing from Excel will be available soon.
           </div>
         </ion-content>
       </ng-template>
@@ -73,7 +95,7 @@
       hidden
       #fileInput
       type="file"
-      accept="application/JSON"
+      [accept]="fileType==='excel'?'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':'application/JSON'"
       (change)="importData($event.target)"
       [(ngModel)]="inputClientData"
     />
