@@ -13,3 +13,15 @@ ion-col {
 ion-card {
   margin: 10px 0;
 }
+
+.scrollable-container {
+  display: flex;
+  overflow-x: auto;
+  width: 100%;
+  text-align: center;
+}
+
+.chart {
+  flex-shrink: 0;
+  white-space: nowrap;
+}

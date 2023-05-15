@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ClientDataService } from '../services/client-data.service';
 
 @Component({
@@ -18,6 +18,12 @@ export class DashboardPage {
   timeGridIcon = 'arrow-down-outline';
   principalGridIcon = 'arrow-down-outline';
   hideSkeletonText = false;
+  @ViewChild('scrollableContainer', { static: true })
+  scrollableContainer!: ElementRef;
+  @ViewChild('chart1', { static: true }) chart1!: ElementRef;
+  @ViewChild('chart2', { static: true }) chart2!: ElementRef;
+  isPieChartVisible = false;
+  scrollTimeout: any;
   constructor(private clientDataService: ClientDataService) {
     this.math = Math;
   }
@@ -144,11 +150,31 @@ export class DashboardPage {
     }
   }
 
-  scrollToElement($element) {
-    $element.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-      inline: 'nearest',
-    });
+  toggleChart() {
+    const chart1Element = this.chart1.nativeElement;
+    const chart2Element = this.chart2.nativeElement;
+
+    if (this.isPieChartVisible) {
+      chart1Element.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+      this.isPieChartVisible = false;
+    } else {
+      chart2Element.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+      this.isPieChartVisible = true;
+    }
+  }
+
+  onScroll() {
+    clearTimeout(this.scrollTimeout);
+    this.scrollTimeout = setTimeout(() => {
+      const container = this.scrollableContainer.nativeElement;
+      const chart1Right =
+        this.chart1.nativeElement.getBoundingClientRect().right;
+      const chart2Left = this.chart2.nativeElement.getBoundingClientRect().left;
+      if (container.scrollLeft >= chart2Left) {
+        this.isPieChartVisible = true;
+      } else if (container.scrollLeft <= chart1Right) {
+        this.isPieChartVisible = false;
+      }
+    }, 250);
   }
 }

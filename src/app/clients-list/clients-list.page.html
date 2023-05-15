@@ -144,11 +144,13 @@
             *ngFor="let clientDetail of client.data.data"
             class="ms-1"
             [color]="getColor(clientDetail)"
-            >{{(clientDetail.principal/1000).toFixed() + 'K'}}
+          >
+            {{(clientDetail.principal/1000).toFixed() + 'K'}}
           </ion-badge>
         </div>
       </ion-item>
     </div>
+    
   </div>
   <ion-item color="medium" lines="none"></ion-item>
 

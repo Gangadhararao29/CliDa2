@@ -2,10 +2,10 @@
   <ion-toolbar>
     <ion-title>Dashboard</ion-title>
     <ion-buttons slot="primary" class="mx-2">
-      <ion-button (click)="scrollToElement(chart1)">
+      <ion-button (click)="toggleChart()" [hidden]="!isPieChartVisible">
         <ion-icon name="stats-chart-sharp"></ion-icon>
       </ion-button>
-      <ion-button (click)="scrollToElement(chart2)">
+      <ion-button (click)="toggleChart()" [hidden]="isPieChartVisible">
         <ion-icon name="pie-chart-sharp"></ion-icon>
       </ion-button>
       <ion-button routerLink="adv-search">
@@ -44,13 +44,11 @@
     </div>
   </div>
 
-  <div
-    class="d-flex overflow-auto justify-content-lg-around align-items-center"
-  >
-    <div #chart1>
+  <div class="scrollable-container justify-content-lg-around" #scrollableContainer (scroll)="onScroll()">
+    <div class="chart" #chart1>
       <app-line-chart [responseData]="totalClients"></app-line-chart>
     </div>
-    <div #chart2>
+    <div class="chart" #chart2>
       <app-pie-chart [responseData]="totalArray"></app-pie-chart>
     </div>
   </div>
