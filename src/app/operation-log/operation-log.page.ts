@@ -34,23 +34,23 @@ export class OperationLogPage {
   async showClearLogsAlert() {
     const alert = await this.alertController.create({
       header: 'Confirm',
-      message: '<strong>Do you want to clear all logs?</strong>',
+      message: 'Do you want to clear all logs?',
       cssClass: 'alertStyle',
       backdropDismiss: false,
       animated: true,
       buttons: [
         {
-          text: 'Cancel',
-          role: 'cancel',
-        },
-        {
-          text: 'OK',
+          text: 'Yes',
           role: 'confirm',
           handler: () => {
             this.logData = [];
             localStorage.removeItem('logs');
             this.presentToast('Logs cleared successfully');
           },
+        },
+        {
+          text: 'No',
+          role: 'cancel',
         },
       ],
     });

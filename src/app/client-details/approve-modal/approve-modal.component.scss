@@ -1,0 +1,15 @@
+.bgLight {
+  background-color: var(--ion-color-light);
+}
+
+.amtIndicator {
+  font-size: 0.9rem;
+  color: var(--ion-color-danger);
+  padding-top: 5px;
+}
+
+.darkInput,
+.darkInput:focus {
+  background-color: var(--ion-color-dark-contrast);
+  color: var(--ion-color-dark);
+}

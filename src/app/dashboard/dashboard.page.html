@@ -44,8 +44,12 @@
     </div>
   </div>
 
-  <div class="scrollable-container justify-content-lg-around" #scrollableContainer (scroll)="onScroll()">
-    <div class="chart" #chart1>
+  <div
+    #scrollableContainer
+    class="d-flex overflow-auto justify-content-lg-around align-items-center"
+    (scroll)="onScroll()"
+  >
+    <div #chart1>
       <app-line-chart [responseData]="totalClients"></app-line-chart>
     </div>
     <div class="chart" #chart2>

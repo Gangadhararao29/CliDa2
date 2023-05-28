@@ -1,4 +1,4 @@
-import { Component, Renderer2 } from '@angular/core';
+import { Component, Renderer2, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
@@ -28,12 +28,13 @@ import { collection } from '@firebase/firestore';
   styleUrls: ['./about.page.scss'],
 })
 export class AboutPage {
+  @ViewChild('modal') modal: any;
   themeName = localStorage.getItem('theme');
   inputClientData: any;
   isUpdateLoading = false;
   isModalOpen = false;
   latestVersion = 0;
-  currentVersion = 3.6;
+  currentVersion = 3.8;
   gitHubResponse = [];
   loadingData = true;
   user: any = null;
@@ -59,6 +60,7 @@ export class AboutPage {
 
   checkForUpdate() {
     this.isUpdateLoading = true;
+    this.isModalOpen = false;
     App.getInfo().then((suc) => {
       this.currentVersion = parseFloat(suc.version);
     });
@@ -190,13 +192,13 @@ export class AboutPage {
       cssClass: 'alertStyle',
       buttons: [
         {
-          text: 'Confirm',
+          text: 'Yes',
           handler: () => {
             this.resetData();
           },
         },
         {
-          text: 'Cancel',
+          text: 'No',
           handler: () => {},
         },
       ],

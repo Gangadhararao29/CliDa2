@@ -16,12 +16,14 @@
         </ion-label>
         <div class="d-flex justify-content-between">
           <ion-item color="light" class="col rounded">
-            <ion-label>Credit</ion-label>
-            <ion-radio slot="start" value="credit"></ion-radio>
+            <ion-radio slot="start" value="credit" labelPlacement="end"
+              >Credit</ion-radio
+            >
           </ion-item>
           <ion-item color="light" class="col rounded">
-            <ion-label>Debit</ion-label>
-            <ion-radio slot="start" value="debit"></ion-radio>
+            <ion-radio slot="start" value="debit" labelPlacement="end"
+              >Debit</ion-radio
+            >
           </ion-item>
         </div>
       </ion-radio-group>
@@ -126,12 +128,9 @@
     </div>
 
     <ion-item class="mt-2 rounded" lines="none" color="light">
-      <ion-label>Add multiple records</ion-label>
-      <ion-toggle
-        color="danger"
-        [ngModel]="false"
-        name="multiRecordsSelected"
-      ></ion-toggle>
+      <ion-toggle color="danger" [ngModel]="false" name="multiRecordsSelected"
+        >Add multiple records
+      </ion-toggle>
     </ion-item>
 
     <ion-button

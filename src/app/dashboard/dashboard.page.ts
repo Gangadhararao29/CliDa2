@@ -52,12 +52,13 @@ export class DashboardPage {
   }
 
   getTotalArray(response) {
-    response.forEach((client) => {
+    this.totalArray = response.map((client) => {
       const name = client.data.name;
       const key = client.key;
       let totalPrincipal = 0;
       let greaterTimePeriod = 0;
       let totalInterest = 0;
+
       client.data.data.forEach((record) => {
         const timeObject = this.clientDataService.calculateTimeperiod(
           record.startDate
@@ -67,21 +68,23 @@ export class DashboardPage {
           rate: record.interest,
           startDate: record.startDate,
         });
+
         totalPrincipal += record.principal;
         totalInterest += intArr[0].intAmt;
+
         if (timeObject.tm > greaterTimePeriod) {
           greaterTimePeriod = timeObject.tm;
         }
       });
 
-      this.totalArray.push({
+      return {
         key,
         name,
         totalPrincipal,
         totalInterest,
         greaterTimePeriod,
         finalAmount: totalPrincipal + totalInterest,
-      });
+      };
     });
   }
 
@@ -91,12 +94,7 @@ export class DashboardPage {
       .sort((a, b) => {
         const keyA = a.totalPrincipal;
         const keyB = b.totalPrincipal;
-        if (keyA < keyB) {
-          return value ? +1 : -1;
-        }
-        if (keyA > keyB) {
-          return value ? -1 : +1;
-        }
+        return value ? keyB - keyA : keyA - keyB;
       });
   }
 
@@ -104,12 +102,7 @@ export class DashboardPage {
     this.array2 = [...this.totalArray].sort((a, b) => {
       const keyA = a.greaterTimePeriod;
       const keyB = b.greaterTimePeriod;
-      if (keyA < keyB) {
-        return value ? +1 : -1;
-      }
-      if (keyA > keyB) {
-        return value ? -1 : +1;
-      }
+      return value ? keyB - keyA : keyA - keyB;
     });
   }
 
@@ -151,16 +144,17 @@ export class DashboardPage {
   }
 
   toggleChart() {
-    const chart1Element = this.chart1.nativeElement;
-    const chart2Element = this.chart2.nativeElement;
+    const chartElement = this.isPieChartVisible
+      ? this.chart1.nativeElement
+      : this.chart2.nativeElement;
 
-    if (this.isPieChartVisible) {
-      chart1Element.scrollIntoView({ behavior: 'smooth', inline: 'start' });
-      this.isPieChartVisible = false;
-    } else {
-      chart2Element.scrollIntoView({ behavior: 'smooth', inline: 'start' });
-      this.isPieChartVisible = true;
-    }
+    chartElement.scrollIntoView({
+      behavior: 'smooth',
+      inline: 'center',
+      block: 'center',
+    });
+
+    this.isPieChartVisible = !this.isPieChartVisible;
   }
 
   onScroll() {

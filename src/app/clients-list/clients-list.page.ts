@@ -34,14 +34,13 @@ export class ClientsListPage {
   }
 
   async backButtonAction() {
-    this.alertController.getTop().then((alrt) => {
-      if (alrt) {
-        alrt.dismiss();
-      }
-    });
-    if (this.router.url === '/clida/clients-list') {
+    const alrt = await this.alertController.getTop();
+
+    if (alrt) {
+      await alrt.dismiss();
+    } else if (this.router.url === '/clida/clients-list') {
       const alert = await this.getCloseAlert();
-      alert.present();
+      await alert.present();
     } else {
       this.router.navigate(['/clida/clients-list']);
     }
@@ -104,7 +103,7 @@ export class ClientsListPage {
       cssClass: 'alertStyle',
       backdropDismiss: false,
       animated: true,
-      message: '<strong>Do you want to close the app?</strong>',
+      message: 'Do you want to close the app?',
       buttons: [
         {
           text: 'No',

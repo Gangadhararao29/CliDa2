@@ -63,7 +63,7 @@
         </ion-card-title>
       </ion-card-header>
 
-      <ion-card-content>
+      <ion-card-content class="p-2">
         <div class="mb-1 d-flex align-items-center justify-content-between">
           <div>Select file type :</div>
           <div class="form-check">
@@ -150,33 +150,41 @@
       </ion-card-header>
 
       <ion-card-content>
-        <ion-button
-          expand="block"
-          color="primary"
-          (click)="selectSort['el'].click()"
-        >
-          <ion-label>Sort Data list by</ion-label>
-          <ion-select
-            #selectSort
-            [interfaceOptions]="{header:'Sort main clients list by'}"
-            interface="alert"
-            (ionChange)="changeSort($event)"
-            placeholder="Yr/Nm"
-          >
-            <ion-select-option value="year">Year</ion-select-option>
-            <ion-select-option value="name">Name</ion-select-option>
-          </ion-select>
-        </ion-button>
-        <ion-button
-          (click)="cleanData()"
-          color="warning"
-          expand="block"
-          class="my-2"
-          >Data Errors fix</ion-button
-        >
-        <ion-button (click)="presentDeleteAlert()" color="danger" expand="block"
-          >Remove all clients data
-        </ion-button>
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-button expand="block" color="primary">
+                <ion-select
+                  label="Sort Data list by"
+                  placeholder="Nm/Yr"
+                  [interfaceOptions]="{header:'Sort clients list menu by'}"
+                  (ionChange)="changeSort($event)"
+                >
+                  <ion-select-option value="name">Name</ion-select-option>
+                  <ion-select-option value="year">Year</ion-select-option>
+                </ion-select>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-button (click)="cleanData()" color="warning" expand="block">
+                Data Errors fix
+              </ion-button>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-button
+                (click)="presentDeleteAlert()"
+                color="danger"
+                expand="block"
+              >
+                Remove all clients data
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
       </ion-card-content>
     </ion-card>
 
@@ -186,49 +194,58 @@
       </ion-card-header>
 
       <ion-card-content>
-        <ion-button
-          expand="block"
-          color="primary"
-          (click)="selectTheme['el'].click()"
-        >
-          <ion-label>Select theme :</ion-label>
-          <ion-select
-            #selectTheme
-            [value]="themeName"
-            (ionChange)="changeTheme($event)"
-            interface="popover"
-          >
-            <ion-select-option value="light">Light</ion-select-option>
-            <ion-select-option value="dark">Dark</ion-select-option>
-            <ion-select-option value="auto">Auto</ion-select-option>
-          </ion-select>
-        </ion-button>
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-button expand="block" color="primary">
+                <ion-select
+                  (ionChange)="changeTheme($event)"
+                  label="Choose theme"
+                  interface="popover"
+                  [value]="themeName"
+                  interface="popover"
+                >
+                  <ion-select-option value="light">Light</ion-select-option>
+                  <ion-select-option value="dark">Dark</ion-select-option>
+                  <ion-select-option value="auto">Auto</ion-select-option>
+                </ion-select>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-button
+                (click)="checkForUpdate()"
+                color="success"
+                expand="block"
+                [disabled]="isUpdateLoading"
+                >Check for update
+              </ion-button>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-button expand="block" color="secondary" routerLink="logs">
+                Show logs
+              </ion-button>
+            </ion-col>
+            <ion-col>
+              <ion-button
+                expand="block"
+                color="danger"
+                href="mailto:gangadhararao29@gmail.com?Subject=CliDa2_Bugs"
+              >
+                Report bug
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
 
-        <ion-button
-          (click)="checkForUpdate()"
-          color="success"
-          class="mt-2 mb-1"
-          expand="block"
-          [disabled]="isUpdateLoading"
-          >Check for update
-        </ion-button>
-
-        <div class="d-flex">
-          <ion-button class="w-100" color="secondary" routerLink="logs">
-            Show logs
-          </ion-button>
-          <ion-button
-            class="w-100"
-            color="danger"
-            href="mailto:gangadhararao29@gmail.com?Subject=CliDa2_Bugs"
-          >
-            Report bug
-          </ion-button>
-        </div>
+        <div class="d-flex"></div>
       </ion-card-content>
     </ion-card>
 
-    <ion-modal [isOpen]="isModalOpen">
+    <ion-modal #modal [isOpen]="isModalOpen">
       <ng-template>
         <ion-header>
           <ion-toolbar>

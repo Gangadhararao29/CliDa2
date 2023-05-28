@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ClientDataService } from '../services/client-data.service';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-adv-search',
@@ -15,6 +16,7 @@ export class AdvSearchPage implements OnInit {
   showfilterRangeErrorText = true;
   showNoRecords = false;
   hideSkeletonText = true;
+
   constructor(private clientDataService: ClientDataService) {}
 
   ngOnInit() {
@@ -93,6 +95,7 @@ export class AdvSearchPage implements OnInit {
       this.hideSkeletonText = true;
       return;
     }
+
     this.clientDataService.getAllClientsDataWithKeys().then((res) => {
       this.displayData = res;
       if (paramsModel.filter.by) {
@@ -102,34 +105,29 @@ export class AdvSearchPage implements OnInit {
         this.sortDataModel(paramsModel);
       }
       this.hideSkeletonText = true;
-      this.showNoRecords = this.displayData.length ? false : true;
+      this.showNoRecords = this.displayData.length === 0;
     });
   }
 
   filterDataModel(paramsModel) {
-    if (paramsModel.filter.by === 'principal') {
-      this.displayData = this.displayData.filter((ele) => {
-        ele.data.data = ele.data.data.filter(
-          (rec) =>
+    this.displayData = this.displayData.filter((ele) => {
+      ele.data.data = ele.data.data.filter((rec) => {
+        const timePeriod =
+          this.clientDataService.calculateTimeperiod(rec.startDate).tm / 12.0;
+        if (paramsModel.filter.by === 'principal') {
+          return (
             rec.principal >= paramsModel.filter.min &&
             rec.principal <= paramsModel.filter.max
-        );
-        return ele.data.data.length;
+          );
+        } else {
+          return (
+            timePeriod >= paramsModel.filter.min &&
+            timePeriod <= paramsModel.filter.max
+          );
+        }
       });
-    } else {
-      this.displayData = this.displayData.filter((ele) => {
-        ele.data.data = ele.data.data.filter(
-          (rec) =>
-            this.clientDataService.calculateTimeperiod(rec.startDate).tm /
-              12.0 >=
-              paramsModel.filter.min &&
-            this.clientDataService.calculateTimeperiod(rec.startDate).tm /
-              12.0 <=
-              paramsModel.filter.max
-        );
-        return ele.data.data.length;
-      });
-    }
+      return ele.data.data.length > 0;
+    });
   }
 
   sortDataModel(paramsModel) {
@@ -138,36 +136,29 @@ export class AdvSearchPage implements OnInit {
         ele.data.data.sort((a, b) => {
           const keyA = new Date(a.startDate);
           const keyB = new Date(b.startDate);
-          if (keyA < keyB) {
-            return paramsModel.sort.order === 'asc' ? +1 : -1;
-          }
-          if (keyA > keyB) {
-            return paramsModel.sort.order === 'asc' ? -1 : +1;
-          }
+          return (
+            (paramsModel.sort.order === 'asc' ? -1 : 1) *
+            (keyA.getTime() - keyB.getTime())
+          );
         });
       });
 
       this.displayData.sort((a, b) => {
         const keyA = new Date(a.data.data[0].startDate);
         const keyB = new Date(b.data.data[0].startDate);
-        if (keyA < keyB) {
-          return paramsModel.sort.order === 'asc' ? +1 : -1;
-        }
-        if (keyA > keyB) {
-          return paramsModel.sort.order === 'asc' ? -1 : +1;
-        }
+        return (
+          (paramsModel.sort.order === 'asc' ? -1 : 1) *
+          (keyA.getTime() - keyB.getTime())
+        );
       });
     }
 
     if (paramsModel.sort.by === 'name') {
-      this.displayData.sort((a, b) => {
-        if (a.data.name < b.data.name) {
-          return paramsModel.sort.order === 'des' ? +1 : -1;
-        }
-        if (a.data.name > b.data.name) {
-          return paramsModel.sort.order === 'des' ? -1 : +1;
-        }
-      });
+      this.displayData.sort(
+        (a, b) =>
+          (paramsModel.sort.order === 'des' ? -1 : 1) *
+          a.data.name.localeCompare(b.data.name)
+      );
     }
   }
 
@@ -205,5 +196,9 @@ export class AdvSearchPage implements OnInit {
     } else {
       return 'medium';
     }
+  }
+
+  ionViewWillLeave() {
+    if (this.modal) this.modal.dismiss();
   }
 }

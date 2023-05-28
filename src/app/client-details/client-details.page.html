@@ -24,15 +24,15 @@
       >
         <ion-accordion [value]="i">
           <ion-item slot="header" class="rounded" color="light">
-            <ion-label class="d-flex ms-2" [color]="getColor(data)">
+            <ion-label class="d-flex ms-2" color="{{getColor(data)}}">
               <span class="fw-bolder">₹ {{ isd.format(data?.principal) }}</span>
               <span class="ms-auto fw-bolder"
-                >{{data?.startDate.split('-').reverse().join('/')}}</span
+                >{{data?.startDate | date : "dd/MM/YYYY"}}</span
               ></ion-label
             >
           </ion-item>
           <ion-list slot="content" lines="none" class="rounded mx-auto">
-            <div class="bgLight mx-2 ps-2 rounded py-1 mt-1 fw-bolder">
+            <div class="bgLight mx-2 ps-2 rounded py-1 fw-bolder">
               <ion-grid>
                 <ion-row>
                   <ion-col size="5">Principal</ion-col>
@@ -48,15 +48,13 @@
                   <ion-col size="5">Start date</ion-col>
                   <ion-col size="2">:</ion-col>
                   <ion-col size="5">
-                    {{data?.startDate.split('-').reverse().join('/')}}
+                    {{data?.startDate | date : "dd/MM/YYYY"}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
                   <ion-col size="5">End date</ion-col>
                   <ion-col size="2">:</ion-col>
-                  <ion-col size="5">
-                    {{today.split('-').reverse().join('/')}}
-                  </ion-col>
+                  <ion-col size="5"> {{today| date : "dd/MM/YYYY"}} </ion-col>
                 </ion-row>
               </ion-grid>
             </div>
@@ -109,7 +107,7 @@
                   <ion-col size="5">Closed on</ion-col>
                   <ion-col size="2">:</ion-col>
                   <ion-col size="5">
-                    {{data?.closedOn.split('-').reverse().join('/')}}
+                    {{data?.closedOn | date : "dd/MM/YYYY"}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
@@ -159,7 +157,6 @@
                       color="success"
                       expand="block"
                       [id]="'approveScreen'+i"
-                      (click)="approveData(data)"
                       [disabled]="data?.closedOn"
                       >Approve</ion-button
                     >
@@ -181,123 +178,14 @@
         <ion-modal
           #modal
           [trigger]="'approveScreen'+i"
-          [initialBreakpoint]="0.5"
-          [breakpoints]="[0, 0.5, 0.75, 1]"
+          [initialBreakpoint]="1"
+          [breakpoints]="[1]"
         >
           <ng-template>
-            <ion-content>
-              <form
-                #formRef="ngForm"
-                (ngSubmit)="onSubmit(formRef)"
-                (keypress)="stopDefaultSubmit($event)"
-              >
-                <div class="rounded bgLight m-2 p-2">
-                  <div class="fw-bolder my-1 px-1">Enter closed details</div>
-
-                  <div class="form-floating mb-2">
-                    <input
-                      type="date"
-                      class="form-control darkInput"
-                      id="closedOn"
-                      [ngModel]="today"
-                      (change)="calculateClosedDetails($event,data)"
-                      #closedOn="ngModel"
-                      name="closedOn"
-                      required
-                      [class.is-valid]="closedOn.valid"
-                      [class.is-invalid]="closedOn.invalid &&  formRef.submitted"
-                    />
-                    <label for="closedOn">On</label>
-                    <div id="closedOn" class="invalid-feedback">
-                      Please enter On-date.
-                    </div>
-                  </div>
-                  <div class="form-floating">
-                    <input
-                      type="number"
-                      class="form-control darkInput"
-                      id="closedAmount"
-                      [ngModel]="(data?.principal + calculateInterest(data,today)).toFixed(2)"
-                      name="closedAmount"
-                      (input)="calculateClosedDetails($event,data,closedOn)"
-                      #closedAmount="ngModel"
-                      required
-                      [class.is-valid]="closedAmount.valid"
-                      [class.is-invalid]="closedAmount.invalid &&  formRef.submitted"
-                    />
-                    <label for="closedAmount">Amount</label>
-                    <div id="closedAmount" class="invalid-feedback">
-                      Please enter Amount.
-                    </div>
-                    <div [hidden]="approvedAmount===0" class="amtIndicator">
-                      *Required amount is ₹ {{isd.format(approvedAmount)}}
-                    </div>
-                  </div>
-
-                  <div [hidden]="hideAppprovedControls">
-                    <div class="px-2 py-1">
-                      <input
-                        type="checkbox"
-                        class="checkboxClass"
-                        id="updateComments"
-                        name="updateComments"
-                        [ngModel]="true"
-                        ngModel
-                      />
-                      <label class="mx-2" for="updateComments">
-                        Update comments automatically
-                      </label>
-                    </div>
-                    <div class="px-2 py-1">
-                      <input
-                        type="checkbox"
-                        id="closeCurrentRecord"
-                        class="checkboxClass"
-                        name="closeCurrentRecord"
-                        [ngModel]="false"
-                        #closeCurrentRecord="ngModel"
-                      />
-                      <label class="mx-2" for="closeCurrentRecord">
-                        Close current record
-                      </label>
-                    </div>
-                    <div class="px-2 py-1">
-                      <input
-                        class="checkboxClass"
-                        type="checkbox"
-                        id="addNewRecord"
-                        name="addNewRecord"
-                        [ngModel]="false"
-                        ngModel
-                        [disabled]="!closeCurrentRecord.value"
-                      />
-                      <label class="mx-2" for="addNewRecord">
-                        Add new record with remaining balance
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                <ion-button
-                  class="m-2"
-                  type="submit"
-                  color="success"
-                  [disabled]="data?.closedOn"
-                  (click)="formRef.valid && modal.dismiss()"
-                  expand="block"
-                >
-                  Close record
-                </ion-button>
-                <ion-button
-                  class="m-2"
-                  color="warning"
-                  (click)="modal.dismiss()"
-                  expand="block"
-                >
-                  Cancel
-                </ion-button>
-              </form>
-            </ion-content>
+            <app-approve-modal
+              [data]="data"
+              [client]="client"
+            ></app-approve-modal>
           </ng-template>
         </ion-modal>
       </div>

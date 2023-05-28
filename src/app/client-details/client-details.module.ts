@@ -7,14 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { ClientDetailsPageRoutingModule } from './client-details-routing.module';
 
 import { ClientDetailsPage } from './client-details.page';
+import { ApproveModalComponent } from './approve-modal/approve-modal.component';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ClientDetailsPageRoutingModule
+    ClientDetailsPageRoutingModule,
   ],
-  declarations: [ClientDetailsPage]
+  declarations: [ClientDetailsPage, ApproveModalComponent],
 })
 export class ClientDetailsPageModule {}

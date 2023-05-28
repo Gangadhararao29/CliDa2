@@ -1,4 +1,4 @@
-package com.application.clida;
+package com.application.clida2;
 
 import com.getcapacitor.BridgeActivity;
 

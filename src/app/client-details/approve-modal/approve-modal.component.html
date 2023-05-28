@@ -1,0 +1,96 @@
+<form
+  #formRef="ngForm"
+  (ngSubmit)="onSubmit(formRef)"
+  (keypress)="stopDefaultSubmit($event)"
+  class="pt-2 pb-3"
+>
+  <div class="rounded bgLight m-2 p-2">
+    <div class="fw-bolder my-1 px-1">Enter closed details</div>
+
+    <div class="form-floating mb-2">
+      <input
+        type="date"
+        class="form-control darkInput"
+        id="closedOn"
+        [ngModel]="today"
+        (change)="calculateClosedDetails($event, data)"
+        #closedOn="ngModel"
+        name="closedOn"
+        required
+        [class.is-valid]="closedOn.valid"
+        [class.is-invalid]="closedOn.invalid && formRef.submitted"
+      />
+      <label for="closedOn">On</label>
+      <div id="closedOn" class="invalid-feedback">Please enter On-date.</div>
+    </div>
+    <div class="form-floating">
+      <input
+        type="number"
+        class="form-control darkInput"
+        id="closedAmount"
+        [ngModel]="
+          (data?.principal + calculateInterest(data, today)).toFixed(2)
+        "
+        name="closedAmount"
+        (input)="calculateClosedDetails($event, data, closedOn)"
+        #closedAmount="ngModel"
+        required
+        [class.is-valid]="closedAmount.valid"
+        [class.is-invalid]="closedAmount.invalid && formRef.submitted"
+      />
+      <label for="closedAmount">Amount</label>
+      <div id="closedAmount" class="invalid-feedback">Please enter Amount.</div>
+      <div [hidden]="approvedAmount === 0" class="amtIndicator">
+        *Required amount is ₹ {{ isd.format(approvedAmount) }}
+      </div>
+    </div>
+
+    <div [hidden]="hideAppprovedControls">
+      <ion-checkbox
+        labelPlacement="end"
+        id="updateComments"
+        name="updateComments"
+        [ngModel]="true"
+        ngModel
+        >Update comments </ion-checkbox
+      ><br />
+      <ion-checkbox
+        labelPlacement="end"
+        id="closeCurrentRecord"
+        name="closeCurrentRecord"
+        [ngModel]="false"
+        #closeCurrentRecord="ngModel"
+      >
+        Close current record</ion-checkbox
+      ><br />
+      <ion-checkbox
+        labelPlacement="end"
+        id="addNewRecord"
+        name="addNewRecord"
+        [ngModel]="false"
+        ngModel
+        [disabled]="!closeCurrentRecord.value"
+        >Add new record with remaining balance</ion-checkbox
+      >
+    </div>
+  </div>
+
+  <ion-button
+    class="m-2"
+    type="submit"
+    color="success"
+    [disabled]="data?.closedOn"
+    (click)="(formRef.valid)"
+    expand="block"
+  >
+    Close record
+  </ion-button>
+  <ion-button
+    class="m-2"
+    color="warning"
+    (click)="dismissModal()"
+    expand="block"
+  >
+    Cancel
+  </ion-button>
+</form>

@@ -73,7 +73,7 @@ export class EditDetailsPage {
       header: 'Confirm',
       backdropDismiss: false,
       animated: true,
-      message: '<b>Do you want to save these changes?</b>',
+      message: 'Do you want to save these changes?',
       buttons: [
         {
           text: 'Yes',
@@ -138,7 +138,7 @@ export class EditDetailsPage {
       header: 'Confirm',
       backdropDismiss: false,
       animated: true,
-      message: '<strong>Do you want to reset closed details?</strong>',
+      message: 'Do you want to reset closed details?',
       buttons: [
         {
           text: 'Yes',
