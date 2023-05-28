@@ -37,7 +37,7 @@ export class CalculatorPage {
       this.linkData.compInt = 3;
     }
   }
-
+  
   onSubmit(formRef) {
     if (formRef.valid) {
       this.timePeriodObject = this.clientsDataService.calculateTimeperiod(

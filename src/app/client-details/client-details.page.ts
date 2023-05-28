@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, IonAccordionGroup } from '@ionic/angular';
 import { ClientDataService } from 'src/app/services/client-data.service';
@@ -9,8 +9,9 @@ import { ClientDataService } from 'src/app/services/client-data.service';
   styleUrls: ['./client-details.page.scss'],
 })
 export class ClientDetailsPage {
-  @ViewChild('modal') modal: any;
   @ViewChild(IonAccordionGroup, { static: true })
+  @ViewChildren('modal')
+  modals: QueryList<any>;
   accordionGroup: IonAccordionGroup;
   client: any;
   clientId = '';
@@ -25,11 +26,9 @@ export class ClientDetailsPage {
     .join('-');
   isd = Intl.NumberFormat('en-IN');
   showClosedData = false;
-  hideAppprovedControls = true;
-  approveDataId: any;
-  approvedAmount = 0;
   hideSkeletonText: boolean;
   totalAmount = 0;
+
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -91,62 +90,6 @@ export class ClientDetailsPage {
     this.router.navigate(['clida', 'calculator', this.clientId, recordId]);
   }
 
-  approveData(data) {
-    this.hideAppprovedControls = true;
-    this.approvedAmount = 0;
-    this.approveDataId = data.id;
-  }
-
-  onSubmit(formRef) {
-    if (formRef.valid) {
-      const clientRecord = this.client.data.find(
-        (ele) => ele.id == this.approveDataId
-      );
-      const oldData = Object.assign({}, clientRecord);
-
-      if (this.hideAppprovedControls || formRef.value.closeCurrentRecord) {
-        clientRecord.closedOn = formRef.value.closedOn;
-        clientRecord.closedAmount = formRef.value.closedAmount;
-        if (formRef.value.addNewRecord) {
-          this.client.data.push({
-            id: Date.now(),
-            principal: this.approvedAmount - formRef.value.closedAmount,
-            interest: clientRecord.interest,
-            startDate: formRef.value.closedOn,
-          });
-        }
-      }
-
-      if (!this.hideAppprovedControls && formRef.value.updateComments) {
-        clientRecord.comments += clientRecord.comments ? `\n` : '';
-        clientRecord.comments += formRef.value.closeCurrentRecord
-          ? ''
-          : `Paid ₹ ${this.isd.format(
-              formRef.value.closedAmount
-            )} on ${formRef.value.closedOn.split('-').reverse().join('/')}\n`;
-
-        clientRecord.comments += `Balance Amt: ₹ ${this.isd.format(
-          this.approvedAmount - formRef.value.closedAmount
-        )}`;
-
-        clientRecord.comments +=
-          formRef.value.addNewRecord && formRef.value.closeCurrentRecord
-            ? `\nNew record added.`
-            : '';
-      }
-
-      this.clientsDataService.updateClientRecordByName(this.client).then(() => {
-        this.clientsDataService.addNewLogData(
-          'edit - approve',
-          { name: this.client.name, ...oldData },
-          clientRecord
-        );
-        this.clientsDataService.presentLoading();
-        this.modal.dismiss();
-      });
-    }
-  }
-
   editClientData(id) {
     this.router.navigate([
       'clida',
@@ -169,7 +112,7 @@ export class ClientDetailsPage {
       cssClass: 'alertStyle',
       backdropDismiss: false,
       animated: true,
-      message: '<strong>Do you want to delete this record?</strong>',
+      message: 'Do you want to delete this record?',
       buttons: [
         {
           text: 'Yes',
@@ -177,7 +120,7 @@ export class ClientDetailsPage {
             this.clientsDataService.presentLoading();
             this.clientsDataService
               .deleteClientData(clientData, clientDataIndex, key)
-              .then((res) => {
+              .then(() => {
                 this.deleteResponseHandler(clientData.data.length);
               });
           },
@@ -226,26 +169,9 @@ export class ClientDetailsPage {
     }
   }
 
-  calculateClosedDetails(event, data, closedOn?) {
-    if (event.target.name === 'closedOn') {
-      this.approvedAmount =
-        data.principal + this.calculateInterest(data, event.target.value);
-    }
-
-    if (event.target.name === 'closedAmount') {
-      this.approvedAmount =
-        data.principal + this.calculateInterest(data, closedOn.value);
-      if (Math.round(event.target.value) !== Math.round(this.approvedAmount)) {
-        this.hideAppprovedControls = false;
-      } else {
-        this.hideAppprovedControls = true;
-      }
-    }
-  }
-
-  stopDefaultSubmit(e) {
-    if (e.keyCode == 13) {
-      e.preventDefault();
-    }
+  ionViewWillLeave() {
+    this.modals.toArray().forEach((element) => {
+      if (element.isCmpOpen) element.dismiss();
+    });
   }
 }

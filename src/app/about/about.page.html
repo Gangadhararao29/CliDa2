@@ -106,23 +106,18 @@
       </ion-card-header>
 
       <ion-card-content>
-        <ion-button
-          expand="block"
-          color="primary"
-          (click)="selectSort['el'].click()"
-        >
-          <ion-label>Sort Data list by</ion-label>
+        <ion-button expand="block" color="primary">
           <ion-select
-            #selectSort
-            [interfaceOptions]="{header:'Sort main clients list by'}"
-            interface="alert"
+            label="Sort Data list by"
+            placeholder="Nm/Yr"
+            [interfaceOptions]="{header:'Sort clients list menu by'}"
             (ionChange)="changeSort($event)"
-            placeholder="Yr/Nm"
           >
-            <ion-select-option value="year">Year</ion-select-option>
             <ion-select-option value="name">Name</ion-select-option>
+            <ion-select-option value="year">Year</ion-select-option>
           </ion-select>
         </ion-button>
+
         <ion-button
           (click)="cleanData()"
           color="warning"
@@ -142,16 +137,12 @@
       </ion-card-header>
 
       <ion-card-content>
-        <ion-button
-          expand="block"
-          color="primary"
-          (click)="selectTheme['el'].click()"
-        >
-          <ion-label>Select theme :</ion-label>
+        <ion-button expand="block" color="primary">
           <ion-select
-            #selectTheme
-            [value]="themeName"
             (ionChange)="changeTheme($event)"
+            label="Chooose theme"
+            interface="popover"
+            [value]="themeName"
             interface="popover"
           >
             <ion-select-option value="light">Light</ion-select-option>
@@ -184,7 +175,7 @@
       </ion-card-content>
     </ion-card>
 
-    <ion-modal [isOpen]="isModalOpen">
+    <ion-modal #modal [isOpen]="isModalOpen">
       <ng-template>
         <ion-header>
           <ion-toolbar>

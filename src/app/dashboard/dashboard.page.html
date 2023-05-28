@@ -45,14 +45,12 @@
   </div>
 
   <div
-    class="scrollable-container justify-content-lg-around"
-    #scrollableContainer
-    (scroll)="onScroll()"
+    class="d-flex overflow-auto justify-content-lg-around align-items-center"
   >
-    <div class="chart" #chart1>
+    <div #chart1>
       <app-line-chart [responseData]="totalClients"></app-line-chart>
     </div>
-    <div class="chart" #chart2>
+    <div #chart2>
       <app-pie-chart [responseData]="totalArray"></app-pie-chart>
     </div>
   </div>

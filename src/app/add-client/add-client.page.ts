@@ -49,7 +49,7 @@ export class AddClientPage {
   }
 
   routeToClientList(formRef) {
-    let message = 'New client record added successfully';
+    let message = 'New client record added successfully. ';
     message += formRef.value.multiRecordsSelected
       ? ''
       : '<br>Redirecting to Clients list tab.';
