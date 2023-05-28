@@ -178,16 +178,14 @@
         <ion-modal
           #modal
           [trigger]="'approveScreen'+i"
-          [initialBreakpoint]="0.5"
-          [breakpoints]="[0, 0.5, 0.75, 1]"
+          [initialBreakpoint]="1"
+          [breakpoints]="[1]"
         >
           <ng-template>
-            <ion-content>
-              <app-approve-modal
-                [data]="data"
-                [client]="client"
-              ></app-approve-modal>
-            </ion-content>
+            <app-approve-modal
+              [data]="data"
+              [client]="client"
+            ></app-approve-modal>
           </ng-template>
         </ion-modal>
       </div>
