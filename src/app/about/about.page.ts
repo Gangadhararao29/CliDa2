@@ -1,4 +1,4 @@
-import { Component, Renderer2 } from '@angular/core';
+import { Component, Renderer2, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
@@ -13,12 +13,13 @@ import { read, utils, writeFileXLSX } from 'xlsx';
   styleUrls: ['./about.page.scss'],
 })
 export class AboutPage {
+  @ViewChild('modal') modal: any;
   themeName = localStorage.getItem('theme');
   inputClientData: any;
   isUpdateLoading = false;
   isModalOpen = false;
   latestVersion = 0;
-  currentVersion = 3.6;
+  currentVersion = 3.8;
   gitHubResponse = [];
   loadingData = true;
   user: any = null;
@@ -165,13 +166,13 @@ export class AboutPage {
       cssClass: 'alertStyle',
       buttons: [
         {
-          text: 'Confirm',
+          text: 'Yes',
           handler: () => {
             this.resetData();
           },
         },
         {
-          text: 'Cancel',
+          text: 'No',
           handler: () => {},
         },
       ],
@@ -311,5 +312,9 @@ export class AboutPage {
         this.router.navigate(['clida', 'clients-list']);
       }, 1000);
     });
+  }
+
+  ionViewWillLeave() {
+    if (this.modal) this.modal.dismiss();
   }
 }

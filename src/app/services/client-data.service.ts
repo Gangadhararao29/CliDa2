@@ -103,23 +103,24 @@ export class ClientDataService {
     if (replaceStatus) {
       return await this.db.collection('clientsData').set(clientsData);
     } else {
-      clientsData.forEach((client) => {
-        this.getClientByName(client.name).then((res) => {
-          if (res) {
-            const recordIndex = res.data.findIndex(
-              (clientData) => clientData.id === res.id
-            );
-            if (recordIndex > -1) {
-              res.push(client.data);
-            } else {
-              res.data[recordIndex] = client.data;
-            }
-            this.updateClientRecordByName(res);
+      const promises = clientsData.map(async (client) => {
+        const res = await this.getClientByName(client.name);
+        if (res) {
+          const recordIndex = res.data.findIndex(
+            (clientData) => clientData.id === res.id
+          );
+          if (recordIndex > -1) {
+            res.push(client.data);
           } else {
-            this.saveNewClient(client);
+            res.data[recordIndex] = client.data;
           }
-        });
+          return this.updateClientRecordByName(res);
+        } else {
+          return this.saveNewClient(client);
+        }
       });
+
+      return Promise.all(promises);
     }
   }
 
@@ -253,19 +254,18 @@ export class ClientDataService {
    * Operation Log functions
    */
   addNewLogData(operation, oldData, newData, index = null) {
-    const logData = localStorage.getItem('logs')
-      ? JSON.parse(localStorage.getItem('logs'))
-      : [];
+    const logData = JSON.parse(localStorage.getItem('logs') || '[]');
+
     switch (operation) {
-      case 'new': {
+      case 'new':
         logData.push({
           operation,
           modifiedOn: this.today,
           data: { name: newData.name, ...newData.data[0] },
         });
         break;
-      }
-      case 'edit': {
+
+      case 'edit':
         logData.push({
           operation,
           modifiedOn: this.today,
@@ -273,23 +273,23 @@ export class ClientDataService {
           newData,
         });
         break;
-      }
-      case 'delete': {
+
+      case 'delete':
         logData.push({
           operation,
           modifiedOn: this.today,
           data: { name: oldData.name, ...oldData.data[0] },
         });
         break;
-      }
-      case 'edit - approve': {
+
+      case 'edit - approve':
         logData.push({
           operation,
           modifiedOn: this.today,
           orgData: oldData,
           newData,
         });
-      }
+        break;
     }
 
     localStorage.setItem('logs', JSON.stringify(logData));

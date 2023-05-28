@@ -22,12 +22,14 @@
         </ion-label>
         <div class="d-flex justify-content-between">
           <ion-item color="light" class="col rounded">
-            <ion-label>Credit</ion-label>
-            <ion-radio slot="start" value="credit"></ion-radio>
+            <ion-radio slot="start" value="credit" labelPlacement="end"
+              >Credit</ion-radio
+            >
           </ion-item>
           <ion-item color="light" class="col rounded">
-            <ion-label>Debit</ion-label>
-            <ion-radio slot="start" value="debit"></ion-radio>
+            <ion-radio slot="start" value="debit" labelPlacement="end"
+              >Debit</ion-radio
+            >
           </ion-item>
         </div>
       </ion-radio-group>
@@ -128,8 +130,8 @@
     </div>
 
     <div *ngIf="clientRecord.closedOn" class="bgLight p-2 rounded">
-      <span class="fs-5 mx-1">Closed details</span>
-      <div class="d-flex mb-2 justify-content-between">
+      <span class="fs-5 mb-2">Closed details</span>
+      <div class="d-flex mb-2 pb-1 justify-content-between">
         <div class="form-floating">
           <input
             type="date"
@@ -159,7 +161,7 @@
       <ion-button
         color="danger"
         expand="block"
-        class="mt-2"
+        class="my-2"
         (click)="resetClosedData()"
       >
         Reset closed details
@@ -172,7 +174,9 @@
   </form>
 
   <div class="container my-3" *ngIf="userName.dirty">
-    <div class="d-flex bgLight align-items-center align-items-md-stretch rounded-3 bg-warning">
+    <div
+      class="d-flex bgLight align-items-center align-items-md-stretch rounded-3 bg-warning"
+    >
       <div class="fs-1 px-3 py-2 text-dark">!</div>
       <small class="justifyText bgLight p-2 rounded-end">
         If the client's name is changed here, it will search for existing

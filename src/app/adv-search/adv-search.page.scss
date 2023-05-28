@@ -22,3 +22,14 @@ ion-content {
     max-width: 350px;
   }
 }
+
+ion-modal {
+  --height: auto;
+}
+
+.modalContent {
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}

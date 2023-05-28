@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace 'com.application.clida2'
+    namespace "com.application.clida2"
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.application.clida2"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 230218
-        versionName "3.6"
+        versionCode 230515
+        versionName "3.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

@@ -104,7 +104,7 @@ export class ClientsListPage {
       cssClass: 'alertStyle',
       backdropDismiss: false,
       animated: true,
-      message: '<strong>Do you want to close the app?</strong>',
+      message: 'Do you want to close the app?',
       buttons: [
         {
           text: 'No',

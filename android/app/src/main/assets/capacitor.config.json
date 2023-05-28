@@ -1,1 +1,8 @@
-{}
+{
+	"appId": "com.application.clida2",
+	"appName": "CliDa",
+	"webDir": "www",
+	"server": {
+		"androidScheme": "https"
+	}
+}
