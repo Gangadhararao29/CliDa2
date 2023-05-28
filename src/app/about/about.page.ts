@@ -35,6 +35,7 @@ export class AboutPage {
 
   checkForUpdate() {
     this.isUpdateLoading = true;
+    this.isModalOpen = false;
     App.getInfo().then((suc) => {
       this.currentVersion = parseFloat(suc.version);
     });

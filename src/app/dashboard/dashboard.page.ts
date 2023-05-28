@@ -144,16 +144,17 @@ export class DashboardPage {
   }
 
   toggleChart() {
-    const chart1Element = this.chart1.nativeElement;
-    const chart2Element = this.chart2.nativeElement;
+    const chartElement = this.isPieChartVisible
+      ? this.chart1.nativeElement
+      : this.chart2.nativeElement;
 
-    if (this.isPieChartVisible) {
-      chart1Element.scrollIntoView({ behavior: 'smooth', inline: 'start' });
-      this.isPieChartVisible = false;
-    } else {
-      chart2Element.scrollIntoView({ behavior: 'smooth', inline: 'start' });
-      this.isPieChartVisible = true;
-    }
+    chartElement.scrollIntoView({
+      behavior: 'smooth',
+      inline: 'center',
+      block: 'center',
+    });
+
+    this.isPieChartVisible = !this.isPieChartVisible;
   }
 
   onScroll() {
@@ -163,6 +164,7 @@ export class DashboardPage {
       const chart1Right =
         this.chart1.nativeElement.getBoundingClientRect().right;
       const chart2Left = this.chart2.nativeElement.getBoundingClientRect().left;
+
       if (container.scrollLeft >= chart2Left) {
         this.isPieChartVisible = true;
       } else if (container.scrollLeft <= chart1Right) {
