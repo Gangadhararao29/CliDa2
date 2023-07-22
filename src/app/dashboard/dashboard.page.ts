@@ -58,6 +58,7 @@ export class DashboardPage {
       let totalPrincipal = 0;
       let greaterTimePeriod = 0;
       let totalInterest = 0;
+      let totalEarnings = 0;
 
       client.data.data.forEach((record) => {
         const timeObject = this.clientDataService.calculateTimeperiod(
@@ -71,6 +72,7 @@ export class DashboardPage {
 
         totalPrincipal += record.principal;
         totalInterest += intArr[0].intAmt;
+        totalEarnings += (record.principal * record.interest) / 100;
 
         if (timeObject.tm > greaterTimePeriod) {
           greaterTimePeriod = timeObject.tm;
@@ -82,6 +84,7 @@ export class DashboardPage {
         name,
         totalPrincipal,
         totalInterest,
+        totalEarnings,
         greaterTimePeriod,
         finalAmount: totalPrincipal + totalInterest,
       };
@@ -111,6 +114,10 @@ export class DashboardPage {
       (prev, curr) => prev + curr.totalPrincipal,
       0
     );
+  }
+
+  getEarnings() {
+    return this.totalArray.reduce((prev, curr) => prev + curr.totalEarnings, 0);
   }
 
   getFinalAmount() {

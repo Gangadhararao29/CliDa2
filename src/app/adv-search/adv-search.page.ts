@@ -67,18 +67,12 @@ export class AdvSearchPage implements OnInit {
   postAdditionNewParams() {
     this.modal.dismiss();
     this.clientDataService.presentToast('New model added');
-    this.sortAndFilterParams.forEach((ele) => (ele.active = 'light'));
+    // this.sortAndFilterParams.forEach((ele) => (ele.active = 'light'));
     localStorage.setItem(
       'sortAndFilterParams',
       JSON.stringify(this.sortAndFilterParams)
     );
-    const firstCard = document.getElementById('paramscard0');
-    if (firstCard) {
-      firstCard.scrollIntoView({
-        inline: 'end',
-        block: 'center',
-      });
-    }
+    this.applyParams(0);
   }
 
   applyParams(index) {
@@ -200,5 +194,10 @@ export class AdvSearchPage implements OnInit {
 
   ionViewWillLeave() {
     if (this.modal) this.modal.dismiss();
+  }
+
+  formatAmount(amount) {
+    const amountInThousands = Math.abs(amount / 1000);
+    return amountInThousands > 1 ? amount / 1000 + 'K' : amount;
   }
 }

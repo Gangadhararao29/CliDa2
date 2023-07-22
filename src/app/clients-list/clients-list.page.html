@@ -95,7 +95,7 @@
     ></ion-searchbar>
   </div>
 
-  <div [hidden]="showEntryText">
+  <ng-container *ngIf="!showEntryText">
     <div class="debitList mt-2 text-center" [hidden]="!showDebitList">
       <ion-item
         *ngFor="let client of debitData | clientsSearch:clientSearchValue; trackBy:trackData"
@@ -104,8 +104,8 @@
         class="rounded-3 listItem d-inline-block"
         lines="none"
       >
-        <div>{{client?.data.name}}</div>
-        <div class="ms-auto text-end mt-1">
+        <span>{{client?.data.name}}</span>
+        <span class="ms-auto text-end mt-1">
           <ion-badge
             *ngFor="let clientDetail of client.data.data"
             class="ms-1"
@@ -113,7 +113,7 @@
             slot="end"
             >{{(clientDetail.principal/1000).toFixed() + 'K'}}
           </ion-badge>
-        </div>
+        </span>
       </ion-item>
     </div>
 
@@ -125,8 +125,8 @@
         class="rounded-3 listItem d-inline-block"
         lines="none"
       >
-        <div>{{client?.data.name}}</div>
-        <div class="ms-auto text-end mt-1">
+        <span>{{client?.data.name}}</span>
+        <span class="ms-auto text-end mt-1">
           <ion-badge
             *ngFor="let clientDetail of client.data.data"
             class="ms-1"
@@ -134,11 +134,11 @@
           >
             {{(clientDetail.principal/1000).toFixed() + 'K'}}
           </ion-badge>
-        </div>
+        </span>
       </ion-item>
     </div>
-    
-  </div>
+  </ng-container>
+
   <ion-item color="medium" lines="none"></ion-item>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">

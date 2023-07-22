@@ -210,8 +210,10 @@ export class ClientDataService {
           interest: formData.interest,
           startDate: formData.startDate,
           comments: formData.comments,
-          closedOn: includeClosedDetails ? formData.closedOn : null,
-          closedAmount: includeClosedDetails ? formData.closedAmount : null,
+          closedOn: includeClosedDetails ? formData.closedOn || null : null,
+          closedAmount: includeClosedDetails
+            ? formData.closedAmount || null
+            : null,
         },
       ],
     };
@@ -232,7 +234,7 @@ export class ClientDataService {
     const toast = await this.toastController.create({
       message,
       position: 'top',
-      duration: 2500,
+      duration: 2800,
       animated: true,
       cssClass,
       icon,
@@ -297,5 +299,14 @@ export class ClientDataService {
 
   async loadSampleData(data) {
     await this.db.collection('clientsData').set(data);
+  }
+
+  getTheme() {
+    let theme = localStorage.getItem('theme');
+    const preferColorMode = window.matchMedia('(prefers-color-scheme:dark)');
+    if (theme == null || theme == 'auto') {
+      theme = preferColorMode.matches ? 'dark' : 'light';
+    }
+    return theme;
   }
 }

@@ -24,6 +24,7 @@ export class ApproveModalComponent implements OnInit {
     .split('/')
     .reverse()
     .join('-');
+  theme: string;
 
   constructor(
     private clientsDataService: ClientDataService,
@@ -31,6 +32,7 @@ export class ApproveModalComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.theme = this.clientsDataService.getTheme();
     this.hideAppprovedControls = true;
     this.approvedAmount = 0;
   }

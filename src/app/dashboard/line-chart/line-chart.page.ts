@@ -27,7 +27,7 @@ export class LineChartPage implements OnChanges {
       principalScale: {
         position: 'left',
         ticks: {
-          color: 'blue',
+          color: '#36a2eb',
           callback: (label: number) => label / 100000 + 'L',
         },
       },
@@ -102,7 +102,7 @@ export class LineChartPage implements OnChanges {
 
   renderGraph(graphData) {
     Object.entries(graphData).forEach((ele: any) => {
-      this.labels.push(ele[0], ele[0] + '-06');
+      this.labels.push(ele[0], ele[0].slice(2) + '-06');
       this.dataSet1.push(ele[1].prin1, ele[1].prin2);
       this.dataSet2.push(ele[1].tot1, ele[1].tot2);
     });
@@ -118,14 +118,14 @@ export class LineChartPage implements OnChanges {
           data: this.dataSet1,
           label: 'Principal',
           yAxisID: 'principalScale',
-          backgroundColor: 'rgba(148,159,177,0.2)',
-          borderColor: 'blue',
-          pointBackgroundColor: 'blue',
-          pointHoverBorderColor: 'blue',
+          backgroundColor: 'rgba(54, 163, 235, 0.712)',
+          borderColor: '#36a2eb',
+          pointBackgroundColor: '#36a2eb',
+          pointHoverBorderColor: '#36a2eb',
         },
         {
           data: this.dataSet2,
-          label: 'Interest',
+          label: 'Earnings',
           yAxisID: 'interestScale',
           backgroundColor: '#20ad2069',
           borderColor: 'green',

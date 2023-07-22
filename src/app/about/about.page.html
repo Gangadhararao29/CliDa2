@@ -12,7 +12,7 @@
   <div class="container my-2">
     <ion-card color="light" [hidden]="user">
       <div class="d-flex m-2 justify-content-between align-items-center">
-        <div class="">Sign in with google to sync data with your account</div>
+        <div class="">Sign in to sync data with your google account</div>
         <ion-button
           expand="block"
           (click)="signInWithGoogle()"
@@ -22,6 +22,7 @@
         </ion-button>
       </div>
     </ion-card>
+
     <ion-card color="light" [hidden]="!user">
       <ion-item color="light">
         <ion-avatar slot="start">
@@ -50,6 +51,7 @@
         Sign out
       </ion-button>
     </ion-card>
+
     <ion-card color="light">
       <ion-card-header>
         <ion-card-title class="d-flex"
@@ -63,8 +65,10 @@
         </ion-card-title>
       </ion-card-header>
 
-      <ion-card-content class="p-2">
-        <div class="mb-1 d-flex align-items-center justify-content-between">
+      <ion-card-content>
+        <div
+          class="px-2 pt-2 d-flex align-items-center justify-content-between"
+        >
           <div>Select file type :</div>
           <div class="form-check">
             <input
@@ -92,27 +96,20 @@
           </div>
         </div>
 
-        <div class="d-flex align-items-center pb-1 justify-content-between">
-          <div class="justifyText pe-2">
-            To save data in your local storage, click the Backup button.
-          </div>
-          <div>
-            <ion-button expand="block" (click)="exportData()"
-              >&nbsp;Backup&nbsp;</ion-button
-            >
-          </div>
-        </div>
-        <hr class="my-1 mx-0 p-0" />
-        <div class="d-flex align-items-center pt-1 justify-content-between">
-          <div class="justifyText pe-2">
-            To load data from your local storage, click the Restore button.
-          </div>
-          <div>
-            <ion-button expand="block" (click)="fileInput.click()"
-              >Restore</ion-button
-            >
-          </div>
-        </div>
+        <ion-grid class="mb-1">
+          <ion-row>
+            <ion-col>
+              <ion-button expand="block" (click)="exportData()">
+                Backup
+              </ion-button>
+            </ion-col>
+            <ion-col>
+              <ion-button expand="block" (click)="fileInput.click()">
+                Restore
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
       </ion-card-content>
     </ion-card>
 
@@ -304,7 +301,7 @@
     </ion-modal>
   </div>
 
-  <div class="text-muted text-center">
+  <div class="text-body-secondary text-center" [attr.data-bs-theme]="theme">
     <small
       >CliDa V3.6 by ChaGa<br />
       -- Web version -- <br />

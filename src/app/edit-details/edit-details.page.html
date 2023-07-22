@@ -21,12 +21,20 @@
           >
         </ion-label>
         <div class="d-flex justify-content-between">
-          <ion-item color="light" class="col rounded">
+          <ion-item
+            color="light"
+            class="col rounded"
+            (click)="changeRadio('credit')"
+          >
             <ion-radio slot="start" value="credit" labelPlacement="end"
               >Credit</ion-radio
             >
           </ion-item>
-          <ion-item color="light" class="col rounded">
+          <ion-item
+            color="light"
+            class="col rounded"
+            (click)="changeRadio('debit')"
+          >
             <ion-radio slot="start" value="debit" labelPlacement="end"
               >Debit</ion-radio
             >
@@ -37,7 +45,7 @@
 
     <div class="bgLight p-2 rounded">
       <span class="fs-5 mx-1">Primary details</span>
-      <div class="form-floating mb-2">
+      <div class="form-floating mb-2" [attr.data-bs-theme]="theme">
         <input
           type="text"
           class="form-control"
@@ -57,7 +65,10 @@
         </div>
       </div>
       <div class="mb-2 d-flex justify-content-between">
-        <div class="form-floating d-inline-block w-100">
+        <div
+          class="form-floating d-inline-block w-100"
+          [attr.data-bs-theme]="theme"
+        >
           <input
             type="number"
             class="form-control"
@@ -76,7 +87,10 @@
           </div>
         </div>
 
-        <div class="form-floating d-inline-block w-100">
+        <div
+          class="form-floating d-inline-block w-100"
+          [attr.data-bs-theme]="theme"
+        >
           <input
             type="number"
             class="form-control"
@@ -95,7 +109,7 @@
           </div>
         </div>
       </div>
-      <div class="form-floating">
+      <div class="form-floating" [attr.data-bs-theme]="theme">
         <input
           type="date"
           class="form-control"
@@ -114,7 +128,7 @@
       </div>
     </div>
 
-    <div class="form-floating my-2">
+    <div class="form-floating my-2" [attr.data-bs-theme]="theme">
       <textarea
         class="form-control"
         id="comments"
@@ -132,7 +146,7 @@
     <div *ngIf="clientRecord.closedOn" class="bgLight p-2 rounded">
       <span class="fs-5 mb-2">Closed details</span>
       <div class="d-flex mb-2 pb-1 justify-content-between">
-        <div class="form-floating">
+        <div class="form-floating" [attr.data-bs-theme]="theme">
           <input
             type="date"
             class="form-control"
@@ -144,7 +158,7 @@
           />
           <label for="closedOn">On</label>
         </div>
-        <div class="form-floating w-100">
+        <div class="form-floating w-100" [attr.data-bs-theme]="theme">
           <input
             type="number"
             class="form-control"

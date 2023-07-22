@@ -9,6 +9,7 @@ import { ClientDataService } from '../services/client-data.service';
   styleUrls: ['./edit-details.page.scss'],
 })
 export class EditDetailsPage {
+  @ViewChild('formRef') formRefVariable: any;
   @ViewChild('commentHeight') commentSection: any;
   clientRecord = {
     principal: 0,
@@ -23,6 +24,7 @@ export class EditDetailsPage {
   clientKey: any;
   clientRecordIndex: number;
   clientName: string;
+  theme: string;
   constructor(
     private activatedRoute: ActivatedRoute,
     private clientDataService: ClientDataService,
@@ -31,6 +33,7 @@ export class EditDetailsPage {
   ) {}
 
   ionViewWillEnter() {
+    this.theme = this.clientDataService.getTheme();
     this.activatedRoute.params.subscribe((params) => {
       this.clientKey = params.key;
       this.clientRecordId = params.clientId;
@@ -55,6 +58,10 @@ export class EditDetailsPage {
   getCommentHeight(event) {
     event.target.style.height = 0;
     event.target.style.height = `${event.target.scrollHeight}px`;
+  }
+
+  changeRadio(event) {
+    this.formRefVariable.form.controls.recordType.setValue(event);
   }
 
   onSubmit(formRef) {
@@ -120,7 +127,7 @@ export class EditDetailsPage {
     } else {
       setTimeout(() => {
         this.clientDataService.presentToast(
-          'Your changes have been saved.<br>Redirecting to Client-Details tab'
+          'Your changes have been saved.<br>Redirecting to Client-details tab'
         );
         this.router.navigate([
           'clida',

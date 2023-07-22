@@ -15,6 +15,7 @@ export class CalculatorPage {
   showCalculatedData = false;
   intArray = [];
   finalInterest = 0;
+  theme: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -22,6 +23,7 @@ export class CalculatorPage {
   ) {}
 
   ionViewWillEnter() {
+    this.theme = this.clientsDataService.getTheme();
     const clientID = this.activatedRoute.snapshot.params.key;
     const recordId = this.activatedRoute.snapshot.params.id;
 
@@ -37,7 +39,7 @@ export class CalculatorPage {
       this.linkData.compInt = 3;
     }
   }
-  
+
   onSubmit(formRef) {
     if (formRef.valid) {
       this.timePeriodObject = this.clientsDataService.calculateTimeperiod(
@@ -62,7 +64,7 @@ export class CalculatorPage {
 
         this.showCalculatedData = true;
         this.clientsDataService.presentToast(
-          'Interest Calculated Successfully'
+          'Interest calculated successfully'
         );
       } else {
         this.showCalculatedData = false;

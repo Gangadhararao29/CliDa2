@@ -7,7 +7,7 @@
   <div class="rounded bgLight m-2 p-2">
     <div class="fw-bolder my-1 px-1">Enter closed details</div>
 
-    <div class="form-floating mb-2">
+    <div class="form-floating mb-2" [attr.data-bs-theme]="theme">
       <input
         type="date"
         class="form-control darkInput"
@@ -23,7 +23,7 @@
       <label for="closedOn">On</label>
       <div id="closedOn" class="invalid-feedback">Please enter On-date.</div>
     </div>
-    <div class="form-floating">
+    <div class="form-floating" [attr.data-bs-theme]="theme">
       <input
         type="number"
         class="form-control darkInput"

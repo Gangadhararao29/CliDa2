@@ -16,14 +16,6 @@ ion-title {
   text-justify: inter-word;
 }
 
-input,
-textarea,
-textarea:focus,
-input:focus {
-  background-color: var(--ion-color-dark-contrast);
-  color: var(--ion-color-dark);
-}
-
 .bgLight {
   background-color: var(--ion-color-light);
 }

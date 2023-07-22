@@ -8,6 +8,8 @@ import { AboutPageRoutingModule } from './about-routing.module';
 
 import { AboutPage } from './about.page';
 import { HttpClientModule } from '@angular/common/http';
+import { AngularFireModule } from '@angular/fire/compat';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   imports: [
@@ -16,6 +18,7 @@ import { HttpClientModule } from '@angular/common/http';
     IonicModule,
     AboutPageRoutingModule,
     HttpClientModule,
+    AngularFireModule.initializeApp(environment.firebase),
   ],
   declarations: [AboutPage],
 })

@@ -6,21 +6,10 @@ import { ClientDataService } from '../services/client-data.service';
 import { HttpClient } from '@angular/common/http';
 import { App } from '@capacitor/app';
 import { read, utils, writeFileXLSX } from 'xlsx';
-import {
-  Auth,
-  getAuth,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithPopup,
-} from '@angular/fire/auth';
-import { Subscription } from 'rxjs';
-import {
-  collectionData,
-  doc,
-  Firestore,
-  setDoc,
-} from '@angular/fire/firestore';
-import { collection } from '@firebase/firestore';
+import { getAuth, onAuthStateChanged } from '@angular/fire/auth';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { GoogleAuthProvider } from 'firebase/auth';
 
 @Component({
   selector: 'app-about',
@@ -39,6 +28,7 @@ export class AboutPage {
   loadingData = true;
   user: any = null;
   fileType = 'json';
+  theme: string;
 
   constructor(
     public alertController: AlertController,
@@ -46,11 +36,12 @@ export class AboutPage {
     private clientDataService: ClientDataService,
     private renderer: Renderer2,
     private httpClient: HttpClient,
-    private auth: Auth,
-    private firestore: Firestore
+    private firestore: AngularFirestore,
+    private afAuth: AngularFireAuth
   ) {}
 
   ionViewWillEnter() {
+    this.theme = this.clientDataService.getTheme();
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
       this.user = user ? user : null;
@@ -133,7 +124,16 @@ export class AboutPage {
       const fileReader = new FileReader();
       fileReader.readAsText(target.files.item(0));
       fileReader.onload = (e) => {
-        this.importDataAlert(JSON.parse(fileReader.result.toString()));
+        try {
+          this.importDataAlert(JSON.parse(fileReader.result.toString()));
+        } catch (err) {
+          this.clientDataService.presentToast(
+            err,
+            'failedToastClass',
+            'alert-outline'
+          );
+          this.inputClientData = '';
+        }
       };
     }
   }
@@ -177,7 +177,7 @@ export class AboutPage {
         setTimeout(() => {
           this.inputClientData = '';
           this.clientDataService.presentToast(
-            'Data imported succcessfully <br>Redirecting to Clients List Tab'
+            'Data imported succcessfully.<br>Redirecting to Clients-list tab'
           );
           this.router.navigate(['clida', 'clients-list']);
         }, 1000);
@@ -213,6 +213,7 @@ export class AboutPage {
 
   changeTheme(event) {
     localStorage.setItem('theme', event.detail.value);
+    this.theme = event.detail.value;
     switch (event.detail.value) {
       case 'light': {
         this.renderer.removeClass(document.body, 'dark');
@@ -227,8 +228,10 @@ export class AboutPage {
           '(prefers-color-scheme:dark)'
         );
         if (preferColorMode.matches) {
+          this.theme = 'dark';
           this.renderer.addClass(document.body, 'dark');
         } else {
+          this.theme = 'light';
           this.renderer.removeClass(document.body, 'dark');
         }
         break;
@@ -288,55 +291,72 @@ export class AboutPage {
     });
   }
 
-  signInWithGoogle() {
-    signInWithPopup(this.auth, new GoogleAuthProvider())
-      .then((res) => {
-        this.clientDataService.presentToast('Signed in successfully');
-      })
-      .catch((err) => {
-        this.clientDataService.presentToast(
-          err.message,
-          'failedToastClass',
-          'alert-outline'
-        );
-      });
+  async signInWithGoogle() {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await this.afAuth.signInWithPopup(provider);
+      this.user = result.user;
+      this.clientDataService.presentToast('Signed in successfully');
+    } catch (err) {
+      this.clientDataService.presentToast(
+        err.message,
+        'failedToastClass',
+        'alert-outline'
+      );
+    }
   }
 
   logOutUser() {
-    this.auth.signOut();
+    this.afAuth.signOut();
     this.user = null;
     this.clientDataService.presentToast('Signed out successfully');
   }
 
-  loadCloudData() {
-    const cdRef = collection(this.firestore, this.user.uid);
-    const infoSub = new Subscription();
-    infoSub.add(
-      collectionData(cdRef).subscribe((res) => {
-        if (res.length) {
-          this.importDataAlert(res);
-        } else {
-          this.clientDataService.presentToast('No data found');
-        }
-        infoSub.unsubscribe();
-      })
-    );
+  async loadCloudData() {
+    try {
+      const cdRef = this.firestore.collection(this.user.uid).ref;
+      const snapshot = await cdRef.get();
+
+      if (snapshot.empty) {
+        this.clientDataService.presentToast('No data found');
+      } else {
+        const res = snapshot.docs.map((doc) => doc.data());
+        this.importDataAlert(res);
+      }
+    } catch (error) {
+      this.clientDataService.presentToast(
+        'Error loading cloud data: <br>' + error,
+        'failedToastClass',
+        'alert-outline'
+      );
+    }
   }
 
-  uploadToCloud() {
-    this.clientDataService.getAllClientsData().then((res) => {
-      res.forEach((record) => {
-        const clientRef = doc(
-          this.firestore,
-          `${this.user.uid}/${record.name}`
-        );
-        setDoc(clientRef, record);
+  async uploadToCloud() {
+    try {
+      const clientsData = await this.clientDataService.getAllClientsData();
+      const batch = this.firestore.firestore.batch();
+
+      clientsData.forEach((record) => {
+        const clientRef = this.firestore
+          .collection(`${this.user.uid}`)
+          .doc(record.name).ref;
+        batch.set(clientRef, record);
       });
-      this.clientDataService.presentLoading();
+
+      await batch.commit();
+      await this.clientDataService.presentLoading();
+
       setTimeout(() => {
         this.clientDataService.presentToast('Upload successful');
       }, 1500);
-    });
+    } catch (error) {
+      this.clientDataService.presentToast(
+        'Error uploading data to cloud: <br>' + error,
+        'failedToastClass',
+        'alert-outline'
+      );
+    }
   }
 
   excelExport(res) {
@@ -384,7 +404,7 @@ export class AboutPage {
       setTimeout(() => {
         this.inputClientData = '';
         this.clientDataService.presentToast(
-          'Data imported succcessfully <br>Redirecting to Clients List Tab'
+          'Data imported succcessfully <br>Redirecting to Clients-list tab'
         );
         this.router.navigate(['clida', 'clients-list']);
       }, 1000);

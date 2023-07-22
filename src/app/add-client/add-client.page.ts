@@ -12,6 +12,7 @@ export class AddClientPage {
   isAddBtnDisable: boolean;
   clientsData = [];
   today: any;
+  theme: string;
 
   constructor(
     private clientDataService: ClientDataService,
@@ -20,6 +21,7 @@ export class AddClientPage {
   ) {}
 
   ionViewWillEnter() {
+    this.theme = this.clientDataService.getTheme();
     this.isAddBtnDisable = false;
     this.formRefVariable.resetForm();
     this.clientDataService.getAllClientsData().then((res) => {
@@ -49,10 +51,10 @@ export class AddClientPage {
   }
 
   routeToClientList(formRef) {
-    let message = 'New client record added successfully. ';
+    let message = 'New client record added successfully.';
     message += formRef.value.multiRecordsSelected
       ? ''
-      : '<br>Redirecting to Clients list tab.';
+      : '<br>Redirecting to Clients-list tab.';
 
     setTimeout(() => {
       this.isAddBtnDisable = false;
@@ -63,5 +65,9 @@ export class AddClientPage {
         });
       }
     }, 1000);
+  }
+
+  changeRadio(event) {
+    this.formRefVariable.form.controls.recordType.setValue(event);
   }
 }

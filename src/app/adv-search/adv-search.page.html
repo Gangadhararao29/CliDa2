@@ -33,7 +33,7 @@
         <span id="paramscard{{i}}"
           >sort : {{params.sort.by || 'none'}} {{params.sort.order}}<br />
           filter : {{params.filter.by || 'none'}} <br />
-          ({{params.filter.min}} - {{params.filter.max}})
+          ({{formatAmount(params.filter.min)}} - {{formatAmount(params.filter.max)}})
         </span>
       </ion-card>
     </div>

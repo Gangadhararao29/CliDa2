@@ -28,6 +28,7 @@ export class ClientDetailsPage {
   showClosedData = false;
   hideSkeletonText: boolean;
   totalAmount = 0;
+  theme: string;
 
   constructor(
     private router: Router,
@@ -37,6 +38,7 @@ export class ClientDetailsPage {
   ) {}
 
   ionViewWillEnter() {
+    this.theme = this.clientsDataService.getTheme();
     this.hideSkeletonText = false;
     this.clientId = this.activatedRoute.snapshot.params.key;
     this.clientsDataService.getClientByKey(this.clientId).then((res) => {
@@ -140,7 +142,7 @@ export class ClientDetailsPage {
     setTimeout(() => {
       if (length < 1) {
         this.clientsDataService.presentToast(
-          'Client deleted completely.<br>Redirecting to Clients list tab'
+          'Client deleted completely.<br>Redirecting to Clients-list tab'
         );
         this.router.navigate(['clida', 'clients-list']);
       } else {

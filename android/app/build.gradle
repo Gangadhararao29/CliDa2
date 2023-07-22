@@ -7,7 +7,7 @@ android {
         applicationId "com.application.clida2"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 230515
+        versionCode 230603
         versionName "3.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {

@@ -20,29 +20,28 @@
 </ion-header>
 
 <ion-content>
-  <div class="container">
-    <div class="my-2 p-1 bgLight rounded">
-      <ion-grid>
-        <ion-row>
-          <ion-col size="6">Number of clients</ion-col>
-          <ion-col>:</ion-col>
-          <ion-col size="5">{{totalClients?.length}}</ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="6">Total principal</ion-col>
-          <ion-col>:</ion-col>
-          <ion-col size="5">
-            ₹ {{isd.format(getTotalPrincipalAmount())}}</ion-col
-          >
-        </ion-row>
-        <ion-row>
-          <ion-col size="6">Final amount</ion-col>
-          <ion-col>:</ion-col>
-          <ion-col size="5"> ₹ {{(isd.format(getFinalAmount()))}}</ion-col>
-        </ion-row>
-      </ion-grid>
-    </div>
-  </div>
+  <ion-grid class="container">
+    <ion-row class="ion-justify-content-around">
+      <ion-col class="bgLight rounded p-2 me-2">
+        <h5>Total Clients</h5>
+        <h3>{{totalClients?.length}}</h3>
+      </ion-col>
+      <ion-col class="bgLight rounded px-3 py-2" size="auto">
+        <h5>Total Principal</h5>
+        <h3>₹ {{isd.format(getTotalPrincipalAmount())}}</h3>
+      </ion-col>
+    </ion-row>
+    <ion-row class="ion-justify-content-around mt-2">
+      <ion-col class="bgLight rounded p-2 me-2">
+        <h5>Earnings</h5>
+        <h3>₹ {{(isd.format(getEarnings()))}}</h3>
+      </ion-col>
+      <ion-col class="bgLight rounded px-3 py-2" size="auto">
+        <h5>Total Amount</h5>
+        <h3>₹ {{(isd.format(getFinalAmount()))}}</h3>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
   <div
     #scrollableContainer
@@ -52,7 +51,7 @@
     <div #chart1>
       <app-line-chart [responseData]="totalClients"></app-line-chart>
     </div>
-    <div class="chart" #chart2>
+    <div #chart2>
       <app-pie-chart [responseData]="totalArray"></app-pie-chart>
     </div>
   </div>
