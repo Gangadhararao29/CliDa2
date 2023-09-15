@@ -10,7 +10,7 @@
 
 <ion-content>
   <div class="container my-2">
-    <ion-card color="light" [hidden]="user">
+    <ion-card color="light" [hidden]="user || !isWebVersion">
       <div class="d-flex m-2 justify-content-between align-items-center">
         <div class="">Sign in to sync data with your google account</div>
         <ion-button
@@ -23,34 +23,42 @@
       </div>
     </ion-card>
 
-    <ion-card color="light" [hidden]="!user">
-      <ion-item color="light">
-        <ion-avatar slot="start">
-          <img
-            alt="Profile pic image"
-            [src]="user?.photoURL"
-            referrerpolicy="no-referrer"
-          />
-        </ion-avatar>
-        <ion-label text-wraop>Hi {{user?.displayName}} </ion-label>
-      </ion-item>
-      <div class="mx-2 d-flex">
-        <ion-button expand="block" class="w-100" (click)="loadCloudData()">
-          Download&nbsp;<ion-icon name="cloud-download-outline"></ion-icon>
-        </ion-button>
-        <ion-button expand="block" class="w-100" (click)="uploadToCloud()">
-          Upload&nbsp;<ion-icon name="cloud-upload-outline"></ion-icon>
-        </ion-button>
-      </div>
-      <ion-button
-        class="mx-2 mb-2"
-        expand="block"
-        color="danger"
-        (click)="logOutUser()"
-      >
-        Sign out
-      </ion-button>
-    </ion-card>
+    <div [hidden]="!user || !isWebVersion">
+      <ion-avatar class="mx-auto" style="height: 2rem">
+        <img
+          alt="Profile pic image"
+          [src]="user?.photoURL"
+          referrerpolicy="no-referrer"
+          class="img-container"
+        />
+      </ion-avatar>
+      <ion-card color="light">
+        <ion-card-header>
+          <ion-card-title class="text-center p-1">
+            <br />
+            Hi {{user?.displayName}}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="mx-2 d-flex py-2">
+            <ion-button expand="block" class="w-100" (click)="loadCloudData()">
+              Download&nbsp;<ion-icon name="cloud-download-outline"></ion-icon>
+            </ion-button>
+            <ion-button expand="block" class="w-100" (click)="uploadToCloud()">
+              Upload&nbsp;<ion-icon name="cloud-upload-outline"></ion-icon>
+            </ion-button>
+          </div>
+          <ion-button
+            class="mx-2 mb-2"
+            expand="block"
+            color="danger"
+            (click)="logOutUser()"
+          >
+            Sign out
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    </div>
 
     <ion-card color="light">
       <ion-card-header>
@@ -119,13 +127,13 @@
           <div>
             The backup button will save your data in the selected file type in
             the file path format shown below.
-            <i class="text-primary"
+            <i class="text-info"
               >Internal_storage/Documents/CliDa/filename.json</i
             >.
             <hr class="mx-0 my-1 p-0" />
-            When you click the Restore button and select a valid json file, or
-            select a excel with correct columns, you will be given two options.
-            We recommend using the replace option, but you can also try merge.
+            When you click the Restore button with a valid json file /excel file
+            with correct columns, you will get two options. We recommend using
+            the replace option, but you can also try merge.
             <hr class="mx-0 my-1 p-0" />
           </div>
         </ion-content>
@@ -303,8 +311,8 @@
 
   <div class="text-body-secondary text-center" [attr.data-bs-theme]="theme">
     <small
-      >CliDa V3.6 by ChaGa<br />
-      -- Web version -- <br />
+      >CliDa V3.8 by ChaGa<br />
+      -- {{isWebVersion ? 'Web' : 'Android'}} version -- <br />
     </small>
   </div>
 </ion-content>

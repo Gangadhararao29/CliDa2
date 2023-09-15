@@ -10,6 +10,7 @@ import { getAuth, onAuthStateChanged } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { GoogleAuthProvider } from 'firebase/auth';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-about',
@@ -29,6 +30,7 @@ export class AboutPage {
   user: any = null;
   fileType = 'json';
   theme: string;
+  isWebVersion: boolean = false;
 
   constructor(
     public alertController: AlertController,
@@ -41,12 +43,17 @@ export class AboutPage {
   ) {}
 
   ionViewWillEnter() {
+    this.isWebVersion = Capacitor.getPlatform() != 'web' ? false : true;
     this.theme = this.clientDataService.getTheme();
-    const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-      this.user = user ? user : null;
+    if (this.isWebVersion) {
+      const auth = getAuth();
+      onAuthStateChanged(auth, (user) => {
+        this.user = user ? user : null;
+        this.loadingData = false;
+      });
+    } else {
       this.loadingData = false;
-    });
+    }
   }
 
   checkForUpdate() {
@@ -246,8 +253,10 @@ export class AboutPage {
       this.clientDataService.getAllClientsData().then((clients) => {
         clients.map((ele) => {
           ele.data.sort((a, b) => {
-            const keyA = new Date(a.startDate);
-            const keyB = new Date(b.startDate);
+            let keyA = new Date(a.startDate);
+            let keyB = new Date(b.startDate);
+            if (a.closedOn) keyA = new Date();
+            if (b.closedOn) keyB = new Date();
             return keyA < keyB ? -1 : +1;
           });
         });

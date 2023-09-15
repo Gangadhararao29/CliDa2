@@ -38,8 +38,8 @@ export class ClientDetailsPage {
   ) {}
 
   ionViewWillEnter() {
-    this.theme = this.clientsDataService.getTheme();
     this.hideSkeletonText = false;
+    this.theme = this.clientsDataService.getTheme();
     this.clientId = this.activatedRoute.snapshot.params.key;
     this.clientsDataService.getClientByKey(this.clientId).then((res) => {
       this.client = res;

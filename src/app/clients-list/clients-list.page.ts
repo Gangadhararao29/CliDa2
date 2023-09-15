@@ -94,7 +94,7 @@ export class ClientsListPage {
   resetSearch() {
     this.clientSearchValue = null;
     this.searchIcon =
-      this.searchIcon === 'search-sharp' ? 'remove' : 'search-sharp';
+      this.searchIcon === 'search-sharp' ? 'caret-up' : 'search-sharp';
   }
 
   async getCloseAlert() {
@@ -134,11 +134,6 @@ export class ClientsListPage {
       return 'medium';
     }
   }
-
-  // setrecordType(event) {
-  //   this.showDebitList = event.detail.value === 'debits' ? true : false;
-  //   localStorage.setItem('tabSection', event.detail.value);
-  // }
 
   setListType(type) {
     this.showDebitList = type === 'debits' ? true : false;

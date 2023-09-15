@@ -32,29 +32,16 @@
 </ion-header>
 
 <ion-content>
-  <div *ngIf="showEntryText" class="container my-2">
-    <ion-item
-      color="primary"
-      lines="none"
-      class="border border-3 text-center rounded-3"
-    >
-      <ion-label class="fs-5 text-warning"> Clida says Hello👋</ion-label>
+  <div *ngIf="showEntryText" class="container">
+    <ion-item color="primary" lines="none" class="text-center rounded-3 my-3">
+      <ion-label class="fs-5 text-warning">Clida says Hello 👋</ion-label>
     </ion-item>
 
     <div class="bgLight rounded-3 px-3 py-2 my-2">
       <div class="justifyText mb-2">
-        Click the Backup/Restore button or go to the Info tab in the bottom
-        navigation bar to load previously saved data from a json file.
-      </div>
-      <div class="text-center">
-        <ion-button routerLink="/clida/about"> Backup / Restore </ion-button>
-      </div>
-    </div>
-
-    <div class="bgLight rounded-3 px-3 py-2 my-2">
-      <div class="justifyText mb-2">
-        To manually add clients, use the button below or the bottom right add
-        button on the screen.
+        For a quick start, click on the below button to add clients. Later on,
+        you can add clients using the floating add button in the bottom right
+        corner of the screen.
       </div>
       <div class="text-center">
         <ion-button color="danger" routerLink="/clida/clients-list/add-client">
@@ -63,12 +50,22 @@
       </div>
     </div>
 
+    <div class="bgLight rounded-3 px-3 py-2 my-2">
+      <div class="justifyText mb-2">
+        To restore bulk data from an already saved file, click on the
+        Backup/Restore button.
+      </div>
+      <div class="text-center">
+        <ion-button routerLink="/clida/about"> Backup / Restore </ion-button>
+      </div>
+    </div>
+
     <ion-button expand="block" (click)="loadSampleData()"
       >Load sample data</ion-button
     >
 
     <div
-      class="d-flex my-2 bgLight align-items-center align-items-lg-stretch rounded-3 bg-warning"
+      class="d-flex my-3 bgLight align-items-center align-items-lg-stretch rounded-3 bg-warning"
     >
       <div class="fs-1 px-3 py-2 text-dark">!</div>
       <div class="justifyText bgLight px-3 py-2 rounded-end">
@@ -96,6 +93,27 @@
   </div>
 
   <ng-container *ngIf="!showEntryText">
+    <div class="creditList mt-2 text-center" [hidden]="showDebitList">
+      <ion-item
+        *ngFor="let client of creditData | clientsSearch:clientSearchValue; trackBy:trackData"
+        [routerLink]="'client-details/' + client.key"
+        color="light"
+        class="rounded-3 listItem d-inline-block"
+        lines="none"
+      >
+        <span>{{client?.data.name}}</span> <br />
+        <span class="ms-auto text-end mt-1">
+          <ion-badge
+            *ngFor="let clientDetail of client.data.data"
+            class="ms-1"
+            [color]="getColor(clientDetail)"
+          >
+            {{(clientDetail.principal/1000).toFixed() + 'K'}}
+          </ion-badge>
+        </span>
+      </ion-item>
+    </div>
+
     <div class="debitList mt-2 text-center" [hidden]="!showDebitList">
       <ion-item
         *ngFor="let client of debitData | clientsSearch:clientSearchValue; trackBy:trackData"
@@ -112,27 +130,6 @@
             [color]="getColor(clientDetail)"
             slot="end"
             >{{(clientDetail.principal/1000).toFixed() + 'K'}}
-          </ion-badge>
-        </span>
-      </ion-item>
-    </div>
-
-    <div class="creditList mt-2 text-center" [hidden]="showDebitList">
-      <ion-item
-        *ngFor="let client of creditData | clientsSearch:clientSearchValue; trackBy:trackData"
-        [routerLink]="'client-details/' + client.key"
-        color="light"
-        class="rounded-3 listItem d-inline-block"
-        lines="none"
-      >
-        <span>{{client?.data.name}}</span>
-        <span class="ms-auto text-end mt-1">
-          <ion-badge
-            *ngFor="let clientDetail of client.data.data"
-            class="ms-1"
-            [color]="getColor(clientDetail)"
-          >
-            {{(clientDetail.principal/1000).toFixed() + 'K'}}
           </ion-badge>
         </span>
       </ion-item>

@@ -7,7 +7,7 @@ ion-content {
 }
 
 .highlight {
-  color: var(--ion-color-success);
+  color: var(--ion-color-success-tint);
 }
 
 ion-col {
@@ -31,5 +31,13 @@ table {
   text-align: center;
 }
 
-.a {color: #198754
+.a {
+  color: #198754;
+}
+
+.borderHighLight {
+  color: var(--ion-color-success-tint);
+  padding: 2px auto;
+  border-top: 2px solid var(--ion-color-success);
+  border-bottom: 2px solid var(--ion-color-success);
 }
