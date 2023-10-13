@@ -160,6 +160,7 @@
             <ion-col>
               <ion-button expand="block" color="primary">
                 <ion-select
+                  style="min-height: 0px"
                   label="Sort Data list by"
                   placeholder="Nm/Yr"
                   [interfaceOptions]="{header:'Sort clients list menu by'}"
@@ -204,9 +205,9 @@
             <ion-col>
               <ion-button expand="block" color="primary">
                 <ion-select
+                  style="min-height: 0px"
                   (ionChange)="changeTheme($event)"
                   label="Choose theme"
-                  interface="popover"
                   [value]="themeName"
                   interface="popover"
                 >

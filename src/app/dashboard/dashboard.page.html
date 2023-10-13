@@ -24,21 +24,21 @@
     <ion-row class="ion-justify-content-around">
       <ion-col class="bgLight rounded p-2 me-2">
         <h5>Total Clients</h5>
-        <h3>{{totalClients?.length}}</h3>
+        <h4>{{totalClients?.length}}</h4>
       </ion-col>
       <ion-col class="bgLight rounded px-3 py-2" size="auto">
         <h5>Total Principal</h5>
-        <h3>₹ {{isd.format(getTotalPrincipalAmount())}}</h3>
+        <h4>₹ {{isd.format(getTotalPrincipalAmount())}}</h4>
       </ion-col>
     </ion-row>
     <ion-row class="ion-justify-content-around mt-2">
       <ion-col class="bgLight rounded p-2 me-2">
         <h5>Earnings</h5>
-        <h3>₹ {{(isd.format(getEarnings()))}}</h3>
+        <h4>₹ {{(isd.format(getEarnings()))}}</h4>
       </ion-col>
       <ion-col class="bgLight rounded px-3 py-2" size="auto">
         <h5>Total Amount</h5>
-        <h3>₹ {{(isd.format(getFinalAmount()))}}</h3>
+        <h4>₹ {{(isd.format(getFinalAmount()))}}</h4>
       </ion-col>
     </ion-row>
   </ion-grid>

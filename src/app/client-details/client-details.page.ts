@@ -29,6 +29,7 @@ export class ClientDetailsPage {
   hideSkeletonText: boolean;
   totalAmount = 0;
   theme: string;
+  selectedChips = [];
 
   constructor(
     private router: Router,
@@ -38,6 +39,7 @@ export class ClientDetailsPage {
   ) {}
 
   ionViewWillEnter() {
+    this.selectedChips = [];
     this.hideSkeletonText = false;
     this.theme = this.clientsDataService.getTheme();
     this.clientId = this.activatedRoute.snapshot.params.key;
@@ -175,5 +177,52 @@ export class ClientDetailsPage {
     this.modals.toArray().forEach((element) => {
       if (element.isCmpOpen) element.dismiss();
     });
+  }
+
+  onChipClick(data) {
+    const isChipSelectedIndex = this.selectedChips.findIndex(
+      (chip) => chip.id === data.id
+    );
+
+    if (isChipSelectedIndex !== -1) {
+      this.selectedChips.splice(isChipSelectedIndex, 1);
+    } else {
+      const calculatedObj = {
+        id: data.id,
+        principal: data.principal,
+        interest: this.calculateInterest(data, new Date()),
+      };
+      this.selectedChips.push(calculatedObj);
+    }
+  }
+
+  toggleTotalChips() {
+    const totalRows = this.client.data.filter((record) => !record.closedOn);
+    if (totalRows.length !== this.selectedChips.length) {
+      totalRows.forEach((rec) => {
+        if (!this.getChipColor(rec.id)) {
+          this.onChipClick(rec);
+        }
+      });
+    } else {
+      this.selectedChips = [];
+    }
+  }
+
+  getChipColor(id) {
+    return this.selectedChips.find((chip) => chip.id == id) ? true : false;
+  }
+
+  getTotalSelectedAmount() {
+    let total = 0;
+    this.selectedChips.forEach(
+      (chip) => (total += chip.principal + chip.interest)
+    );
+    return `₹ ${this.isd.format(total)}`;
+  }
+
+  onCheckBoxClick(event, data) {
+    event.stopPropagation();
+    this.onChipClick(data);
   }
 }

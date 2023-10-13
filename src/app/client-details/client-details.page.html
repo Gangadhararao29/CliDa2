@@ -13,11 +13,11 @@
 
 <ion-content>
   <div class="bgLight p-2 rounded text-center mx-2 mt-2">
-    Present Transactions
+    Current transactions
   </div>
 
   <ion-accordion-group
-    class="m-2 text-center d-flex flex-wrap justify-content-center"
+    class="m-2 text-center d-flex flex-wrap justify-content-evenly"
   >
     <div
       *ngFor="let data of client?.data; let i=index; trackBy:trackData"
@@ -25,6 +25,14 @@
     >
       <ion-accordion [value]="i">
         <ion-item slot="header" class="rounded" color="light">
+          <input
+            type="checkbox"
+            (click)="onCheckBoxClick($event, data)"
+            [checked]="getChipColor(data?.id)"
+            class="form-check-input"
+            [attr.data-bs-theme]="theme"
+            [disabled]="data?.closedOn"
+          />
           <ion-label class="d-flex ms-2" color="{{getColor(data)}}">
             <span class="fw-bolder">₹ {{ isd.format(data?.principal) }}</span>
             <span class="ms-auto fw-bolder"
@@ -200,10 +208,36 @@
     ><ion-label class="text-danger fw-bolder"> + Add new record </ion-label>
   </ion-item>
 
-  <div
-    class="text-center mx-2 mb-2 text-body-secondary"
-    [attr.data-bs-theme]="theme"
-  >
-    Total Principal : ₹ {{isd.format(totalAmount)}}
+  <div class="text-center">
+    <ion-chip (click)="toggleTotalChips()">
+      Total amount: ₹ {{isd.format(totalAmount)}}
+    </ion-chip>
+  </div>
+
+  <div class="m-2" style="font-size: 90%" *ngIf="selectedChips.length">
+    <table
+      class="table table-sm table-striped rounded overflow-hidden"
+      [attr.data-bs-theme]="theme"
+    >
+      <thead>
+        <tr>
+          <th>Principal</th>
+          <th>Interest</th>
+          <th>P + I</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let record of selectedChips">
+          <td>₹ {{isd.format(record.principal)}}</td>
+          <td>₹ {{isd.format(record.interest)}}</td>
+          <td>₹ {{isd.format(record.principal + record.interest)}}</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>Total amount</td>
+          <th>{{getTotalSelectedAmount()}}</th>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </ion-content>
