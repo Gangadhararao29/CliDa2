@@ -11,6 +11,7 @@ import { DashboardPage } from './dashboard.page';
 import { LineChartPage } from './line-chart/line-chart.page';
 import { PieChartComponent } from './pie-chart/pie-chart.component';
 import { NgChartsModule } from 'ng2-charts';
+import { FilterByYearPipe } from './filter-by-year.pipe';
 
 @NgModule({
   imports: [
@@ -21,6 +22,6 @@ import { NgChartsModule } from 'ng2-charts';
     NgChartsModule,
     NgxPaginationModule,
   ],
-  declarations: [DashboardPage, LineChartPage, PieChartComponent],
+  declarations: [DashboardPage, LineChartPage, PieChartComponent, FilterByYearPipe],
 })
 export class DashboardPageModule {}

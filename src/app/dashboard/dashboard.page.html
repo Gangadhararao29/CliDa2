@@ -2,116 +2,173 @@
   <ion-toolbar>
     <ion-title>Dashboard</ion-title>
     <ion-buttons slot="primary" class="mx-2">
-      <ion-button (click)="toggleChart()" [hidden]="!isPieChartVisible">
+      <ion-button (click)="toggleChart()" [hidden]="!isPieChartVisible || !dashPref?.graphs">
         <ion-icon name="stats-chart-sharp"></ion-icon>
       </ion-button>
-      <ion-button (click)="toggleChart()" [hidden]="isPieChartVisible">
+      <ion-button (click)="toggleChart()" [hidden]="isPieChartVisible || !dashPref?.graphs">
         <ion-icon name="pie-chart-sharp"></ion-icon>
       </ion-button>
       <ion-button routerLink="adv-search">
         <ion-icon name="color-wand-sharp" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-progress-bar
-      [hidden]="hideSkeletonText"
-      type="indeterminate"
-    ></ion-progress-bar>
+    <ion-progress-bar [hidden]="hideSkeletonText" type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-grid class="container">
-    <ion-row class="ion-justify-content-around">
-      <ion-col class="bgLight rounded p-2 me-2">
-        <h5>Total Clients</h5>
-        <h4>{{totalClients?.length}}</h4>
-      </ion-col>
-      <ion-col class="bgLight rounded px-3 py-2" size="auto">
-        <h5>Total Principal</h5>
-        <h4>₹ {{isd.format(getTotalPrincipalAmount())}}</h4>
-      </ion-col>
-    </ion-row>
-    <ion-row class="ion-justify-content-around mt-2">
-      <ion-col class="bgLight rounded p-2 me-2">
+  <ion-grid class="container-md p-1 my-1 mx-auto" [hidden]="!dashPref?.stats">
+    <ion-row>
+      <ion-col>
         <h5>Earnings</h5>
         <h4>₹ {{(isd.format(getEarnings()))}}</h4>
       </ion-col>
-      <ion-col class="bgLight rounded px-3 py-2" size="auto">
+      <ion-col>
+        <h5>Clients</h5>
+        <h4>{{totalClients?.length}}</h4>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <h5>Total Principal</h5>
+        <h4>₹ {{isd.format(getTotalPrincipalAmount())}}</h4>
+      </ion-col>
+      <ion-col>
         <h5>Total Amount</h5>
         <h4>₹ {{(isd.format(getFinalAmount()))}}</h4>
       </ion-col>
     </ion-row>
   </ion-grid>
 
-  <div
-    #scrollableContainer
-    class="d-flex overflow-auto justify-content-lg-around align-items-center"
-    (scroll)="onScroll()"
-  >
-    <div #chart1>
-      <app-line-chart [responseData]="totalClients"></app-line-chart>
-    </div>
-    <div #chart2>
-      <app-pie-chart [responseData]="totalArray"></app-pie-chart>
+  <div [hidden]="!dashPref?.graphs">
+    <div #scrollableContainer class="d-flex overflow-auto justify-content-lg-around align-items-center mt-2"
+      (scroll)="onScroll()">
+      <div #chart1>
+        <app-line-chart [responseData]="totalClients"></app-line-chart>
+      </div>
+      <div #chart2>
+        <app-pie-chart [responseData]="totalArray"></app-pie-chart>
+      </div>
     </div>
   </div>
 
-  <div class="container">
-    <ion-card color="light">
-      <ion-item color="success" class="text-center">
-        Sorting by time
-        <ion-icon
-          [name]="timeGridIcon"
-          slot="end"
-          (click)="sortTimeGridChange()"
-        ></ion-icon>
+  <div class="container-md">
+    <!-- Upcoming transactions -->
+    <ion-card color="light" [hidden]="!dashPref?.upTrans">
+      <ion-item color="light" lines="full">
+        <ion-label><span style="font-size: 125%">Upcoming transactions</span></ion-label>
+        <ion-button slot="end" color="light" (click)="sortTimeGridChange()" class="mx-1">
+          <ion-icon [name]="timeGridIcon" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ion-button slot="end" color="light" (click)="selectYear.open()" class="mx-1">
+          <ion-icon name="filter" slot="icon-only" [color]="+selectYear.value ? 'primary' : ''"></ion-icon>
+        </ion-button>
       </ion-item>
-      <span
-        *ngFor="let client of array2 | paginate: { itemsPerPage: 4, currentPage: grid1Page, id:'grid1'}; trackBy:trackData"
-      >
+      <ng-container
+        *ngFor="let client of array2 | filterByYear : selectYear.value | paginate: { itemsPerPage: 4, currentPage: upTransPage, id:'upTrans'}; trackBy:trackData">
         <ion-item [routerLink]="'client-details/' + client.key" color="light">
-          <ion-label>{{client.name}}</ion-label>
-          <ion-label slot="end" class="fw-bolder">
-            {{math.trunc((client.greaterTimePeriod)/12) + "Y " +
-            math.trunc(client.greaterTimePeriod%12)+ "M"}}</ion-label
-          >
+          <ion-label>
+            <span class="d-flex">
+              <h2>{{client.name}}</h2>
+              <h2 class="ms-auto fw-bolder">{{math.trunc((client.greaterTimePeriod)/12) + "Y " +
+                math.trunc(client.greaterTimePeriod%12)+ "M"}}</h2>
+            </span>
+          </ion-label>
         </ion-item>
-      </span>
-      <pagination-controls
-        class="text-end"
-        (pageChange)="grid1Page = $event"
-        id="grid1"
-        [responsive]="true"
-        [autoHide]="true"
-      ></pagination-controls>
+      </ng-container>
+      <pagination-controls class="text-end" (pageChange)="upTransPage = $event" id="upTrans" [responsive]="true"
+        [autoHide]="true"></pagination-controls>
     </ion-card>
 
-    <ion-card color="light">
-      <ion-item color="success" class="text-center"
-        >Sorting by principal
-        <ion-icon
-          [name]="principalGridIcon"
-          slot="end"
-          (click)="sortPrincipalGridChange()"
-        ></ion-icon
-      ></ion-item>
-      <span
-        *ngFor="let client of array1 | paginate: { itemsPerPage: 4, currentPage: grid2Page, id:'grid2'}; trackBy:trackData"
-      >
-        <ion-item [routerLink]="'client-details/' + client.key" color="light">
-          <ion-label class="ion-text-wrap">{{client.name}}</ion-label>
-          <ion-label slot="end" class="fw-bolder">
-            ₹{{isd.format(client.totalPrincipal)}}</ion-label
-          >
+    <!-- Recent transactions -->
+    <ion-card color="light" [hidden]="!dashPref?.recTrans">
+      <ion-item color="light" lines="full">
+        <ion-label><span style="font-size: 125%">Recent transactions</span></ion-label>
+        <ion-button slot="end" color="light" routerLink='logs'>
+          <ion-icon name="arrow-forward" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <ng-container
+        *ngFor="let log of logData | paginate: { itemsPerPage: 3, currentPage: recTransPage, id:'recTrans'};">
+        <ion-item color="light">
+          <ion-label>
+            <span class="d-flex">
+              <h2>{{log?.data?.name || log?.orgData?.name}}</h2>
+              <h2 class="ms-auto text-light p-1 rounded">
+                <span class="px-1 bg-success rounded mx-1" style="font-size: 115%" *ngIf="log.operation==='new'">
+                  &plus;</span>
+                <span class="px-1 bg-danger rounded mx-1" style="font-size: 115%" *ngIf="log.operation==='delete'">
+                  &minus;</span>
+                <span class="px-1 text-warning rounded mx-1" style="font-size: 115%" *ngIf="log.operation==='edit'">
+                  &#8859;</span>
+                <span class="px-1 bg-primary rounded mx-1" style="font-size: 115%"
+                  *ngIf="log.operation==='edit - approve'">
+                  &#10003;</span>
+                ₹ {{(isd.format(log?.data?.principal || log?.newData?.principal))}}
+              </h2>
+            </span>
+            <span class="d-flex">
+              <p>{{log?.data?.startDate || log?.newData?.startDate}}</p>
+              <p class="ms-auto">{{log?.data?.interest || log?.newData?.interest}}</p>
+            </span>
+          </ion-label>
         </ion-item>
-      </span>
-      <pagination-controls
-        class="text-end"
-        (pageChange)="grid2Page = $event"
-        id="grid2"
-        [responsive]="true"
-        [autoHide]="true"
-      ></pagination-controls>
+      </ng-container>
+      <pagination-controls class="text-end" (pageChange)="recTransPage = $event" id="recTrans" [responsive]="true"
+        [autoHide]="true"></pagination-controls>
+    </ion-card>
+
+    <!-- filter for upcoming transactions -->
+    <ion-item color="light" hidden>
+      <ion-select #selectYear aria-label="fruit" placeholder="Select year to filter">
+        <ion-select-option value=1>1 year</ion-select-option>
+        <ion-select-option value=2>2 year</ion-select-option>
+        <ion-select-option value=3>3 year</ion-select-option>
+        <ion-select-option value=0>All year</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Sorted list -->
+    <ion-card color="light" [hidden]="!dashPref?.cliSum">
+      <ion-item color="light" lines="full">
+        <!-- <ion-icon name="swap-horizontal" slot="start"></ion-icon> -->
+        <ion-label><span style="font-size: 125%">Clients summary (principal)</span></ion-label>
+        <ion-button slot="end" color="light" (click)="sortPrincipalGridChange()">
+          <ion-icon [name]="principalGridIcon" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ng-container
+        *ngFor="let client of array1 | paginate: { itemsPerPage: 4, currentPage: cliSumPage, id:'cliSum'}; trackBy:trackData">
+        <ion-item [routerLink]="'client-details/' + client.key" color="light">
+          <ion-label>
+            <span class="d-flex">
+              <h2>{{client.name}}</h2>
+              <h2 class="ms-auto fw-bolder"> ₹{{isd.format(client.totalPrincipal)}}</h2>
+            </span>
+          </ion-label>
+        </ion-item>
+      </ng-container>
+      <pagination-controls class="text-end" (pageChange)="cliSumPage = $event" id="cliSum" [responsive]="true"
+        [autoHide]="true"></pagination-controls>
+    </ion-card>
+
+    <!-- toggle user section -->
+    <ion-card color="light" #toggleDashSection>
+      <ion-item color="light" lines="full">
+        <ion-label><span style="font-size: 125%;">Quick toggle sections</span></ion-label>
+      </ion-item>
+      <ion-item color="light">
+        <ion-chip [color]="dashPref?.stats ?'secondary':''" (click)="toggleDashPref('stats')">Stats</ion-chip>
+        <ion-chip [color]="dashPref?.graphs ?'secondary':''" (click)="toggleDashPref('graphs')">Graphical
+          data</ion-chip>
+        <ion-chip [color]="dashPref?.upTrans ?'secondary':''" (click)="toggleDashPref('upTrans')">Upcoming
+          transactions</ion-chip>
+        <ion-chip [color]="dashPref?.recTrans ?'secondary':''" (click)="toggleDashPref('recTrans')">Recent
+          transactions</ion-chip>
+        <ion-chip [color]="dashPref?.cliSum ?'secondary':''" (click)="toggleDashPref('cliSum')">Clients
+          summary</ion-chip>
+      </ion-item>
     </ion-card>
   </div>
 </ion-content>

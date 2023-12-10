@@ -7,8 +7,9 @@ import { ClientDataService } from '../services/client-data.service';
   styleUrls: ['./dashboard.page.scss'],
 })
 export class DashboardPage {
-  grid1Page = 1;
-  grid2Page = 1;
+  recTransPage = 1;
+  upTransPage = 1;
+  cliSumPage = 1;
   totalArray = [];
   isd = Intl.NumberFormat('en-IN');
   array1: any[];
@@ -20,16 +21,36 @@ export class DashboardPage {
   hideSkeletonText = false;
   @ViewChild('scrollableContainer', { static: true })
   scrollableContainer!: ElementRef;
+  @ViewChild('toggleDashSection', { static: true })
+  toggleDashSection;
   @ViewChild('chart1', { static: true }) chart1!: ElementRef;
   @ViewChild('chart2', { static: true }) chart2!: ElementRef;
   isPieChartVisible = false;
   scrollTimeout: any;
+  logData: any[];
+  dashPref: any;
+  defaultPref = {
+    stats: true,
+    graphs: true,
+    recTrans: true,
+    upTrans: true,
+    cliSum: true,
+  };
   constructor(private clientDataService: ClientDataService) {
     this.math = Math;
   }
 
-  ionViewDidEnter() {
+  ionViewWillEnter() {
     this.hideSkeletonText = false;
+    this.logData = localStorage.getItem('logs')
+      ? JSON.parse(localStorage.getItem('logs')).reverse()
+      : [];
+    this.dashPref = localStorage.getItem('dashPref')
+      ? JSON.parse(localStorage.getItem('dashPref'))
+      : Object.assign({}, this.defaultPref);
+  }
+
+  ionViewDidEnter() {
     this.clientDataService.getAllClientsDataWithKeys().then((res) => {
       this.totalClients = this.filterOpenData(res);
       this.totalArray = [];
@@ -152,8 +173,8 @@ export class DashboardPage {
 
   toggleChart() {
     const chartElement = this.isPieChartVisible
-      ? this.chart1.nativeElement
-      : this.chart2.nativeElement;
+      ? this.chart1?.nativeElement
+      : this.chart2?.nativeElement;
 
     chartElement.scrollIntoView({
       behavior: 'smooth',
@@ -177,5 +198,16 @@ export class DashboardPage {
         this.isPieChartVisible = false;
       }
     }, 250);
+  }
+
+  toggleDashPref(prop) {
+    this.dashPref[prop] = !this.dashPref[prop];
+    setTimeout(() => {
+      this.toggleDashSection.el.scrollIntoView({
+        inline: 'center',
+        block: 'center',
+      });
+    });
+    localStorage.setItem('dashPref', JSON.stringify(this.dashPref));
   }
 }

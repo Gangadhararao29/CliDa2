@@ -50,6 +50,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'dashboard/logs',
+        loadChildren: () =>
+          import('../operation-log/operation-log.module').then(
+            (m) => m.OperationLogPageModule
+          ),
+      },
+      {
         path: 'calculator/:key/:id',
         loadChildren: () =>
           import('../calculator/calculator.module').then(
