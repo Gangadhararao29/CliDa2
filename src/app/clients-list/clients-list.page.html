@@ -2,41 +2,42 @@
   <ion-toolbar>
     <ion-title>
       CliDa
-      <ion-chip
-        [hidden]="showEntryText"
-        [ngClass]="{'tabActive': !showDebitList}"
-        (click)="setListType('credits')"
-        >Credits</ion-chip
-      >
-      <ion-chip
-        [hidden]="showEntryText"
-        [ngClass]="{'tabActive': showDebitList}"
-        (click)="setListType('debits')"
-        >Debits</ion-chip
-      >
+      <ion-chip [hidden]="showEntryText" [ngClass]="{'tabActive': !showDebitList}"
+        (click)="setListType('credits')">Credits</ion-chip>
+      <ion-chip [hidden]="showEntryText" [ngClass]="{'tabActive': showDebitList}"
+        (click)="setListType('debits')">Debits</ion-chip>
     </ion-title>
     <ion-buttons slot="primary">
-      <ion-button
-        [hidden]="showEntryText"
-        (click)="resetSearch()"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseExample"
-        ><ion-icon [name]="searchIcon" slot="icon-only"></ion-icon
-      ></ion-button>
+      <ion-button [hidden]="showEntryText" (click)="toggleSearch()" data-bs-toggle="collapse"
+        data-bs-target="#collapseExample">
+        <ion-icon name="search" slot="icon-only" [color]="isSearchVisible ? 'primary' : ''"></ion-icon>
+      </ion-button>
     </ion-buttons>
-    <ion-progress-bar
-      [hidden]="hideSkeletonText"
-      type="indeterminate"
-    ></ion-progress-bar>
+    <ion-progress-bar [hidden]="hideSkeletonText" type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div *ngIf="showEntryText" class="container">
-    <ion-item color="primary" lines="none" class="text-center rounded-3 my-3">
-      <ion-label class="fs-5 text-warning">Clida says Hello 👋</ion-label>
-    </ion-item>
+  <div class="container my-3" *ngIf="showEntryText">
+    <ion-card color="light" class="rounded" style="margin: 0px;">
+      <ion-item color=light>
+        <ion-label class="text-warning text-center fs-5 ">Clida says Hello 👋</ion-label>
+      </ion-item>
 
+      <div class="fs-6 px-3 mb-2 mt-1 pb-1">
+        💼 Manage clients effortlessly <br>
+        📊 Dashboard for real-time insights. <br>
+        🧮 Calculator for simple & compound interests. <br>
+        🔄 Backup & Restore data (Excel/Json) <br>
+        🎨 Theme customization <br>
+        📱 Mobile-friendly <br>
+        🚀 Streamlined operations
+      </div>
+
+    </ion-card>
+  </div>
+
+  <div *ngIf="showEntryText" class="container">
     <div class="bgLight rounded-3 px-3 py-2 my-2">
       <div class="justifyText mb-2">
         For a quick start, click on the below button to add clients. Later on,
@@ -44,7 +45,7 @@
         corner of the screen.
       </div>
       <div class="text-center">
-        <ion-button color="danger" routerLink="/clida/clients-list/add-client">
+        <ion-button color="danger" routerLink="/clients-list/add-client">
           Add new Client
         </ion-button>
       </div>
@@ -56,17 +57,13 @@
         Backup/Restore button.
       </div>
       <div class="text-center">
-        <ion-button routerLink="/clida/about"> Backup / Restore </ion-button>
+        <ion-button routerLink="/about"> Backup / Restore </ion-button>
       </div>
     </div>
 
-    <ion-button expand="block" (click)="loadSampleData()"
-      >Load sample data</ion-button
-    >
+    <ion-button expand="block" (click)="loadSampleData()">Load sample data</ion-button>
 
-    <div
-      class="d-flex my-3 bgLight align-items-center align-items-lg-stretch rounded-3 bg-warning"
-    >
+    <div class="d-flex my-3 bgLight align-items-center align-items-lg-stretch rounded-3 bg-warning">
       <div class="fs-1 px-3 py-2 text-dark">!</div>
       <div class="justifyText bgLight px-3 py-2 rounded-end">
         Please save your data locally on a regular basis using the Info tab.
@@ -81,59 +78,23 @@
   </div>
 
   <div class="collapse sticky-top" id="collapseExample">
-    <ion-searchbar
-      animated
-      class="pb-1"
-      color="light"
-      placeholder="Search clients here..."
-      [(ngModel)]="clientSearchValue"
-      enterkeyhint="search"
-      search-icon="search-outline"
-    ></ion-searchbar>
+    <div class="d-flex align-items-center">
+      <ion-searchbar animated="true" color="light" placeholder="Search clients here..." [(ngModel)]="clientSearchValue"
+        enterkeyhint="search" search-icon="none" show-clear-button="focus"></ion-searchbar>
+      <ion-button color="light" routerLink="adv-search" class="me-2">
+        <ion-icon name="funnel-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+
+
   </div>
 
   <ng-container *ngIf="!showEntryText">
-    <div class="creditList mt-2 text-center" [hidden]="showDebitList">
-      <ion-item
-        *ngFor="let client of creditData | clientsSearch:clientSearchValue; trackBy:trackData"
-        [routerLink]="'client-details/' + client.key"
-        color="light"
-        class="rounded-3 listItem d-inline-block"
-        lines="none"
-      >
-        <span>{{client?.data.name}}</span> <br />
-        <span class="ms-auto text-end mt-1">
-          <ion-badge
-            *ngFor="let clientDetail of client.data.data"
-            class="ms-1"
-            [color]="getColor(clientDetail)"
-          >
-            {{(clientDetail.principal/1000).toFixed() + 'K'}}
-          </ion-badge>
-        </span>
-      </ion-item>
-    </div>
+    <app-datalist [dataList]="creditData" [clientSearchValue]="clientSearchValue"
+      [hidden]="showDebitList"></app-datalist>
 
-    <div class="debitList mt-2 text-center" [hidden]="!showDebitList">
-      <ion-item
-        *ngFor="let client of debitData | clientsSearch:clientSearchValue; trackBy:trackData"
-        [routerLink]="'client-details/' + client.key"
-        color="light"
-        class="rounded-3 listItem d-inline-block"
-        lines="none"
-      >
-        <span>{{client?.data.name}}</span>
-        <span class="ms-auto text-end mt-1">
-          <ion-badge
-            *ngFor="let clientDetail of client.data.data"
-            class="ms-1"
-            [color]="getColor(clientDetail)"
-            slot="end"
-            >{{(clientDetail.principal/1000).toFixed() + 'K'}}
-          </ion-badge>
-        </span>
-      </ion-item>
-    </div>
+    <app-datalist [dataList]="debitData" [clientSearchValue]="clientSearchValue"
+      [hidden]="!showDebitList"></app-datalist>
   </ng-container>
 
   <ion-item color="medium" lines="none"></ion-item>

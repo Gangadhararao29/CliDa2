@@ -7,7 +7,8 @@ import { IonicModule } from '@ionic/angular';
 import { ClientsListPageRoutingModule } from './clients-list-routing.module';
 
 import { ClientsListPage } from './clients-list.page';
-import { ClientsSearchPipe } from './client-search.pipe';
+import { ClientsSearchPipe } from './datalist/client-search.pipe';
+import { DatalistComponent } from './datalist/datalist.component';
 
 @NgModule({
   imports: [
@@ -16,6 +17,7 @@ import { ClientsSearchPipe } from './client-search.pipe';
     IonicModule,
     ClientsListPageRoutingModule,
   ],
-  declarations: [ClientsListPage, ClientsSearchPipe],
+  declarations: [ClientsListPage, ClientsSearchPipe, DatalistComponent],
+  exports: [DatalistComponent],
 })
 export class ClientsListPageModule {}

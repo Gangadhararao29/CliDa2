@@ -121,7 +121,7 @@ export class EditDetailsPage {
             this.clientDataService.presentToast(
               'Your changes have been saved.<br>Redirecting to Clients-list tab'
             );
-            this.router.navigate(['clida', 'clients-list']);
+            this.router.navigate(['clients-list']);
           }, 1000);
         });
     } else {
@@ -130,7 +130,6 @@ export class EditDetailsPage {
           'Your changes have been saved.<br>Redirecting to Client-details tab'
         );
         this.router.navigate([
-          'clida',
           'clients-list',
           'client-details',
           this.clientKey,

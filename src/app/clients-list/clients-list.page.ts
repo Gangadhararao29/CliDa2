@@ -17,7 +17,7 @@ export class ClientsListPage {
   creditData = [];
   showDebitList: boolean;
   tabSection = 'credits';
-  searchIcon = 'search-sharp';
+  isSearchVisible = false;
   hideSkeletonText: boolean;
   constructor(
     private router: Router,
@@ -38,11 +38,11 @@ export class ClientsListPage {
 
     if (alrt) {
       await alrt.dismiss();
-    } else if (this.router.url === '/clida/clients-list') {
+    } else if (this.router.url === '/clients-list') {
       const alert = await this.getCloseAlert();
       await alert.present();
     } else {
-      this.router.navigate(['/clida/clients-list']);
+      this.router.navigate(['/clients-list']);
     }
   }
 
@@ -87,14 +87,9 @@ export class ClientsListPage {
     });
   }
 
-  trackData(index, client) {
-    return client.key;
-  }
-
-  resetSearch() {
+  toggleSearch() {
     this.clientSearchValue = null;
-    this.searchIcon =
-      this.searchIcon === 'search-sharp' ? 'caret-up' : 'search-sharp';
+    this.isSearchVisible = !this.isSearchVisible;
   }
 
   async getCloseAlert() {

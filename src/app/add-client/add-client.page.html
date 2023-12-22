@@ -16,12 +16,12 @@
         </ion-label>
         <div class="d-flex justify-content-between">
           <ion-item color="light" class="col rounded" (click)="changeRadio('credit')">
-            <ion-radio slot="start" value="credit" labelPlacement="end"
+            <ion-radio  value="credit" labelPlacement="end" justify="start"
               >Credit</ion-radio
             >
           </ion-item>
           <ion-item color="light" class="col rounded"  (click)="changeRadio('debit')">
-            <ion-radio slot="start" value="debit" labelPlacement="end"
+            <ion-radio  value="debit" labelPlacement="end" justify="start"
               >Debit</ion-radio
             >
           </ion-item>
@@ -137,7 +137,7 @@
       #submitButton
       color="danger"
       expand="block"
-      class="my-2"
+      class="my-3"
       type="submit"
       [disabled]="isAddBtnDisable"
     >

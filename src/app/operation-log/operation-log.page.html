@@ -13,171 +13,116 @@
 </ion-header>
 
 <ion-content>
-  <div
-    *ngIf="!logData.length"
-    class="h-100 d-flex align-items-center justify-content-center"
-  >
+  <div *ngIf="!logData.length" class="h-100 d-flex align-items-center justify-content-center">
     <div class="p-2 bg-danger rounded text-light">No logs found</div>
   </div>
 
   <div class="container">
-    <ion-accordion-group
-    *ngFor="let log of logData; let i=index;"
-    class="m-2"
-    value="0"
-  >
-    <ion-accordion [value]="i" class="rounded">
-      <ion-item class="rounded" slot="header" [color]="getColor(log.operation)">
-        <ion-label>
-          <div class="d-flex">
-            <div>{{log.operation}}</div>
-            <div class="ms-auto">{{log.modifiedOn}}</div>
-          </div>
-        </ion-label>
-      </ion-item>
-      <div class="bgLight" slot="content">
-        <div [ngSwitch]="log.operation" class="mx-2">
-          <div *ngSwitchCase="'new'">
-            <ion-grid>
-              <ion-row>
-                <ion-col size="5">Name</ion-col>
-                <ion-col size="1">:</ion-col>
-                <ion-col>{{log.data.name}}</ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col size="5">Principal</ion-col>
-                <ion-col size="1">:</ion-col>
-                <ion-col size="6">{{log.data.principal}}</ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>Interest</ion-col>
-                <ion-col size="1">:</ion-col>
-                <ion-col size="6">{{log.data.interest}}</ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>Start date</ion-col>
-                <ion-col size="1">:</ion-col>
-                <ion-col size="6">{{log.data.startDate}}</ion-col>
-              </ion-row>
-            </ion-grid>
-          </div>
+    <ion-accordion-group *ngFor="let log of logData; let i=index;" class="m-2" value="0">
+      <ion-accordion [value]="i" class="rounded">
+        <ion-item class="rounded" slot="header" [color]="getColor(log.operation)">
+          <ion-label>
+            <div class="d-flex">
+              <div>{{log.operation}}</div>
+              <div class="ms-auto">{{log.modifiedOn}}</div>
+            </div>
+          </ion-label>
+        </ion-item>
+        <div class="bgLight" slot="content">
+          <div [ngSwitch]="log.operation" class="mx-2">
+            <div *ngSwitchCase="log.operation === 'new' || log.operation === 'delete' ? log.operation: 'other'">
+              <ion-grid>
+                <ion-row>
+                  <ion-col>N : {{log.data.name}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>P : {{log.data.principal}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>I : {{log.data.interest}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>S : {{log.data.startDate}}</ion-col>
+                </ion-row>
+              </ion-grid>
+            </div>
+            <div *ngSwitchCase="log.operation==='edit' || log.operation==='edit - approve' ? log.operation: 'other'">
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="2">Nm</ion-col>
+                  <ion-col size="1">:</ion-col>
+                  <ion-col>{{log.orgData.name}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="2">Pn</ion-col>
+                  <ion-col size="1">:</ion-col>
+                  <ion-col>
+                    <del *ngIf="log.orgData.principal !== log.newData.principal">
+                      {{log.orgData.principal}}
+                    </del>
+                    {{ log.newData.principal}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="2">Ir</ion-col>
+                  <ion-col size="1">:</ion-col>
+                  <ion-col>
+                    <del *ngIf="log.orgData.interest !== log.newData.interest">
+                      {{log.orgData.interest}}
+                    </del>
+                    {{ log.newData.interest}}
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="2">Sd</ion-col>
+                  <ion-col size="1">:</ion-col>
+                  <ion-col>
+                    <del *ngIf="log.orgData.startDate !== log.newData.startDate">
+                      {{log.orgData.startDate}}
+                    </del>
+                    {{ log.newData.startDate}}
+                  </ion-col>
+                </ion-row>
+                <ion-row
+                  [hidden]="!log.orgData.comments && !log.newData.comments || log.orgData.comments === log.newData.comments"
+                  style="white-space: pre-line">
+                  <ion-col size="2">Cm</ion-col>
+                  <ion-col size="1">:</ion-col>
+                  <ion-col>
+                    <del>
+                      {{ log.orgData.comments}}
+                    </del>
+                    {{log.newData.comments}}
+                  </ion-col>
+                </ion-row>
+                <ion-row
+                  [hidden]="!log.orgData.closedOn && !log.newData.closedOn || log.orgData.closedOn === log.newData.closedOn">
+                  <ion-col size="2">Cd</ion-col>
+                  <ion-col size="1">:</ion-col>
+                  <ion-col>
+                    <del *ngIf="log.orgData.closedOn !== log.newData.closedOn">
+                      {{log.orgData.closedOn}}
+                    </del>
+                    {{ log.newData.closedOn}}
+                  </ion-col>
+                </ion-row>
+                <ion-row
+                  [hidden]="!log.orgData.closedAmount && !log.newData.closedAmount || log.orgData.closedAmount === log.newData.closedAmount">
+                  <ion-col size="2">Cm</ion-col>
+                  <ion-col size="1">:</ion-col>
+                  <ion-col>
+                    <del *ngIf="log.orgData.closedAmount !== log.newData.closedAmount">
+                      {{log.orgData.closedAmount}}
+                    </del>
+                    {{ log.newData.closedAmount}}
+                  </ion-col>
+                </ion-row>
 
-          <div
-            *ngSwitchCase="log.operation==='edit' || log.operation==='edit - approve' ? log.operation: 'other'"
-          >
-            <ion-grid>
-              <ion-row>
-                <ion-col size="4">Name</ion-col>
-                <ion-col size="1">:</ion-col>
-                <ion-col size="7"> {{log.orgData.name}} </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col size="4">Principal</ion-col>
-                <ion-col size="1">:</ion-col>
-                <ion-col size="7">
-                  {{log.orgData.principal}}
-                  <span
-                    *ngIf="log.orgData.principal !== log.newData.principal"
-                    class="text-primary"
-                  >
-                    => {{log.newData.principal}}
-                  </span>
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col size="4">Interest</ion-col>
-                <ion-col size="1">:</ion-col>
-                <ion-col size="7">
-                  {{log.orgData.interest}}
-                  <span
-                    *ngIf="log.orgData.interest !== log.newData.interest"
-                    class="text-primary"
-                  >
-                    => {{log.newData.interest}}
-                  </span>
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col size="4">Start date</ion-col>
-                <ion-col size="1">:</ion-col>
-                <ion-col size="7"
-                  >{{log.orgData.startDate}}
-                  <span
-                    *ngIf="log.orgData.startDate !== log.newData.startDate"
-                    class="text-primary d-block text-end"
-                  >
-                    => {{log.newData.startDate}}</span
-                  >
-                </ion-col>
-              </ion-row>
-              <ion-row [hidden]="log.orgData.comments === log.newData.comments">
-                <ion-col size="4">comments</ion-col>
-                <ion-col size="1">:</ion-col>
-              </ion-row>
-              <ion-row [hidden]="log.orgData.comments === log.newData.comments">
-                <ion-col size="" style="white-space: pre-line"
-                  >{{log.orgData.comments}}
-                  <span class="text-primary"
-                    >=> {{'\n' + log.newData.comments}}</span
-                  ></ion-col
-                >
-              </ion-row>
-              <ion-row
-                [hidden]="log.orgData.closedOn === log.newData.closedOn || !(log.orgData.closedOn || log.newData.closedOn)"
-              >
-                <ion-col size="4">closedOn</ion-col>
-                <ion-col size="1">:</ion-col>
-                <ion-col size="7"
-                  >{{log.orgData.closedOn}}
-                  <span class="text-primary text-end d-block"
-                    >=> {{log.newData.closedOn}}</span
-                  ></ion-col
-                >
-              </ion-row>
-              <ion-row
-                [hidden]="log.orgData.closedAmount === log.newData.closedAmount || !(log.orgData.closedAmount || log.newData.closedAmount)"
-              >
-                <ion-col size="4">closedAmt</ion-col>
-                <ion-col size="1">:</ion-col>
-                <ion-col size="7"
-                  >{{log.orgData.closedAmount}} =>
-                  {{log.newData.closedAmount}}</ion-col
-                >
-              </ion-row>
-            </ion-grid>
-          </div>
-          <div *ngSwitchCase="'delete'">
-            <ion-grid>
-              <ion-row>
-                <ion-col>Name</ion-col>
-                <ion-col size="1">:</ion-col>
-                <ion-col size="6">{{log.data.name}}</ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>Principal</ion-col>
-                <ion-col size="1">:</ion-col>
-                <ion-col size="6">{{log.data.principal}}</ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>Interest</ion-col>
-                <ion-col size="1">:</ion-col>
-                <ion-col size="6">{{log.data.interest}}</ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>Start date</ion-col>
-                <ion-col size="1">:</ion-col>
-                <ion-col size="6">{{log.data.startDate}}</ion-col>
-              </ion-row>
-              <ion-row [hidden]="!log.data.comments">
-                <ion-col>comments</ion-col>
-                <ion-col size="1">:</ion-col>
-                <ion-col size="6">{{log.data.comments}}</ion-col>
-              </ion-row>
-            </ion-grid>
+              </ion-grid>
+            </div>
           </div>
         </div>
-      </div>
-    </ion-accordion>
-  </ion-accordion-group>
+      </ion-accordion>
+    </ion-accordion-group>
   </div>
 </ion-content>

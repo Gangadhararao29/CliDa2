@@ -108,8 +108,19 @@
 .ngx-pagination .current {
   background: #3f51b5 !important;
   border-radius: 8px;
+  color: whitesmoke !important;
 }
 
 ion-content {
   --ion-background-color: var(--ion-color-medium);
+}
+
+.searchbar-search-icon {
+  display: none !important;
+  width: 0;
+  height: 0;
+}
+
+.searchbar-input {
+  padding-left: 9px !important;
 }

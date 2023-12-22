@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { AdvSearchPageRoutingModule } from './adv-search-routing.module';
 
 import { AdvSearchPage } from './adv-search.page';
+import { ClientsListPageModule } from '../clients-list/clients-list.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    AdvSearchPageRoutingModule
+    AdvSearchPageRoutingModule,
+    ClientsListPageModule
   ],
   declarations: [AdvSearchPage]
 })

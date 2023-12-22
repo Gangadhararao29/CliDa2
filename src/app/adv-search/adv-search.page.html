@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title>Advanced Search</ion-title>
+    <ion-title>Adv. Search</ion-title>
     <ion-buttons slot="primary">
       <ion-button id="addParamsScreen">
         <ion-icon name="create-outline" slot="icon-only"></ion-icon>
@@ -12,181 +12,93 @@
         <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-progress-bar
-      [hidden]="hideSkeletonText"
-      type="indeterminate"
-    ></ion-progress-bar>
+    <ion-progress-bar [hidden]="hideSkeletonText" type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div
-    class="d-flex align-items-center overflow-auto flex-nowrap mt-1 px-1"
-    style="height: max-content"
-  >
-    <div *ngFor="let params of sortAndFilterParams;let i = index" class="ms-1">
-      <ion-card
-        [color]="params.active"
-        class="cardFilterClass"
-        (click)="applyParams(i)"
-      >
-        <span id="paramscard{{i}}"
-          >sort : {{params.sort.by || 'none'}} {{params.sort.order}}<br />
-          filter : {{params.filter.by || 'none'}} <br />
-          ({{formatAmount(params.filter.min)}} - {{formatAmount(params.filter.max)}})
+  <ion-searchbar animated="true" color="light" class="bgMedium" placeholder="Search clients here..."
+    [(ngModel)]="clientSearchValue" enterkeyhint="search" search-icon="none" show-clear-button="focus"></ion-searchbar>
+
+  <div class="d-flex align-items-center overflow-auto flex-nowrap my-1 px-1" style="height: fit-content;">
+    <div *ngFor="let params of sortAndFilterParams; let i = index" class="ms-1">
+      <ion-card [color]="params.active" class="cardFilterClass" (click)="applyParams(i)" style="width: fit-content;">
+        <span id="paramscard{{i}}">
+          Sort: {{ params.sort.by || 'none' }} {{ params.sort.order }}<br />
+          Filter: {{ params.filter.by || 'none' }} <br>
+          ({{ formatAmount(params.filter.min) }} - {{formatAmount(params.filter.max) }})
         </span>
       </ion-card>
     </div>
   </div>
 
-  <ion-modal
-    #modal
-    trigger="addParamsScreen"
-    [initialBreakpoint]="1"
-    [breakpoints]="[0, 1]"
-  >
+  <ion-modal #modal trigger="addParamsScreen" [initialBreakpoint]="1" [breakpoints]="[0, 1]">
     <ng-template>
       <div class="my-3">
-        <div class="fs-5 fw-2 mx-3">Add new Sort / Filter condition</div>
+        <h3 class="mx-3">Add new sort & filter</h3>
         <form #formRef="ngForm" (ngSubmit)="addNewParams(formRef)">
           <ion-card color="light">
-            <div class="d-flex">
-              <ion-item color="light" class="me-1 col">
-                <ion-select
-                  interface="popover"
-                  id="sortBy"
-                  name="sortBy"
-                  ngModel
-                  label="Sort by"
-                  #sortBy="ngModel"
-                  label-placement="floating"
-                >
+            <div class="d-flex ">
+              <ion-item color="light" class="col">
+                <ion-select interface="popover" id="sortBy" name="sortBy" ngModel label="Sort by" #sortBy="ngModel"
+                  label-placement="floating">
                   <ion-select-option value="">None</ion-select-option>
                   <ion-select-option value="name">Name</ion-select-option>
                   <ion-select-option value="time">Time</ion-select-option>
                 </ion-select>
               </ion-item>
-              <ion-item color="light" class="ms-1 col">
-                <ion-select
-                  interface="popover"
-                  id="sortOrder"
-                  name="sortOrder"
-                  [disabled]="sortBy.value?false:true"
-                  [ngModel]='"asc"'
-                  label="Sort order"
-                  label-placement="floating"
-                >
-                  <ion-select-option value="asc">asc</ion-select-option>
-                  <ion-select-option value="des">des</ion-select-option>
+              <ion-item color="light" class="col">
+                <ion-select interface="popover" id="sortOrder" name="sortOrder" [disabled]="sortBy.value?false:true"
+                  [ngModel]='"asc"' label="Order" label-placement="floating">
+                  <ion-select-option value="asc">asc ⬇</ion-select-option>
+                  <ion-select-option value="des">des ⬆</ion-select-option>
                 </ion-select>
               </ion-item>
             </div>
-            <small
-              [hidden]="!showSortMissingText"
-              class="bgLight text-danger mx-2 fw-bolder"
-            >
+            <small [hidden]="!showSortMissingText" class="bgLight text-danger mx-2 fw-bolder">
               *Please select sort by condition
             </small>
           </ion-card>
 
           <ion-card color="light">
             <ion-item color="light">
-              <ion-select
-                interface="popover"
-                id="filterBy"
-                name="filterBy"
-                ngModel
-                #filterBy="ngModel"
-                label="Filter by"
-                label-placement="floating"
-              >
+              <ion-select interface="popover" id="filterBy" name="filterBy" ngModel #filterBy="ngModel"
+                label="Filter by" label-placement="floating">
                 <ion-select-option value="">None</ion-select-option>
-                <ion-select-option value="principal"
-                  >Principal</ion-select-option
-                >
-                <ion-select-option value="time"
-                  >Time Period(Y)</ion-select-option
-                >
+                <ion-select-option value="principal">Principal</ion-select-option>
+                <ion-select-option value="time">Time Period(Y)</ion-select-option>
               </ion-select>
             </ion-item>
-            <small
-              [hidden]="!showFilterMissingText"
-              class="bgLight text-danger mx-2 fw-bolder"
-            >
+            <small [hidden]="!showFilterMissingText" class="bgLight text-danger mx-2 fw-bolder">
               *Please select filter by condition
             </small>
             <div class="d-flex">
-              <ion-item color="light">
-                <ion-input
-                  interface="popover"
-                  id="filterMin"
-                  name="filterMin"
-                  ngModel
-                  [disabled]="filterBy.value?false:true"
-                  type="number"
-                  #filterMin="ngModel"
-                  [ngModel]="0"
-                  label="Min. value"
-                  label-placement="floating"
-                ></ion-input>
+              <ion-item color="light" class="col">
+                <ion-input interface="popover" id="filterMin" name="filterMin" ngModel
+                  [disabled]="filterBy.value?false:true" type="number" #filterMin="ngModel" [ngModel]="0"
+                  label="Min. value" label-placement="floating"></ion-input>
               </ion-item>
-              <ion-item color="light">
-                <ion-input
-                  interface="popover"
-                  id="filterMax"
-                  name="filterMax"
-                  type="number"
-                  ngModel
-                  [disabled]="filterBy.value?false:true"
-                  #filterMax="ngModel"
-                  [ngModel]="0"
-                  label="Max. value"
-                  label-placement="floating"
-                ></ion-input>
+              <ion-item color="light" class="col">
+                <ion-input interface="popover" id="filterMax" name="filterMax" type="number" ngModel
+                  [disabled]="filterBy.value?false:true" #filterMax="ngModel" [ngModel]="0" label="Max. value"
+                  label-placement="floating"></ion-input>
               </ion-item>
             </div>
-            <small
-              [hidden]="showfilterRangeErrorText"
-              class="bgLight text-danger mx-2 fw-bolder"
-            >
+            <small [hidden]="showfilterRangeErrorText" class="bgLight text-danger mx-2 fw-bolder">
               *Max & Min value both shouldn't be equal to 0
             </small>
           </ion-card>
-          <ion-button type="submit" expand="block" class="m-2"
-            >Save current params</ion-button
-          >
+          <ion-button type="submit" expand="block" class="mx-2 mt-3 mb-2">Save current params</ion-button>
         </form>
       </div>
     </ng-template>
   </ion-modal>
 
-  <div class="m-2">
-    <div
-      [hidden]="!showNoRecords"
-      class="p-3 text-center bgLight rounded-3 text-danger"
-    >
+  <div class="my-2">
+    <div [hidden]="!showNoRecords" class="p-3 mx-2 text-center bgLight rounded-3 text-danger">
       No Records found
     </div>
-    <div class="text-center">
-      <ion-item
-        *ngFor="let client of displayData"
-        [routerLink]="'client-details/' + client.key"
-        color="light"
-        class="rounded-3 listItem d-inline-block"
-      >
-        <div>{{client?.data.name}}</div>
-        <div class="ms-auto d-flex text-end">
-          <div class="mt-1">
-            <ion-badge
-              *ngFor="let clientDetail of client.data.data"
-              class="ms-1"
-              [color]="getColor(clientDetail)"
-              slot="end"
-              >{{(clientDetail.principal/1000).toFixed() + 'K'}}
-            </ion-badge>
-          </div>
-        </div>
-      </ion-item>
-    </div>
+
+    <app-datalist [dataList]="displayData" [clientSearchValue]="clientSearchValue"></app-datalist>
   </div>
 </ion-content>

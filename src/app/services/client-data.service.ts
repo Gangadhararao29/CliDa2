@@ -136,6 +136,16 @@ export class ClientDataService {
     });
   }
 
+  async cleanApprovedData() {
+    return await this.getAllClientsData().then((res) => {
+      res = res.filter((client) => {
+        client.data = client.data?.filter((record) => !record?.closedOn);
+        return client?.name && client.data?.length;
+      });
+      this.db.collection('clientsData').set(res);
+    });
+  }
+
   /**
    * for calculating interests
    */

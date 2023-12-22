@@ -4,9 +4,14 @@ import { TabsPage } from './tabs.page';
 
 const routes: Routes = [
   {
-    path: 'clida',
+    path: '',
     component: TabsPage,
     children: [
+      {
+        path: '',
+        redirectTo: 'clients-list',
+        pathMatch: 'full',
+      },
       {
         path: 'clients-list',
         loadChildren: () =>
@@ -22,6 +27,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'clients-list/adv-search',
+        loadChildren: () =>
+          import('../adv-search/adv-search.module').then(
+            (m) => m.AdvSearchPageModule
+          ),
+      },
+      {
         path: 'dashboard',
         loadChildren: () =>
           import('../dashboard/dashboard.module').then(
@@ -29,14 +41,7 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'dashboard/adv-search',
-        loadChildren: () =>
-          import('../adv-search/adv-search.module').then(
-            (m) => m.AdvSearchPageModule
-          ),
-      },
-      {
-        path: 'dashboard/adv-search/client-details/:key',
+        path: 'clients-list/adv-search/client-details/:key',
         loadChildren: () =>
           import('../client-details/client-details.module').then(
             (m) => m.ClientDetailsPageModule
@@ -97,8 +102,8 @@ const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/clida/clients-list',
-    pathMatch: 'prefix',
+    redirectTo: '/clients-list',
+    pathMatch: 'full',
   },
 ];
 

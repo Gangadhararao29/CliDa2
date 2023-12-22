@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ClientDataService } from '../services/client-data.service';
-import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-adv-search',
@@ -15,6 +14,7 @@ export class AdvSearchPage implements OnInit {
   showFilterMissingText = false;
   showfilterRangeErrorText = true;
   showNoRecords = false;
+  clientSearchValue = '';
   hideSkeletonText = true;
 
   constructor(private clientDataService: ClientDataService) {}
@@ -67,7 +67,7 @@ export class AdvSearchPage implements OnInit {
   postAdditionNewParams() {
     this.modal.dismiss();
     this.clientDataService.presentToast('New model added');
-    // this.sortAndFilterParams.forEach((ele) => (ele.active = 'light'));
+    this.sortAndFilterParams.forEach((ele) => (ele.active = 'light'));
     localStorage.setItem(
       'sortAndFilterParams',
       JSON.stringify(this.sortAndFilterParams)

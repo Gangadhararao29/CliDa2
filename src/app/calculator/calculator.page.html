@@ -5,39 +5,20 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="container my-2">
+  <div class="container my-2" [attr.data-bs-theme]="theme">
     <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
       <div class="bgLight p-2 rounded mb-2">
         <div class="fs-5 fw-2 mb-1 mx-1">Enter details to calculate</div>
-        <div class="form-floating mb-2" [attr.data-bs-theme]="theme">
-          <input
-            type="text"
-            class="form-control"
-            id="name"
-            placeholder="name"
-            name="clientName"
-            [ngModel]="linkData.name"
-            disabled
-          />
+        <div class="form-floating mb-2">
+          <input type="text" class="form-control" id="name" placeholder="name" name="clientName"
+            [ngModel]="linkData.name" disabled />
           <label for="name"><span class="formLabel">Client name</span></label>
         </div>
         <div class="mb-2 d-flex justify-content-between">
-          <div
-            class="form-floating d-inline-block w-100"
-            [attr.data-bs-theme]="theme"
-          >
-            <input
-              type="number"
-              class="form-control"
-              id="principal"
-              placeholder="100000"
-              #principal="ngModel"
-              name="principal"
-              [(ngModel)]="linkData.principal"
-              required
-              [class.is-valid]="principal.valid"
-              [class.is-invalid]="principal.invalid &&  formRef.submitted"
-            />
+          <div class="form-floating d-inline-block w-100">
+            <input type="number" class="form-control" id="principal" placeholder="100000" #principal="ngModel"
+              name="principal" [(ngModel)]="linkData.principal" required [class.is-valid]="principal.valid"
+              [class.is-invalid]="principal.invalid &&  formRef.submitted" />
             <label for="principal">
               <span class="formLabel">Principal</span>
             </label>
@@ -46,230 +27,211 @@
             </div>
           </div>
 
-          <div
-            class="form-floating d-inline-block w-100"
-            [attr.data-bs-theme]="theme"
-          >
-            <input
-              type="number"
-              class="form-control"
-              id="interest"
-              placeholder="1.50"
-              [(ngModel)]="linkData.interest"
-              name="interest"
-              #interest="ngModel"
-              required
-              [class.is-valid]="interest.valid"
-              [class.is-invalid]="interest.invalid &&  formRef.submitted"
-            />
-            <label for="interest"
-              ><span class="formLabel">Interest rate</span></label
-            >
+          <div class="form-floating d-inline-block w-100">
+            <input type="number" class="form-control" id="interest" placeholder="1.50" [(ngModel)]="linkData.interest"
+              name="interest" #interest="ngModel" required [class.is-valid]="interest.valid"
+              [class.is-invalid]="interest.invalid &&  formRef.submitted" />
+            <label for="interest"><span class="formLabel">Interest rate</span></label>
             <div id="interest" class="invalid-feedback">
               Please enter interest value.
             </div>
           </div>
         </div>
-        <div class="form-floating mb-2" [attr.data-bs-theme]="theme">
-          <input
-            type="date"
-            class="form-control"
-            id="startDate"
-            [(ngModel)]="linkData.startDate"
-            name="startDate"
-            required
-            #startDate="ngModel"
-            [class.is-valid]="startDate.valid"
-            [class.is-invalid]="startDate.invalid &&  formRef.submitted"
-          />
-          <label for="startDate">
-            <span class="formLabel">Start date</span>
-          </label>
-          <div id="startDate" class="invalid-feedback">
-            Please enter start Date.
+
+        <div class="d-flex mb-2">
+          <div class="col-6 pe-1">
+            <input type="radio" class="btn-check w-100" name="timePeriodType" id="dates"
+              [(ngModel)]="linkData.timePeriodType" value="dates">
+            <label class="btn btn-outline-success w-100" for="dates">Dates</label>
           </div>
-        </div>
-        <div class="form-floating mb-1" [attr.data-bs-theme]="theme">
-          <input
-            type="date"
-            class="form-control"
-            id="endDate"
-            [(ngModel)]="linkData.endDate"
-            name="endDate"
-            required
-            #endDate="ngModel"
-            [class.is-valid]="endDate.valid"
-            [class.is-invalid]="endDate.invalid &&  formRef.submitted"
-          />
-          <label for="endDate"><span class="formLabel">End date</span></label>
-          <div id="endDate" class="invalid-feedback">
-            Please enter end Date.
+          <div class="col-6 ps-1">
+            <input type="radio" class="btn-check w-100" name="timePeriodType" id="period"
+              [(ngModel)]="linkData.timePeriodType" value="period">
+            <label class="btn btn-outline-success w-100" for="period">Period</label>
           </div>
         </div>
 
-        <div>
-          Compound Interest for every
-          <b>{{linkData.compInt}}</b>
-          years
+        <ng-container *ngIf="linkData.timePeriodType == 'dates'">
+          <div class="form-floating mb-2">
+            <input type="date" class="form-control" id="startDate" [(ngModel)]="linkData.startDate" name="startDate"
+              required #startDate="ngModel" [class.is-valid]="startDate.valid"
+              [class.is-invalid]="startDate.invalid &&  formRef.submitted" />
+            <label for="startDate">
+              <span class="formLabel">Start date</span>
+            </label>
+            <div id="startDate" class="invalid-feedback">
+              Please enter start Date.
+            </div>
+          </div>
+          <div class="form-floating mb-1">
+            <input type="date" class="form-control" id="endDate" [(ngModel)]="linkData.endDate" name="endDate" required
+              #endDate="ngModel" [class.is-valid]="endDate.valid"
+              [class.is-invalid]="endDate.invalid &&  formRef.submitted" />
+            <label for="endDate"><span class="formLabel">End date</span></label>
+            <div id="endDate" class="invalid-feedback">
+              Please enter end Date.
+            </div>
+          </div>
+        </ng-container>
+
+        <div class="d-flex my-2" *ngIf="linkData.timePeriodType == 'period'">
+          <div class="flex-fill d-flex align-items-center px-2">
+            <input type="number" class="form-control me-1 flex-fill" name="periodYears"
+              [(ngModel)]="timePeriodObject.y">
+            <span class="me-1">y</span>
+          </div>
+
+          <div class="flex-fill d-flex align-items-center px-2">
+            <input type="number" class="form-control me-1 flex-fill" name="periodMonths"
+              [(ngModel)]="timePeriodObject.m">
+            <span class="me-1">m</span>
+          </div>
+
+          <div class="flex-fill d-flex align-items-center px-2">
+            <input type="number" class="form-control flex-fill" name="periodDays" [(ngModel)]="timePeriodObject.d">
+            <span>d</span>
+          </div>
         </div>
-        <ion-range
-          class="formControl"
-          id="compInt"
-          name="compInt"
-          [(ngModel)]="linkData.compInt"
-          [min]="1"
-          [max]="5"
-          [value]="3"
-          [ticks]="true"
-          [snaps]="true"
-        ></ion-range>
+
+
+
+
+        <div class="d-flex justify-content-between my-1">
+          <span>Compound interest</span>
+          <span><b>{{linkData.compInt}} </b>Yrs</span>
+        </div>
+        <ion-range class="formControl" id="compInt" name="compInt" [(ngModel)]="linkData.compInt" [min]="1" [max]="5"
+          [value]="3" [ticks]="true" [snaps]="true"></ion-range>
       </div>
 
-      <div
-        *ngIf="linkData?.closedOn"
-        class="bg-success rounded-3 text-light text-center"
-      >
+      <div *ngIf="linkData?.closedOn" class="bg-success rounded-3 text-light text-center">
         <div class="p-2">
           Record closed on
-          <span class="fw-bold"
-            >{{linkData?.closedOn.split('-').reverse().join('/')}}</span
-          ><br />
+          <span class="fw-bold">{{linkData?.closedOn.split('-').reverse().join('/')}}</span><br />
           with amount
           <span class="fw-bold">₹ {{linkData?.closedAmount}}</span>
         </div>
       </div>
 
-      <div class="mt-2 mb-3">
+      <div class="my-3">
         <ion-button color="warning" expand="block" type="submit">
           Calculate
         </ion-button>
       </div>
 
       <div class="mb-3">
-        <ion-button
-          type="button"
-          color="danger"
-          expand="block"
-          (click)="resetForm(formRef)"
-        >
+        <ion-button type="button" color="danger" expand="block" (click)="resetForm(formRef)">
           Reset
         </ion-button>
       </div>
     </form>
   </div>
 
-  <div class="rounded container my-2" *ngIf="showCalculatedData">
-    <div
-      class="d-flex align-items-center bg-success text-light rounded-top pt-2 px-2"
-    >
-      <h5 class="fw-bold">Calculated result</h5>
-      <ion-icon
-        id="calcInfo"
-        class="ms-auto pb-1"
-        name="information-circle"
-        size="large"
-        slot="end"
-        color="warning"
-      ></ion-icon>
-    </div>
+  <div class="container mx-auto" *ngIf="showCalculatedData">
+    <ion-card color="light">
+      <ion-item color="light" lines="full">
+        <ion-label><span style="font-size: 125%; font-weight: bolder;"> Calculated result</span></ion-label>
+        <ion-button class="mx-1 p-0" slot="end" color="light" id="calcInfo">
+          <ion-icon name="information" slot="icon-only" color="warning"></ion-icon>
+        </ion-button>
+        <ion-button class="mx-1 p-0" slot="end" color="light" (click)="shareToClipboard()">
+          <ion-icon name="share-social-outline" slot="icon-only" color="primary"></ion-icon>
+        </ion-button>
+      </ion-item>
 
-    <ion-popover trigger="calcInfo" side="left" alignment="start">
-      <ng-template>
-        <ion-content class="ion-padding">
-          <div>
-            Tm = 12x{{timePeriodObject?.y}} + {{timePeriodObject?.m}} +
-            {{timePeriodObject?.d}}/30 <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
-            {{timePeriodObject.tm.toFixed(4)}}m <br />
-            <hr class="m-1" />
-            SI = {{linkData.principal/100}} x {{timePeriodObject.tm.toFixed(3)}}
-            x {{linkData.interest}} <br />
-            &nbsp;&nbsp;&nbsp;&nbsp; = {{(linkData.principal/100 *
-            timePeriodObject.tm * linkData.interest).toFixed(2)}}
-            <hr class="m-1" />
+      <ion-popover trigger="calcInfo" side="bottom" alignment="end">
+        <ng-template>
+          <ion-content class="ion-padding">
+            <div>
+              Tm = 12x{{timePeriodObject?.y}} + {{timePeriodObject?.m}} +
+              {{timePeriodObject?.d}}/30 <br />
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+              {{timePeriodObject.tm.toFixed(4)}}m <br />
+              <hr class="m-1" />
+              SI = {{linkData.principal/100}} x {{timePeriodObject.tm.toFixed(3)}}
+              x {{linkData.interest}} <br />
+              &nbsp;&nbsp;&nbsp;&nbsp; = {{(linkData.principal/100 *
+              timePeriodObject.tm * linkData.interest).toFixed(2)}}
+              <hr class="m-1" />
 
-            <table class="table">
-              <tr>
-                <th>Time(m)</th>
-                <th>Principal</th>
-                <th>Interest</th>
-              </tr>
-              <tr *ngFor="let intObj of intArray">
-                <td>{{intObj.start * 12}} - {{(intObj.end *12).toFixed()}}</td>
-                <td>{{intObj.principal.toFixed()}}</td>
-                <td>{{intObj.intAmt.toFixed()}}</td>
-              </tr>
-            </table>
-          </div>
-        </ion-content>
-      </ng-template>
-    </ion-popover>
+              <table class="table">
+                <tr>
+                  <th>Time(m)</th>
+                  <th>Principal</th>
+                  <th>Interest</th>
+                </tr>
+                <tr *ngFor="let intObj of intArray">
+                  <td>{{intObj.start * 12}} - {{(intObj.end *12).toFixed()}}</td>
+                  <td>{{intObj.principal.toFixed()}}</td>
+                  <td>{{intObj.intAmt.toFixed()}}</td>
+                </tr>
+              </table>
+            </div>
+          </ion-content>
+        </ng-template>
+      </ion-popover>
 
-    <div class="bgLight rounded-bottom px-2 fw-bold">
-      <ion-grid>
-        <ion-row>
-          <ion-col size="5"> Name </ion-col>
-          <ion-col size="1">:</ion-col>
-          <ion-col size="6">{{linkData.name}}</ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="5"> Principal</ion-col>
-          <ion-col size="1">:</ion-col>
-          <ion-col size="6" class="highlight"
-            >{{currencyFormat(linkData.principal)}}</ion-col
-          >
-        </ion-row>
-        <ion-row>
-          <ion-col size="5"> Interest rate</ion-col>
-          <ion-col size="1">:</ion-col>
-          <ion-col size="6" class="highlight">{{linkData.interest}}</ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="5"> Close date </ion-col>
-          <ion-col size="1">:</ion-col>
-          <ion-col size="6">{{linkData.endDate}}</ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="5"> Start date </ion-col>
-          <ion-col size="1">:</ion-col>
-          <ion-col size="6"> {{linkData.startDate}} </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="5"> Time taken </ion-col>
-          <ion-col size="1">:</ion-col>
-          <ion-col size="6">
-            <span class="borderHighLight">
-              {{timePeriodObject?.y}}y&nbsp; {{timePeriodObject?.m}}m&nbsp;
-              {{timePeriodObject?.d}}d&nbsp;
-            </span>
-          </ion-col>
-        </ion-row>
-        <div *ngFor="let intObj of intArray">
+      <div #calculatedDataMain class="bgLight rounded-bottom px-2 fw-bold fs-6">
+        <ion-grid>
           <ion-row>
-            <ion-col size="5">
-              Int amt <small>({{intObj.start}} - {{intObj.end}})y</small>
-            </ion-col>
+            <ion-col size="5"> Name </ion-col>
             <ion-col size="1">:</ion-col>
-            <ion-col sizez="6" [ngClass]="{'highlight': intArray.length ===1}"
-              >{{currencyFormat(intObj?.intAmt)}}</ion-col
-            >
+            <ion-col size="6">{{linkData.name}}</ion-col>
           </ion-row>
-        </div>
-        <ion-row [hidden]="intArray.length < 2">
-          <ion-col size="5"> Total Interest </ion-col>
-          <ion-col size="1">:</ion-col>
-          <ion-col sizez="6" class="highlight"
-            >{{currencyFormat(finalInterest)}}</ion-col
-          >
-        </ion-row>
-        <ion-row class="border-bottom border-top border-success border-2 mb-1">
-          <ion-col size="5"> Final amount </ion-col>
-          <ion-col size="1">:</ion-col>
-          <ion-col size="6" class="highlight">
-            {{currencyFormat(finalInterest + linkData?.principal)}}
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </div>
+          <ion-row>
+            <ion-col size="5"> Principal</ion-col>
+            <ion-col size="1">:</ion-col>
+            <ion-col size="6" class="highlight">{{currencyFormat(linkData.principal)}}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="5"> Interest rate</ion-col>
+            <ion-col size="1">:</ion-col>
+            <ion-col size="6" class="highlight">{{linkData.interest}}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="5"> Close date </ion-col>
+            <ion-col size="1">:</ion-col>
+            <ion-col size="6">{{linkData.endDate}}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="5"> Start date </ion-col>
+            <ion-col size="1">:</ion-col>
+            <ion-col size="6"> {{linkData.startDate}} </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="5"> Time taken </ion-col>
+            <ion-col size="1">:</ion-col>
+            <ion-col size="6">
+              <span class="borderHighLight">
+                {{timePeriodObject?.y}}y&nbsp; {{timePeriodObject?.m}}m&nbsp;
+                {{timePeriodObject?.d}}d&nbsp;
+              </span>
+            </ion-col>
+          </ion-row>
+          <div *ngFor="let intObj of intArray">
+            <ion-row>
+              <ion-col size="5">
+                Int amt <small>({{intObj.start}} - {{intObj.end}})y</small>
+              </ion-col>
+              <ion-col size="1">:</ion-col>
+              <ion-col sizez="6"
+                [ngClass]="{'highlight': intArray.length ===1}">{{currencyFormat(intObj?.intAmt)}}</ion-col>
+            </ion-row>
+          </div>
+          <ion-row [hidden]="intArray.length < 2">
+            <ion-col size="5"> Total Interest </ion-col>
+            <ion-col size="1">:</ion-col>
+            <ion-col sizez="6" class="highlight">{{currencyFormat(finalInterest)}}</ion-col>
+          </ion-row>
+          <ion-row class="border-bottom border-top border-success border-2 mb-1">
+            <ion-col size="5"> Final amount </ion-col>
+            <ion-col size="1">:</ion-col>
+            <ion-col size="6" class="highlight">
+              {{currencyFormat(finalInterest + linkData?.principal)}}
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </ion-card>
   </div>
 </ion-content>

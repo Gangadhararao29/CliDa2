@@ -29,7 +29,7 @@
             type="checkbox"
             (click)="onCheckBoxClick($event, data)"
             [checked]="getChipColor(data?.id)"
-            class="form-check-input"
+            class="form-check-input p-2"
             [attr.data-bs-theme]="theme"
             [disabled]="data?.closedOn"
           />
@@ -203,7 +203,7 @@
   <ion-item
     color="light"
     class="rounded text-center m-2"
-    routerLink="/clida/clients-list/add-client"
+    routerLink="/clients-list/add-client"
     [queryParams]="{name:client?.name}"
     ><ion-label class="text-danger fw-bolder"> + Add new record </ion-label>
   </ion-item>

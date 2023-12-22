@@ -91,12 +91,11 @@ export class ClientDetailsPage {
   }
 
   openCalculator(recordId) {
-    this.router.navigate(['clida', 'calculator', this.clientId, recordId]);
+    this.router.navigate(['calculator', this.clientId, recordId]);
   }
 
   editClientData(id) {
     this.router.navigate([
-      'clida',
       'clients-list',
       'client-details',
       this.clientId,
@@ -146,7 +145,7 @@ export class ClientDetailsPage {
         this.clientsDataService.presentToast(
           'Client deleted completely.<br>Redirecting to Clients-list tab'
         );
-        this.router.navigate(['clida', 'clients-list']);
+        this.router.navigate(['clients-list']);
       } else {
         this.clientsDataService.presentToast(
           'Client record deleted successfully'

@@ -1,10 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Information</ion-title>
-    <ion-progress-bar
-      [hidden]="!loadingData"
-      type="indeterminate"
-    ></ion-progress-bar>
+    <ion-progress-bar [hidden]="!loadingData" type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
 
@@ -13,11 +10,7 @@
     <ion-card color="light" [hidden]="user || !isWebVersion">
       <div class="d-flex m-2 justify-content-between align-items-center">
         <div class="">Sign in to sync data with your google account</div>
-        <ion-button
-          expand="block"
-          (click)="signInWithGoogle()"
-          [disabled]="loadingData"
-        >
+        <ion-button expand="block" (click)="signInWithGoogle()" [disabled]="loadingData">
           Sign in
         </ion-button>
       </div>
@@ -25,12 +18,7 @@
 
     <div [hidden]="!user || !isWebVersion">
       <ion-avatar class="mx-auto" style="height: 2rem">
-        <img
-          alt="Profile pic image"
-          [src]="user?.photoURL"
-          referrerpolicy="no-referrer"
-          class="img-container"
-        />
+        <img alt="Profile pic image" [src]="user?.photoURL" referrerpolicy="no-referrer" class="img-container" />
       </ion-avatar>
       <ion-card color="light">
         <ion-card-header>
@@ -48,12 +36,7 @@
               Upload&nbsp;<ion-icon name="cloud-upload-outline"></ion-icon>
             </ion-button>
           </div>
-          <ion-button
-            class="mx-2 mb-2"
-            expand="block"
-            color="danger"
-            (click)="logOutUser()"
-          >
+          <ion-button class="mx-2 mb-2" expand="block" color="danger" (click)="logOutUser()">
             Sign out
           </ion-button>
         </ion-card-content>
@@ -62,45 +45,25 @@
 
     <ion-card color="light">
       <ion-card-header>
-        <ion-card-title class="d-flex"
-          ><div>Local Backup / Restore</div>
-          <ion-icon
-            id="help-section"
-            name="help-sharp"
-            size="small"
-            class="ms-auto border border-dark bg-warning rounded-circle text-dark p-1"
-          ></ion-icon>
+        <ion-card-title class="d-flex">
+          <div>Export / Import</div>
+          <ion-icon id="help-section" name="help-sharp" size="small"
+            class="ms-auto border border-dark bg-warning rounded-circle text-dark p-1"></ion-icon>
         </ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
-        <div
-          class="px-2 pt-2 d-flex align-items-center justify-content-between"
-        >
-          <div>Select file type :</div>
+        <div class="px-2 pt-2 d-flex align-items-center justify-content-between">
+          <div>File type :</div>
           <div class="form-check">
-            <input
-              type="radio"
-              name="fileType"
-              id="json"
-              class="form-check-input"
-              value="json"
-              [(ngModel)]="fileType"
-            />
+            <input type="radio" name="fileType" id="json" class="form-check-input" value="json"
+              [(ngModel)]="fileType" />
             <label for="json" class="px-2 form-check-label">Json</label>
           </div>
           <div class="form-check">
-            <input
-              type="radio"
-              name="fileType"
-              id="excel"
-              class="form-check-input"
-              value="excel"
-              [(ngModel)]="fileType"
-            />
-            <label for="excel" class="px-2 form-check-label"
-              >Excel (beta)</label
-            >
+            <input type="radio" name="fileType" id="excel" class="form-check-input" value="excel"
+              [(ngModel)]="fileType" />
+            <label for="excel" class="px-2 form-check-label">Excel (beta)</label>
           </div>
         </div>
 
@@ -108,12 +71,12 @@
           <ion-row>
             <ion-col>
               <ion-button expand="block" (click)="exportData()">
-                Backup
+                Export
               </ion-button>
             </ion-col>
             <ion-col>
               <ion-button expand="block" (click)="fileInput.click()">
-                Restore
+                Import
               </ion-button>
             </ion-col>
           </ion-row>
@@ -125,13 +88,11 @@
       <ng-template>
         <ion-content class="ion-padding">
           <div>
-            The backup button will save your data in the selected file type in
+            The export button will save your data in the selected file type in
             the file path format shown below.
-            <i class="text-info"
-              >Internal_storage/Documents/CliDa/filename.json</i
-            >.
+            <i class="text-info">Internal_storage/Documents/CliDa/filename.json</i>.
             <hr class="mx-0 my-1 p-0" />
-            When you click the Restore button with a valid json file /excel file
+            When you click the backup button with a valid json file /excel file
             with correct columns, you will get two options. We recommend using
             the replace option, but you can also try merge.
             <hr class="mx-0 my-1 p-0" />
@@ -140,14 +101,9 @@
       </ng-template>
     </ion-popover>
 
-    <input
-      hidden
-      #fileInput
-      type="file"
+    <input hidden #fileInput type="file"
       [accept]="fileType==='excel'?'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':'application/JSON'"
-      (change)="importData($event.target)"
-      [(ngModel)]="inputClientData"
-    />
+      (change)="importData($event.target)" [(ngModel)]="inputClientData" />
 
     <ion-card color="light">
       <ion-card-header>
@@ -155,42 +111,33 @@
       </ion-card-header>
 
       <ion-card-content>
-        <ion-grid>
-          <ion-row>
-            <ion-col>
-              <ion-button expand="block" color="primary">
-                <ion-select
-                  style="min-height: 0px"
-                  label="Sort Data list by"
-                  placeholder="Nm/Yr"
-                  [interfaceOptions]="{header:'Sort clients list menu by'}"
-                  (ionChange)="changeSort($event)"
-                >
-                  <ion-select-option value="name">Name</ion-select-option>
-                  <ion-select-option value="year">Year</ion-select-option>
-                </ion-select>
-              </ion-button>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>
-              <ion-button (click)="cleanData()" color="warning" expand="block">
-                Data Errors fix
-              </ion-button>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>
-              <ion-button
-                (click)="presentDeleteAlert()"
-                color="danger"
-                expand="block"
-              >
-                Remove all clients data
-              </ion-button>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
+        <div class="buttonSpacing">
+          <ion-button expand="block" color="primary">
+            <ion-select style="min-height: 0px" label="Sort Data list by" placeholder="Nm/Yr"
+              [interfaceOptions]="{header:'Sort clients list menu by'}" (ionChange)="changeSort($event)">
+              <ion-select-option value="name">Name</ion-select-option>
+              <ion-select-option value="year">Year</ion-select-option>
+            </ion-select>
+          </ion-button>
+        </div>
+
+        <div class="buttonSpacing">
+          <ion-button (click)="cleanData()" color="warning" expand="block">
+            Data Errors fix
+          </ion-button>
+        </div>
+
+        <div class="buttonSpacing">
+          <ion-button (click)="cleanApproveData()" color="success" expand="block">
+            Clean approved data
+          </ion-button>
+        </div>
+
+        <div class="buttonSpacing">
+          <ion-button (click)="presentDeleteAlert()" color="danger" expand="block">
+            Remove all clients data
+          </ion-button>
+        </div>
       </ion-card-content>
     </ion-card>
 
@@ -200,54 +147,35 @@
       </ion-card-header>
 
       <ion-card-content>
-        <ion-grid>
-          <ion-row>
-            <ion-col>
-              <ion-button expand="block" color="primary">
-                <ion-select
-                  style="min-height: 0px"
-                  (ionChange)="changeTheme($event)"
-                  label="Choose theme"
-                  [value]="themeName"
-                  interface="popover"
-                >
-                  <ion-select-option value="light">Light</ion-select-option>
-                  <ion-select-option value="dark">Dark</ion-select-option>
-                  <ion-select-option value="auto">Auto</ion-select-option>
-                </ion-select>
-              </ion-button>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>
-              <ion-button
-                (click)="checkForUpdate()"
-                color="success"
-                expand="block"
-                [disabled]="isUpdateLoading"
-                >Check for update
-              </ion-button>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>
-              <ion-button expand="block" color="secondary" routerLink="logs">
-                Show logs
-              </ion-button>
-            </ion-col>
-            <ion-col>
-              <ion-button
-                expand="block"
-                color="danger"
-                href="mailto:gangadhararao29@gmail.com?Subject=CliDa2_Bugs"
-              >
-                Report bug
-              </ion-button>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
+        <div class="buttonSpacing">
+          <ion-button expand="block" color="primary">
+            <ion-select style="min-height: 0px" (ionChange)="changeTheme($event)" label="Choose theme"
+              [value]="themeName" interface="popover">
+              <ion-select-option value="light">Light</ion-select-option>
+              <ion-select-option value="dark">Dark</ion-select-option>
+              <ion-select-option value="auto">Auto</ion-select-option>
+            </ion-select>
+          </ion-button>
+        </div>
 
-        <div class="d-flex"></div>
+        <div class="buttonSpacing">
+          <ion-button (click)="checkForUpdate()" color="success" expand="block" [disabled]="isUpdateLoading">Check
+            for update
+          </ion-button>
+        </div>
+
+        <div class="mb-2 mx-2 d-flex justify-content-between">
+          <div class="col">
+            <ion-button expand="block" color="secondary" routerLink="logs">
+              Show logs
+            </ion-button>
+          </div>
+          <div class="col">
+            <ion-button expand="block" color="danger" href="mailto:gangadhararao29@gmail.com?Subject=CliDa2_Bugs">
+              Report bug
+            </ion-button>
+          </div>
+        </div>
       </ion-card-content>
     </ion-card>
 
@@ -276,12 +204,9 @@
               </ion-row>
               <ion-row class="text-center">
                 <ion-col>
-                  <ion-button
-                    [href]="gitHubResponse[0].assets[0].browser_download_url"
-                    expand="block"
+                  <ion-button [href]="gitHubResponse[0].assets[0]?.browser_download_url" expand="block"
                     [disabled]="latestVersion <= currentVersion"
-                    [innerHTML]="latestVersion <= currentVersion ? 'No updates found' : 'Download latest apk'"
-                  ></ion-button>
+                    [innerHTML]="latestVersion <= currentVersion ? 'No updates found' : 'Download latest apk'"></ion-button>
                 </ion-col>
               </ion-row>
             </ion-grid>
@@ -291,7 +216,7 @@
             <div *ngFor="let release of gitHubResponse">
               <div class="d-flex">
                 <div class="fs-3 text-primary">{{release.tag_name}}</div>
-                <a class="ms-2" [href]="release.assets[0].browser_download_url">
+                <a class="ms-2" [href]="release.assets[0]?.browser_download_url">
                   <ion-icon name="download-outline" size="large"></ion-icon>
                 </a>
                 <a class="ms-2" [href]="release.html_url">
@@ -310,9 +235,8 @@
     </ion-modal>
   </div>
 
-  <div class="text-body-secondary text-center" [attr.data-bs-theme]="theme">
-    <small
-      >CliDa V3.8 by ChaGa<br />
+  <div class="text-body-secondary text-center mb-2" [attr.data-bs-theme]="theme">
+    <small>CliDa v{{currentVersion}} by ChaGa<br />
       -- {{isWebVersion ? 'Web' : 'Android'}} version -- <br />
     </small>
   </div>

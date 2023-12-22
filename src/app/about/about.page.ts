@@ -24,7 +24,7 @@ export class AboutPage {
   isUpdateLoading = false;
   isModalOpen = false;
   latestVersion = 0;
-  currentVersion = 3.8;
+  currentVersion = 3.2312;
   gitHubResponse = [];
   loadingData = true;
   user: any = null;
@@ -65,7 +65,7 @@ export class AboutPage {
     this.httpClient
       .get('https://api.github.com/repos/gangadhararao29/clida2/releases')
       .subscribe((res: Array<any>) => {
-        this.gitHubResponse = res.filter((release) => !release.draft);
+        this.gitHubResponse = res;
         this.latestVersion = parseFloat(
           this.gitHubResponse[0].tag_name.slice(1)
         );
@@ -186,7 +186,7 @@ export class AboutPage {
           this.clientDataService.presentToast(
             'Data imported succcessfully.<br>Redirecting to Clients-list tab'
           );
-          this.router.navigate(['clida', 'clients-list']);
+          this.router.navigate(['clients-list']);
         }, 1000);
       });
   }
@@ -287,6 +287,16 @@ export class AboutPage {
       this.clientDataService.presentLoading().then(() => {
         this.clientDataService.presentToast(
           'All the empty Data and errors are fixed.'
+        );
+      });
+    });
+  }
+
+  cleanApproveData() {
+    this.clientDataService.cleanApprovedData().then((res) => {
+      this.clientDataService.presentLoading().then(() => {
+        this.clientDataService.presentToast(
+          'All the approved data is cleared.'
         );
       });
     });
@@ -415,7 +425,7 @@ export class AboutPage {
         this.clientDataService.presentToast(
           'Data imported succcessfully <br>Redirecting to Clients-list tab'
         );
-        this.router.navigate(['clida', 'clients-list']);
+        this.router.navigate(['clients-list']);
       }, 1000);
     });
   }

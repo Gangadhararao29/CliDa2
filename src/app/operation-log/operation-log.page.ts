@@ -14,9 +14,8 @@ export class OperationLogPage {
   ) {}
 
   ionViewWillEnter() {
-    this.logData = localStorage.getItem('logs')
-      ? JSON.parse(localStorage.getItem('logs')).reverse()
-      : [];
+    const logsString = localStorage.getItem('logs');
+    this.logData = logsString ? JSON.parse(logsString).reverse() : [];
   }
 
   getColor(operation) {
