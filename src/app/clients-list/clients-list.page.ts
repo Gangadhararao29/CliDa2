@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, IonRouterOutlet, Platform } from '@ionic/angular';
 import { App } from '@capacitor/app';
@@ -19,6 +19,7 @@ export class ClientsListPage {
   tabSection = 'credits';
   isSearchVisible = false;
   hideSkeletonText: boolean;
+  @ViewChild('creditDebitList') creditDebitList;
   constructor(
     private router: Router,
     private platform: Platform,
@@ -139,6 +140,9 @@ export class ClientsListPage {
     const data = sampleData['default'];
     await this.clientDataService.loadSampleData(data).then(() => {
       this.ionViewWillEnter();
+      setTimeout(()=>{
+        this.creditDebitList.nativeElement.scrollIntoView();
+      },1000)
     });
   }
 }

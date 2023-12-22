@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ClientDataService } from '../services/client-data.service';
-import { Clipboard } from '@capacitor/clipboard';
+import { Share } from '@capacitor/share';
 
 @Component({
   selector: 'app-calculator',
@@ -164,18 +164,9 @@ export class CalculatorPage {
 
   async shareToClipboard() {
     const clipboardText = this.generateResultHtml();
-    try {
-      await Clipboard.write({
-        string: clipboardText,
-      });
-      this.clientsDataService.presentToast('Copied to clipboard successfully.');
-    } catch (error) {
-      this.clientsDataService.presentToast(
-        error.message,
-        'failedToastClass',
-        'alert-outline'
-      );
-    }
+    await Share.share({
+      text: clipboardText,
+    });
   }
 
   // prettier-ignore
@@ -185,25 +176,25 @@ export class CalculatorPage {
     text += 'Interest rate  : ' + this.linkData.interest + '\n';
     text += 'End date       : ' + this.linkData.endDate + '\n';
     text += 'Start date     : ' + this.linkData.startDate + '\n';
-    text += '------------------------------\n';
+    text += '-----------------------------------\n';
     text += 'Time period    : ' + `${this.timePeriodObject.y} y ${this.timePeriodObject.m} m ${this.timePeriodObject.d} d` + '\n';
-    text += '------------------------------\n';
+    text += '-----------------------------------\n';
 
     text += 'Time in months : ' + this.timePeriodObject.tm.toFixed(2) + '\n';
 
     if(this.intArray.length ===1){
     text += 'Total interest : ' + this.currencyFormat(this.intArray[0].intAmt) + '\n';
-    text += '------------------------------\n';
+    text += '-----------------------------------\n';
     text += 'Total amount   : ' + this.currencyFormat(this.intArray[0].intAmt + this.linkData.principal) + '\n';
     }else{
       this.intArray.forEach(intObj=>{
     text += `Int amount (${intObj.start} - ${(+intObj.end).toFixed(2)})y : ` + this.currencyFormat(intObj.intAmt) + '\n';
       })
     text += 'Total interest : ' + this.currencyFormat(this.finalInterest) + '\n';
-    text += '------------------------------\n';
+    text += '-----------------------------------\n';
     text += 'Total amount   : ' + this.currencyFormat(this.finalInterest + this.linkData.principal) + '\n';
     }
-    text += '------------------------------\n';
+    text += '-----------------------------------\n';
     text += 'Calculated by \n - https://clida3.web.app/calculator';
     return text;
   }

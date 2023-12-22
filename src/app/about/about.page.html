@@ -205,8 +205,8 @@
               <ion-row class="text-center">
                 <ion-col>
                   <ion-button [href]="gitHubResponse[0].assets[0]?.browser_download_url" expand="block"
-                    [disabled]="latestVersion <= currentVersion"
-                    [innerHTML]="latestVersion <= currentVersion ? 'No updates found' : 'Download latest apk'"></ion-button>
+                    [disabled]="!isUpdateAvailable"
+                    [innerHTML]="!isUpdateAvailable ? 'No updates found' : 'Download latest apk'"></ion-button>
                 </ion-col>
               </ion-row>
             </ion-grid>

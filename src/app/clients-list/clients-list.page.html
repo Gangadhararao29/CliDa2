@@ -18,7 +18,7 @@
 </ion-header>
 
 <ion-content>
-  <div class="container my-3" *ngIf="showEntryText">
+  <div class="container my-3" *ngIf="showEntryText" #creditDebitList>
     <ion-card color="light" class="rounded" style="margin: 0px;">
       <ion-item color=light>
         <ion-label class="text-warning text-center fs-5 ">Clida says Hello 👋</ion-label>
@@ -89,7 +89,7 @@
 
   </div>
 
-  <ng-container *ngIf="!showEntryText">
+  <ng-container *ngIf="!showEntryText" #creditDebitList>
     <app-datalist [dataList]="creditData" [clientSearchValue]="clientSearchValue"
       [hidden]="showDebitList"></app-datalist>
 

@@ -23,14 +23,15 @@ export class AboutPage {
   inputClientData: any;
   isUpdateLoading = false;
   isModalOpen = false;
-  latestVersion = 0;
-  currentVersion = 3.2312;
+  latestVersion = '0.0.0';
+  currentVersion = '3.23.06';
   gitHubResponse = [];
   loadingData = true;
   user: any = null;
   fileType = 'json';
   theme: string;
   isWebVersion: boolean = false;
+  isUpdateAvailable = false;
 
   constructor(
     public alertController: AlertController,
@@ -56,19 +57,23 @@ export class AboutPage {
     }
   }
 
+  ionViewDidEnter() {
+    const lv = this.latestVersion.split('.');
+    const cv = this.currentVersion.split('.');
+    this.isUpdateAvailable = lv[0] > cv[0] || lv[1] > cv[1] || lv[2] > cv[2];
+  }
+
   checkForUpdate() {
     this.isUpdateLoading = true;
     this.isModalOpen = false;
     App.getInfo().then((suc) => {
-      this.currentVersion = parseFloat(suc.version);
+      this.currentVersion = suc.version;
     });
     this.httpClient
       .get('https://api.github.com/repos/gangadhararao29/clida2/releases')
       .subscribe((res: Array<any>) => {
         this.gitHubResponse = res;
-        this.latestVersion = parseFloat(
-          this.gitHubResponse[0].tag_name.slice(1)
-        );
+        this.latestVersion = this.gitHubResponse[0].tag_name.slice(1);
         this.isUpdateLoading = false;
         this.isModalOpen = true;
       });
