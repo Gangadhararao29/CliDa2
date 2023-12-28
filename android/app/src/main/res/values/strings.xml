@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">CliDa</string>
     <string name="title_activity_main">CliDa</string>
-    <string name="package_name">com.application.clida2</string>
-    <string name="custom_url_scheme">com.application.clida2</string>
+    <string name="package_name">clida3.web.app</string>
+    <string name="custom_url_scheme">clida3.web.app</string>
 </resources>

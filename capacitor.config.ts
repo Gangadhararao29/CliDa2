@@ -1,12 +1,9 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.application.clida2',
+  appId: 'clida3.web.app',
   appName: 'CliDa',
-  webDir: 'www',
-  server: {
-    androidScheme: 'https'
-  }
+  webDir: 'www'
 };
 
 export default config;

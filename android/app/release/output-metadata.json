@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "clida3.web.app",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 231223,
+      "versionName": "3.23.12",
+      "outputFile": "app-release.apk"
+    }
+  ],
+  "elementType": "File"
+}
