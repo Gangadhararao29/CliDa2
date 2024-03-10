@@ -140,9 +140,12 @@ export class ClientsListPage {
     const data = sampleData['default'];
     await this.clientDataService.loadSampleData(data).then(() => {
       this.ionViewWillEnter();
-      setTimeout(()=>{
-        this.creditDebitList.nativeElement.scrollIntoView();
-      },1000)
+      setTimeout(() => {
+        this.creditDebitList.nativeElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      });
     });
   }
 }

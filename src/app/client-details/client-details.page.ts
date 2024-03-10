@@ -44,6 +44,7 @@ export class ClientDetailsPage {
     this.theme = this.clientsDataService.getTheme();
     this.clientId = this.activatedRoute.snapshot.params.key;
     this.clientsDataService.getClientByKey(this.clientId).then((res) => {
+      console.log(res);
       this.client = res;
       this.calculateTotalPrincipal(this.client);
       this.hideSkeletonText = true;

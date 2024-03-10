@@ -23,7 +23,7 @@ export class CalculatorPage {
   constructor(
     private activatedRoute: ActivatedRoute,
     private clientsDataService: ClientDataService
-  ) {}
+  ) { }
 
   ionViewWillEnter() {
     this.theme = this.clientsDataService.getTheme();
@@ -60,20 +60,32 @@ export class CalculatorPage {
     return NaN;
   }
 
-  generateStartEndDate(formRefValue) {
-    const endDate = new Date(this.linkData.endDate);
-    formRefValue.endDate = endDate;
-    formRefValue.startDate = new Date(endDate);
-    formRefValue.startDate.setDate(
-      formRefValue.startDate.getDate() - this.timePeriodObject.d
-    );
-    formRefValue.startDate.setMonth(
-      formRefValue.startDate.getMonth() - this.timePeriodObject.m
-    );
-    formRefValue.startDate.setFullYear(
-      formRefValue.startDate.getFullYear() - this.timePeriodObject.y
-    );
+  generateStartEndDate(formRefValue: any): void {
+    this.timePeriodObject.d = this.timePeriodObject.d || 0;
+    this.timePeriodObject.m = this.timePeriodObject.m || 0;
+    this.timePeriodObject.y = this.timePeriodObject.y || 0;
+
+    const { y, m, d } = this.timePeriodObject;
+
+    if (this.linkData.startDate) {
+      const startDate = new Date(this.linkData.startDate);
+      formRefValue.startDate = startDate;
+      formRefValue.endDate = new Date(
+        startDate.getFullYear() + y,
+        startDate.getMonth() + m,
+        startDate.getDate() + d
+      );
+    } else {
+      const endDate = this.linkData.endDate ? new Date(this.linkData.endDate) : new Date();
+      formRefValue.startDate = new Date(
+        endDate.getFullYear() - y,
+        endDate.getMonth() - m,
+        endDate.getDate() - d
+      )
+      formRefValue.endDate = endDate;
+    }
   }
+
 
   dateFormater(date: Date): string {
     return date
@@ -170,7 +182,7 @@ export class CalculatorPage {
   }
 
   // prettier-ignore
-  generateResultHtml(){
+  generateResultHtml() {
     let text = '';
     text += 'Principal      : ' + this.currencyFormat(this.linkData.principal) + '\n';
     text += 'Interest rate  : ' + this.linkData.interest + '\n';
@@ -179,20 +191,19 @@ export class CalculatorPage {
     text += '-----------------------------------\n';
     text += 'Time period    : ' + `${this.timePeriodObject.y} y ${this.timePeriodObject.m} m ${this.timePeriodObject.d} d` + '\n';
     text += '-----------------------------------\n';
-
     text += 'Time in months : ' + this.timePeriodObject.tm.toFixed(2) + '\n';
 
-    if(this.intArray.length ===1){
-    text += 'Total interest : ' + this.currencyFormat(this.intArray[0].intAmt) + '\n';
-    text += '-----------------------------------\n';
-    text += 'Total amount   : ' + this.currencyFormat(this.intArray[0].intAmt + this.linkData.principal) + '\n';
-    }else{
-      this.intArray.forEach(intObj=>{
-    text += `Int amount (${intObj.start} - ${(+intObj.end).toFixed(2)})y : ` + this.currencyFormat(intObj.intAmt) + '\n';
+    if (this.intArray.length === 1) {
+      text += 'Total interest : ' + this.currencyFormat(this.intArray[0].intAmt) + '\n';
+      text += '-----------------------------------\n';
+      text += 'Total amount   : ' + this.currencyFormat(this.intArray[0].intAmt + this.linkData.principal) + '\n';
+    } else {
+      this.intArray.forEach(intObj => {
+        text += `Int amount (${intObj.start} - ${(+intObj.end).toFixed(2)})y : ` + this.currencyFormat(intObj.intAmt) + '\n';
       })
-    text += 'Total interest : ' + this.currencyFormat(this.finalInterest) + '\n';
-    text += '-----------------------------------\n';
-    text += 'Total amount   : ' + this.currencyFormat(this.finalInterest + this.linkData.principal) + '\n';
+      text += 'Total interest : ' + this.currencyFormat(this.finalInterest) + '\n';
+      text += '-----------------------------------\n';
+      text += 'Total amount   : ' + this.currencyFormat(this.finalInterest + this.linkData.principal) + '\n';
     }
     text += '-----------------------------------\n';
     text += 'Calculated by \n - https://clida3.web.app/calculator';
