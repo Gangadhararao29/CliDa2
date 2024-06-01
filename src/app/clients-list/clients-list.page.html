@@ -18,7 +18,7 @@
 </ion-header>
 
 <ion-content>
-  <div class="container my-3" *ngIf="showEntryText" #creditDebitList>
+  <div class="container ion-margin" *ngIf="showEntryText" #creditDebitList>
     <ion-card color="light" class="rounded" style="margin: 0px;">
       <ion-item color=light>
         <ion-label class="text-warning text-center fs-5 ">Clida says Hello 👋</ion-label>
@@ -33,12 +33,11 @@
         📱 Mobile-friendly <br>
         🚀 Streamlined operations
       </div>
-
     </ion-card>
   </div>
 
-  <div *ngIf="showEntryText" class="container">
-    <div class="bgLight rounded-3 px-3 py-2 my-2">
+  <div *ngIf="showEntryText" class="container ion-margin">
+    <div class="bgLight rounded-3 p-2 mb-3">
       <div class="justifyText mb-2">
         For a quick start, click on the below button to add clients. Later on,
         you can add clients using the floating add button in the bottom right
@@ -51,7 +50,7 @@
       </div>
     </div>
 
-    <div class="bgLight rounded-3 px-3 py-2 my-2">
+    <div class="bgLight rounded-3 p-2 mb-3">
       <div class="justifyText mb-2">
         To restore bulk data from an already saved file, click on the
         Backup/Restore button.
@@ -63,15 +62,15 @@
 
     <ion-button expand="block" (click)="loadSampleData()">Load sample data</ion-button>
 
-    <div class="d-flex mt-3 bgLight align-items-center align-items-lg-stretch rounded-3 bg-warning">
+    <div class="d-flex mt-3 bgLight align-items-center rounded-3 bg-warning">
       <div class="fs-1 px-3 py-2 text-dark">!</div>
-      <div class="justifyText bgLight px-3 py-2 rounded-end">
+      <div class="justifyText bgLight px-3 py-2 rounded-end" style="flex: 1;">
         Please save your data locally on a regular basis using the Info tab.
         <br />
         <i>
-          You can also sync data to cloud by signing in with your google
+          You can also sync data to the cloud by signing in with your Google
           account. After signing in, click the upload button to store data into
-          your google account
+          your Google account.
         </i>
       </div>
     </div>
@@ -85,8 +84,6 @@
         <ion-icon name="funnel-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </div>
-
-
   </div>
 
   <ng-container *ngIf="!showEntryText" #creditDebitList>
