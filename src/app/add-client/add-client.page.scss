@@ -5,3 +5,7 @@
 textarea {
   overflow-y: hidden;
 }
+
+ion-content {
+  --ion-background-color: var(--ion-color-medium);
+}
