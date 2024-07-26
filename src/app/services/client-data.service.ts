@@ -125,15 +125,34 @@ export class ClientDataService {
   }
 
   async cleanClientsData() {
-    return await this.getAllClientsData().then((res) => {
-      res = res.filter((client) => {
-        client.data = client.data?.filter(
-          (record) => record?.principal && record?.interest && record?.startDate
-        );
-        return client?.name && client.data?.length;
-      });
-      this.db.collection('clientsData').set(res);
-    });
+    try {
+      let clients = await this.getAllClientsData();
+
+      clients = clients
+        .map((client) => ({
+          ...client,
+          data: client.data
+            .filter(
+              (record) =>
+                record?.principal && record?.interest && record?.startDate
+            )
+            .map((record) => this.replaceUndefinedWithNull(record)),
+        }))
+        .filter((client) => client?.name && client.data?.length);
+
+      await this.db.collection('clientsData').set(clients);
+    } catch (error) {
+      console.error('Error cleaning clients data:', error);
+    }
+  }
+
+  replaceUndefinedWithNull(obj) {
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key) && obj[key] === undefined) {
+        obj[key] = null;
+      }
+    }
+    return obj;
   }
 
   async cleanApprovedData() {

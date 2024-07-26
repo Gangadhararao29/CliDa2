@@ -24,7 +24,7 @@ export class AboutPage {
   isUpdateLoading = false;
   isModalOpen = false;
   latestVersion = '0.0.0';
-  currentVersion = '3.23.06';
+  currentVersion = '3.24.06';
   gitHubResponse = [];
   loadingData = true;
   user: any = null;
@@ -260,8 +260,10 @@ export class AboutPage {
           ele.data.sort((a, b) => {
             let keyA = new Date(a.startDate);
             let keyB = new Date(b.startDate);
-            if (a.closedOn) keyA = new Date();
-            if (b.closedOn) keyB = new Date();
+            if (!(a.closedOn && b.closedOn)) {
+              if (a.closedOn) keyA = new Date();
+              if (b.closedOn) keyB = new Date();
+            }
             return keyA < keyB ? -1 : +1;
           });
         });
@@ -270,8 +272,12 @@ export class AboutPage {
           clients.sort((a, b) => (a.name < b.name ? -1 : +1));
         } else if (event.target.value === 'year') {
           clients.sort((a, b) => {
-            const keyA = new Date(a.data[0].startDate);
-            const keyB = new Date(b.data[0].startDate);
+            let keyA = new Date(a.data[0].startDate);
+            let keyB = new Date(b.data[0].startDate);
+            if (!(a.data[0].closedOn && b.data[0].closedOn)) {
+              if (a.data[0].closedOn) keyA = new Date();
+              if (b.data[0].closedOn) keyB = new Date();
+            }
             return keyA < keyB ? -1 : +1;
           });
         }

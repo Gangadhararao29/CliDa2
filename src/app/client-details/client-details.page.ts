@@ -10,9 +10,8 @@ import { ClientDataService } from 'src/app/services/client-data.service';
 })
 export class ClientDetailsPage {
   @ViewChild(IonAccordionGroup, { static: true })
-  @ViewChildren('modal')
-  modals: QueryList<any>;
   accordionGroup: IonAccordionGroup;
+  @ViewChildren('modal') modals: QueryList<any>;
   client: any;
   clientId = '';
   today = new Date()
@@ -44,7 +43,6 @@ export class ClientDetailsPage {
     this.theme = this.clientsDataService.getTheme();
     this.clientId = this.activatedRoute.snapshot.params.key;
     this.clientsDataService.getClientByKey(this.clientId).then((res) => {
-      console.log(res);
       this.client = res;
       this.calculateTotalPrincipal(this.client);
       this.hideSkeletonText = true;
@@ -213,12 +211,22 @@ export class ClientDetailsPage {
     return this.selectedChips.find((chip) => chip.id == id) ? true : false;
   }
 
-  getTotalSelectedAmount() {
-    let total = 0;
-    this.selectedChips.forEach(
-      (chip) => (total += chip.principal + chip.interest)
-    );
-    return `₹ ${this.isd.format(total)}`;
+  getQuickMenuPrincipal() {
+    return `₹ ${this.isd.format(
+      this.selectedChips.reduce((a, b) => a + b.principal, 0) || 0
+    )}`;
+  }
+
+  getQuickMenuInterest() {
+    return `₹ ${this.isd.format(
+      this.selectedChips.reduce((a, b) => a + b.interest, 0) || 0
+    )}`;
+  }
+
+  getQuickMenuTotal() {
+    return `₹ ${this.isd.format(
+      this.selectedChips.reduce((a, b) => a + b.principal + b.interest, 0) || 0
+    )}`;
   }
 
   onCheckBoxClick(event, data) {

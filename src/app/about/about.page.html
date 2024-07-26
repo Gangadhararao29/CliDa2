@@ -112,8 +112,8 @@
 
       <ion-card-content>
         <div class="buttonSpacing">
-          <ion-button expand="block" color="primary">
-            <ion-select style="min-height: 0px" label="Sort Data list by" placeholder="Nm/Yr"
+          <ion-button expand="block" color="primary" (click)="select1.open()">
+            <ion-select #select1 style="min-height: 0px" label="Sort Data list by" placeholder="Nm/Yr"
               [interfaceOptions]="{header:'Sort clients list menu by'}" (ionChange)="changeSort($event)">
               <ion-select-option value="name">Name</ion-select-option>
               <ion-select-option value="year">Year</ion-select-option>
@@ -148,8 +148,8 @@
 
       <ion-card-content>
         <div class="buttonSpacing">
-          <ion-button expand="block" color="primary">
-            <ion-select style="min-height: 0px" (ionChange)="changeTheme($event)" label="Choose theme"
+          <ion-button expand="block" color="primary" (click)="select2.open()">
+            <ion-select #select2 style="min-height: 0px" (ionChange)="changeTheme($event)" label="Choose theme"
               [value]="themeName" interface="popover">
               <ion-select-option value="light">Light</ion-select-option>
               <ion-select-option value="dark">Dark</ion-select-option>

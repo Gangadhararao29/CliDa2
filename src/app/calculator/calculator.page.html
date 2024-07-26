@@ -109,7 +109,7 @@
           Record closed on
           <span class="fw-bold">{{linkData?.closedOn.split('-').reverse().join('/')}}</span><br />
           with amount
-          <span class="fw-bold">₹ {{linkData?.closedAmount}}</span>
+          <span class="fw-bold">{{this.currencyFormat(linkData?.closedAmount)}}</span>
         </div>
       </div>
 

@@ -22,6 +22,14 @@ export class AdvSearchPage implements OnInit {
   ngOnInit() {
     const storedValue = JSON.parse(localStorage.getItem('sortAndFilterParams'));
     this.sortAndFilterParams = storedValue ? storedValue : [];
+    this.resetDisplayData();
+  }
+
+  resetDisplayData() {
+    this.clientDataService.getAllClientsDataWithKeys().then((res) => {
+      this.displayData = res;
+      this.showNoRecords = this.displayData.length === 0;
+    });
   }
 
   addNewParams(formRef) {
@@ -85,8 +93,8 @@ export class AdvSearchPage implements OnInit {
       paramsModel.active = 'primary';
     } else {
       paramsModel.active = 'light';
-      this.displayData = [];
       this.hideSkeletonText = true;
+      this.resetDisplayData();
       return;
     }
 
@@ -162,7 +170,7 @@ export class AdvSearchPage implements OnInit {
     );
     if (paramIndex > -1) {
       this.sortAndFilterParams.splice(paramIndex, 1);
-      this.displayData = [];
+      this.resetDisplayData();
       localStorage.setItem(
         'sortAndFilterParams',
         JSON.stringify(this.sortAndFilterParams)

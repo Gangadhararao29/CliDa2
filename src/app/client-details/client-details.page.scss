@@ -29,14 +29,25 @@ ion-col {
   --ion-grid-column-padding: 1px;
 }
 
-.listItem {
-  width: 98%;
-  margin: auto 1%;
-  @media screen and (min-width: 732px) {
-    max-width: 350px;
-  }
-}
-
 ion-modal {
   --height: auto;
+}
+
+.listItem {
+  @media screen and (max-width: 747px) {
+    width: 98%;
+    margin: auto 1%;
+  }
+
+  @media screen and (min-width: 747px) {
+    width: 98%;
+    margin: 2px 1%;
+    max-width: 48%;
+  }
+
+  @media screen and (min-width: 1121px) {
+    width: 98%;
+    margin: 2px 1%;
+    max-width: 31%;
+  }
 }

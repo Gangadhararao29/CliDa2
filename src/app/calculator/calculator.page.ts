@@ -23,7 +23,7 @@ export class CalculatorPage {
   constructor(
     private activatedRoute: ActivatedRoute,
     private clientsDataService: ClientDataService
-  ) { }
+  ) {}
 
   ionViewWillEnter() {
     this.theme = this.clientsDataService.getTheme();
@@ -34,7 +34,8 @@ export class CalculatorPage {
       this.clientsDataService.getClientByKey(clientID).then((res) => {
         this.linkData = res.data.find((record) => record.id == recordId);
         this.linkData.name = res.name;
-        this.linkData.endDate = this.clientsDataService.today;
+        this.linkData.endDate =
+          this.linkData.closedOn || this.clientsDataService.today;
         this.linkData.timePeriodType = 'dates';
         this.linkData.compInt = 3;
       });
@@ -76,16 +77,17 @@ export class CalculatorPage {
         startDate.getDate() + d
       );
     } else {
-      const endDate = this.linkData.endDate ? new Date(this.linkData.endDate) : new Date();
+      const endDate = this.linkData.endDate
+        ? new Date(this.linkData.endDate)
+        : new Date();
       formRefValue.startDate = new Date(
         endDate.getFullYear() - y,
         endDate.getMonth() - m,
         endDate.getDate() - d
-      )
+      );
       formRefValue.endDate = endDate;
     }
   }
-
 
   dateFormater(date: Date): string {
     return date
@@ -206,7 +208,7 @@ export class CalculatorPage {
       text += 'Total amount   : ' + this.currencyFormat(this.finalInterest + this.linkData.principal) + '\n';
     }
     text += '-----------------------------------\n';
-    text += 'Calculated by \n - https://clida3.web.app/calculator';
+    text += 'https://clida3.web.app/calculator';
     return text;
   }
 }
