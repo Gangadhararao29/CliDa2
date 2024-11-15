@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { AlertController, IonRouterOutlet, Platform } from '@ionic/angular';
 import { App } from '@capacitor/app';
 import { ClientDataService } from '../services/client-data.service';
-import * as sampleData from '../../assets/clientsData.json';
 
 @Component({
   selector: 'app-clients-list',
@@ -19,7 +18,6 @@ export class ClientsListPage {
   tabSection = 'credits';
   isSearchVisible = false;
   hideSkeletonText: boolean;
-  @ViewChild('creditDebitList') creditDebitList;
   constructor(
     private router: Router,
     private platform: Platform,
@@ -136,16 +134,5 @@ export class ClientsListPage {
     localStorage.setItem('tabSection', type);
   }
 
-  async loadSampleData() {
-    const data = sampleData['default'];
-    await this.clientDataService.loadSampleData(data).then(() => {
-      this.ionViewWillEnter();
-      setTimeout(() => {
-        this.creditDebitList.nativeElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-        });
-      });
-    });
-  }
+
 }

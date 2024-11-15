@@ -1,7 +1,7 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-title>
-      CliDa
+      <span class="text-grad">CliDa</span>
       <ion-chip [hidden]="showEntryText" [ngClass]="{'tabActive': !showDebitList}"
         (click)="setListType('credits')">Credits</ion-chip>
       <ion-chip [hidden]="showEntryText" [ngClass]="{'tabActive': showDebitList}"
@@ -13,68 +13,13 @@
         <ion-icon name="search" slot="icon-only" [color]="isSearchVisible ? 'primary' : ''"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-progress-bar [hidden]="hideSkeletonText" type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
+  <ion-progress-bar [hidden]="hideSkeletonText" type="indeterminate"></ion-progress-bar>
 </ion-header>
 
 <ion-content>
-  <div class="container ion-margin" *ngIf="showEntryText" #creditDebitList>
-    <ion-card color="light" class="rounded" style="margin: 0px;">
-      <ion-item color=light>
-        <ion-label class="text-warning text-center fs-5 ">Clida says Hello 👋</ion-label>
-      </ion-item>
 
-      <div class="fs-6 px-3 mb-2 mt-1 pb-1">
-        💼 Manage clients effortlessly <br>
-        📊 Dashboard for real-time insights. <br>
-        🧮 Calculator for simple & compound interests. <br>
-        🔄 Backup & Restore data (Excel/Json) <br>
-        🎨 Theme customization <br>
-        📱 Mobile-friendly <br>
-        🚀 Streamlined operations
-      </div>
-    </ion-card>
-  </div>
-
-  <div *ngIf="showEntryText" class="container ion-margin">
-    <div class="bgLight rounded-3 p-2 mb-3">
-      <div class="justifyText mb-2">
-        For a quick start, click on the below button to add clients. Later on,
-        you can add clients using the floating add button in the bottom right
-        corner of the screen.
-      </div>
-      <div class="text-center">
-        <ion-button color="danger" routerLink="/clients-list/add-client">
-          Add new Client
-        </ion-button>
-      </div>
-    </div>
-
-    <div class="bgLight rounded-3 p-2 mb-3">
-      <div class="justifyText mb-2">
-        To restore bulk data from an already saved file, click on the
-        Backup/Restore button.
-      </div>
-      <div class="text-center">
-        <ion-button routerLink="/about"> Backup / Restore </ion-button>
-      </div>
-    </div>
-
-    <ion-button expand="block" (click)="loadSampleData()">Load sample data</ion-button>
-
-    <div class="d-flex mt-3 bgLight align-items-center rounded-3 bg-warning">
-      <div class="fs-1 px-3 py-2 text-dark">!</div>
-      <div class="justifyText bgLight px-3 py-2 rounded-end" style="flex: 1;">
-        Please save your data locally on a regular basis using the Info tab.
-        <br />
-        <i>
-          You can also sync data to the cloud by signing in with your Google
-          account. After signing in, click the upload button to store data into
-          your Google account.
-        </i>
-      </div>
-    </div>
-  </div>
+  <app-intro *ngIf="showEntryText" (reloadClientList)="ionViewWillEnter()"></app-intro>
 
   <div class="collapse sticky-top" id="collapseExample">
     <div class="d-flex align-items-center">
