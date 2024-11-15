@@ -24,7 +24,7 @@ export class AboutPage {
   isUpdateLoading = false;
   isModalOpen = false;
   latestVersion = '0.0.0';
-  currentVersion = '3.24.06';
+  currentVersion = '3.24.11';
   gitHubResponse = [];
   loadingData = true;
   user: any = null;
