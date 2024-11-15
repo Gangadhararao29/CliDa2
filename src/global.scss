@@ -26,7 +26,9 @@
 @import "~@ionic/angular/css/flex-utils.css";
 
 * {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Work Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
 }
 
 .alertStyle .alert-wrapper,
@@ -123,4 +125,22 @@ ion-content {
 
 .searchbar-input {
   padding-left: 9px !important;
+}
+
+.text-grad {
+  background: linear-gradient(to right, #22009e, #0078a3, #bd5800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+.dark {
+  .text-grad {
+    background: linear-gradient(to right, #ffdb9e, #48d1ff, #ffea30);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+  }
 }
