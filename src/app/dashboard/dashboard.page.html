@@ -154,11 +154,11 @@
         <ion-label><span style="font-size: 125%; font-weight: bolder;">Quick toggle sections</span></ion-label>
       </ion-item>
       <ion-item color="light">
-        <ion-chip [color]="dashPref?.stats ?'secondary':''" (click)="toggleDashPref('stats')">Stats</ion-chip>
-        <ion-chip [color]="dashPref?.graphs ?'secondary':''" (click)="toggleDashPref('graphs')">Graphs</ion-chip>
-        <ion-chip [color]="dashPref?.upTrans ?'secondary':''" (click)="toggleDashPref('upTrans')">Upcoming</ion-chip>
-        <ion-chip [color]="dashPref?.recTrans ?'secondary':''" (click)="toggleDashPref('recTrans')">Recent</ion-chip>
-        <ion-chip [color]="dashPref?.cliSum ?'secondary':''" (click)="toggleDashPref('cliSum')">Summary</ion-chip>
+        <ion-chip [color]="dashPref?.stats ?'tertiary':''" (click)="toggleDashPref('stats')">Stats</ion-chip>
+        <ion-chip [color]="dashPref?.graphs ?'tertiary':''" (click)="toggleDashPref('graphs')">Graphs</ion-chip>
+        <ion-chip [color]="dashPref?.upTrans ?'tertiary':''" (click)="toggleDashPref('upTrans')">Upcoming</ion-chip>
+        <ion-chip [color]="dashPref?.recTrans ?'tertiary':''" (click)="toggleDashPref('recTrans')">Recent</ion-chip>
+        <ion-chip [color]="dashPref?.cliSum ?'tertiary':''" (click)="toggleDashPref('cliSum')">Summary</ion-chip>
       </ion-item>
     </ion-card>
   </div>

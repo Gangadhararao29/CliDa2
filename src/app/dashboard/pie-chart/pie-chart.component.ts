@@ -44,8 +44,8 @@ export class PieChartComponent implements OnChanges {
         datasets: [
           {
             data: [-1 * debit, credit],
-            backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'],
-            hoverBackgroundColor: ['rgb(255, 80, 120)', 'rgb(45, 140, 255)'],
+            backgroundColor: ['#dc2f02', '#0077b6'],
+            hoverBackgroundColor: ['#d00000', '#023e8a'],
           },
         ],
       };
