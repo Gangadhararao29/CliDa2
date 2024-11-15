@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ClientDataService } from '../services/client-data.service';
 import { Share } from '@capacitor/share';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-calculator',
@@ -9,6 +10,7 @@ import { Share } from '@capacitor/share';
   styleUrls: ['./calculator.page.scss'],
 })
 export class CalculatorPage {
+  @ViewChild('calcHistory') calcsHistoryComp;
   linkData = {
     timePeriod: { d: null, m: null, y: null },
   } as any;
@@ -19,6 +21,9 @@ export class CalculatorPage {
   intArray = [];
   finalInterest = 0;
   theme: string;
+  calcsHistory = [];
+  presentObj = { data: [] } as any;
+  isWebVersion = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -27,11 +32,15 @@ export class CalculatorPage {
 
   ionViewWillEnter() {
     this.theme = this.clientsDataService.getTheme();
+    this.calcsHistory = JSON.parse(localStorage.getItem('calcsHistory')) || [];
+    this.isWebVersion = Capacitor.getPlatform() != 'web' ? false : true;
+
     const clientID = this.activatedRoute.snapshot.params.key;
     const recordId = this.activatedRoute.snapshot.params.id;
 
     if (clientID !== '0') {
       this.clientsDataService.getClientByKey(clientID).then((res) => {
+        this.presentObj = res;
         this.linkData = res.data.find((record) => record.id == recordId);
         this.linkData.name = res.name;
         this.linkData.endDate =
@@ -44,6 +53,24 @@ export class CalculatorPage {
       this.linkData.timePeriodType = 'dates';
       this.linkData.compInt = 3;
     }
+  }
+
+  changeCalcData(clientDetail?: any) {
+    if (clientDetail) {
+      this.linkData = clientDetail;
+      this.linkData.name = clientDetail?.name || this.presentObj?.name || '';
+      this.linkData.endDate =
+        this.linkData.closedOn || this.clientsDataService.today;
+    } else {
+      this.linkData = {
+        timePeriod: { d: null, m: null, y: null },
+        endDate: this.clientsDataService.today,
+      };
+    }
+
+    this.linkData.timePeriodType = 'dates';
+    this.linkData.compInt = 3;
+    this.showCalculatedData = false;
   }
 
   generateTmFromPeriod(): number {
@@ -141,7 +168,45 @@ export class CalculatorPage {
         this.showCalculatedData = false;
         this.dateInputErrorAlert(formRef.timePeriodType === 'dates');
       }
+
+      this.saveCalcLogs(this.finalInterest);
     }
+  }
+
+  saveCalcLogs(finalInterest) {
+    if (this.calcsHistory[0]?.key == this.clientsDataService.today) {
+    } else {
+      this.calcsHistory.unshift({
+        key: this.clientsDataService.today,
+        value: [],
+      });
+    }
+
+    const historyArr = this.calcsHistory[0].value;
+
+    const index = historyArr.findIndex((calc) => {
+      return (
+        calc.principal === this.linkData.principal &&
+        calc.interest === this.linkData.interest &&
+        calc.startDate === this.linkData.startDate &&
+        calc.endDate === this.linkData.endDate
+      );
+    });
+
+    if (index > -1) {
+      historyArr.splice(index, 1);
+    }
+
+    historyArr.unshift({
+      ...this.linkData,
+      id: this.linkData.id || Date.now(),
+      finalInterest,
+    });
+
+    this.calcsHistory[0].value = historyArr;
+
+    const text = JSON.stringify(this.calcsHistory);
+    localStorage.setItem('calcsHistory', text);
   }
 
   resetForm(formRef) {
@@ -178,9 +243,24 @@ export class CalculatorPage {
 
   async shareToClipboard() {
     const clipboardText = this.generateResultHtml();
-    await Share.share({
-      text: clipboardText,
-    });
+    try {
+      await Share.share({
+        text: clipboardText,
+      });
+    } catch {
+      const cb = navigator.clipboard;
+      await cb.writeText(clipboardText);
+      this.clientsDataService.presentToast('Copied to clipboard');
+    }
+  }
+
+  loadHistory(eventData) {
+    console.log(eventData);
+    this.changeCalcData(eventData);
+  }
+
+  openHistory() {
+    this.calcsHistoryComp.openModal();
   }
 
   // prettier-ignore
@@ -190,24 +270,24 @@ export class CalculatorPage {
     text += 'Interest rate  : ' + this.linkData.interest + '\n';
     text += 'End date       : ' + this.linkData.endDate + '\n';
     text += 'Start date     : ' + this.linkData.startDate + '\n';
-    text += '-----------------------------------\n';
+    text += '--------------------------------\n';
     text += 'Time period    : ' + `${this.timePeriodObject.y} y ${this.timePeriodObject.m} m ${this.timePeriodObject.d} d` + '\n';
-    text += '-----------------------------------\n';
+    text += '--------------------------------\n';
     text += 'Time in months : ' + this.timePeriodObject.tm.toFixed(2) + '\n';
 
     if (this.intArray.length === 1) {
       text += 'Total interest : ' + this.currencyFormat(this.intArray[0].intAmt) + '\n';
-      text += '-----------------------------------\n';
+      text += '--------------------------------\n';
       text += 'Total amount   : ' + this.currencyFormat(this.intArray[0].intAmt + this.linkData.principal) + '\n';
     } else {
       this.intArray.forEach(intObj => {
         text += `Int amount (${intObj.start} - ${(+intObj.end).toFixed(2)})y : ` + this.currencyFormat(intObj.intAmt) + '\n';
       })
       text += 'Total interest : ' + this.currencyFormat(this.finalInterest) + '\n';
-      text += '-----------------------------------\n';
+      text += '--------------------------------\n';
       text += 'Total amount   : ' + this.currencyFormat(this.finalInterest + this.linkData.principal) + '\n';
     }
-    text += '-----------------------------------\n';
+    text += '--------------------------------\n';
     text += 'https://clida3.web.app/calculator';
     return text;
   }

@@ -15,7 +15,6 @@ ion-col {
   --ion-grid-column-padding: 0.15rem;
 }
 
-
 ion-range {
   padding: 0;
   margin: 0;
@@ -41,4 +40,8 @@ table {
 
 ion-content {
   --ion-background-color: var(--ion-color-medium);
+}
+
+.fs-med {
+  font-size: 1.5rem !important;
 }

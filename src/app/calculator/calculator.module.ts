@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { CalculatorPageRoutingModule } from './calculator-routing.module';
 
 import { CalculatorPage } from './calculator.page';
+import { CalcHistoryComponent } from './calc-history/calc-history.component';
 
 @NgModule({
   imports: [
@@ -15,6 +16,6 @@ import { CalculatorPage } from './calculator.page';
     IonicModule,
     CalculatorPageRoutingModule,
   ],
-  declarations: [CalculatorPage],
+  declarations: [CalculatorPage, CalcHistoryComponent],
 })
 export class CalculatorPageModule {}

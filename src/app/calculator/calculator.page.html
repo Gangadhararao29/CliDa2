@@ -1,11 +1,25 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-title>Interest Calculator</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="openHistory()">
+        <ion-icon name="receipt-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div class="container my-2" [attr.data-bs-theme]="theme">
+  <div class="container my-2 " [attr.data-bs-theme]="theme">
+    <ng-container *ngFor="let clientDetail of presentObj.data">
+      <ion-badge [color]="clientDetail.id == linkData.id ? 'primary' : 'light'" class="mx-1 mb-1 p-2"
+        (click)="changeCalcData(clientDetail)" style="cursor: pointer;">
+        {{(clientDetail.principal/1000).toFixed() +'K'}} |
+        {{clientDetail.interest}}
+      </ion-badge>
+    </ng-container>
+    <ion-badge *ngIf="showCalculatedData" color="light" class="mx-1 mb-1 p-2" (click)="changeCalcData()">+</ion-badge>
+
     <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
       <div class="bgLight p-2 rounded mb-2">
         <div class="fs-5 fw-2 mb-1 mx-1">Enter details to calculate</div>
@@ -41,12 +55,12 @@
         <div class="d-flex mb-2">
           <div class="col-6 pe-1">
             <input type="radio" class="btn-check w-100" name="timePeriodType" id="dates"
-              [(ngModel)]="linkData.timePeriodType" value="dates">
+              [(ngModel)]="linkData.timePeriodType" value="dates" />
             <label class="btn btn-outline-success w-100" for="dates">Dates</label>
           </div>
           <div class="col-6 ps-1">
             <input type="radio" class="btn-check w-100" name="timePeriodType" id="period"
-              [(ngModel)]="linkData.timePeriodType" value="period">
+              [(ngModel)]="linkData.timePeriodType" value="period" />
             <label class="btn btn-outline-success w-100" for="period">Period</label>
           </div>
         </div>
@@ -77,24 +91,21 @@
         <div class="d-flex my-2" *ngIf="linkData.timePeriodType == 'period'">
           <div class="flex-fill d-flex align-items-center px-2">
             <input type="number" class="form-control me-1 flex-fill" name="periodYears"
-              [(ngModel)]="timePeriodObject.y">
+              [(ngModel)]="timePeriodObject.y" />
             <span class="me-1">y</span>
           </div>
 
           <div class="flex-fill d-flex align-items-center px-2">
             <input type="number" class="form-control me-1 flex-fill" name="periodMonths"
-              [(ngModel)]="timePeriodObject.m">
+              [(ngModel)]="timePeriodObject.m" />
             <span class="me-1">m</span>
           </div>
 
           <div class="flex-fill d-flex align-items-center px-2">
-            <input type="number" class="form-control flex-fill" name="periodDays" [(ngModel)]="timePeriodObject.d">
+            <input type="number" class="form-control flex-fill" name="periodDays" [(ngModel)]="timePeriodObject.d" />
             <span>d</span>
           </div>
         </div>
-
-
-
 
         <div class="d-flex justify-content-between my-1">
           <span>Compound interest</span>
@@ -130,12 +141,14 @@
   <div class="container mx-auto" *ngIf="showCalculatedData">
     <ion-card color="light">
       <ion-item color="light" lines="full">
-        <ion-label><span style="font-size: 125%; font-weight: bolder;"> Calculated result</span></ion-label>
+        <ion-label><span style="font-size: 125%; font-weight: bolder">
+            Calculated result</span></ion-label>
         <ion-button class="mx-1 p-0" slot="end" color="light" id="calcInfo">
-          <ion-icon name="information" slot="icon-only" color="warning"></ion-icon>
+          <ion-icon name="information" color="warning" class="fs-med"></ion-icon>
         </ion-button>
-        <ion-button class="mx-1 p-0" slot="end" color="light" (click)="shareToClipboard()">
-          <ion-icon name="share-social-outline" slot="icon-only" color="primary"></ion-icon>
+        <ion-button class="ms-1 p-0" slot="end" color="light" (click)="shareToClipboard()">
+          <ion-icon [name]='isWebVersion ?"copy-outline" :"share-social-outline"' color="primary"
+            class="fs-med"></ion-icon>
         </ion-button>
       </ion-item>
 
@@ -148,8 +161,8 @@
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
               {{timePeriodObject.tm.toFixed(4)}}m <br />
               <hr class="m-1" />
-              SI = {{linkData.principal/100}} x {{timePeriodObject.tm.toFixed(3)}}
-              x {{linkData.interest}} <br />
+              SI = {{linkData.principal/100}} x
+              {{timePeriodObject.tm.toFixed(3)}} x {{linkData.interest}} <br />
               &nbsp;&nbsp;&nbsp;&nbsp; = {{(linkData.principal/100 *
               timePeriodObject.tm * linkData.interest).toFixed(2)}}
               <hr class="m-1" />
@@ -161,7 +174,9 @@
                   <th>Interest</th>
                 </tr>
                 <tr *ngFor="let intObj of intArray">
-                  <td>{{intObj.start * 12}} - {{(intObj.end *12).toFixed()}}</td>
+                  <td>
+                    {{intObj.start * 12}} - {{(intObj.end *12).toFixed()}}
+                  </td>
                   <td>{{intObj.principal.toFixed()}}</td>
                   <td>{{intObj.intAmt.toFixed()}}</td>
                 </tr>
@@ -235,3 +250,6 @@
     </ion-card>
   </div>
 </ion-content>
+
+<app-calc-history #calcHistory [attr.data-bs-theme]="theme" (restoreData)="loadHistory($event)"
+  [calHistory]="calcsHistory"></app-calc-history>
