@@ -17,8 +17,8 @@
     <div *ngFor="let data of client?.data; let i=index; trackBy:trackData" class="my-1 listItem text-start">
       <ion-accordion [value]="i">
         <ion-item slot="header" class="rounded" color="light">
-          <input type="checkbox" (click)="onCheckBoxClick($event, data)" [checked]="getChipColor(data?.id)"
-            class="form-check-input p-2" [attr.data-bs-theme]="theme" [disabled]="data?.closedOn" />
+          <input type="checkbox" (click)="onCheckBoxClick($event, data)" [checked]="isChipSelected(data?.id)"
+            class="form-check-input p-2" [attr.data-bs-theme]="theme" />
           <ion-label class="d-flex ms-2" color="{{getColor(data)}}">
             <span class="fw-bolder">₹ {{ isd.format(data?.principal) }}</span>
             <span class="ms-auto fw-bolder">{{data?.startDate | date : "dd/MM/YYYY"}}</span></ion-label>
@@ -46,7 +46,7 @@
               <ion-row>
                 <ion-col size="5">End date</ion-col>
                 <ion-col size="2">:</ion-col>
-                <ion-col size="5"> {{today| date : "dd/MM/YYYY"}} </ion-col>
+                <ion-col size="5"> {{(data?.closedOn || today) | date : "dd/MM/YYYY"}} </ion-col>
               </ion-row>
             </ion-grid>
           </div>
@@ -57,19 +57,19 @@
                 <ion-col size="5">Time period</ion-col>
                 <ion-col size="2">:</ion-col>
                 <ion-col size="5">
-                  {{calculateDateDifference(data?.startDate,today)}}
+                  {{calculateDateDifference(data?.startDate,data?.closedOn || today)}}
                 </ion-col>
               </ion-row>
               <ion-row>
                 <ion-col size="5">in months</ion-col>
                 <ion-col size="2">:</ion-col>
-                <ion-col size="5">{{totalTimeinMonths(data?.startDate,today)}}m</ion-col>
+                <ion-col size="5">{{totalTimeinMonths(data?.startDate,data?.closedOn || today)}}m</ion-col>
               </ion-row>
               <ion-row>
                 <ion-col size="5">Interest amt</ion-col>
                 <ion-col size="2">:</ion-col>
                 <ion-col size="5">
-                  ₹ {{isd.format(calculateInterest(data, today))}}
+                  ₹ {{isd.format(calculateInterest(data, data?.closedOn || today))}}
                 </ion-col>
               </ion-row>
               <ion-row>
@@ -77,7 +77,7 @@
                 <ion-col size="2">:</ion-col>
                 <ion-col size="5">
                   ₹ {{isd.format(data?.principal +
-                  calculateInterest(data,today))}}
+                  calculateInterest(data,data?.closedOn || today))}}
                 </ion-col>
               </ion-row>
             </ion-grid>
@@ -108,7 +108,7 @@
             </ion-grid>
           </div>
 
-          <div *ngIf="totalTimeinMonths(data?.startDate,today)>36"
+          <div *ngIf="totalTimeinMonths(data?.startDate,data?.closedOn || today)>36"
             class="d-flex m-2 py-1 justify-content-around align-items-center bgWarning rounded">
             <ion-icon name="alert" size="large" slot="start"></ion-icon>
             <div>

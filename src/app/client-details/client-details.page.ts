@@ -197,17 +197,14 @@ export class ClientDetailsPage {
   toggleTotalChips() {
     const totalRows = this.client.data.filter((record) => !record.closedOn);
     if (totalRows.length !== this.selectedChips.length) {
-      totalRows.forEach((rec) => {
-        if (!this.getChipColor(rec.id)) {
-          this.onChipClick(rec);
-        }
-      });
+      this.selectedChips = [];
+      totalRows.forEach((rec) => this.onChipClick(rec));
     } else {
       this.selectedChips = [];
     }
   }
 
-  getChipColor(id) {
+  isChipSelected(id) {
     return this.selectedChips.find((chip) => chip.id == id) ? true : false;
   }
 
