@@ -2,7 +2,6 @@ import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ClientDataService } from '../services/client-data.service';
 import { Share } from '@capacitor/share';
-import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-calculator',
@@ -23,7 +22,6 @@ export class CalculatorPage {
   theme: string;
   calcsHistory = [];
   presentObj = { data: [] } as any;
-  isWebVersion = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -33,7 +31,6 @@ export class CalculatorPage {
   ionViewWillEnter() {
     this.theme = this.clientsDataService.getTheme();
     this.calcsHistory = JSON.parse(localStorage.getItem('calcsHistory')) || [];
-    this.isWebVersion = Capacitor.getPlatform() != 'web' ? false : true;
 
     const clientID = this.activatedRoute.snapshot.params.key;
     const recordId = this.activatedRoute.snapshot.params.id;
@@ -255,7 +252,6 @@ export class CalculatorPage {
   }
 
   loadHistory(eventData) {
-    console.log(eventData);
     this.changeCalcData(eventData);
   }
 

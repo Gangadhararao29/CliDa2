@@ -50,7 +50,7 @@ export class LineChartPage implements OnChanges {
     }
   }
 
-  groupByYear(response, halfYearly = true) {
+  groupByYear(response, halfYearly = false) {
     const yearObject = {};
     response.forEach((record) => {
       record.data.data.forEach((ele) => {
@@ -116,7 +116,6 @@ export class LineChartPage implements OnChanges {
         this.dataSet1.push(ele[1].prin1);
         this.dataSet2.push(ele[1].tot1);
       });
-
     }
 
     if (this.dataSet1[0] == 0 && this.dataSet2[0] == 0) {

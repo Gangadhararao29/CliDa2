@@ -13,8 +13,8 @@
         <ion-icon name="search" slot="icon-only" [color]="isSearchVisible ? 'primary' : ''"></ion-icon>
       </ion-button>
     </ion-buttons>
+    <ion-progress-bar [hidden]="hideSkeletonText" type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
-  <ion-progress-bar [hidden]="hideSkeletonText" type="indeterminate"></ion-progress-bar>
 </ion-header>
 
 <ion-content>
