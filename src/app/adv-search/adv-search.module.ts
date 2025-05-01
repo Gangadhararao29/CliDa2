@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { AdvSearchPageRoutingModule } from './adv-search-routing.module';
 
 import { AdvSearchPage } from './adv-search.page';
-import { ClientsListPageModule } from '../clients-list/clients-list.module';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
@@ -15,8 +15,8 @@ import { ClientsListPageModule } from '../clients-list/clients-list.module';
     FormsModule,
     IonicModule,
     AdvSearchPageRoutingModule,
-    ClientsListPageModule
+    SharedModule,
   ],
-  declarations: [AdvSearchPage]
+  declarations: [AdvSearchPage],
 })
 export class AdvSearchPageModule {}

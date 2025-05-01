@@ -14,28 +14,49 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid class="container-md p-1 my-1 mx-auto" [hidden]="!dashPref?.stats">
-    <ion-row>
-      <ion-col>
-        <h5>Earnings</h5>
+
+  <div class="my-2" [hidden]="!dashPref?.stats">
+    <!-- <ion-card >
+      <ion-item color="light" lines="none">
+        <ion-icon name="analytics-sharp" slot="start" color="primary"></ion-icon>
+        <ion-label><span class="header-title">Statistics</span></ion-label>
+      </ion-item> -->
+    <div class="d-flex flex-wrap justify-content-evenly">
+      <div class="stat-item">
+        <span class="d-flex">
+          <ion-icon name="cash" color="success" class="stat-icon"></ion-icon>
+          <h5 class="px-1">Earnings</h5>
+        </span>
         <h4>₹ {{(isd.format(getEarnings()))}}</h4>
-      </ion-col>
-      <ion-col>
-        <h5>Clients</h5>
-        <h4>{{totalClients?.length}}</h4>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>
-        <h5>Total Principal</h5>
+      </div>
+
+      <div class="stat-item">
+        <span class="d-flex">
+          <ion-icon name="people" color="tertiary" class="stat-icon"></ion-icon>
+          <h5 class="px-1">Clients</h5>
+        </span>
+        <h4 class="px-1">{{totalClients?.length}}</h4>
+      </div>
+
+      <div class="stat-item">
+        <span class="d-flex">
+          <ion-icon name="wallet" color="warning" class="stat-icon"></ion-icon>
+          <h5 class="px-1">Principals</h5>
+        </span>
         <h4>₹ {{isd.format(getTotalPrincipalAmount())}}</h4>
-      </ion-col>
-      <ion-col>
-        <h5>Total Amount</h5>
+      </div>
+
+      <div class="stat-item">
+        <span class="d-flex">
+          <ion-icon name="trending-up" color="danger" class="stat-icon"></ion-icon>
+          <h5 class="px-1">Totals</h5>
+        </span>
         <h4>₹ {{(isd.format(getFinalAmount()))}}</h4>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+      </div>
+    </div>
+  <!-- </ion-card> -->
+
+  </div>
 
   <div [hidden]="!dashPref?.graphs">
     <div #scrollableContainer class="d-flex overflow-auto justify-content-lg-around align-items-center mt-2"
@@ -161,5 +182,6 @@
         <ion-chip [color]="dashPref?.cliSum ?'tertiary':''" (click)="toggleDashPref('cliSum')">Summary</ion-chip>
       </div>
     </ion-card>
+
   </div>
 </ion-content>

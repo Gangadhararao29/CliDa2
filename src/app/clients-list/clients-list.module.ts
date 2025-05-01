@@ -7,9 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { ClientsListPageRoutingModule } from './clients-list-routing.module';
 
 import { ClientsListPage } from './clients-list.page';
-import { ClientsSearchPipe } from './datalist/client-search.pipe';
-import { DatalistComponent } from './datalist/datalist.component';
-import { IntroComponent } from './intro/intro.component';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
@@ -17,13 +15,9 @@ import { IntroComponent } from './intro/intro.component';
     FormsModule,
     IonicModule,
     ClientsListPageRoutingModule,
+    SharedModule,
   ],
-  declarations: [
-    ClientsListPage,
-    ClientsSearchPipe,
-    DatalistComponent,
-    IntroComponent,
-  ],
-  exports: [DatalistComponent],
+  declarations: [ClientsListPage],
+  exports: [],
 })
 export class ClientsListPageModule {}

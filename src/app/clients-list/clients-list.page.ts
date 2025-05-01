@@ -10,6 +10,7 @@ import { ClientDataService } from '../services/client-data.service';
   styleUrls: ['./clients-list.page.scss'],
 })
 export class ClientsListPage {
+  @ViewChild('searchbar') searchbar: any;
   clientSearchValue = '';
   showEntryText: boolean;
   debitData = [];
@@ -89,6 +90,9 @@ export class ClientsListPage {
   toggleSearch() {
     this.clientSearchValue = null;
     this.isSearchVisible = !this.isSearchVisible;
+    if (this.isSearchVisible) {
+      this.searchbar.setFocus();
+    }
   }
 
   async getCloseAlert() {
@@ -133,6 +137,4 @@ export class ClientsListPage {
     this.showDebitList = type === 'debits' ? true : false;
     localStorage.setItem('tabSection', type);
   }
-
-
 }

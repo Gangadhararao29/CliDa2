@@ -29,6 +29,7 @@ export class ClientDetailsPage {
   totalAmount = 0;
   theme: string;
   selectedChips = [];
+  openedAccordion;
 
   constructor(
     private router: Router,
@@ -150,6 +151,7 @@ export class ClientDetailsPage {
           'Client record deleted successfully'
         );
         this.accordionGroup.value = undefined;
+        this.openedAccordion = undefined;
       }
     }, 1000);
   }
@@ -229,5 +231,19 @@ export class ClientDetailsPage {
   onCheckBoxClick(event, data) {
     event.stopPropagation();
     this.onChipClick(data);
+  }
+
+  accordionGroupChange(event) {
+    this.openedAccordion = event.detail.value;
+  }
+
+  selectRecord(id) {
+    if (id !== this.openedAccordion) {
+      this.openedAccordion = id;
+      this.accordionGroup.value = id;
+    } else {
+      this.openedAccordion = undefined;
+      this.accordionGroup.value = undefined;
+    }
   }
 }

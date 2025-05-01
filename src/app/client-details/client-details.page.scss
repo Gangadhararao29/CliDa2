@@ -51,3 +51,17 @@ ion-modal {
     max-width: 31%;
   }
 }
+
+.dis-small {
+  display : none;
+  @media screen and (max-width: 747px) {
+    display: block;
+  }
+}
+
+.dis-large {
+  display : none;
+  @media screen and (min-width: 747px) {
+    display: block;
+  }
+}
