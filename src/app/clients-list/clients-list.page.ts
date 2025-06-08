@@ -8,6 +8,7 @@ import { ClientDataService } from '../services/client-data.service';
   selector: 'app-clients-list',
   templateUrl: './clients-list.page.html',
   styleUrls: ['./clients-list.page.scss'],
+  standalone: false,
 })
 export class ClientsListPage {
   @ViewChild('searchbar') searchbar: any;

@@ -4,6 +4,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   selector: 'app-calc-history',
   templateUrl: './calc-history.component.html',
   styleUrls: ['./calc-history.component.scss'],
+  standalone: false,
 })
 export class CalcHistoryComponent {
   @Input() showModal = false;

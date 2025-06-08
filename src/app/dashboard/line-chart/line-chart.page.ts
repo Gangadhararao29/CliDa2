@@ -5,6 +5,7 @@ import { ChartConfiguration } from 'chart.js';
   selector: 'app-line-chart',
   templateUrl: './line-chart.page.html',
   styleUrls: ['./line-chart.page.scss'],
+  standalone: false,
 })
 export class LineChartPage implements OnChanges {
   @Input() responseData: any[];

@@ -6,16 +6,27 @@ import { ClientDataService } from '../services/client-data.service';
 import { HttpClient } from '@angular/common/http';
 import { App } from '@capacitor/app';
 import { read, utils, writeFileXLSX } from 'xlsx';
-import { getAuth, onAuthStateChanged } from '@angular/fire/auth';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { GoogleAuthProvider } from 'firebase/auth';
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut,
+} from '@angular/fire/auth';
 import { Capacitor } from '@capacitor/core';
+import {
+  Firestore,
+  collection,
+  doc,
+  getDocs,
+  writeBatch,
+} from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-about',
   templateUrl: './about.page.html',
   styleUrls: ['./about.page.scss'],
+  standalone: false,
 })
 export class AboutPage {
   @ViewChild('modal') modal: any;
@@ -24,7 +35,7 @@ export class AboutPage {
   isUpdateLoading = false;
   isModalOpen = false;
   latestVersion = '0.0.0';
-  currentVersion = '3.24.11';
+  currentVersion = '3.25.05';
   gitHubResponse = [];
   loadingData = true;
   user: any = null;
@@ -39,8 +50,7 @@ export class AboutPage {
     private clientDataService: ClientDataService,
     private renderer: Renderer2,
     private httpClient: HttpClient,
-    private firestore: AngularFirestore,
-    private afAuth: AngularFireAuth
+    private firestore: Firestore
   ) {}
 
   ionViewWillEnter() {
@@ -49,7 +59,7 @@ export class AboutPage {
     if (this.isWebVersion) {
       const auth = getAuth();
       onAuthStateChanged(auth, (user) => {
-        this.user = user ? user : null;
+        this.user = user ?? null;
         this.loadingData = false;
       });
     } else {
@@ -323,11 +333,12 @@ export class AboutPage {
 
   async signInWithGoogle() {
     try {
+      const auth = getAuth();
       const provider = new GoogleAuthProvider();
-      const result = await this.afAuth.signInWithPopup(provider);
+      const result = await signInWithPopup(auth, provider);
       this.user = result.user;
       this.clientDataService.presentToast('Signed in successfully');
-    } catch (err) {
+    } catch (err: any) {
       this.clientDataService.presentToast(
         err.message,
         'failedToastClass',
@@ -336,16 +347,25 @@ export class AboutPage {
     }
   }
 
-  logOutUser() {
-    this.afAuth.signOut();
-    this.user = null;
-    this.clientDataService.presentToast('Signed out successfully');
+  async logOutUser() {
+    try {
+      const auth = getAuth();
+      await signOut(auth);
+      this.user = null;
+      this.clientDataService.presentToast('Signed out successfully');
+    } catch (error) {
+      this.clientDataService.presentToast(
+        'Error signing out: <br>' + error,
+        'failedToastClass',
+        'alert-outline'
+      );
+    }
   }
 
   async loadCloudData() {
     try {
-      const cdRef = this.firestore.collection(this.user.uid).ref;
-      const snapshot = await cdRef.get();
+      const userCollection = collection(this.firestore, this.user.uid);
+      const snapshot = await getDocs(userCollection);
 
       if (snapshot.empty) {
         this.clientDataService.presentToast('No data found');
@@ -354,6 +374,7 @@ export class AboutPage {
         this.importDataAlert(res);
       }
     } catch (error) {
+      console.log('Error loading cloud data:', error);
       this.clientDataService.presentToast(
         'Error loading cloud data: <br>' + error,
         'failedToastClass',
@@ -365,12 +386,11 @@ export class AboutPage {
   async uploadToCloud() {
     try {
       const clientsData = await this.clientDataService.getAllClientsData();
-      const batch = this.firestore.firestore.batch();
+      const db = this.firestore;
+      const batch = writeBatch(db);
 
       clientsData.forEach((record) => {
-        const clientRef = this.firestore
-          .collection(`${this.user.uid}`)
-          .doc(record.name).ref;
+        const clientRef = doc(db, this.user.uid, record.name);
         batch.set(clientRef, record);
       });
 

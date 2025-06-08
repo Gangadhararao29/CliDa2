@@ -7,6 +7,7 @@ import { ClientDataService } from '../services/client-data.service';
   selector: 'app-edit-details',
   templateUrl: './edit-details.page.html',
   styleUrls: ['./edit-details.page.scss'],
+  standalone: false,
 })
 export class EditDetailsPage {
   @ViewChild('formRef') formRefVariable: any;

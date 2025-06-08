@@ -6,6 +6,7 @@ import { ClientDataService } from '../../services/client-data.service';
   selector: 'app-intro',
   templateUrl: './intro.component.html',
   styleUrls: ['./intro.component.scss'],
+  standalone: false,
 })
 export class IntroComponent {
   @ViewChild('creditDebitList') creditDebitList;

@@ -7,6 +7,7 @@ import { ClientDataService } from 'src/app/services/client-data.service';
   selector: 'app-client-details',
   templateUrl: './client-details.page.html',
   styleUrls: ['./client-details.page.scss'],
+  standalone: false,
 })
 export class ClientDetailsPage {
   @ViewChild(IonAccordionGroup, { static: true })

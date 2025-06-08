@@ -47,19 +47,19 @@
     <ion-card color="light">
       <ion-card-header>
         <ion-card-title class="d-flex align-items-center">
-          <div>Local Data Sync</div>
+          <div>Sync Local Data</div>
           <ion-icon id="help-section" name="help-sharp" size="small"
             class="ms-auto border border-dark bg-warning rounded-circle text-dark p-1"></ion-icon>
         </ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
-        <ion-item>
-          <ion-label>File Type:</ion-label>
-          <ion-radio-group class="d-flex gap-2" [(ngModel)]="fileType">
-            <ion-radio value="json" labelPlacement="end">Json</ion-radio>
-            <ion-radio value="excel" labelPlacement="end">Excel (beta)</ion-radio>
-          </ion-radio-group>
+
+        <ion-item color="light">
+          <ion-select justify="space-between" interface="popover" label="Select file type" placeholder="" [(ngModel)]="fileType">
+            <ion-select-option value="json">Json</ion-select-option>
+            <ion-select-option value="excel">Excel (beta)</ion-select-option>
+          </ion-select>
         </ion-item>
 
         <ion-grid>

@@ -7,6 +7,7 @@ import { Share } from '@capacitor/share';
   selector: 'app-calculator',
   templateUrl: './calculator.page.html',
   styleUrls: ['./calculator.page.scss'],
+  standalone: false,
 })
 export class CalculatorPage {
   @ViewChild('calcHistory') calcsHistoryComp;

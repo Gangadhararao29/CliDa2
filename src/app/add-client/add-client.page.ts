@@ -6,6 +6,7 @@ import { ClientDataService } from '../services/client-data.service';
   selector: 'app-add-client',
   templateUrl: './add-client.page.html',
   styleUrls: ['./add-client.page.scss'],
+  standalone: false,
 })
 export class AddClientPage {
   @ViewChild('formRef') formRefVariable: any;

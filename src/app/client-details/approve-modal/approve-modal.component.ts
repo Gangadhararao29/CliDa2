@@ -6,6 +6,7 @@ import { ClientDataService } from 'src/app/services/client-data.service';
   selector: 'app-approve-modal',
   templateUrl: './approve-modal.component.html',
   styleUrls: ['./approve-modal.component.scss'],
+  standalone: false,
 })
 export class ApproveModalComponent implements OnInit {
   @Input() data: any;

@@ -5,6 +5,7 @@ import { ClientDataService } from '../services/client-data.service';
   selector: 'app-adv-search',
   templateUrl: './adv-search.page.html',
   styleUrls: ['./adv-search.page.scss'],
+  standalone: false,
 })
 export class AdvSearchPage implements OnInit {
   @ViewChild('modal') modal: any;

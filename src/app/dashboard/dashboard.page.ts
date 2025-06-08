@@ -5,6 +5,7 @@ import { ClientDataService } from '../services/client-data.service';
   selector: 'app-dashboard',
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
+  standalone: false,
 })
 export class DashboardPage {
   recTransPage = 1;

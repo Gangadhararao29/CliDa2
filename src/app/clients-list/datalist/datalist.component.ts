@@ -5,6 +5,7 @@ import { ClientDataService } from '../../services/client-data.service';
   selector: 'app-datalist',
   templateUrl: './datalist.component.html',
   styleUrls: ['./datalist.component.scss'],
+  standalone: false
 })
 export class DatalistComponent implements OnInit {
   @Input() dataList: any[] = [];

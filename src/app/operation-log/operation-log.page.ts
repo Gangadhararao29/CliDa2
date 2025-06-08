@@ -5,6 +5,7 @@ import { AlertController, ToastController } from '@ionic/angular';
   selector: 'app-operation-log',
   templateUrl: './operation-log.page.html',
   styleUrls: ['./operation-log.page.scss'],
+  standalone: false,
 })
 export class OperationLogPage {
   logData = [];
