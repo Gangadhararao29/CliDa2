@@ -19,8 +19,10 @@
       <div *ngFor="let data of client?.data; let i=index; trackBy:trackData" class="my-1 listItem text-start">
         <ion-accordion [value]="i">
           <ion-item slot="header" class="rounded" color="light">
-            <input type="checkbox" (click)="onCheckBoxClick($event, data)" [checked]="isChipSelected(data?.id)"
-              class="form-check-input p-2" [attr.data-bs-theme]="theme" />
+            <div class="ps-1 py-1" (click)="onCheckBoxClick($event, data)">
+              <input type="checkbox" [checked]="isChipSelected(data?.id)" class="form-check-input"
+                [attr.data-bs-theme]="theme" />
+            </div>
             <ion-label class="d-flex ms-2" color="{{getColor(data)}}">
               <span class="fw-bolder">₹ {{ isd.format(data?.principal) }}</span>
               <span class="ms-auto fw-bolder">{{data?.startDate | date : "dd/MM/YYYY"}}</span></ion-label>
@@ -36,19 +38,19 @@
                 <ion-row>
                   <ion-col size="5">Interest</ion-col>
                   <ion-col size="2">:</ion-col>
-                <ion-col size="5">{{data?.interest}}</ion-col>
+                  <ion-col size="5">{{data?.interest}}</ion-col>
                 </ion-row>
                 <ion-row>
                   <ion-col size="5">Start date</ion-col>
                   <ion-col size="2">:</ion-col>
                   <ion-col size="5">
-                  {{data?.startDate | date : "dd/MM/YYYY"}}
+                    {{data?.startDate | date : "dd/MM/YYYY"}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
                   <ion-col size="5">End date</ion-col>
                   <ion-col size="2">:</ion-col>
-                <ion-col size="5"> {{(data?.closedOn || today) | date : "dd/MM/YYYY"}} </ion-col>
+                  <ion-col size="5"> {{(data?.closedOn || today) | date : "dd/MM/YYYY"}} </ion-col>
                 </ion-row>
               </ion-grid>
             </div>
@@ -87,7 +89,7 @@
 
             <div *ngIf="data?.comments" class="bgLight p-2 rounded mx-2 mb-2">
               <small class="fw-bold d-block">Comments : </small>
-            <small style="white-space: pre-line">{{data?.comments}}</small>
+              <small style="white-space: pre-line">{{data?.comments}}</small>
             </div>
 
             <div *ngIf="data?.closedOn"
@@ -97,7 +99,7 @@
                   <ion-col size="5">Closed on</ion-col>
                   <ion-col size="2">:</ion-col>
                   <ion-col size="5">
-                  {{data?.closedOn | date : "dd/MM/YYYY"}}
+                    {{data?.closedOn | date : "dd/MM/YYYY"}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
@@ -196,8 +198,10 @@
         <ng-container *ngFor="let data of client?.data; let i=index; trackBy:trackData">
           <ion-item class="rounded m-2" [ngClass]="{'border border-4 border-primary': i === +openedAccordion}"
             color="light" (click)="selectRecord(i)">
-            <input type="checkbox" (click)="onCheckBoxClick($event, data)" [checked]="isChipSelected(data?.id)"
-              class="form-check-input p-2" [attr.data-bs-theme]="theme" />
+            <div class="py-1 ps-1" (click)="onCheckBoxClick($event, data)">
+              <input type="checkbox" [checked]="isChipSelected(data?.id)" class="form-check-input"
+                [attr.data-bs-theme]="theme" />
+            </div>
             <ion-label class="d-flex ms-2" [color]="getColor(data)">
               <span class="fw-bolder">₹ {{ isd.format(data?.principal) }}</span>
               <span class="ms-auto fw-bolder">{{ data?.startDate | date : 'dd/MM/yyyy'}}</span>

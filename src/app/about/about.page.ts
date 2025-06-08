@@ -6,21 +6,8 @@ import { ClientDataService } from '../services/client-data.service';
 import { HttpClient } from '@angular/common/http';
 import { App } from '@capacitor/app';
 import { read, utils, writeFileXLSX } from 'xlsx';
-import {
-  getAuth,
-  onAuthStateChanged,
-  signInWithPopup,
-  GoogleAuthProvider,
-  signOut,
-} from '@angular/fire/auth';
 import { Capacitor } from '@capacitor/core';
-import {
-  Firestore,
-  collection,
-  doc,
-  getDocs,
-  writeBatch,
-} from '@angular/fire/firestore';
+import { FirebaseService } from '../services/firebase.service';
 
 @Component({
   selector: 'app-about',
@@ -50,15 +37,14 @@ export class AboutPage {
     private clientDataService: ClientDataService,
     private renderer: Renderer2,
     private httpClient: HttpClient,
-    private firestore: Firestore
+    private firebaseService: FirebaseService
   ) {}
 
   ionViewWillEnter() {
     this.isWebVersion = Capacitor.getPlatform() != 'web' ? false : true;
     this.theme = this.clientDataService.getTheme();
     if (this.isWebVersion) {
-      const auth = getAuth();
-      onAuthStateChanged(auth, (user) => {
+      this.firebaseService.onAuthStateChanged((user) => {
         this.user = user ?? null;
         this.loadingData = false;
       });
@@ -333,10 +319,7 @@ export class AboutPage {
 
   async signInWithGoogle() {
     try {
-      const auth = getAuth();
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      this.user = result.user;
+      this.user = await this.firebaseService.signInWithGoogle();
       this.clientDataService.presentToast('Signed in successfully');
     } catch (err: any) {
       this.clientDataService.presentToast(
@@ -349,8 +332,7 @@ export class AboutPage {
 
   async logOutUser() {
     try {
-      const auth = getAuth();
-      await signOut(auth);
+      await this.firebaseService.signOutUser();
       this.user = null;
       this.clientDataService.presentToast('Signed out successfully');
     } catch (error) {
@@ -364,13 +346,10 @@ export class AboutPage {
 
   async loadCloudData() {
     try {
-      const userCollection = collection(this.firestore, this.user.uid);
-      const snapshot = await getDocs(userCollection);
-
-      if (snapshot.empty) {
+      const res = await this.firebaseService.loadCloudData(this.user?.uid);
+      if (!res.length) {
         this.clientDataService.presentToast('No data found');
       } else {
-        const res = snapshot.docs.map((doc) => doc.data());
         this.importDataAlert(res);
       }
     } catch (error) {
@@ -386,17 +365,8 @@ export class AboutPage {
   async uploadToCloud() {
     try {
       const clientsData = await this.clientDataService.getAllClientsData();
-      const db = this.firestore;
-      const batch = writeBatch(db);
-
-      clientsData.forEach((record) => {
-        const clientRef = doc(db, this.user.uid, record.name);
-        batch.set(clientRef, record);
-      });
-
-      await batch.commit();
+      await this.firebaseService.uploadToCloud(this.user.uid, clientsData);
       await this.clientDataService.presentLoading();
-
       setTimeout(() => {
         this.clientDataService.presentToast('Upload successful');
       }, 1500);

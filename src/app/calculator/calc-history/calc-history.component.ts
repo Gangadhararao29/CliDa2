@@ -11,11 +11,13 @@ export class CalcHistoryComponent {
   @Input() calHistory: Array<{ key: string; value: Array<any> }>;
   @Output() restoreData = new EventEmitter<string>();
 
-  loadData(ele, id) {
-    const index = this.calHistory[ele].value.findIndex((calc) => calc.id == id);
-    const record = this.calHistory[ele][index];
-    record.name = record.name || 'Calc' + index;
-    this.restoreData.emit(record);
+  loadData(key, id) {
+    const calcObject = this.calHistory.find((ele) => ele.key == key);
+    const index = calcObject.value.findIndex((calc) => calc.id == id);
+    const calcRecord = calcObject.value[index];
+    calcRecord.name =
+      calcRecord.name || 'Calc' + (calcObject.value.length - index);
+    this.restoreData.emit(calcRecord);
     this.showModal = false;
   }
 

@@ -232,9 +232,9 @@
             <div *ngFor="let release of gitHubResponse">
               <div class="d-flex">
                 <div class="fs-3 text-primary">{{release.tag_name}}</div>
-                <a class="ms-2" [href]="release.assets[0]?.browser_download_url">
+                <!-- <a class="ms-2" [href]="release.assets[0]?.browser_download_url" disabled="true">
                   <ion-icon name="download-outline" size="large"></ion-icon>
-                </a>
+                </a> -->
                 <a class="ms-2" [href]="release.html_url">
                   <ion-icon name="logo-github" size="large"></ion-icon>
                 </a>
