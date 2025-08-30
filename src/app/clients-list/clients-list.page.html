@@ -19,7 +19,7 @@
 
 <ion-content>
 
-  <app-intro *ngIf="showEntryText" (reloadClientList)="ionViewWillEnter()"></app-intro>
+  <app-intro [theme]="theme" *ngIf="showEntryText" (reloadClientList)="ionViewWillEnter()"></app-intro>
 
   <div class="collapse sticky-top" id="collapseExample">
     <div class="d-flex align-items-center">

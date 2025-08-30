@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ClientDataService } from '../../services/client-data.service';
 
 @Component({
@@ -7,13 +7,11 @@ import { ClientDataService } from '../../services/client-data.service';
   styleUrls: ['./datalist.component.scss'],
   standalone: false
 })
-export class DatalistComponent implements OnInit {
+export class DatalistComponent  {
   @Input() dataList: any[] = [];
   @Input() clientSearchValue: string = '';
 
   constructor(private clientDataService: ClientDataService) {}
-
-  ngOnInit() {}
 
   getColor(detail) {
     const tm = this.clientDataService.calculateTimeperiod(detail?.startDate).tm;

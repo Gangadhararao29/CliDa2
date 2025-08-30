@@ -1,10 +1,10 @@
 <div class="container ion-margin" #creditDebitList>
   <ion-card color="light" class="rounded mx-0 my-3">
-    <ion-item color="light">
-      <ion-label class="text-center text-grad fs-5" id="animated-title">Clients Management Made Easy!</ion-label>
-    </ion-item>
+    <ion-card-header>
+      <ion-card-title class="text-grad text-center px-2"> Clients Management Made Easy! </ion-card-title>
+    </ion-card-header>
 
-    <div class="fs-6 px-3 mb-2 mt-1 pb-1">
+    <ion-card-content class="fs-6" style="line-height: 1.8;">
       💼 Simplify client management <br />
       📊 Real-time dashboard insights <br />
       🧮 Interest calculators (simple & compound) <br />
@@ -12,47 +12,47 @@
       🎨 Customizable themes <br />
       📱 Mobile-optimized <br />
       🚀 Boost operational efficiency
-    </div>
+    </ion-card-content>
   </ion-card>
 
   <ion-card color="light" class="rounded mx-0 my-3">
-  <ion-item color="light">
-    <ion-label class="fs-5" id="animated-title">Quick Start Guide</ion-label>
-  </ion-item>
+    <ion-card-title class="p-2 my-1">
+      <ion-icon name="flash-outline" class="text-primary"></ion-icon>
+      Quick Start Guide
+    </ion-card-title>
 
-  <div>
-    <ion-item color="light" class="">
-      <ion-button slot="end" routerLink="/clients-list/add-client" color="danger">
-        <span class="p-1"><ion-icon name="person-add-outline" size="large"></ion-icon></span>
-      </ion-button>
-      <ion-label class="justifyText">
-        <b>Add a Client:</b> Click the <ion-icon name="person-add-outline"></ion-icon> button. You can also use the floating add button at the bottom right.
+    <!-- Add Client -->
+    <ion-item color="light" button detail routerLink="/clients-list/add-client">
+      <ion-icon name="person-add-outline" slot="start" class="text-danger fs-4"></ion-icon>
+      <ion-label>
+        <h2 class="fw-semibold mb-1">Add Client</h2>
+        <p class="text-muted small mb-0" [attr.data-bs-theme]="theme">Add new clients in seconds.</p>
       </ion-label>
     </ion-item>
 
-    <ion-item color="light" class="">
-      <ion-button slot="end" routerLink="/about" color="primary">
-        <span class="p-1"><ion-icon name="sync-outline" size="large"></ion-icon></span>
-      </ion-button>
-      <ion-label class="justifyText">
-        <b>Restore Data:</b> Click the <ion-icon name="sync-outline"></ion-icon> button to restore from a backup file.
+    <!-- Restore Data -->
+    <ion-item color="light" button detail routerLink="/about">
+      <ion-icon name="sync-outline" slot="start" class="text-primary fs-4"></ion-icon>
+      <ion-label>
+        <h2 class="fw-semibold mb-1">Restore Backup</h2>
+        <p class="text-muted small mb-0" [attr.data-bs-theme]="theme">Bring back your saved data.</p>
       </ion-label>
     </ion-item>
 
-    <ion-item color="light" class="">
-      <ion-button slot="end" (click)="loadSampleData()" color="success">
-        <span class="p-1"><ion-icon name="bulb-outline" size="large"></ion-icon></span>
-      </ion-button>
-      <ion-label class="justifyText">
-        <b>Try Sample Data:</b> Click the <ion-icon name="bulb-outline"></ion-icon> button to explore with preloaded data.
+    <!-- Try Demo Data -->
+    <ion-item color="light" button detail (click)="loadSampleData()">
+      <ion-icon name="bulb-outline" slot="start" class="text-success fs-4"></ion-icon>
+      <ion-label>
+        <h2 class="fw-semibold mb-1">Try Demo Data</h2>
+        <p class="text-muted small mb-0" [attr.data-bs-theme]="theme">Preview with preloaded examples.</p>
       </ion-label>
     </ion-item>
-  </div>
-</ion-card>
+  </ion-card>
+
 
   <div class="d-flex mt-3 bgLight align-items-center rounded-3 bg-warning">
-    <div class="fs-1 px-3 py-2 text-dark">!</div>
-    <div class="justifyText bgLight px-3 py-2 rounded-end" style="flex: 1">
+    <div class="px-3 py-2 text-dark" style="font-size: 200%;">!</div>
+    <div class="justifyText bgLight px-3 py-2 rounded-end " style="flex: 1">
       This app uses local storage to save your data, which may be lost if you clear your browser's data.
       <br />
       <i>
@@ -60,4 +60,5 @@
       </i>
     </div>
   </div>
+
 </div>

@@ -4,8 +4,8 @@
       <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-title>{{client?.name}}</ion-title>
-    <ion-progress-bar [hidden]="hideSkeletonText" type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
+  <ion-progress-bar *ngIf="!hideSkeletonText" type="indeterminate"></ion-progress-bar>
 </ion-header>
 
 <ion-content>
@@ -87,38 +87,39 @@
               </ion-grid>
             </div>
 
-            <div *ngIf="data?.comments" class="bgLight p-2 rounded mx-2 mb-2">
-              <small class="fw-bold d-block">Comments : </small>
+            <div *ngIf="totalTimeinMonths(data?.startDate,data?.closedOn || today)>36"
+              class="m-2 p-1 d-flex flex-row gap-3 justify-content-around align-items-center bgWarning rounded">
+              <ion-icon name="alert" size="large" slot="start" color="danger"></ion-icon>
+              <div class="ms-2 d-flex flex-column justify-content-center" style="line-height: 1.2; width: 100%;">
+                <span class="fw-bold text-warning-emphasis" style="font-size: 0.95em;">Interest calculated for 3 years
+                  only.</span>
+                <span class="text-secondary" style="font-size: 0.9em;">Use <b>Calculate</b> for details.</span>
+              </div>
+            </div>
+
+            <div *ngIf="data?.comments" class="bgLight p-2 rounded mx-2 mb-2" style="border-left: 4px solid #ffc107;">
+              <small class="fw-bold d-block">💬 Comments</small>
               <small style="white-space: pre-line">{{data?.comments}}</small>
             </div>
 
             <div *ngIf="data?.closedOn"
-              class="bgLight mb-2 mx-2 rounded ps-2 py-1 fw-bold border-success border-3 border">
+              class="bgLight mb-2 mx-2 rounded fw-bold px-2 border-start border-end border-5 border-success shadow-sm">
               <ion-grid>
                 <ion-row>
                   <ion-col size="5">Closed on</ion-col>
                   <ion-col size="2">:</ion-col>
-                  <ion-col size="5">
-                    {{data?.closedOn | date : "dd/MM/YYYY"}}
+                  <ion-col size="5" class="text-end">
+                    {{ data?.closedOn | date: "dd/MM/yyyy" }}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col size="5">Paid amt</ion-col>
+                  <ion-col size="5" class="">Paid Amt</ion-col>
                   <ion-col size="2">:</ion-col>
-                  <ion-col size="5">
-                    ₹ {{isd.format(data?.closedAmount)}}
+                  <ion-col size="5" class="text-end">
+                    ₹ {{ isd.format(data?.closedAmount) }}
                   </ion-col>
                 </ion-row>
               </ion-grid>
-            </div>
-
-            <div *ngIf="totalTimeinMonths(data?.startDate,data?.closedOn || today)>36"
-              class="d-flex m-2 py-1 justify-content-around align-items-center bgWarning rounded">
-              <ion-icon name="alert" size="large" slot="start"></ion-icon>
-              <div>
-                Interest calculated for 3 years only.<br />
-                Please use calculate option.
-              </div>
             </div>
 
             <div class="bgLight rounded m-2">
@@ -157,7 +158,7 @@
       [queryParams]="{name:client?.name}"><ion-label class="text-danger fw-bolder"> + Add new record </ion-label>
     </ion-item>
 
-    <div class="text-center">
+    <div class="text-center fw-semibold">
       <ion-chip (click)="toggleTotalChips()">
         Total amount: ₹ {{isd.format(totalAmount)}}
       </ion-chip>
@@ -192,7 +193,7 @@
     <div class="d-flex" style="height: 100%; overflow: hidden;">
       <!-- side menu content-->
       <div style="min-width: 300px; overflow-y: auto; height: 100%;">
-        <div class="bgLight p-2 rounded text-center mx-2 mt-3">
+        <div class="bgLight p-2 rounded text-center mx-2 mt-3 sticky-top">
           Current transactions
         </div>
         <ng-container *ngFor="let data of client?.data; let i=index; trackBy:trackData">
@@ -213,7 +214,7 @@
           [queryParams]="{name:client?.name}"><ion-label class="text-danger fw-bolder"> + Add new record </ion-label>
         </ion-item>
 
-        <div class="text-center mb-3">
+        <div class="text-center mb-3 fw-semibold">
           <ion-chip (click)="toggleTotalChips()">
             Total amount: ₹ {{isd.format(totalAmount)}}
           </ion-chip>
@@ -288,39 +289,41 @@
             </ion-grid>
           </div>
 
-          <div *ngIf="client?.data[openedAccordion]?.comments" class="bgLight p-2 rounded mx-2 mb-2">
-            <small class="fw-bold d-block">Comments : </small>
+          <div
+            *ngIf="totalTimeinMonths(client?.data[openedAccordion]?.startDate,client?.data[openedAccordion]?.closedOn || today)>36"
+            class="m-2 p-1 d-flex flex-row gap-3 justify-content-around align-items-center bgWarning rounded">
+            <ion-icon name="alert" size="large" slot="start" color="danger"></ion-icon>
+            <div class="ms-2 d-flex flex-column justify-content-center" style="line-height: 1.2; width: 100%;">
+              <span class="fw-bold text-warning-emphasis" style="font-size: 0.95em;">Interest calculated for 3 years
+                only.</span>
+              <span class="text-secondary" style="font-size: 0.9em;">Use <b>Calculate</b> for details.</span>
+            </div>
+          </div>
+
+          <div *ngIf="client?.data[openedAccordion]?.comments" class="bgLight p-2 rounded mx-2 mb-2"
+            style="border-left: 4px solid #ffc107;">
+            <small class="fw-bold d-block">💬 Comments</small>
             <small style="white-space: pre-line">{{client?.data[openedAccordion]?.comments}}</small>
           </div>
 
           <div *ngIf="client?.data[openedAccordion]?.closedOn"
-            class="bgLight mb-2 mx-2 rounded ps-2 py-1 fw-bold border-success border-3 border">
+            class="bgLight mb-2 mx-2 rounded fw-bold px-2 border-start border-end border-5 border-success shadow-sm">
             <ion-grid>
               <ion-row>
                 <ion-col size="5">Closed on</ion-col>
                 <ion-col size="2">:</ion-col>
-                <ion-col size="5">
-                  {{client?.data[openedAccordion]?.closedOn | date : "dd/MM/YYYY"}}
+                <ion-col size="5" class="text-end">
+                  {{ client?.data[openedAccordion]?.closedOn | date: "dd/MM/yyyy" }}
                 </ion-col>
               </ion-row>
               <ion-row>
-                <ion-col size="5">Paid amt</ion-col>
+                <ion-col size="5">Paid Amt</ion-col>
                 <ion-col size="2">:</ion-col>
-                <ion-col size="5">
-                  ₹ {{isd.format(client?.data[openedAccordion]?.closedAmount)}}
+                <ion-col size="5" class="text-end">
+                  ₹ {{ isd.format(client?.data[openedAccordion]?.closedAmount) }}
                 </ion-col>
               </ion-row>
             </ion-grid>
-          </div>
-
-          <div
-            *ngIf="totalTimeinMonths(client?.data[openedAccordion]?.startDate,client?.data[openedAccordion]?.closedOn || today)>36"
-            class="d-flex m-2 py-1 justify-content-around align-items-center bgWarning rounded">
-            <ion-icon name="alert" size="large" slot="start"></ion-icon>
-            <div>
-              Interest calculated for 3 years only.<br />
-              Please use calculate option.
-            </div>
           </div>
 
           <div class="bgLight rounded m-2">

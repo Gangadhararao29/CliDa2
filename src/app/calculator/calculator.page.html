@@ -118,9 +118,9 @@
       <div *ngIf="linkData?.closedOn" class="bg-success rounded-3 text-light text-center">
         <div class="p-2">
           Record closed on
-          <span class="fw-bold">{{linkData?.closedOn.split('-').reverse().join('/')}}</span><br />
+          <span class="fw-semibold">{{linkData?.closedOn.split('-').reverse().join('/')}}</span><br />
           with amount
-          <span class="fw-bold">{{this.currencyFormat(linkData?.closedAmount)}}</span>
+          <span class="fw-semibold">{{this.currencyFormat(linkData?.closedAmount)}}</span>
         </div>
       </div>
 
@@ -185,7 +185,7 @@
         </ng-template>
       </ion-popover>
 
-      <div #calculatedDataMain class="bgLight rounded-bottom px-2 fw-bold fs-6">
+      <div #calculatedDataMain class="bgLight rounded-bottom px-2 fw-semibold fs-6">
         <ion-grid>
           <ion-row>
             <ion-col size="5"> Name </ion-col>

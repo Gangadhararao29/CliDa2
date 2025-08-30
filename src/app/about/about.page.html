@@ -7,15 +7,20 @@
 
 <ion-content>
   <div class="container my-2">
-    <ion-card color="light" [hidden]="user || !isWebVersion">
-      <div class="d-flex flex-column m-2 align-items-center text-center bgLight">
-        <div class="mb-3">Connect your Google account to securely sync and backup your data across devices</div>
-        <ion-button expand="block" (click)="signInWithGoogle()" [disabled]="loadingData" class="w-auto">
-          <ion-icon name="logo-google" slot="start"></ion-icon>
-          Continue with Google
+
+    <ion-card color="light" [hidden]="user || !isWebVersion" class="my-2 rounded shadow-sm">
+      <div class="d-flex flex-column align-items-center text-center p-2 bgLight rounded">
+        <div class="fw-medium mb-2">
+          Connect your Google account to securely sync and backup your data across devices.
+        </div>
+        <ion-button expand="block" (click)="signInWithGoogle()" [disabled]="loadingData"
+          class="d-flex align-items-center justify-content-center w-auto shadow-sm">
+          <ion-icon name="logo-google" slot="start" class="fs-5"></ion-icon>
+          <span class="fw-medium">Continue with Google</span>
         </ion-button>
       </div>
     </ion-card>
+
 
     <div [hidden]="!user || !isWebVersion">
       <ion-avatar class="mx-auto" style="height: 2rem">
@@ -23,13 +28,13 @@
       </ion-avatar>
       <ion-card color="light">
         <ion-card-header>
-          <ion-card-title class="text-center p-1">
-            <br />
+          <ion-card-title class="text-center m-1">
+            <br class="m-0 p-0" />
             Hi {{user?.displayName}}
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <div class="mx-2 d-flex py-2">
+          <div class="d-flex gap-2 mx-2 my-1 justify-content-between">
             <ion-button expand="block" class="w-100" (click)="loadCloudData()">
               Download&nbsp;<ion-icon name="cloud-download-outline"></ion-icon>
             </ion-button>
@@ -108,7 +113,7 @@
         <ion-grid>
           <ion-row>
             <ion-col size="12">
-              <ion-button expand="block" color="primary" shape="round" fill="solid" (click)="select1.open()">
+              <ion-button expand="block" color="primary" fill="solid" (click)="select1.open()">
                 <ion-select #select1 style="min-height: 0px" (ionChange)="changeSort($event)" label="Sort main list by"
                   placeholder="Nm/Yr" [interfaceOptions]="{ header: 'Sort clients list menu by' }">
                   <ion-select-option value="name">Name</ion-select-option>
@@ -119,7 +124,7 @@
           </ion-row>
           <ion-row>
             <ion-col size="12">
-              <ion-button expand="block" color="warning" shape="round" fill="solid" (click)="cleanData()">
+              <ion-button expand="block" color="warning" fill="solid" (click)="cleanData()">
                 <ion-icon name="construct-outline" slot="start"></ion-icon>
                 Fix Data Errors
               </ion-button>
@@ -128,7 +133,7 @@
 
           <ion-row>
             <ion-col size="12">
-              <ion-button expand="block" color="success" shape="round" fill="solid" (click)="cleanApproveData()">
+              <ion-button expand="block" color="success" fill="solid" (click)="cleanApproveData()">
                 <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
                 Clean Approved Data
               </ion-button>
@@ -137,7 +142,7 @@
 
           <ion-row>
             <ion-col size="12">
-              <ion-button expand="block" color="danger" shape="round" fill="solid" (click)="presentDeleteAlert()">
+              <ion-button expand="block" color="danger" fill="solid" (click)="presentDeleteAlert()">
                 <ion-icon name="trash-outline" slot="start"></ion-icon>
                 Remove All Client Data
               </ion-button>
@@ -157,7 +162,7 @@
         <ion-grid>
           <ion-row>
             <ion-col size="12">
-              <ion-button expand="block" color="primary" shape="round" fill="solid" (click)="select2.open()">
+              <ion-button expand="block" color="primary" fill="solid" (click)="select2.open()">
                 <ion-select #select2 style="min-height: 0px" (ionChange)="changeTheme($event)" label="Choose theme"
                   [value]="themeName" interface="popover">
                   <ion-select-option value="light">Light</ion-select-option>
@@ -169,7 +174,7 @@
           </ion-row>
           <ion-row>
             <ion-col size="12">
-              <ion-button expand="block" color="success" shape="round" fill="solid" (click)="checkForUpdate()">
+              <ion-button expand="block" color="success" fill="solid" (click)="checkForUpdate()">
                 <ion-icon name="bag-check-outline" slot="start"></ion-icon>
                 Check for Update
               </ion-button>
@@ -177,13 +182,13 @@
           </ion-row>
           <ion-row>
             <ion-col size="6">
-              <ion-button expand="block" color="secondary" shape="round" fill="solid" routerLink="logs">
+              <ion-button expand="block" color="secondary" fill="solid" routerLink="logs">
                 <ion-icon name="document-text-outline" slot="start"></ion-icon>
                 Show logs
               </ion-button>
             </ion-col>
             <ion-col size="6">
-              <ion-button expand="block" color="danger" shape="round" fill="solid"
+              <ion-button expand="block" color="danger" fill="solid"
                 href="mailto:gangadhararao29@gmail.com?Subject=CliDa2_Bugs">
                 <ion-icon name="bug-outline" slot="start"></ion-icon>
                 Report bug

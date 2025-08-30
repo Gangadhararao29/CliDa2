@@ -1,4 +1,10 @@
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import * as sampleData from '../../../assets/clientsData.json';
 import { ClientDataService } from '../../services/client-data.service';
 
@@ -11,6 +17,7 @@ import { ClientDataService } from '../../services/client-data.service';
 export class IntroComponent {
   @ViewChild('creditDebitList') creditDebitList;
   @Output() reloadClientList = new EventEmitter();
+  @Input() theme: string;
 
   constructor(private clientDataService: ClientDataService) {}
 

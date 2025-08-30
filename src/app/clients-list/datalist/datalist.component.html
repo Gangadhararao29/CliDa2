@@ -1,10 +1,13 @@
 <div class="mt-2 text-center">
-  <ng-container *ngFor="let client of dataList | clientsSearch:clientSearchValue; trackBy:trackData">
+  <ng-container *ngFor="
+      let client of dataList | clientsSearch : clientSearchValue;
+      trackBy: trackData
+    ">
     <ion-item color="light" class="rounded-2 listItem d-inline-block" [routerLink]="'client-details/' + client.key">
-      {{client?.data.name}}
+      {{ client?.data.name }}
       <div class="ms-auto text-end mt-1">
         <ion-badge *ngFor="let clientDetail of client.data.data" [color]="getColor(clientDetail)" class="ms-1">
-          {{(clientDetail.principal/1000).toFixed() +'K'}}
+          {{ (clientDetail.principal / 1000).toFixed() + "K" }}
         </ion-badge>
       </div>
     </ion-item>

@@ -20,6 +20,7 @@ export class ClientsListPage {
   tabSection = 'credits';
   isSearchVisible = false;
   hideSkeletonText: boolean;
+  theme: string;
   constructor(
     private router: Router,
     private platform: Platform,
@@ -49,6 +50,7 @@ export class ClientsListPage {
 
   ionViewWillEnter() {
     this.hideSkeletonText = false;
+    this.theme = this.clientDataService.getTheme();
     this.getDisplayData();
     if (localStorage.getItem('tabSection') === 'debits') {
       this.tabSection = 'debits';
