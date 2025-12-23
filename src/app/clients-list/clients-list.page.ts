@@ -2,7 +2,9 @@ import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, IonRouterOutlet, Platform } from '@ionic/angular';
 import { App } from '@capacitor/app';
-import { ClientDataService } from '../services/client-data.service';
+import { DataBaseService } from '../services/data-base.service';
+import { CalculationService } from '../services/calculation.service';
+import { CommonService } from '../services/common.service';
 
 @Component({
   selector: 'app-clients-list',
@@ -26,7 +28,9 @@ export class ClientsListPage {
     private platform: Platform,
     private routerOutlet: IonRouterOutlet,
     private alertController: AlertController,
-    private clientDataService: ClientDataService
+    private dataBaseService: DataBaseService,
+    private commonService: CommonService,
+    private calculationService: CalculationService
   ) {
     this.platform.backButton.subscribeWithPriority(-1, () => {
       if (!this.routerOutlet.canGoBack()) {
@@ -50,7 +54,7 @@ export class ClientsListPage {
 
   ionViewWillEnter() {
     this.hideSkeletonText = false;
-    this.theme = this.clientDataService.getTheme();
+    this.theme = this.commonService.getTheme();
     this.getDisplayData();
     if (localStorage.getItem('tabSection') === 'debits') {
       this.tabSection = 'debits';
@@ -62,7 +66,7 @@ export class ClientsListPage {
   }
 
   getDisplayData() {
-    this.clientDataService.getAllClientsDataWithKeys().then((data) => {
+    this.dataBaseService.getAllClientsDataWithKeys().then((data) => {
       this.showEntryText = data.length > 0 ? false : true;
       this.debitData = [];
       this.creditData = [];
@@ -122,7 +126,7 @@ export class ClientsListPage {
   }
 
   getColor(detail) {
-    const tm = this.clientDataService.calculateTimeperiod(detail?.startDate).tm;
+    const tm = this.calculationService.calculateTimeperiod(detail?.startDate).tm;
     if (detail?.closedOn) {
       return 'success';
     } else if (tm >= 30) {

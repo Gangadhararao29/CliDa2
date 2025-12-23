@@ -1,7 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ClientDataService } from '../services/client-data.service';
 import { Share } from '@capacitor/share';
+import { CommonService } from '../services/common.service';
+import { DataBaseService } from '../services/data-base.service';
+import { CalculationService } from '../services/calculation.service';
 
 @Component({
   selector: 'app-calculator',
@@ -26,28 +28,30 @@ export class CalculatorPage {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private clientsDataService: ClientDataService
+    private dataBaseService: DataBaseService,
+    private commonService: CommonService,
+    private calculationService: CalculationService
   ) {}
 
   ionViewWillEnter() {
-    this.theme = this.clientsDataService.getTheme();
+    this.theme = this.commonService.getTheme();
     this.calcsHistory = JSON.parse(localStorage.getItem('calcsHistory')) || [];
 
     const clientID = this.activatedRoute.snapshot.params.key;
     const recordId = this.activatedRoute.snapshot.params.id;
 
     if (clientID !== '0') {
-      this.clientsDataService.getClientByKey(clientID).then((res) => {
+      this.dataBaseService.getClientByKey(clientID).then((res) => {
         this.presentObj = res;
         this.linkData = res.data.find((record) => record.id == recordId);
         this.linkData.name = res.name;
         this.linkData.endDate =
-          this.linkData.closedOn || this.clientsDataService.today;
+          this.linkData.closedOn || this.commonService.today;
         this.linkData.timePeriodType = 'dates';
         this.linkData.compInt = 3;
       });
     } else {
-      this.linkData.endDate = this.clientsDataService.today;
+      this.linkData.endDate = this.commonService.today;
       this.linkData.timePeriodType = 'dates';
       this.linkData.compInt = 3;
     }
@@ -58,11 +62,11 @@ export class CalculatorPage {
       this.linkData = clientDetail;
       this.linkData.name = clientDetail?.name || this.presentObj?.name || '';
       this.linkData.endDate =
-        this.linkData.closedOn || this.clientsDataService.today;
+        this.linkData.closedOn || this.commonService.today;
     } else {
       this.linkData = {
         timePeriod: { d: null, m: null, y: null },
-        endDate: this.clientsDataService.today,
+        endDate: this.commonService.today,
       };
     }
 
@@ -114,7 +118,7 @@ export class CalculatorPage {
     }
   }
 
-  dateFormater(date: Date): string {
+  dateFormatter(date: Date): string {
     return date
       .toLocaleDateString('en-GB', {
         day: '2-digit',
@@ -133,18 +137,18 @@ export class CalculatorPage {
         this.generateStartEndDate(formRef.value);
 
         if (!isNaN(this.timePeriodObject.tm)) {
-          this.linkData.startDate = this.dateFormater(formRef.value.startDate);
-          this.linkData.endDate = this.dateFormater(formRef.value.endDate);
+          this.linkData.startDate = this.dateFormatter(formRef.value.startDate);
+          this.linkData.endDate = this.dateFormatter(formRef.value.endDate);
         }
       } else {
-        this.timePeriodObject = this.clientsDataService.calculateTimeperiod(
+        this.timePeriodObject = this.calculationService.calculateTimeperiod(
           formRef.value.startDate,
           formRef.value.endDate
         );
       }
 
       if (!isNaN(this.timePeriodObject.tm)) {
-        this.intArray = this.clientsDataService.calculateTotalInterest(
+        this.intArray = this.calculationService.calculateTotalInterest(
           {
             principal: formRef.value.principal,
             rate: formRef.value.interest,
@@ -159,9 +163,7 @@ export class CalculatorPage {
         );
 
         this.showCalculatedData = true;
-        this.clientsDataService.presentToast(
-          'Interest calculated successfully'
-        );
+        this.commonService.presentToast('Interest calculated successfully');
       } else {
         this.showCalculatedData = false;
         this.dateInputErrorAlert(formRef.timePeriodType === 'dates');
@@ -172,10 +174,10 @@ export class CalculatorPage {
   }
 
   saveCalcLogs(finalInterest) {
-    if (this.calcsHistory[0]?.key == this.clientsDataService.today) {
+    if (this.calcsHistory[0]?.key == this.commonService.today) {
     } else {
       this.calcsHistory.unshift({
-        key: this.clientsDataService.today,
+        key: this.commonService.today,
         value: [],
       });
     }
@@ -213,7 +215,7 @@ export class CalculatorPage {
     formRef.form.controls.compInt.setValue(3);
     setTimeout(() => {
       formRef.form.controls.startDate.setValue(null);
-      formRef.form.controls.endDate.setValue(this.clientsDataService.today);
+      formRef.form.controls.endDate.setValue(this.commonService.today);
     });
     this.showCalculatedData = false;
   }
@@ -248,7 +250,7 @@ export class CalculatorPage {
     } catch {
       const cb = navigator.clipboard;
       await cb.writeText(clipboardText);
-      this.clientsDataService.presentToast('Copied to clipboard');
+      this.commonService.presentToast('Copied to clipboard');
     }
   }
 

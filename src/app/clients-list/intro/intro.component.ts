@@ -6,7 +6,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import * as sampleData from '../../../assets/clientsData.json';
-import { ClientDataService } from '../../services/client-data.service';
+import { DataBaseService } from '../../services/data-base.service';
 
 @Component({
   selector: 'app-intro',
@@ -19,11 +19,11 @@ export class IntroComponent {
   @Output() reloadClientList = new EventEmitter();
   @Input() theme: string;
 
-  constructor(private clientDataService: ClientDataService) {}
+  constructor(private dataBaseService: DataBaseService) {}
 
   async loadSampleData() {
     const data = sampleData['default'];
-    await this.clientDataService.loadSampleData(data).then(() => {
+    await this.dataBaseService.loadSampleData(data).then(() => {
       this.reloadClientList.emit(true);
       setTimeout(() => {
         this.creditDebitList.nativeElement.scrollIntoView({

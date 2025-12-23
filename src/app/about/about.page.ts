@@ -2,12 +2,13 @@ import { Component, Renderer2, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
-import { ClientDataService } from '../services/client-data.service';
 import { HttpClient } from '@angular/common/http';
 import { App } from '@capacitor/app';
 import { read, utils, writeFileXLSX } from 'xlsx';
 import { Capacitor } from '@capacitor/core';
 import { FirebaseService } from '../services/firebase.service';
+import { CommonService } from '../services/common.service';
+import { DataBaseService } from '../services/data-base.service';
 
 @Component({
   selector: 'app-about',
@@ -34,15 +35,16 @@ export class AboutPage {
   constructor(
     public alertController: AlertController,
     private router: Router,
-    private clientDataService: ClientDataService,
     private renderer: Renderer2,
     private httpClient: HttpClient,
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
+    private commonService: CommonService,
+    private dataBaseService: DataBaseService
   ) {}
 
   ionViewWillEnter() {
     this.isWebVersion = Capacitor.getPlatform() != 'web' ? false : true;
-    this.theme = this.clientDataService.getTheme();
+    this.theme = this.commonService.getTheme();
     if (this.isWebVersion) {
       this.firebaseService.onAuthStateChanged((user) => {
         this.user = user ?? null;
@@ -80,7 +82,7 @@ export class AboutPage {
   }
 
   exportData() {
-    this.clientDataService.getAllClientsData().then((data) => {
+    this.dataBaseService.getAllClientsData().then((data) => {
       if (this.fileType === 'json') {
         const clientDataString = JSON.stringify(data);
         this.writeSecretFile(clientDataString);
@@ -111,13 +113,13 @@ export class AboutPage {
       recursive: true,
     })
       .then(() => {
-        this.clientDataService.presentToast(
+        this.commonService.presentToast(
           `File saved successfully in <br> Documents/${fileName}.`
         );
       })
       .catch((err) => {
         const errString = 'No Data found.<br>' + err.toString().slice(6);
-        this.clientDataService.presentToast(
+        this.commonService.presentToast(
           errString,
           'failedToastClass',
           'alert-outline'
@@ -135,7 +137,7 @@ export class AboutPage {
         try {
           this.importDataAlert(JSON.parse(fileReader.result.toString()));
         } catch (err) {
-          this.clientDataService.presentToast(
+          this.commonService.presentToast(
             err,
             'failedToastClass',
             'alert-outline'
@@ -156,14 +158,14 @@ export class AboutPage {
         {
           text: 'Replace with new data',
           handler: () => {
-            this.clientDataService.presentLoading();
+            this.commonService.presentLoading();
             this.importHandler(clientsData, true);
           },
         },
         {
           text: 'Merge with new data',
           handler: () => {
-            this.clientDataService.presentLoading();
+            this.commonService.presentLoading();
             this.importHandler(clientsData, false);
           },
         },
@@ -179,12 +181,12 @@ export class AboutPage {
   }
 
   importHandler(clientsData, replaceStatus) {
-    this.clientDataService
+    this.dataBaseService
       .saveBulkClients(clientsData, replaceStatus)
       .then((res) => {
         setTimeout(() => {
           this.inputClientData = '';
-          this.clientDataService.presentToast(
+          this.commonService.presentToast(
             'Data imported succcessfully.<br>Redirecting to Clients-list tab'
           );
           this.router.navigate(['clients-list']);
@@ -215,8 +217,8 @@ export class AboutPage {
   }
 
   resetData() {
-    this.clientDataService.deleteDataBase();
-    this.clientDataService.presentToast('Data successfully deleted');
+    this.dataBaseService.deleteDataBase();
+    this.commonService.presentToast('Data successfully deleted');
   }
 
   changeTheme(event) {
@@ -249,9 +251,9 @@ export class AboutPage {
 
   changeSort(event) {
     if (event.target.value) {
-      this.clientDataService.presentLoading();
+      this.commonService.presentLoading();
       event.target.disabled = true;
-      this.clientDataService.getAllClientsData().then((clients) => {
+      this.dataBaseService.getAllClientsData().then((clients) => {
         clients.map((ele) => {
           ele.data.sort((a, b) => {
             let keyA = new Date(a.startDate);
@@ -278,9 +280,9 @@ export class AboutPage {
           });
         }
 
-        this.clientDataService.saveBulkClients(clients, true).then((res) => {
+        this.dataBaseService.saveBulkClients(clients, true).then((res) => {
           setTimeout(() => {
-            this.clientDataService.presentToast('Data sorted successfully');
+            this.commonService.presentToast('Data sorted successfully');
             event.target.disabled = false;
             event.target.value = null;
           }, 1000);
@@ -290,9 +292,9 @@ export class AboutPage {
   }
 
   cleanData() {
-    this.clientDataService.cleanClientsData().then((res) => {
-      this.clientDataService.presentLoading().then(() => {
-        this.clientDataService.presentToast(
+    this.dataBaseService.cleanClientsData().then((res) => {
+      this.commonService.presentLoading().then(() => {
+        this.commonService.presentToast(
           'All the empty Data and errors are fixed.'
         );
       });
@@ -300,11 +302,9 @@ export class AboutPage {
   }
 
   cleanApproveData() {
-    this.clientDataService.cleanApprovedData().then((res) => {
-      this.clientDataService.presentLoading().then(() => {
-        this.clientDataService.presentToast(
-          'All the approved data is cleared.'
-        );
+    this.dataBaseService.cleanApprovedData().then((res) => {
+      this.commonService.presentLoading().then(() => {
+        this.commonService.presentToast('All the approved data is cleared.');
       });
     });
   }
@@ -320,9 +320,9 @@ export class AboutPage {
   async signInWithGoogle() {
     try {
       this.user = await this.firebaseService.signInWithGoogle();
-      this.clientDataService.presentToast('Signed in successfully');
+      this.commonService.presentToast('Signed in successfully');
     } catch (err: any) {
-      this.clientDataService.presentToast(
+      this.commonService.presentToast(
         err.message,
         'failedToastClass',
         'alert-outline'
@@ -334,9 +334,9 @@ export class AboutPage {
     try {
       await this.firebaseService.signOutUser();
       this.user = null;
-      this.clientDataService.presentToast('Signed out successfully');
+      this.commonService.presentToast('Signed out successfully');
     } catch (error) {
-      this.clientDataService.presentToast(
+      this.commonService.presentToast(
         'Error signing out: <br>' + error,
         'failedToastClass',
         'alert-outline'
@@ -348,13 +348,13 @@ export class AboutPage {
     try {
       const res = await this.firebaseService.loadCloudData(this.user?.uid);
       if (!res.length) {
-        this.clientDataService.presentToast('No data found');
+        this.commonService.presentToast('No data found');
       } else {
         this.importDataAlert(res);
       }
     } catch (error) {
       console.log('Error loading cloud data:', error);
-      this.clientDataService.presentToast(
+      this.commonService.presentToast(
         'Error loading cloud data: <br>' + error,
         'failedToastClass',
         'alert-outline'
@@ -364,14 +364,14 @@ export class AboutPage {
 
   async uploadToCloud() {
     try {
-      const clientsData = await this.clientDataService.getAllClientsData();
+      const clientsData = await this.dataBaseService.getAllClientsData();
       await this.firebaseService.uploadToCloud(this.user.uid, clientsData);
-      await this.clientDataService.presentLoading();
+      await this.commonService.presentLoading();
       setTimeout(() => {
-        this.clientDataService.presentToast('Upload successful');
+        this.commonService.presentToast('Upload successful');
       }, 1500);
     } catch (error) {
-      this.clientDataService.presentToast(
+      this.commonService.presentToast(
         'Error uploading data to cloud: <br>' + error,
         'failedToastClass',
         'alert-outline'
@@ -420,10 +420,10 @@ export class AboutPage {
         clientsData.push({ name: newClient, data: [record] });
       }
     });
-    this.clientDataService.saveBulkClients(clientsData, true).then(() => {
+    this.dataBaseService.saveBulkClients(clientsData, true).then(() => {
       setTimeout(() => {
         this.inputClientData = '';
-        this.clientDataService.presentToast(
+        this.commonService.presentToast(
           'Data imported succcessfully <br>Redirecting to Clients-list tab'
         );
         this.router.navigate(['clients-list']);

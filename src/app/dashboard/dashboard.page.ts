@@ -1,5 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { ClientDataService } from '../services/client-data.service';
+import { DataBaseService } from '../services/data-base.service';
+import { CalculationService } from '../services/calculation.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -37,7 +38,10 @@ export class DashboardPage {
     upTrans: true,
     cliSum: true,
   };
-  constructor(private clientDataService: ClientDataService) {
+  constructor(
+    private dataBaseService: DataBaseService,
+    private calculationService: CalculationService
+  ) {
     this.math = Math;
   }
 
@@ -52,7 +56,7 @@ export class DashboardPage {
   }
 
   ionViewDidEnter() {
-    this.clientDataService.getAllClientsDataWithKeys().then((res) => {
+    this.dataBaseService.getAllClientsDataWithKeys().then((res) => {
       this.totalClients = this.filterOpenData(res);
       this.totalArray = [];
       this.getTotalArray(this.totalClients);
@@ -83,10 +87,10 @@ export class DashboardPage {
       let totalEarnings = 0;
 
       client.data.data.forEach((record) => {
-        const timeObject = this.clientDataService.calculateTimeperiod(
+        const timeObject = this.calculationService.calculateTimeperiod(
           record.startDate
         );
-        const intArr = this.clientDataService.calculateTotalInterest({
+        const intArr = this.calculationService.calculateTotalInterest({
           principal: record.principal,
           rate: record.interest,
           startDate: record.startDate,

@@ -1,5 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ClientDataService } from '../services/client-data.service';
+import { DataBaseService } from '../services/data-base.service';
+import { CommonService } from '../services/common.service';
+import { CalculationService } from '../services/calculation.service';
 
 @Component({
   selector: 'app-adv-search',
@@ -18,7 +20,11 @@ export class AdvSearchPage implements OnInit {
   clientSearchValue = '';
   hideSkeletonText = true;
 
-  constructor(private clientDataService: ClientDataService) {}
+  constructor(
+    private dataBaseService: DataBaseService,
+    private commonService: CommonService,
+    private calculationService: CalculationService
+  ) {}
 
   ngOnInit() {
     const storedValue = JSON.parse(localStorage.getItem('sortAndFilterParams'));
@@ -27,7 +33,7 @@ export class AdvSearchPage implements OnInit {
   }
 
   resetDisplayData() {
-    this.clientDataService.getAllClientsDataWithKeys().then((res) => {
+    this.dataBaseService.getAllClientsDataWithKeys().then((res) => {
       this.displayData = res;
       this.showNoRecords = this.displayData.length === 0;
     });
@@ -75,7 +81,7 @@ export class AdvSearchPage implements OnInit {
 
   postAdditionNewParams() {
     this.modal.dismiss();
-    this.clientDataService.presentToast('New model added');
+    this.commonService.presentToast('New model added');
     this.sortAndFilterParams.forEach((ele) => (ele.active = 'light'));
     localStorage.setItem(
       'sortAndFilterParams',
@@ -99,7 +105,7 @@ export class AdvSearchPage implements OnInit {
       return;
     }
 
-    this.clientDataService.getAllClientsDataWithKeys().then((res) => {
+    this.dataBaseService.getAllClientsDataWithKeys().then((res) => {
       this.displayData = res;
       if (paramsModel.filter.by) {
         this.filterDataModel(paramsModel);
@@ -116,7 +122,7 @@ export class AdvSearchPage implements OnInit {
     this.displayData = this.displayData.filter((ele) => {
       ele.data.data = ele.data.data.filter((rec) => {
         const timePeriod =
-          this.clientDataService.calculateTimeperiod(rec.startDate).tm / 12.0;
+          this.calculationService.calculateTimeperiod(rec.startDate).tm / 12.0;
         if (paramsModel.filter.by === 'principal') {
           return (
             rec.principal >= paramsModel.filter.min &&
@@ -176,9 +182,9 @@ export class AdvSearchPage implements OnInit {
         'sortAndFilterParams',
         JSON.stringify(this.sortAndFilterParams)
       );
-      this.clientDataService.presentToast('Params deleted successfuly');
+      this.commonService.presentToast('Params deleted successfuly');
     } else {
-      this.clientDataService.presentToast(
+      this.commonService.presentToast(
         'Select any params to delete',
         'failedToastClass',
         'alert-outline'
@@ -187,7 +193,7 @@ export class AdvSearchPage implements OnInit {
   }
 
   getColor(detail) {
-    const tm = this.clientDataService.calculateTimeperiod(detail?.startDate).tm;
+    const tm = this.calculationService.calculateTimeperiod(detail?.startDate).tm;
     if (detail?.closedOn) {
       return 'success';
     } else if (tm >= 30) {

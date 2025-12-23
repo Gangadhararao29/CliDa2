@@ -1,7 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { ClientDataService } from '../services/client-data.service';
+import { CommonService } from '../services/common.service';
+import { DataBaseService } from '../services/data-base.service';
 
 @Component({
   selector: 'app-edit-details',
@@ -28,17 +29,18 @@ export class EditDetailsPage {
   theme: string;
   constructor(
     private activatedRoute: ActivatedRoute,
-    private clientDataService: ClientDataService,
     public alertController: AlertController,
-    private router: Router
+    private router: Router,
+    private dataBaseService: DataBaseService,
+    private commonService: CommonService
   ) {}
 
   ionViewWillEnter() {
-    this.theme = this.clientDataService.getTheme();
+    this.theme = this.commonService.getTheme();
     this.activatedRoute.params.subscribe((params) => {
       this.clientKey = params.key;
       this.clientRecordId = params.clientId;
-      this.clientDataService.getClientByKey(params.key).then((record) => {
+      this.dataBaseService.getClientByKey(params.key).then((record) => {
         this.clientData = record;
         this.clientName = record.name;
         this.clientRecordIndex = record.data.findIndex(
@@ -86,7 +88,7 @@ export class EditDetailsPage {
         {
           text: 'Yes',
           handler: () => {
-            this.clientDataService.presentLoading();
+            this.commonService.presentLoading();
             this.saveClientsData(formRef);
           },
         },
@@ -102,7 +104,7 @@ export class EditDetailsPage {
   }
 
   saveClientsData(formRef) {
-    this.clientDataService
+    this.dataBaseService
       .editClientData(formRef.value, this.clientData, this.clientRecordIndex)
       .then((res) => {
         this.responseHandler(res.data.name);
@@ -111,7 +113,7 @@ export class EditDetailsPage {
 
   responseHandler(name) {
     if (name !== this.clientName) {
-      this.clientDataService
+      this.dataBaseService
         .deleteClientData(
           this.clientData,
           this.clientRecordIndex,
@@ -119,7 +121,7 @@ export class EditDetailsPage {
         )
         .then(() => {
           setTimeout(() => {
-            this.clientDataService.presentToast(
+            this.commonService.presentToast(
               'Your changes have been saved.<br>Redirecting to Clients-list tab'
             );
             this.router.navigate(['clients-list']);
@@ -127,7 +129,7 @@ export class EditDetailsPage {
         });
     } else {
       setTimeout(() => {
-        this.clientDataService.presentToast(
+        this.commonService.presentToast(
           'Your changes have been saved.<br>Redirecting to Client-details tab'
         );
         this.router.navigate([

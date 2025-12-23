@@ -1,6 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ClientDataService } from '../services/client-data.service';
+import { DataBaseService } from '../services/data-base.service';
+import { CommonService } from '../services/common.service';
 
 @Component({
   selector: 'app-add-client',
@@ -16,22 +17,23 @@ export class AddClientPage {
   theme: string;
 
   constructor(
-    private clientDataService: ClientDataService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private dataBaseService: DataBaseService,
+    private commonService: CommonService
   ) {}
 
   ionViewWillEnter() {
-    this.theme = this.clientDataService.getTheme();
+    this.theme = this.commonService.getTheme();
     this.isAddBtnDisable = false;
     this.formRefVariable.resetForm();
-    this.clientDataService.getAllClientsData().then((res) => {
+    this.dataBaseService.getAllClientsData().then((res) => {
       this.clientsData = res;
     });
 
     this.formRefVariable.form.patchValue({
       userName: this.activatedRoute.snapshot.queryParamMap.get('name'),
-      startDate: this.clientDataService.today,
+      startDate: this.commonService.today,
       recordType: 'credit',
     });
   }
@@ -44,8 +46,8 @@ export class AddClientPage {
   onSubmit(formRef) {
     if (formRef.valid) {
       this.isAddBtnDisable = true;
-      this.clientDataService.addNewClientData(formRef.value).then((res) => {
-        this.clientDataService.presentLoading();
+      this.dataBaseService.addNewClientData(formRef.value).then((res) => {
+        this.commonService.presentLoading();
         this.routeToClientList(formRef);
       });
     }
@@ -59,7 +61,7 @@ export class AddClientPage {
 
     setTimeout(() => {
       this.isAddBtnDisable = false;
-      this.clientDataService.presentToast(message);
+      this.commonService.presentToast(message);
       if (!formRef.value.multiRecordsSelected) {
         this.router.navigate(['..']).then(() => {
           formRef.resetForm();

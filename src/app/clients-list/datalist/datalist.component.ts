@@ -1,20 +1,22 @@
 import { Component, Input } from '@angular/core';
-import { ClientDataService } from '../../services/client-data.service';
+import { CalculationService } from '../../services/calculation.service';
 
 @Component({
   selector: 'app-datalist',
   templateUrl: './datalist.component.html',
   styleUrls: ['./datalist.component.scss'],
-  standalone: false
+  standalone: false,
 })
-export class DatalistComponent  {
+export class DatalistComponent {
   @Input() dataList: any[] = [];
   @Input() clientSearchValue: string = '';
 
-  constructor(private clientDataService: ClientDataService) {}
+  constructor(private calculationService: CalculationService) {}
 
   getColor(detail) {
-    const tm = this.clientDataService.calculateTimeperiod(detail?.startDate).tm;
+    const tm = this.calculationService.calculateTimeperiod(
+      detail?.startDate
+    ).tm;
     if (detail?.closedOn) {
       return 'success';
     } else if (tm >= 30) {

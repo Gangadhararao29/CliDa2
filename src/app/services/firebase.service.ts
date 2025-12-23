@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, User } from '@angular/fire/auth';
 import { Firestore, collection, doc, getDocs, writeBatch } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
