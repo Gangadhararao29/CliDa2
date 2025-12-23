@@ -1,6 +1,8 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { ClientDataService } from 'src/app/services/client-data.service';
+import { DataBaseService } from '../../services/data-base.service';
+import { CommonService } from '../../services/common.service';
+import { CalculationService } from '../../services/calculation.service';
 
 @Component({
   selector: 'app-approve-modal',
@@ -27,13 +29,16 @@ export class ApproveModalComponent implements OnInit {
     .join('-');
   theme: string;
 
+
   constructor(
-    private clientsDataService: ClientDataService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private dataBaseService: DataBaseService,
+    private commonService: CommonService,
+    private calculationService: CalculationService
   ) {}
 
   ngOnInit() {
-    this.theme = this.clientsDataService.getTheme();
+    this.theme = this.commonService.getTheme();
     this.hideAppprovedControls = true;
     this.approvedAmount = 0;
   }
@@ -76,15 +81,13 @@ export class ApproveModalComponent implements OnInit {
         }${paymentDetails}\n${balanceAmount}${newRecordAdded}`;
       }
 
-      this.clientsDataService.updateClientRecordByName(this.client).then(() => {
-        this.clientsDataService.addNewLogData(
-          'edit - approve',
-          { name: this.client.name, ...oldData },
-          this.client.data[index]
-        );
-        this.clientsDataService.presentLoading();
-        this.modalController.dismiss();
-      });
+      this.commonService.presentLoading();
+      this.dataBaseService
+        .approveClientData(this.client, oldData, index)
+        .then(() => {
+          this.modalController.dismiss();
+          this.commonService.pageRefreshEmitter.next(this.client);
+        });
     }
   }
 
@@ -110,7 +113,7 @@ export class ApproveModalComponent implements OnInit {
   }
 
   calculateInterest(data, endDate) {
-    const intArr = this.clientsDataService.calculateTotalInterest(
+    const intArr = this.calculationService.calculateTotalInterest(
       {
         principal: data.principal,
         rate: data.interest,

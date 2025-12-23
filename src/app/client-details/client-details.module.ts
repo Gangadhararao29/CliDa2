@@ -8,6 +8,8 @@ import { ClientDetailsPageRoutingModule } from './client-details-routing.module'
 
 import { ClientDetailsPage } from './client-details.page';
 import { ApproveModalComponent } from './approve-modal/approve-modal.component';
+import { SummaryTableComponent } from './summaryTable/summary-table.component';
+import { ClientDataViewComponent } from './client-data-view/client-data-view.component';
 
 @NgModule({
   imports: [
@@ -16,6 +18,11 @@ import { ApproveModalComponent } from './approve-modal/approve-modal.component';
     IonicModule,
     ClientDetailsPageRoutingModule,
   ],
-  declarations: [ClientDetailsPage, ApproveModalComponent],
+  declarations: [
+    ClientDetailsPage,
+    ApproveModalComponent,
+    SummaryTableComponent,
+    ClientDataViewComponent
+  ],
 })
 export class ClientDetailsPageModule {}

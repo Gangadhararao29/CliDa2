@@ -1,0 +1,127 @@
+<div class="bgLight mx-2 mb-2 ps-2 rounded fw-bold py-1">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="5">Principal</ion-col>
+      <ion-col size="2">:</ion-col>
+      <ion-col size="5">₹ {{isd.format(data?.principal)}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="5">Interest</ion-col>
+      <ion-col size="2">:</ion-col>
+      <ion-col size="5">{{data?.interest}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="5">Start date</ion-col>
+      <ion-col size="2">:</ion-col>
+      <ion-col size="5">
+        {{data?.startDate | date : "dd/MM/YYYY"}}
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="5">End date</ion-col>
+      <ion-col size="2">:</ion-col>
+      <ion-col size="5"> {{(data?.closedOn || today) | date : "dd/MM/YYYY"}} </ion-col>
+    </ion-row>
+  </ion-grid>
+</div>
+
+<div class="bgLight m-2 rounded ps-2 py-1 fw-bold">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="5">Time period</ion-col>
+      <ion-col size="2">:</ion-col>
+      <ion-col size="5">
+        {{calculateDateDifference(data?.startDate,data?.closedOn || today)}}
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="5">in months</ion-col>
+      <ion-col size="2">:</ion-col>
+      <ion-col size="5">{{totalTimeinMonths(data?.startDate,data?.closedOn || today)}}m</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="5">Interest amt</ion-col>
+      <ion-col size="2">:</ion-col>
+      <ion-col size="5">
+        ₹ {{isd.format(calculateInterest(data, data?.closedOn || today))}}
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="5">Total amt</ion-col>
+      <ion-col size="2">:</ion-col>
+      <ion-col size="5">
+        ₹ {{isd.format(data?.principal + calculateInterest(data,data?.closedOn || today))}}
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</div>
+
+<div *ngIf="totalTimeinMonths(data?.startDate,data?.closedOn || today)>36"
+  class="m-2 p-1 d-flex gap-3 align-items-center bgWarning rounded">
+
+  <ion-icon name="alert" size="large" color="danger"></ion-icon>
+
+  <div class="d-flex flex-column" style="line-height: 1.2;">
+    <span class="fw-bold text-warning-emphasis" style="font-size: 0.95em;">
+      Interest calculated for 3 years only.
+    </span>
+    <span class="text-secondary" style="font-size: 0.9em;">
+      Use <b>Calculate</b> for details.
+    </span>
+  </div>
+
+</div>
+
+
+<div *ngIf="data?.comments" class="bgLight p-2 rounded m-2" style="border-left: 4px solid #ffc107;">
+  <small class="fw-bold d-block">💬 Comments</small>
+  <small style="white-space: pre-line">{{data?.comments}}</small>
+</div>
+
+<div *ngIf="data?.closedOn"
+  class="bgLight m-2 rounded fw-bold px-2 border-start border-end border-5 border-success shadow-sm">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="5">Closed on</ion-col>
+      <ion-col size="2">:</ion-col>
+      <ion-col size="5" class="text-end">
+        {{ data?.closedOn | date: "dd/MM/yyyy" }}
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="5" class="">Paid Amt</ion-col>
+      <ion-col size="2">:</ion-col>
+      <ion-col size="5" class="text-end">
+        ₹ {{ isd.format(data?.closedAmount) }}
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</div>
+
+<div class="bgLight rounded m-2">
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-button color="primary" expand="block" (click)="editClientData(data?.id)">Edit</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button color="warning" expand="block" (click)="openCalculator(data?.id)">Calculate</ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-button color="success" expand="block" [id]="'approveScreen'+index"
+          [disabled]="data?.closedOn">Approve</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button color="danger" expand="block" (click)="deleteData(data?.id)">Delete</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</div>
+
+<ion-modal #modal [trigger]="'approveScreen'+index" [initialBreakpoint]="1" [breakpoints]="[1]">
+  <ng-template>
+    <app-approve-modal [data]="data" [client]="client"></app-approve-modal>
+  </ng-template>
+</ion-modal>

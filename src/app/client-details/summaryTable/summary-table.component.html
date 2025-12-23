@@ -1,0 +1,27 @@
+<div class="mx-2 py-0 px-1 summary rounded bgLight" *ngIf="selectedChips.length">
+  <table class="table table-sm caption-top" [attr.data-bs-theme]="theme">
+    <caption>Selected Records ({{selectedChips.length}})</caption>
+    <thead>
+      <tr>
+        <th>Principal</th>
+        <th>Interest</th>
+        <th>Final</th>
+      </tr>
+    </thead>
+    <tbody class="">
+      <tr *ngFor="let record of selectedChips">
+        <td>₹ {{isd.format(record.principal)}}</td>
+        <td>₹ {{isd.format(record.interest)}}</td>
+        <td>₹ {{isd.format(record.principal + record.interest)}}</td>
+      </tr>
+    </tbody>
+
+    <tfoot>
+      <tr class="table-success">
+        <th>{{getQuickMenuPrincipal()}}</th>
+        <th>{{getQuickMenuInterest()}}</th>
+        <th>{{getQuickMenuTotal()}}</th>
+      </tr>
+    </tfoot>
+  </table>
+</div>

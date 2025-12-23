@@ -1,0 +1,16 @@
+.bgLight {
+  background-color: var(--ion-color-light);
+}
+
+.bgWarning {
+  background-color: var(--ion-color-warning);
+  color: black;
+}
+
+ion-col {
+  --ion-grid-column-padding: 1px;
+}
+
+ion-modal {
+  --height: auto;
+}

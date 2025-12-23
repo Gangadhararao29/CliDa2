@@ -1,7 +1,11 @@
 import { Component, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, IonAccordionGroup } from '@ionic/angular';
-import { ClientDataService } from 'src/app/services/client-data.service';
+import { ActivatedRoute } from '@angular/router';
+import { IonAccordionGroup } from '@ionic/angular';
+
+import { CalculationService } from '../services/calculation.service';
+import { CommonService } from '../services/common.service';
+import { DataBaseService } from '../services/data-base.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-client-details',
@@ -31,56 +35,56 @@ export class ClientDetailsPage {
   theme: string;
   selectedChips = [];
   openedAccordion;
+  isOldStyle = false;
+  transactions = { active: 0, closed: 0 };
+  pageRefreshSub: Subscription;
 
   constructor(
-    private router: Router,
     private activatedRoute: ActivatedRoute,
-    private clientsDataService: ClientDataService,
-    private alertController: AlertController
+    private dataBaseService: DataBaseService,
+    private commonService: CommonService,
+    private calculationService: CalculationService
   ) {}
 
   ionViewWillEnter() {
     this.selectedChips = [];
     this.hideSkeletonText = false;
-    this.theme = this.clientsDataService.getTheme();
+    this.theme = this.commonService.getTheme();
     this.clientId = this.activatedRoute.snapshot.params.key;
-    this.clientsDataService.getClientByKey(this.clientId).then((res) => {
+    this.isOldStyle = localStorage.getItem('isOldStyle') === 'true';
+    this.dataBaseService.getClientByKey(this.clientId).then((res) => {
       this.client = res;
-      this.calculateTotalPrincipal(this.client);
+      this.client.id = this.clientId;
+      this.updateDependencies(this.client);
       this.hideSkeletonText = true;
     });
+
+    this.pageRefreshSub = this.commonService.pageRefreshEmitter.subscribe(
+      (newClient) => {
+        if (newClient) this.updateDependencies(newClient);
+      }
+    );
   }
 
   trackData(index, record) {
     return record.id;
   }
 
-  calculateTotalPrincipal(res) {
-    this.totalAmount = res.data.reduce(
-      (a, b) =>
-        a + (b.hasOwnProperty('closedOn') && b.closedOn ? 0 : b.principal),
-      0
-    );
-  }
-
-  calculateDateDifference(startDate, endDate) {
-    const timeObject = this.clientsDataService.calculateTimeperiod(
-      startDate,
-      endDate
-    );
-    return `${timeObject.y}y, ${timeObject.m}m, ${timeObject.d}d`;
-  }
-
-  totalTimeinMonths(startDate, endDate) {
-    return (
-      Math.round(
-        this.clientsDataService.calculateTimeperiod(startDate, endDate).tm * 100
-      ) / 100.0
-    );
+  updateDependencies(res) {
+    this.transactions = { active: 0, closed: 0 };
+    this.totalAmount = 0;
+    res.data.forEach((detail) => {
+      if (detail.closedOn) {
+        this.transactions.closed += 1;
+      } else {
+        this.totalAmount += detail.principal;
+        this.transactions.active += 1;
+      }
+    });
   }
 
   calculateInterest(data, endDate) {
-    const intArr = this.clientsDataService.calculateTotalInterest(
+    const intArr = this.calculationService.calculateTotalInterest(
       {
         principal: data.principal,
         rate: data.interest,
@@ -91,74 +95,8 @@ export class ClientDetailsPage {
     return Math.round(intArr[0].intAmt * 100) / 100;
   }
 
-  openCalculator(recordId) {
-    this.router.navigate(['calculator', this.clientId, recordId]);
-  }
-
-  editClientData(id) {
-    this.router.navigate([
-      'clients-list',
-      'client-details',
-      this.clientId,
-      'edit-details',
-      id,
-    ]);
-  }
-
-  deleteData(id) {
-    const clientDataIndex = this.client.data.findIndex((data) => data.id == id);
-    this.presentAlertConfirm(clientDataIndex, this.client, this.clientId);
-  }
-
-  async presentAlertConfirm(clientDataIndex, clientData, key) {
-    const alert = await this.alertController.create({
-      header: 'Confirm',
-      cssClass: 'alertStyle',
-      backdropDismiss: false,
-      animated: true,
-      message: 'Do you want to delete this record?',
-      buttons: [
-        {
-          text: 'Yes',
-          handler: () => {
-            this.clientsDataService.presentLoading();
-            this.clientsDataService
-              .deleteClientData(clientData, clientDataIndex, key)
-              .then(() => {
-                this.deleteResponseHandler(clientData.data.length);
-              });
-          },
-        },
-        {
-          text: 'No',
-          role: 'cancel',
-          cssClass: 'secondary',
-        },
-      ],
-    });
-
-    await alert.present();
-  }
-
-  deleteResponseHandler(length) {
-    setTimeout(() => {
-      if (length < 1) {
-        this.clientsDataService.presentToast(
-          'Client deleted completely.<br>Redirecting to Clients-list tab'
-        );
-        this.router.navigate(['clients-list']);
-      } else {
-        this.clientsDataService.presentToast(
-          'Client record deleted successfully'
-        );
-        this.accordionGroup.value = undefined;
-        this.openedAccordion = undefined;
-      }
-    }, 1000);
-  }
-
   getColor(detail) {
-    const tm = this.clientsDataService.calculateTimeperiod(
+    const tm = this.calculationService.calculateTimeperiod(
       detail?.startDate
     ).tm;
     if (detail?.closedOn) {
@@ -178,6 +116,12 @@ export class ClientDetailsPage {
     this.modals.toArray().forEach((element) => {
       if (element.isCmpOpen) element.dismiss();
     });
+
+    this.pageRefreshSub?.unsubscribe();
+  }
+
+  toggleClosedData() {
+    this.showClosedData = !this.showClosedData;
   }
 
   onChipClick(data) {
@@ -197,6 +141,11 @@ export class ClientDetailsPage {
     }
   }
 
+  accordionCleanUp() {
+    this.accordionGroup.value = undefined;
+    this.openedAccordion = undefined;
+  }
+
   toggleTotalChips() {
     const totalRows = this.client.data.filter((record) => !record.closedOn);
     if (totalRows.length !== this.selectedChips.length) {
@@ -209,24 +158,6 @@ export class ClientDetailsPage {
 
   isChipSelected(id) {
     return this.selectedChips.find((chip) => chip.id == id) ? true : false;
-  }
-
-  getQuickMenuPrincipal() {
-    return `₹ ${this.isd.format(
-      this.selectedChips.reduce((a, b) => a + b.principal, 0) || 0
-    )}`;
-  }
-
-  getQuickMenuInterest() {
-    return `₹ ${this.isd.format(
-      this.selectedChips.reduce((a, b) => a + b.interest, 0) || 0
-    )}`;
-  }
-
-  getQuickMenuTotal() {
-    return `₹ ${this.isd.format(
-      this.selectedChips.reduce((a, b) => a + b.principal + b.interest, 0) || 0
-    )}`;
   }
 
   onCheckBoxClick(event, data) {
@@ -246,5 +177,10 @@ export class ClientDetailsPage {
       this.openedAccordion = undefined;
       this.accordionGroup.value = undefined;
     }
+  }
+
+  toggleLayout() {
+    localStorage.setItem('isOldStyle', (!this.isOldStyle).toString());
+    this.isOldStyle = !this.isOldStyle;
   }
 }
