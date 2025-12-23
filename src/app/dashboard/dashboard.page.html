@@ -54,7 +54,7 @@
         <h4>₹ {{(isd.format(getFinalAmount()))}}</h4>
       </div>
     </div>
-  <!-- </ion-card> -->
+    <!-- </ion-card> -->
 
   </div>
 
@@ -74,7 +74,7 @@
     <!-- Upcoming transactions -->
     <ion-card color="light" [hidden]="!dashPref?.upTrans">
       <ion-item color="light" lines="full">
-        <ion-label><span style="font-size: 125%; font-weight: bolder;">Upcoming trans</span></ion-label>
+        <ion-label><span class="heading">Upcoming trans</span></ion-label>
         <ion-button slot="end" color="light" (click)="sortTimeGridChange()" class="mx-1">
           <ion-icon [name]="timeGridIcon" slot="icon-only"></ion-icon>
         </ion-button>
@@ -99,11 +99,56 @@
     </ion-card>
 
     <!-- Recent transactions -->
-    <ion-card color="light" [hidden]="!dashPref?.recTrans">
+    <ion-card color="light" *ngIf="dashPref?.recTrans">
       <ion-item color="light" lines="full">
-        <ion-label><span style="font-size: 125%; font-weight: bolder;">Recent trans</span></ion-label>
-        <ion-button slot="end" color="light" routerLink='logs'>
-          <ion-icon name="arrow-forward" slot="icon-only"></ion-icon>
+        <ion-label><span class="heading">Recent trans</span></ion-label>
+        <!-- <ion-label class="fw-bold">Recent Transactions</ion-label> -->
+        <ion-button slot="end" color="dark" fill="clear" routerLink='logs'>
+          <ion-icon name="arrow-forward"></ion-icon>
+          <!-- <ion-icon name="chevron-forward-outline"></ion-icon> -->
+        </ion-button>
+      </ion-item>
+
+      <ng-container
+        *ngFor="let log of logData | paginate: { itemsPerPage: 3, currentPage: recTransPage, id:'recTrans'};">
+        <ion-item detail="false" color="light">
+
+          <ion-label>
+            <ion-text class="text-truncate">{{log?.data?.name || log?.orgData?.name}}</ion-text><br />
+            <ion-note class="ion-text-wrap">
+              {{ log?.data?.interest || log?.newData?.interest }}
+              •
+              {{ log?.data?.startDate || log?.newData?.startDate }}
+            </ion-note>
+          </ion-label>
+
+          <div class="metadata-end-wrapper text-end" slot="end">
+            <ion-text>
+              <span *ngIf="log.operation === 'new'" class="badge bg-success-subtle text-success small">+ New</span>
+              <span *ngIf="log.operation === 'delete'" class="badge bg-danger-subtle text-danger small">− Deleted</span>
+              <span *ngIf="log.operation === 'edit'" class="badge bg-warning bg-opacity-75 text-dark small">✎
+                Edited</span>
+              <span *ngIf="log.operation === 'edit - approve'" class="badge bg-primary-subtle text-primary small">✓
+                Approved</span>
+              <br>
+
+              <span class="fw-bolder text-nowrap mt-1">
+                ₹ {{ isd.format(log?.data?.principal || log?.newData?.principal) }}
+              </span>
+            </ion-text>
+          </div>
+        </ion-item>
+      </ng-container>
+      <pagination-controls class="text-end" (pageChange)="recTransPage = $event" id="recTrans" [responsive]="true"
+        [autoHide]="true"></pagination-controls>
+    </ion-card>
+
+    <!-- <ion-card color="light" *ngIf="dashPref?.recTrans">
+      <ion-item color="light" lines="full">
+        <ion-label><span class="heading">Recent trans</span></ion-label>
+
+        <ion-button slot="end" color="dark" fill="clear" routerLink='logs'>
+          <ion-icon name="arrow-forward"></ion-icon>
         </ion-button>
       </ion-item>
 
@@ -133,7 +178,7 @@
       </ng-container>
       <pagination-controls class="text-end" (pageChange)="recTransPage = $event" id="recTrans" [responsive]="true"
         [autoHide]="true"></pagination-controls>
-    </ion-card>
+    </ion-card> -->
 
     <!-- filter for upcoming transactions -->
     <ion-item color="light" hidden>
@@ -149,7 +194,7 @@
     <ion-card color="light" [hidden]="!dashPref?.cliSum">
       <ion-item color="light" lines="full">
         <!-- <ion-icon name="swap-horizontal" slot="start"></ion-icon> -->
-        <ion-label><span style="font-size: 125%; font-weight: bolder;">Summary (principal)</span></ion-label>
+        <ion-label><span class="heading">Summary (principal)</span></ion-label>
         <ion-button slot="end" color="light" (click)="sortPrincipalGridChange()">
           <ion-icon [name]="principalGridIcon" slot="icon-only"></ion-icon>
         </ion-button>
@@ -172,7 +217,7 @@
     <!-- toggle user section -->
     <ion-card color="light" #toggleDashSection>
       <ion-item color="light" lines="full">
-        <ion-label><span style="font-size: 125%; font-weight: bolder;">Quick toggle sections</span></ion-label>
+        <ion-label><span class="heading">Customize Dashboard</span></ion-label>
       </ion-item>
       <div class="px-2 pb-2">
         <ion-chip [color]="dashPref?.stats ?'tertiary':''" (click)="toggleDashPref('stats')">Stats</ion-chip>
