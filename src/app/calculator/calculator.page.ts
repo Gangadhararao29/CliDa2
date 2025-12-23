@@ -264,30 +264,55 @@ export class CalculatorPage {
 
   // prettier-ignore
   generateResultHtml() {
-    let text = '';
-    text += 'Principal      : ' + this.currencyFormat(this.linkData.principal) + '\n';
-    text += 'Interest rate  : ' + this.linkData.interest + '\n';
-    text += 'End date       : ' + this.linkData.endDate + '\n';
-    text += 'Start date     : ' + this.linkData.startDate + '\n';
-    text += '--------------------------------\n';
-    text += 'Time period    : ' + `${this.timePeriodObject.y} y ${this.timePeriodObject.m} m ${this.timePeriodObject.d} d` + '\n';
-    text += '--------------------------------\n';
-    text += 'Time in months : ' + this.timePeriodObject.tm.toFixed(2) + '\n';
+  const {
+    principal,
+    interest,
+    startDate,
+    endDate
+  } = this.linkData;
 
-    if (this.intArray.length === 1) {
-      text += 'Total interest : ' + this.currencyFormat(this.intArray[0].intAmt) + '\n';
-      text += '--------------------------------\n';
-      text += 'Total amount   : ' + this.currencyFormat(this.intArray[0].intAmt + this.linkData.principal) + '\n';
-    } else {
-      this.intArray.forEach(intObj => {
-        text += `Int amount (${intObj.start} - ${(+intObj.end).toFixed(2)})y : ` + this.currencyFormat(intObj.intAmt) + '\n';
-      })
-      text += 'Total interest : ' + this.currencyFormat(this.finalInterest) + '\n';
-      text += '--------------------------------\n';
-      text += 'Total amount   : ' + this.currencyFormat(this.finalInterest + this.linkData.principal) + '\n';
-    }
-    text += '--------------------------------\n';
-    text += 'https://clida3.web.app/calculator';
-    return text;
+  const { y, m, d, tm } = this.timePeriodObject;
+  const separator = `--------------------------------`;
+
+  const lines: string[] = [
+    `Principal      : ${this.currencyFormat(principal)}`,
+    `Interest rate  : ${interest}`,
+    `End date       : ${endDate}`,
+    `Start date     : ${startDate}`,
+    `${separator}`,
+    `Time period    : ${y} y ${m} m ${d} d`,
+    `${separator}`,
+    `Time in months : ${tm.toFixed(2)}`
+  ];
+
+  if (this.intArray.length === 1) {
+    const interestAmt = this.intArray[0].intAmt;
+
+    lines.push(
+      `Total interest : ${this.currencyFormat(interestAmt)}`,
+      `${separator}`,
+      `Total amount   : ${this.currencyFormat(interestAmt + principal)}`
+    );
+  } else {
+    lines.push('Interest breakdown')
+    this.intArray.forEach(({ start, end, intAmt }) => {
+      lines.push(
+        `${start}y - ${(+end).toFixed(2)}y     : ${this.currencyFormat(intAmt)}`,
+      )
+    });
+
+    lines.push(
+      `Total interest : ${this.currencyFormat(this.finalInterest)}`,
+      `${separator}`,
+      `Total amount   : ${this.currencyFormat(this.finalInterest + principal)}`
+    );
   }
+
+  lines.push(
+    `${separator}`,
+    `https://clida3.web.app/calculator`
+  );
+
+  return lines.join('\n');
+}
 }

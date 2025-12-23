@@ -107,20 +107,53 @@
           </div>
         </div>
 
-        <div class="d-flex justify-content-between my-1">
-          <span>Compound interest</span>
-          <span><b>{{linkData.compInt}} </b>Yrs</span>
+
+        <div class="my-2 p-2 border border-1 border-success rounded">
+          <div class="d-flex justify-content-between align-items-center gap-3">
+
+            <div class="flex-fill" style="font-size: 0.9rem;">
+              <span class="text-muted">Compound Interest</span> <br>
+              <span class="small text-muted mt-1">Recalculate over a period of</span> <br>
+              <ion-range class="formControl" id="compInt" name="compInt" [(ngModel)]="linkData.compInt" [min]="1"
+                [max]="5" [value]="3" [ticks]="true" [snaps]="true" color="success"></ion-range>
+            </div>
+
+            <div>
+              <span class="rounded-pill p-2 bg-success bg-opacity-75 text-light"><b>{{linkData.compInt}}</b>
+                Yrs</span>
+            </div>
+          </div>
+
+
+
         </div>
-        <ion-range class="formControl" id="compInt" name="compInt" [(ngModel)]="linkData.compInt" [min]="1" [max]="5"
-          [value]="3" [ticks]="true" [snaps]="true"></ion-range>
+
+        <!-- <div class="compound-interest-section">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+              <span class="fw-semibold">Compound Interest Period</span>
+              <div class="small text-muted mt-1">Recalculate interest every year over {{linkData.compInt}} years</div>
+            </div>
+            <span class="compound-value"><b>{{linkData.compInt}}</b> Yrs</span>
+          </div>
+          <ion-range class="formControl" id="compInt" name="compInt" [(ngModel)]="linkData.compInt" [min]="1" [max]="5"
+            [value]="3" [ticks]="true" [snaps]="true"></ion-range>
+        </div> -->
       </div>
 
-      <div *ngIf="linkData?.closedOn" class="bg-success rounded-3 text-light text-center">
-        <div class="p-2">
-          Record closed on
-          <span class="fw-semibold">{{linkData?.closedOn.split('-').reverse().join('/')}}</span><br />
-          with amount
-          <span class="fw-semibold">{{this.currencyFormat(linkData?.closedAmount)}}</span>
+
+      <div *ngIf="linkData?.closedOn" class="bg-success rounded-3 text-light my-2">
+        <div class="d-flex align-items-center p-2 justify-content-between">
+          <ion-icon name="checkmark-circle" size="large" class="closed-record-icon"></ion-icon>
+          <div>
+            Record closed <br>
+            on <b>{{linkData?.closedOn.split('-').reverse().join('/')}}</b>
+          </div>
+
+          <div>
+            with amount <br>
+            <b>{{this.currencyFormat(linkData?.closedAmount)}}</b>
+          </div>
         </div>
       </div>
 
@@ -141,32 +174,65 @@
   <div class="container mx-auto" *ngIf="showCalculatedData">
     <ion-card color="light">
       <ion-item color="light" lines="full">
-        <ion-label><span style="font-size: 125%; font-weight: bolder">
-            Calculated result</span></ion-label>
-        <ion-button class="mx-1 p-0" slot="end" color="light" id="calcInfo">
-          <ion-icon name="information" color="warning" class="fs-med"></ion-icon>
-        </ion-button>
-        <ion-button class="ms-1 p-0" slot="end" color="light" (click)="shareToClipboard()">
-          <ion-icon name="share-social-outline" color="primary" class="fs-med"></ion-icon>
-        </ion-button>
+        <ion-label class="fw-bold fs-5">
+          Calculated Result
+        </ion-label>
+
+        <ion-buttons slot="end">
+          <ion-button fill="clear" id="calcInfo" aria-label="Calculation info">
+            <ion-icon slot="icon-only" name="information-circle-outline" color="warning">
+            </ion-icon>
+          </ion-button>
+
+          <ion-button fill="clear" aria-label="Share result" (click)="shareToClipboard()">
+            <ion-icon slot="icon-only" name="share-social-outline" color="primary">
+            </ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-item>
 
-      <ion-popover trigger="calcInfo" side="bottom" alignment="end">
+
+      <ion-popover trigger="calcInfo" side="bottom" alignment="end" class="popover-width">
         <ng-template>
           <ion-content class="ion-padding">
-            <div>
-              Tm = 12x{{timePeriodObject?.y}} + {{timePeriodObject?.m}} +
-              {{timePeriodObject?.d}}/30 <br />
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
-              {{timePeriodObject.tm.toFixed(4)}}m <br />
-              <hr class="m-1" />
-              SI = {{linkData.principal/100}} x
-              {{timePeriodObject.tm.toFixed(3)}} x {{linkData.interest}} <br />
-              &nbsp;&nbsp;&nbsp;&nbsp; = {{(linkData.principal/100 *
-              timePeriodObject.tm * linkData.interest).toFixed(2)}}
-              <hr class="m-1" />
 
-              <table class="table">
+            <div class="font-monospace">
+
+              <div class="row">
+                <div class="col-12">
+                  <strong>T<sub>m</sub></strong> =
+                  12×{{ timePeriodObject?.y }}
+                  + {{ timePeriodObject?.m }}
+                  + {{ timePeriodObject?.d }}/30
+                </div>
+                <div class="col-12 ps-4">
+                  &nbsp;&nbsp;&nbsp;= <strong>{{ timePeriodObject.tm.toFixed(4) }}</strong> months
+                </div>
+              </div>
+
+              <hr class="my-1">
+
+              <div class="row">
+                <div class="col-12">
+                  <strong>SI</strong> =
+                  {{ linkData.principal / 100 }}
+                  × {{ timePeriodObject.tm.toFixed(3) }}
+                  × {{ linkData.interest }}
+                </div>
+                <div class="col-12 ps-4">
+                  &nbsp;&nbsp;= <strong>
+                    {{
+                    (linkData.principal / 100 *
+                    timePeriodObject.tm *
+                    linkData.interest).toFixed(2)
+                    }}
+                  </strong>
+                </div>
+              </div>
+
+              <hr class="my-1">
+
+              <table class="table table-sm table-hover">
                 <tr>
                   <th>Time(m)</th>
                   <th>Principal</th>
@@ -174,16 +240,18 @@
                 </tr>
                 <tr *ngFor="let intObj of intArray">
                   <td>
-                    {{intObj.start * 12}} - {{(intObj.end *12).toFixed()}}
+                    {{intObj.start * 12}} - {{(intObj.end *12) | number:'1.0-0'}}
                   </td>
-                  <td>{{intObj.principal.toFixed()}}</td>
-                  <td>{{intObj.intAmt.toFixed()}}</td>
+                  <td>{{intObj.principal | number:'1.0-0'}}</td>
+                  <td>{{intObj.intAmt | number:'1.0-0'}}</td>
                 </tr>
               </table>
             </div>
           </ion-content>
         </ng-template>
       </ion-popover>
+
+
 
       <div #calculatedDataMain class="bgLight rounded-bottom px-2 fw-semibold fs-6">
         <ion-grid>
