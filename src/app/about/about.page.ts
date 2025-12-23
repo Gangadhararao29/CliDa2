@@ -23,7 +23,7 @@ export class AboutPage {
   isUpdateLoading = false;
   isModalOpen = false;
   latestVersion = '0.0.0';
-  currentVersion = '3.25.05';
+  currentVersion = '3.25.12';
   gitHubResponse = [];
   loadingData = true;
   user: any = null;
@@ -219,6 +219,10 @@ export class AboutPage {
   resetData() {
     this.dataBaseService.deleteDataBase();
     this.commonService.presentToast('Data successfully deleted');
+  }
+
+  handleThemeBtnClick(container) {
+    container.el.click();
   }
 
   changeTheme(event) {

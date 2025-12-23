@@ -61,7 +61,8 @@
       <ion-card-content>
 
         <ion-item color="light">
-          <ion-select justify="space-between" interface="popover" label="Select file type" placeholder="" [(ngModel)]="fileType">
+          <ion-select justify="space-between" interface="popover" label="Select file type" placeholder=""
+            [(ngModel)]="fileType">
             <ion-select-option value="json">Json</ion-select-option>
             <ion-select-option value="excel">Excel (beta)</ion-select-option>
           </ion-select>
@@ -152,7 +153,6 @@
       </ion-card-content>
     </ion-card>
 
-
     <ion-card color="light" class="my-3">
       <ion-card-header>
         <ion-card-title>App Settings</ion-card-title>
@@ -162,16 +162,17 @@
         <ion-grid>
           <ion-row>
             <ion-col size="12">
-              <ion-button expand="block" color="primary" fill="solid" (click)="select2.open()">
+              <ion-button expand="block" color="primary" fill="solid" (click)="handleThemeBtnClick(select2)">
                 <ion-select #select2 style="min-height: 0px" (ionChange)="changeTheme($event)" label="Choose theme"
-                  [value]="themeName" interface="popover">
-                  <ion-select-option value="light">Light</ion-select-option>
-                  <ion-select-option value="dark">Dark</ion-select-option>
-                  <ion-select-option value="auto">Auto</ion-select-option>
+                  [value]="themeName" interface="popover" (click)="$event.stopPropagation()">
+                  <ion-select-option value="light">☀️ Light</ion-select-option>
+                  <ion-select-option value="dark">🌙 Dark</ion-select-option>
+                  <ion-select-option value="auto">🌓 Auto</ion-select-option>
                 </ion-select>
               </ion-button>
             </ion-col>
           </ion-row>
+
           <ion-row>
             <ion-col size="12">
               <ion-button expand="block" color="success" fill="solid" (click)="checkForUpdate()">
@@ -189,14 +190,13 @@
             </ion-col>
             <ion-col size="6">
               <ion-button expand="block" color="danger" fill="solid"
-                href="mailto:gangadhararao29@gmail.com?Subject=CliDa2_Bugs">
+                href="https://github.com/Gangadhararao29/CliDa2/issues" target="_blank">
                 <ion-icon name="bug-outline" slot="start"></ion-icon>
                 Report bug
               </ion-button>
             </ion-col>
           </ion-row>
         </ion-grid>
-
       </ion-card-content>
     </ion-card>
 
@@ -256,10 +256,11 @@
     </ion-modal>
   </div>
 
-  <div class="text-center my-2" [attr.data-bs-theme]="theme">
-    <small class="text-muted">
-      <strong>CliDa</strong> v{{currentVersion}} by <span class="text-primary">ChaGa</span><br />
+  <div class="text-center mb-3" [attr.data-bs-theme]="theme">
+    <div class="text-muted" style="font-size: 90%;">
+      <strong>CliDa</strong> v{{currentVersion}} by
+      <span class="text-primary fw-bold">ChaGa</span><br />
       <span class="badge bg-info text-dark">{{isWebVersion ? 'Web Version' : 'Android Version'}}</span>
-    </small>
+    </div>
   </div>
 </ion-content>

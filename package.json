@@ -9,7 +9,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy": "ionic build --configuration=production && firebase deploy"
+    "deploy": "npx ionic build --configuration=production && firebase deploy"
   },
   "private": true,
   "dependencies": {
@@ -31,7 +31,7 @@
     "@capacitor/share": "^7.0.1",
     "@capacitor/status-bar": "7.0.1",
     "@ionic/angular": "^8.0.0",
-    "bootstrap": "^5.3.6",
+    "bootstrap": "^5.3.8",
     "chart.js": "^4.4.9",
     "ionicons": "^7.0.0",
     "localbase": "^0.7.7",
