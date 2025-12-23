@@ -46,7 +46,7 @@ export class EditDetailsPage {
         this.clientRecordIndex = record.data.findIndex(
           (row) => row.id == params.clientId
         );
-        this.clientRecord = this.clientData.data[this.clientRecordIndex];
+        this.clientRecord = { ...this.clientData.data[this.clientRecordIndex] };
         this.setCommentHeight();
       });
     });

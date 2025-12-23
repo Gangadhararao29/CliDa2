@@ -9,3 +9,19 @@ ion-content {
 ion-col {
   --ion-grid-column-padding: 0px;
 }
+
+.sticky-group-header {
+  position: sticky;
+  top: 5px; // adjust based on ion-header height
+  z-index: 10;
+  background: var(--ion-background-color);
+}
+
+/* Optional polish */
+.sticky-group-header ion-item {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+ion-card {
+  margin: 8px;
+}

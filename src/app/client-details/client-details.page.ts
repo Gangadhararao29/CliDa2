@@ -18,7 +18,7 @@ export class ClientDetailsPage {
   accordionGroup: IonAccordionGroup;
   @ViewChildren('modal') modals: QueryList<any>;
   client: any;
-  clientId = '';
+  clientId: any;
   today = new Date()
     .toLocaleDateString('en-GB', {
       day: '2-digit',

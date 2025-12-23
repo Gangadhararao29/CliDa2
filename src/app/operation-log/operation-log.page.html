@@ -13,116 +13,128 @@
 </ion-header>
 
 <ion-content>
-  <div *ngIf="!logData.length" class="h-100 d-flex align-items-center justify-content-center">
-    <div class="p-2 bg-danger rounded text-light">No logs found</div>
+  <div *ngIf="!logData.length" class="h-100 d-flex align-items-center justify-content-center text-center">
+    <ion-card *ngIf="!(logData?.length)" color="light" class="w-100">
+      <ion-card-content>
+        <ion-icon name="alert-circle-outline" color="danger" size="large"></ion-icon>
+        <h2>No Logs Found</h2>
+      </ion-card-content>
+    </ion-card>
   </div>
 
-  <div class="container">
-    <ion-accordion-group *ngFor="let log of logData; let i=index;" class="m-2" value="0">
-      <ion-accordion [value]="i" class="rounded">
-        <ion-item class="rounded" slot="header" [color]="getColor(log.operation)">
-          <ion-label>
-            <div class="d-flex">
-              <div>{{log.operation}}</div>
-              <div class="ms-auto">{{log.modifiedOn}}</div>
-            </div>
-          </ion-label>
-        </ion-item>
-        <div class="bgLight" slot="content">
-          <div [ngSwitch]="log.operation" class="mx-2">
-            <div *ngSwitchCase="log.operation === 'new' || log.operation === 'delete' ? log.operation: 'other'">
-              <ion-grid>
-                <ion-row>
-                  <ion-col>N : {{log.data.name}}</ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col>P : {{log.data.principal}}</ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col>I : {{log.data.interest}}</ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col>S : {{log.data.startDate}}</ion-col>
-                </ion-row>
-              </ion-grid>
-            </div>
-            <div *ngSwitchCase="log.operation==='edit' || log.operation==='edit - approve' ? log.operation: 'other'">
-              <ion-grid>
-                <ion-row>
-                  <ion-col size="2">Nm</ion-col>
-                  <ion-col size="1">:</ion-col>
-                  <ion-col>{{log.orgData.name}}</ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size="2">Pn</ion-col>
-                  <ion-col size="1">:</ion-col>
-                  <ion-col>
-                    <del *ngIf="log.orgData.principal !== log.newData.principal">
-                      {{log.orgData.principal}}
-                    </del>
-                    {{ log.newData.principal}}
-                  </ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size="2">Ir</ion-col>
-                  <ion-col size="1">:</ion-col>
-                  <ion-col>
-                    <del *ngIf="log.orgData.interest !== log.newData.interest">
-                      {{log.orgData.interest}}
-                    </del>
-                    {{ log.newData.interest}}
-                  </ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size="2">Sd</ion-col>
-                  <ion-col size="1">:</ion-col>
-                  <ion-col>
-                    <del *ngIf="log.orgData.startDate !== log.newData.startDate">
-                      {{log.orgData.startDate}}
-                    </del>
-                    {{ log.newData.startDate}}
-                  </ion-col>
-                </ion-row>
-                <ion-row
-                  [hidden]="!log.orgData.comments && !log.newData.comments || log.orgData.comments === log.newData.comments"
-                  style="white-space: pre-line">
-                  <ion-col size="2">Cm</ion-col>
-                  <ion-col size="1">:</ion-col>
-                  <ion-col>
-                    <del>
-                      {{ log.orgData.comments}}
-                    </del>
-                    {{log.newData.comments}}
-                  </ion-col>
-                </ion-row>
-                <ion-row
-                  [hidden]="!log.orgData.closedOn && !log.newData.closedOn || log.orgData.closedOn === log.newData.closedOn">
-                  <ion-col size="2">Cd</ion-col>
-                  <ion-col size="1">:</ion-col>
-                  <ion-col>
-                    <del *ngIf="log.orgData.closedOn !== log.newData.closedOn">
-                      {{log.orgData.closedOn}}
-                    </del>
-                    {{ log.newData.closedOn}}
-                  </ion-col>
-                </ion-row>
-                <ion-row
-                  [hidden]="!log.orgData.closedAmount && !log.newData.closedAmount || log.orgData.closedAmount === log.newData.closedAmount">
-                  <ion-col size="2">Cm</ion-col>
-                  <ion-col size="1">:</ion-col>
-                  <ion-col>
-                    <del *ngIf="log.orgData.closedAmount !== log.newData.closedAmount">
-                      {{log.orgData.closedAmount}}
-                    </del>
-                    {{ log.newData.closedAmount}}
-                  </ion-col>
-                </ion-row>
 
-              </ion-grid>
+  <div class="container my-2">
+    <ng-container *ngFor="let group of logDataGroup">
+      <!-- GROUP HEADER -->
+      <div class="sticky-group-header">
+        <ion-item button color="light" class="rounded-3 fw-semibold my-2" (click)="toggleGroup(group.modifiedOn)">
+          <ion-label>{{ group.modifiedOn }}</ion-label>
+          <ion-icon slot="end" [name]="expandedGroups[group.modifiedOn] ? 'chevron-up' : 'chevron-down'">
+          </ion-icon>
+        </ion-item>
+      </div>
+
+      <!-- COLLAPSIBLE CONTENT -->
+      <div *ngIf="expandedGroups[group.modifiedOn]" class="mt-2">
+        <ion-card *ngFor="let log of group.logs" class="mb-2 shadow-sm rounded-3" color="light">
+          <ion-card-content>
+            <div class="d-flex" [ngSwitch]="log.operation" [attr.data-bs-theme]="theme">
+              <!-- ===================== -->
+              <!-- NEW / DELETE -->
+              <!-- ===================== -->
+              <ng-container
+                *ngSwitchCase="log.operation === 'new' || log.operation === 'delete' ? log.operation : 'other'">
+                <!-- LEFT -->
+                <div class="flex-grow-1">
+                  <div class="fw-semibold" style="font-size: 120%;">{{ log.data.name }}</div>
+
+                  <div class="text-muted">
+                    {{ log.data.interest }}
+                    <span class="mx-1">•</span>
+                    {{ log.data.startDate }}
+                  </div>
+
+                  <div *ngIf="log.data.comments" class="small mt-1 text-muted" style="white-space: pre-line">
+                    {{ log.data.comments }}
+                  </div>
+
+                  <div *ngIf="log.data.closedAmount > 0 && log.data.closedOn" class="mt-1 text-success">
+                    {{ log.data.closedOn }}
+                    <span class="mx-1">•</span>
+                    {{ log.data.closedAmount }}
+                  </div>
+                </div>
+
+                <!-- RIGHT -->
+                <div class="text-end ms-3">
+                  <ion-badge [color]="getStatusColor(log.operation)" class="mb-2 text-capitalize">
+                    {{ log.operation }}
+                  </ion-badge>
+
+                  <div class="fw-bold fs-5">{{ log.data.principal | currency:'INR':'symbol':'1.0-0':'en-IN' }}
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- ===================== -->
+              <!-- EDIT / EDIT APPROVE -->
+              <!-- ===================== -->
+              <ng-container
+                *ngSwitchCase="log.operation === 'edit' || log.operation === 'edit - approve' ? log.operation : 'other'">
+                <!-- LEFT -->
+                <div class="flex-grow-1">
+                  <!-- NAME -->
+                  <div class="fw-semibold" style="font-size: 120%;">{{ log.orgData.name }}</div>
+
+                  <!-- INTEREST + START DATE -->
+                  <div class="text-muted">
+                    <del *ngIf="log.orgData.interest !== log.newData.interest">
+                      {{ log.orgData.interest }}
+                    </del>
+                    {{ log.newData.interest }}
+                    <span *ngIf="log.orgData.startDate == log.newData.startDate" class="mx-1">•</span>
+                    <del *ngIf="log.orgData.startDate !== log.newData.startDate">
+                      <br>{{ log.orgData.startDate }}
+                    </del>
+                    {{ log.newData.startDate }}
+                  </div>
+
+                  <!-- COMMENTS -->
+                  <div *ngIf="log.orgData.comments !== log.newData.comments" class="small mt-1 text-muted"
+                    style="white-space: pre-line;">
+                    <del>{{ log.orgData.comments }}</del>
+                    {{ log.newData.comments }}
+                  </div>
+
+                  <!-- CLOSED -->
+                  <div *ngIf="log.orgData.closedOn !== log.newData.closedOn" class="mt-1 text-success">
+                    <del>{{ log.orgData.closedOn }}</del>
+                    {{ log.newData.closedOn }}
+                    <span *ngIf="log.orgData.closedOn == log.newData.closedOn" class="mx-1">•</span>
+                    <br><del>{{ log.orgData.closedAmount }}</del>
+                    {{ log.newData.closedAmount | currency:'INR':'symbol':'1.0-0':'en-IN' }}
+                  </div>
+                </div>
+
+                <!-- RIGHT -->
+                <div class="text-end ms-3">
+                  <ion-badge [color]="getStatusColor(log.operation)" class="mb-2 text-capitalize">
+                    {{ log.operation }}
+                  </ion-badge>
+
+                  <div class="fw-bold fs-5">
+                    <del *ngIf="log.orgData.principal !== log.newData.principal">
+                      {{ log.orgData.principal }}<br>
+                    </del>
+
+                    {{ log.newData.principal | currency:'INR':'symbol':'1.0-0':'en-IN' }}
+                  </div>
+                </div>
+              </ng-container>
             </div>
-          </div>
-        </div>
-      </ion-accordion>
-    </ion-accordion-group>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </ng-container>
   </div>
 </ion-content>

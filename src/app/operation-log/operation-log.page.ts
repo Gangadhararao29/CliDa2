@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
+import { CommonService } from '../services/common.service';
 
 @Component({
   selector: 'app-operation-log',
@@ -9,26 +10,33 @@ import { AlertController, ToastController } from '@ionic/angular';
 })
 export class OperationLogPage {
   logData = [];
+  logDataGroup = [];
+  expandedGroups = {};
+  theme: string;
   constructor(
     private alertController: AlertController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private commonService: CommonService
   ) {}
 
   ionViewWillEnter() {
     const logsString = localStorage.getItem('logs');
+    this.theme = this.commonService.getTheme();
     this.logData = logsString ? JSON.parse(logsString).reverse() : [];
-  }
+    let index = -1;
 
-  getColor(operation) {
-    switch (operation) {
-      case 'new':
-        return 'success';
-      case 'edit':
-      case 'edit - approve':
-        return 'primary';
-      case 'delete':
-        return 'danger';
-    }
+    this.logData.forEach((log) => {
+      index = this.logDataGroup.findIndex(
+        (logGroup) => logGroup.modifiedOn === log.modifiedOn
+      );
+
+      if (index === -1) {
+        this.expandedGroups[log.modifiedOn] = true;
+        this.logDataGroup.push({ modifiedOn: log.modifiedOn, logs: [log] });
+      } else {
+        this.logDataGroup[index].logs.push(log);
+      }
+    });
   }
 
   async showClearLogsAlert() {
@@ -72,5 +80,24 @@ export class OperationLogPage {
       icon,
     });
     toast.present();
+  }
+
+  getStatusColor(status: string) {
+    switch (status) {
+      case 'new':
+        return 'success';
+      case 'delete':
+        return 'danger';
+      case 'edit - approve':
+        return 'primary';
+      case 'edit':
+        return 'warning';
+      default:
+        return 'medium';
+    }
+  }
+
+  toggleGroup(date) {
+    this.expandedGroups[date] = !this.expandedGroups[date];
   }
 }
