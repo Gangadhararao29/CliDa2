@@ -5,11 +5,11 @@
   "homepage": "clida3.web.app",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --host=0.0.0.0",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy": "npx ionic build --configuration=production && firebase deploy"
+    "deploy": "ng build --configuration production && firebase deploy"
   },
   "private": true,
   "dependencies": {

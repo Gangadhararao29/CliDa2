@@ -62,7 +62,7 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'calculator/:key/:id',
+        path: 'calculator/:encoded',
         loadChildren: () =>
           import('../calculator/calculator.module').then(
             (m) => m.CalculatorPageModule
@@ -70,7 +70,7 @@ const routes: Routes = [
       },
       {
         path: 'calculator',
-        redirectTo: 'calculator/0/0',
+        redirectTo: 'calculator/MHww', // '0' encoded in base64 for fallback
       },
       {
         path: 'about',

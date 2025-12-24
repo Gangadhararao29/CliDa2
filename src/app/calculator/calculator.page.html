@@ -11,7 +11,7 @@
 
 <ion-content>
   <div class="container my-2 " [attr.data-bs-theme]="theme">
-    <ng-container *ngFor="let clientDetail of presentObj.data">
+    <ng-container *ngFor="let clientDetail of presentObj?.data">
       <ion-badge [color]="clientDetail.id == linkData.id ? 'primary' : 'light'" class="mx-1 mb-1 p-2"
         (click)="changeCalcData(clientDetail)" style="cursor: pointer;">
         {{(clientDetail.principal/1000).toFixed() +'K'}} |

@@ -4,6 +4,7 @@ import { Share } from '@capacitor/share';
 import { CommonService } from '../services/common.service';
 import { DataBaseService } from '../services/data-base.service';
 import { CalculationService } from '../services/calculation.service';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-calculator',
@@ -13,6 +14,7 @@ import { CalculationService } from '../services/calculation.service';
 })
 export class CalculatorPage {
   @ViewChild('calcHistory') calcsHistoryComp;
+  @ViewChild('formRef') form: NgForm;
   linkData = {
     timePeriod: { d: null, m: null, y: null },
   } as any;
@@ -37,10 +39,32 @@ export class CalculatorPage {
     this.theme = this.commonService.getTheme();
     this.calcsHistory = JSON.parse(localStorage.getItem('calcsHistory')) || [];
 
-    const clientID = this.activatedRoute.snapshot.params.key;
-    const recordId = this.activatedRoute.snapshot.params.id;
+    const encoded = this.activatedRoute.snapshot.params.encoded;
+    let params;
 
-    if (clientID !== '0') {
+    try {
+      params = atob(decodeURIComponent(encoded)).split('|') || [];
+    } catch {
+      params = [];
+    }
+
+    if (params.length == 4) {
+      this.linkData = {
+        principal: params[0],
+        interest: params[1],
+        startDate: params[2],
+        endDate: params[3],
+        timePeriodType: 'dates',
+        compInt: 3,
+      };
+
+      setTimeout(() => {
+        if (this.showCalculatedData == false) this.form.ngSubmit.emit();
+      });
+    } else if (params.length == 2 && params[0] != '0' && params[1] != '0') {
+      const clientID = params[0];
+      const recordId = params[1];
+
       this.dataBaseService.getClientByKey(clientID).then((res) => {
         this.presentObj = res;
         this.linkData = res.data.find((record) => record.id == recordId);
@@ -268,55 +292,53 @@ export class CalculatorPage {
 
   // prettier-ignore
   generateResultHtml() {
-  const {
-    principal,
-    interest,
-    startDate,
-    endDate
-  } = this.linkData;
+    const { principal, interest, startDate, endDate } = this.linkData;
 
-  const { y, m, d, tm } = this.timePeriodObject;
-  const separator = `--------------------------------`;
+    const { y, m, d, tm } = this.timePeriodObject;
+    const separator = `--------------------------------`;
 
-  const lines: string[] = [
-    `${'Principal'.padEnd(15)}: ${this.currencyFormat(principal)}`,
-    `${'Interest rate'.padEnd(15)}: ${interest}`,
-    `${'End date'.padEnd(15)}: ${endDate}`,
-    `${'Start date'.padEnd(15)}: ${startDate}`,
-    `${separator}`,
-    `${'Time period'.padEnd(15)}: ${y} y ${m} m ${d} d`,
-    `${separator}`,
-    `${'Time in months'.padEnd(15)}: ${tm.toFixed(2)}`
-  ];
-
-  if (this.intArray.length === 1) {
-    const interestAmt = this.intArray[0].intAmt;
-
-    lines.push(
-      `${'Total interest'.padEnd(15)}: ${this.currencyFormat(interestAmt)}`,
+    const lines: string[] = [
+      `Principal : ${this.currencyFormat(principal)}`,
+      `Interest rate : ${interest}`,
+      `End date : ${endDate}`,
+      `Start date : ${startDate}`,
       `${separator}`,
-      `${'Total amount'.padEnd(15)}: ${this.currencyFormat(interestAmt + principal)}`
-    );
-  } else {
-    lines.push('Interest breakdown');
-    this.intArray.forEach(({ start, end, intAmt }) => {
+      `Time period : ${y}y ${m}m ${d}d`,
+      `${separator}`,
+      `Time in months : ${tm.toFixed(2)}`,
+    ];
+
+    if (this.intArray.length === 1) {
+      const interestAmt = this.intArray[0].intAmt;
+
       lines.push(
-        `${start}y - ${(+end).toFixed(2)}y     : ${this.currencyFormat(intAmt)}`,
+        `Total interest : ${this.currencyFormat(interestAmt)}`,
+        `${separator}`,
+        `Total amount : ${this.currencyFormat(interestAmt + principal)}`
       );
-    });
+    } else {
+      lines.push('Interest breakdown');
+      this.intArray.forEach(({ start, end, intAmt }) => {
+        lines.push(
+          `${start}y - ${(+end).toFixed(2)}y : ${this.currencyFormat(intAmt)}`
+        );
+      });
 
-    lines.push(
-      `${'Total interest'.padEnd(15)}: ${this.currencyFormat(this.finalInterest)}`,
-      `${separator}`,
-      `${'Total amount'.padEnd(15)}: ${this.currencyFormat(this.finalInterest + principal)}`
-    );
+      lines.push(
+        `Total interest : ${this.currencyFormat(this.finalInterest)}`,
+        `${separator}`,
+        `Total amount : ${this.currencyFormat(this.finalInterest + principal)}`
+      );
+    }
+
+    const jsonString = `${principal}|${interest}|${startDate}|${endDate}`;
+    const encoded = encodeURIComponent(btoa(jsonString));
+
+    const serverURL = `https://clida3.web.app/calculator/${encoded}`;
+    const localURL = `http://localhost:4200/calculator/${encoded}`;
+
+    lines.push(`${separator}`, serverURL);
+
+    return lines.join('\n');
   }
-
-  lines.push(
-    `${separator}`,
-    `https://clida3.web.app/calculator`
-  );
-
-  return lines.join('\n');
-}
 }

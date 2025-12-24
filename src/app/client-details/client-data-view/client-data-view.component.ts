@@ -67,7 +67,9 @@ export class ClientDataViewComponent implements OnInit {
   }
 
   openCalculator(recordId) {
-    this.router.navigate(['calculator', this.client.id, recordId]);
+    const encoded = btoa(`${this.client.id}|${recordId}`);
+
+    this.router.navigate(['calculator', encodeURIComponent(encoded)]);
   }
 
   editClientData(id) {
