@@ -97,7 +97,7 @@ export class AboutPage {
     const a = document.createElement('a');
     const file = new Blob([clientsDataString], { type: 'text/plain' });
     a.href = URL.createObjectURL(file);
-    a.download = 'clientsData.json';
+    a.download = `clientsData_${new Date().toJSON().slice(0, 10)}.json`;
     a.click();
   }
 
@@ -218,7 +218,8 @@ export class AboutPage {
 
   resetData() {
     this.dataBaseService.deleteDataBase();
-    this.commonService.presentToast('Data successfully deleted');
+    localStorage.clear();
+    this.commonService.presentToast('Factory reset completed successfully');
   }
 
   handleThemeBtnClick(container) {

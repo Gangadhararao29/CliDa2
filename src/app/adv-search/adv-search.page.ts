@@ -122,7 +122,7 @@ export class AdvSearchPage implements OnInit {
     this.displayData = this.displayData.filter((ele) => {
       ele.data.data = ele.data.data.filter((rec) => {
         const timePeriod =
-          this.calculationService.calculateTimeperiod(rec.startDate).tm / 12.0;
+          this.calculationService.calculateTimePeriod(rec.startDate).tm / 12.0;
         if (paramsModel.filter.by === 'principal') {
           return (
             rec.principal >= paramsModel.filter.min &&
@@ -193,7 +193,7 @@ export class AdvSearchPage implements OnInit {
   }
 
   getColor(detail) {
-    const tm = this.calculationService.calculateTimeperiod(detail?.startDate).tm;
+    const tm = this.calculationService.calculateTimePeriod(detail?.startDate).tm;
     if (detail?.closedOn) {
       return 'success';
     } else if (tm >= 30) {

@@ -141,7 +141,7 @@ export class CalculatorPage {
           this.linkData.endDate = this.dateFormatter(formRef.value.endDate);
         }
       } else {
-        this.timePeriodObject = this.calculationService.calculateTimeperiod(
+        this.timePeriodObject = this.calculationService.calculateTimePeriod(
           formRef.value.startDate,
           formRef.value.endDate
         );

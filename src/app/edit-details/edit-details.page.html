@@ -25,7 +25,7 @@
       </ion-radio-group>
     </div>
 
-    <div class="bgLight p-2 rounded"  [attr.data-bs-theme]="theme">
+    <div class="bgLight p-2 rounded" [attr.data-bs-theme]="theme">
       <span class="fs-5 mx-1">Primary details</span>
       <div class="form-floating mb-2">
         <input type="text" class="form-control" id="userName" placeholder="100000" #userName="ngModel" name="userName"
@@ -69,13 +69,13 @@
       </div>
     </div>
 
-    <div class="form-floating my-2"  [attr.data-bs-theme]="theme">
+    <div class="form-floating my-2" [attr.data-bs-theme]="theme">
       <textarea class="form-control" id="comments" [ngModel]="clientRecord.comments" (input)="getCommentHeight($event)"
         name="comments" placeholder="Enter comments here" #comments="ngModel" #commentHeight></textarea>
       <label for="comments">Comments</label>
     </div>
 
-    <div *ngIf="clientRecord.closedOn" class="bgLight p-2 rounded"  [attr.data-bs-theme]="theme">
+    <div *ngIf="clientRecord.closedOn" class="bgLight p-2 rounded" [attr.data-bs-theme]="theme">
       <span class="fs-5 mb-2">Closed details</span>
       <div class="d-flex mb-2 pb-1 justify-content-between">
         <div class="form-floating">
@@ -96,7 +96,7 @@
     </div>
 
     <ion-button color="success" expand="block" type="submit" class="my-3">
-      Confirm
+      Save Changes
     </ion-button>
   </form>
 

@@ -16,7 +16,7 @@ export class CalculationService {
 
   constructor() {}
 
-  calculateTimeperiod(startDate, endDate = this.today) {
+  calculateTimePeriod(startDate, endDate = this.today) {
     const sd = new Date(startDate);
     const ed = new Date(endDate);
     const d1 = sd.getDate();
@@ -46,7 +46,7 @@ export class CalculationService {
   }
 
   calculateTotalInterest(data, endDate = this.today, ci = 3) {
-    let tm = this.calculateTimeperiod(data.startDate, endDate).tm;
+    let tm = this.calculateTimePeriod(data.startDate, endDate).tm;
     let start = 0;
     const resultArray = [];
     while (tm > ci * 12) {

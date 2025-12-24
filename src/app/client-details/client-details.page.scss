@@ -106,3 +106,7 @@ ion-item.selected {
   --padding-top: 7px;
   --padding-bottom: 7px;
 }
+
+ion-checkbox {
+  --checkbox-background: var(--ion-color-light-tint);
+}

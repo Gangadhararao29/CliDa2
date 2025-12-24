@@ -17,7 +17,7 @@ export class ClientDetailsPage {
   @ViewChild(IonAccordionGroup, { static: true })
   accordionGroup: IonAccordionGroup;
   @ViewChildren('modal') modals: QueryList<any>;
-  client: any;
+  client: { id: string; name: string; data: any[] };
   clientId: any;
   today = new Date()
     .toLocaleDateString('en-GB', {
@@ -96,7 +96,7 @@ export class ClientDetailsPage {
   }
 
   getColor(detail) {
-    const tm = this.calculationService.calculateTimeperiod(
+    const tm = this.calculationService.calculateTimePeriod(
       detail?.startDate
     ).tm;
     if (detail?.closedOn) {

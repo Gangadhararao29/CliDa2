@@ -14,7 +14,7 @@ export class DatalistComponent {
   constructor(private calculationService: CalculationService) {}
 
   getColor(detail) {
-    const tm = this.calculationService.calculateTimeperiod(
+    const tm = this.calculationService.calculateTimePeriod(
       detail?.startDate
     ).tm;
     if (detail?.closedOn) {

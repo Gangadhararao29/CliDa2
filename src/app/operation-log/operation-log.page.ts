@@ -31,7 +31,7 @@ export class OperationLogPage {
       );
 
       if (index === -1) {
-        this.expandedGroups[log.modifiedOn] = true;
+        this.expandedGroups[log.modifiedOn] = false;
         this.logDataGroup.push({ modifiedOn: log.modifiedOn, logs: [log] });
       } else {
         this.logDataGroup[index].logs.push(log);

@@ -144,8 +144,8 @@
           <ion-row>
             <ion-col size="12">
               <ion-button expand="block" color="danger" fill="solid" (click)="presentDeleteAlert()">
-                <ion-icon name="trash-outline" slot="start"></ion-icon>
-                Remove All Client Data
+                <ion-icon name="refresh-outline" slot="start"></ion-icon>
+                Factory reset app
               </ion-button>
             </ion-col>
           </ion-row>
@@ -165,9 +165,9 @@
               <ion-button expand="block" color="primary" fill="solid" (click)="handleThemeBtnClick(select2)">
                 <ion-select #select2 style="min-height: 0px" (ionChange)="changeTheme($event)" label="Choose theme"
                   [value]="themeName" interface="popover" (click)="$event.stopPropagation()">
-                  <ion-select-option value="light">☀️ Light</ion-select-option>
-                  <ion-select-option value="dark">🌙 Dark</ion-select-option>
-                  <ion-select-option value="auto">🌓 Auto</ion-select-option>
+                  <ion-select-option value="light">🌝 Light</ion-select-option>
+                  <ion-select-option value="dark">🌚 Dark</ion-select-option>
+                  <ion-select-option value="auto">🌗 Auto</ion-select-option>
                 </ion-select>
               </ion-button>
             </ion-col>

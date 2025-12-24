@@ -87,7 +87,7 @@ export class DashboardPage {
       let totalEarnings = 0;
 
       client.data.data.forEach((record) => {
-        const timeObject = this.calculationService.calculateTimeperiod(
+        const timeObject = this.calculationService.calculateTimePeriod(
           record.startDate
         );
         const intArr = this.calculationService.calculateTotalInterest({

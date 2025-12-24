@@ -40,10 +40,10 @@ export class ClientsListPage {
   }
 
   async backButtonAction() {
-    const alrt = await this.alertController.getTop();
+    const alert = await this.alertController.getTop();
 
-    if (alrt) {
-      await alrt.dismiss();
+    if (alert) {
+      await alert.dismiss();
     } else if (this.router.url === '/clients-list') {
       const alert = await this.getCloseAlert();
       await alert.present();
@@ -126,7 +126,9 @@ export class ClientsListPage {
   }
 
   getColor(detail) {
-    const tm = this.calculationService.calculateTimeperiod(detail?.startDate).tm;
+    const tm = this.calculationService.calculateTimePeriod(
+      detail?.startDate
+    ).tm;
     if (detail?.closedOn) {
       return 'success';
     } else if (tm >= 30) {

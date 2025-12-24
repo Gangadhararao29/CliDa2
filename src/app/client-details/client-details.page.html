@@ -115,8 +115,7 @@
           <ion-item button class="rounded m-2" [ngClass]="{'selected': i === +openedAccordion}" color="light"
             (click)="selectRecord(i)">
             <ion-checkbox class="check-pad" slot="start" [checked]="isChipSelected(data?.id)"
-              (ionChange)="onCheckBoxClick($event, data)" (click)="$event.stopPropagation()"
-              [attr.data-bs-theme]="theme">
+              (ionChange)="onCheckBoxClick($event, data)" (click)="$event.stopPropagation()" color="primary">
             </ion-checkbox>
 
             <ion-label class="d-flex ms-2" [color]="getColor(data)">
