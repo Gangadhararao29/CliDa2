@@ -54,10 +54,10 @@ export class AddClientPage {
   }
 
   routeToClientList(formRef) {
-    let message = 'New client record added successfully.';
+    let message = 'The client has been added successfully.';
     message += formRef.value.multiRecordsSelected
       ? ''
-      : '<br>Redirecting to Clients-list tab.';
+      : '<br>Redirecting to the Clients List tab.';
 
     setTimeout(() => {
       this.isAddBtnDisable = false;

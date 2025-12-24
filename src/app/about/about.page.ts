@@ -18,6 +18,8 @@ import { DataBaseService } from '../services/data-base.service';
 })
 export class AboutPage {
   @ViewChild('modal') modal: any;
+  @ViewChild('select2') select2;
+
   themeName = localStorage.getItem('theme');
   inputClientData: any;
   isUpdateLoading = false;
@@ -84,7 +86,9 @@ export class AboutPage {
   exportData() {
     this.dataBaseService.getAllClientsData().then((data) => {
       if (this.fileType === 'json') {
-        const clientDataString = JSON.stringify(data);
+        const userObj = this.commonService.getUserPreferences();
+        userObj.userData = data;
+        const clientDataString = JSON.stringify(userObj);
         this.writeSecretFile(clientDataString);
         this.nativeSaveByUrl(clientDataString);
       } else {
@@ -114,11 +118,11 @@ export class AboutPage {
     })
       .then(() => {
         this.commonService.presentToast(
-          `File saved successfully in <br> Documents/${fileName}.`
+          `The file has been saved successfully in <br> Documents/${fileName}.`
         );
       })
       .catch((err) => {
-        const errString = 'No Data found.<br>' + err.toString().slice(6);
+        const errString = 'No data found. <br>' + err.toString().slice(6);
         this.commonService.presentToast(
           errString,
           'failedToastClass',
@@ -150,20 +154,23 @@ export class AboutPage {
 
   async importDataAlert(clientsData) {
     const alert = await this.alertController.create({
-      header: 'Existing Data will?',
+      header: 'Import data',
+      message: 'You already have data. How would you like to handle it?',
       cssClass: 'alertMultiStyle',
       backdropDismiss: false,
       animated: true,
       buttons: [
         {
-          text: 'Replace with new data',
+          text: 'Replace existing',
+          cssClass: 'bg-primary',
           handler: () => {
             this.commonService.presentLoading();
             this.importHandler(clientsData, true);
           },
         },
         {
-          text: 'Merge with new data',
+          text: 'Merge with existing',
+          cssClass: 'bg-primary',
           handler: () => {
             this.commonService.presentLoading();
             this.importHandler(clientsData, false);
@@ -171,6 +178,7 @@ export class AboutPage {
         },
         {
           text: 'Cancel',
+          role: 'cancel',
           handler: () => {
             this.inputClientData = '';
           },
@@ -181,13 +189,17 @@ export class AboutPage {
   }
 
   importHandler(clientsData, replaceStatus) {
+    if (clientsData.hasOwnProperty('userData')) {
+      this.commonService.setUserPreferences(clientsData);
+      clientsData = clientsData.userData;
+    }
     this.dataBaseService
       .saveBulkClients(clientsData, replaceStatus)
-      .then((res) => {
+      .then(() => {
         setTimeout(() => {
           this.inputClientData = '';
           this.commonService.presentToast(
-            'Data imported succcessfully.<br>Redirecting to Clients-list tab'
+            'Data imported successfully. <br> Redirecting to the Clients List tab.'
           );
           this.router.navigate(['clients-list']);
         }, 1000);
@@ -196,20 +208,23 @@ export class AboutPage {
 
   async presentDeleteAlert() {
     const alert = await this.alertController.create({
-      header: 'Do you want to reset the app data?',
+      header: 'Reset app data?',
+      message: 'This will remove all saved data and restore default settings.',
       backdropDismiss: false,
       animated: true,
       cssClass: 'alertStyle',
       buttons: [
         {
-          text: 'Yes',
+          text: 'Reset',
+          role: 'submit',
+          cssClass: 'bg-danger',
           handler: () => {
             this.resetData();
           },
         },
         {
-          text: 'No',
-          handler: () => {},
+          text: 'Cancel',
+          role: 'cancel',
         },
       ],
     });
@@ -219,11 +234,15 @@ export class AboutPage {
   resetData() {
     this.dataBaseService.deleteDataBase();
     localStorage.clear();
-    this.commonService.presentToast('Factory reset completed successfully');
+    this.changeTheme({ detail: { value: 'auto' } });
+    this.select2.value = 'auto';
+    this.commonService.presentToast(
+      'The factory reset has been completed successfully.'
+    );
   }
 
-  handleThemeBtnClick(container) {
-    container.el.click();
+  handleThemeBtnClick() {
+    this.select2?.el?.click();
   }
 
   changeTheme(event) {
@@ -287,7 +306,9 @@ export class AboutPage {
 
         this.dataBaseService.saveBulkClients(clients, true).then((res) => {
           setTimeout(() => {
-            this.commonService.presentToast('Data sorted successfully');
+            this.commonService.presentToast(
+              'The data has been sorted successfully.'
+            );
             event.target.disabled = false;
             event.target.value = null;
           }, 1000);
@@ -300,7 +321,7 @@ export class AboutPage {
     this.dataBaseService.cleanClientsData().then((res) => {
       this.commonService.presentLoading().then(() => {
         this.commonService.presentToast(
-          'All the empty Data and errors are fixed.'
+          'All empty data and errors have been fixed.'
         );
       });
     });
@@ -309,7 +330,7 @@ export class AboutPage {
   cleanApproveData() {
     this.dataBaseService.cleanApprovedData().then((res) => {
       this.commonService.presentLoading().then(() => {
-        this.commonService.presentToast('All the approved data is cleared.');
+        this.commonService.presentToast('All approved data has been removed.');
       });
     });
   }
@@ -325,7 +346,7 @@ export class AboutPage {
   async signInWithGoogle() {
     try {
       this.user = await this.firebaseService.signInWithGoogle();
-      this.commonService.presentToast('Signed in successfully');
+      this.commonService.presentToast('You have signed in successfully.');
     } catch (err: any) {
       this.commonService.presentToast(
         err.message,
@@ -339,7 +360,7 @@ export class AboutPage {
     try {
       await this.firebaseService.signOutUser();
       this.user = null;
-      this.commonService.presentToast('Signed out successfully');
+      this.commonService.presentToast('You have signed out successfully.');
     } catch (error) {
       this.commonService.presentToast(
         'Error signing out: <br>' + error,
@@ -353,7 +374,7 @@ export class AboutPage {
     try {
       const res = await this.firebaseService.loadCloudData(this.user?.uid);
       if (!res.length) {
-        this.commonService.presentToast('No data found');
+        this.commonService.presentToast('No data was found.');
       } else {
         this.importDataAlert(res);
       }
@@ -371,9 +392,9 @@ export class AboutPage {
     try {
       const clientsData = await this.dataBaseService.getAllClientsData();
       await this.firebaseService.uploadToCloud(this.user.uid, clientsData);
-      await this.commonService.presentLoading();
+      this.commonService.presentLoading();
       setTimeout(() => {
-        this.commonService.presentToast('Upload successful');
+        this.commonService.presentToast('The upload was successful.');
       }, 1500);
     } catch (error) {
       this.commonService.presentToast(
@@ -429,7 +450,7 @@ export class AboutPage {
       setTimeout(() => {
         this.inputClientData = '';
         this.commonService.presentToast(
-          'Data imported succcessfully <br>Redirecting to Clients-list tab'
+          'Data imported successfully <br>Redirecting to Clients-list tab'
         );
         this.router.navigate(['clients-list']);
       }, 1000);

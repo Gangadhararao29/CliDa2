@@ -46,7 +46,7 @@ export class ClientDataViewComponent implements OnInit {
     return `${timeObject.y}y, ${timeObject.m}m, ${timeObject.d}d`;
   }
 
-  totalTimeinMonths(startDate, endDate) {
+  totalTimeInMonths(startDate, endDate) {
     return (
       Math.round(
         this.calculationService.calculateTimePeriod(startDate, endDate).tm * 100
@@ -84,17 +84,18 @@ export class ClientDataViewComponent implements OnInit {
     const clientDataIndex = this.client.data.findIndex((data) => data.id == id);
     this.presentAlertConfirm(clientDataIndex, this.client, this.client.id);
   }
-
   async presentAlertConfirm(clientDataIndex, clientData, key) {
     const alert = await this.alertController.create({
-      header: 'Confirm',
+      header: 'Delete record?',
+      message: 'This will be deleted permanently.',
       cssClass: 'alertStyle',
       backdropDismiss: false,
       animated: true,
-      message: 'Do you want to delete this record?',
       buttons: [
         {
-          text: 'Yes',
+          text: 'Delete',
+          role: 'submit',
+          cssClass: 'bg-danger',
           handler: () => {
             this.commonService.presentLoading();
             this.dataBaseService
@@ -105,9 +106,8 @@ export class ClientDataViewComponent implements OnInit {
           },
         },
         {
-          text: 'No',
+          text: 'Cancel',
           role: 'cancel',
-          cssClass: 'secondary',
         },
       ],
     });
@@ -119,11 +119,11 @@ export class ClientDataViewComponent implements OnInit {
     setTimeout(() => {
       if (length < 1) {
         this.commonService.presentToast(
-          'Client deleted completely.<br>Redirecting to Clients-list tab'
+          'The client has been deleted completely.<br>Redirecting to the Clients List tab.'
         );
         this.router.navigate(['clients-list']);
       } else {
-        this.commonService.presentToast('Client record deleted successfully');
+        this.commonService.presentToast('The client record has been deleted successfully.');
 
         this.cleanUp.emit();
       }

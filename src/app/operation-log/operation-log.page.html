@@ -61,7 +61,7 @@
                   <div *ngIf="log.data.closedAmount > 0 && log.data.closedOn" class="mt-1 text-success">
                     {{ log.data.closedOn }}
                     <span class="mx-1">•</span>
-                    {{ log.data.closedAmount }}
+                    <span class="strong"> {{ log.data.closedAmount | currency:'INR':'symbol':'1.0-0':'en-IN' }} </span>
                   </div>
                 </div>
 
@@ -112,7 +112,7 @@
                     {{ log.newData.closedOn }}
                     <span *ngIf="log.orgData.closedOn == log.newData.closedOn" class="mx-1">•</span>
                     <br><del>{{ log.orgData.closedAmount }}</del>
-                    {{ log.newData.closedAmount | currency:'INR':'symbol':'1.0-0':'en-IN' }}
+                    <span class="strong"> {{ log.newData.closedAmount | currency:'INR':'symbol':'1.0-0':'en-IN' }}</span>
                   </div>
                 </div>
 

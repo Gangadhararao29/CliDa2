@@ -15,7 +15,7 @@ export class ApproveModalComponent implements OnInit {
   @Input() client: any;
 
   approveDataId: any;
-  hideAppprovedControls = true;
+  hideApprovedControls = true;
   approvedAmount = 0;
   isd = Intl.NumberFormat('en-IN');
   today = new Date()
@@ -39,7 +39,7 @@ export class ApproveModalComponent implements OnInit {
 
   ngOnInit() {
     this.theme = this.commonService.getTheme();
-    this.hideAppprovedControls = true;
+    this.hideApprovedControls = true;
     this.approvedAmount = 0;
   }
 
@@ -48,7 +48,7 @@ export class ApproveModalComponent implements OnInit {
       const oldData = { ...this.data };
       const index = this.client.data.findIndex((res) => res.id === oldData.id);
 
-      if (this.hideAppprovedControls || formRef.value.closeCurrentRecord) {
+      if (this.hideApprovedControls || formRef.value.closeCurrentRecord) {
         this.client.data[index].closedOn = formRef.value.closedOn;
         this.client.data[index].closedAmount = formRef.value.closedAmount;
 
@@ -62,7 +62,7 @@ export class ApproveModalComponent implements OnInit {
         }
       }
 
-      if (!this.hideAppprovedControls && formRef.value.updateComments) {
+      if (!this.hideApprovedControls && formRef.value.updateComments) {
         const paymentDetails = `Paid ₹ ${this.isd.format(
           formRef.value.closedAmount
         )} on ${formRef.value.closedOn.split('-').reverse().join('/')}`;
@@ -105,9 +105,9 @@ export class ApproveModalComponent implements OnInit {
       this.approvedAmount =
         data.principal + this.calculateInterest(data, closedOn.value);
       if (Math.round(event.target.value) !== Math.round(this.approvedAmount)) {
-        this.hideAppprovedControls = false;
+        this.hideApprovedControls = false;
       } else {
-        this.hideAppprovedControls = true;
+        this.hideApprovedControls = true;
       }
     }
   }

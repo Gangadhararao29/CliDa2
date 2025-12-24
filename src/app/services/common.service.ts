@@ -56,4 +56,29 @@ export class CommonService {
     }
     return theme;
   }
+
+  getUserPreferences() {
+    const theme = localStorage.getItem('theme');
+    const dashPref = localStorage.getItem('dashPref');
+    const oldStyle = localStorage.getItem('isOldStyle');
+    const logs = localStorage.getItem('logs');
+    const tabSection = localStorage.getItem('tabSection');
+    const calcLogs = localStorage.getItem('calcsHistory');
+    return {
+      userPreference: { theme, dashPref, oldStyle, tabSection },
+      userData: null,
+      logs,
+      calcLogs,
+    };
+  }
+
+  setUserPreferences(preferences) {
+    const { userPreference, logs, calcLogs } = preferences;
+    localStorage.setItem('theme', userPreference.theme);
+    localStorage.setItem('dashPref', userPreference.dashPref);
+    localStorage.setItem('isOldStyle', userPreference.oldStyle);
+    localStorage.setItem('tabSection', userPreference.tabSection);
+    localStorage.setItem('logs', logs);
+    localStorage.setItem('calcsHistory', calcLogs);
+  }
 }

@@ -25,13 +25,16 @@ export class OperationLogPage {
     this.logData = logsString ? JSON.parse(logsString).reverse() : [];
     let index = -1;
 
+    this.logDataGroup = [];
+
     this.logData.forEach((log) => {
       index = this.logDataGroup.findIndex(
         (logGroup) => logGroup.modifiedOn === log.modifiedOn
       );
 
       if (index === -1) {
-        this.expandedGroups[log.modifiedOn] = false;
+        this.expandedGroups[log.modifiedOn] =
+          this.expandedGroups[log.modifiedOn] || false;
         this.logDataGroup.push({ modifiedOn: log.modifiedOn, logs: [log] });
       } else {
         this.logDataGroup[index].logs.push(log);
@@ -41,15 +44,16 @@ export class OperationLogPage {
 
   async showClearLogsAlert() {
     const alert = await this.alertController.create({
-      header: 'Confirm',
-      message: 'Do you want to clear all logs?',
+      header: 'Clear logs ?',
+      message: 'All log entries will be cleared from this device',
       cssClass: 'alertStyle',
       backdropDismiss: false,
       animated: true,
       buttons: [
         {
-          text: 'Yes',
+          text: 'Clear',
           role: 'confirm',
+          cssClass: 'bg-danger',
           handler: () => {
             this.logData = [];
             localStorage.removeItem('logs');
@@ -57,7 +61,7 @@ export class OperationLogPage {
           },
         },
         {
-          text: 'No',
+          text: 'Cancel',
           role: 'cancel',
         },
       ],

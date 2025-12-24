@@ -14,13 +14,13 @@
       <ion-col size="5">Start date</ion-col>
       <ion-col size="2">:</ion-col>
       <ion-col size="5">
-        {{data?.startDate | date : "dd/MM/YYYY"}}
+        {{data?.startDate | date : "dd/MM/yyyy"}}
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col size="5">End date</ion-col>
       <ion-col size="2">:</ion-col>
-      <ion-col size="5"> {{(data?.closedOn || today) | date : "dd/MM/YYYY"}} </ion-col>
+      <ion-col size="5"> {{(data?.closedOn || today) | date : "dd/MM/yyyy"}} </ion-col>
     </ion-row>
   </ion-grid>
 </div>
@@ -37,7 +37,7 @@
     <ion-row>
       <ion-col size="5">in months</ion-col>
       <ion-col size="2">:</ion-col>
-      <ion-col size="5">{{totalTimeinMonths(data?.startDate,data?.closedOn || today)}}m</ion-col>
+      <ion-col size="5">{{totalTimeInMonths(data?.startDate,data?.closedOn || today)}}m</ion-col>
     </ion-row>
     <ion-row>
       <ion-col size="5">Interest amt</ion-col>
@@ -56,7 +56,7 @@
   </ion-grid>
 </div>
 
-<div *ngIf="totalTimeinMonths(data?.startDate,data?.closedOn || today)>36"
+<div *ngIf="totalTimeInMonths(data?.startDate,data?.closedOn || today)>36"
   class="m-2 p-1 d-flex gap-3 align-items-center bgWarning rounded">
 
   <ion-icon name="alert" size="large" color="danger"></ion-icon>

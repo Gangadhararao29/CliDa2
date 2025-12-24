@@ -104,19 +104,19 @@ export class ClientsListPage {
 
   async getCloseAlert() {
     return await this.alertController.create({
-      header: 'Exit',
+      header: 'Exit app?',
+      message: 'Are you sure you want to exit the app?',
       cssClass: 'alertStyle',
       backdropDismiss: false,
       animated: true,
-      message: 'Do you want to close the app?',
       buttons: [
         {
-          text: 'No',
+          text: 'Cancel',
           role: 'cancel',
-          cssClass: 'secondary',
         },
         {
-          text: 'Yes',
+          text: 'Exit',
+          cssClass: 'bg-primary',
           handler: () => {
             App.exitApp();
           },

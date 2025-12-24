@@ -15,7 +15,7 @@ export class AdvSearchPage implements OnInit {
   displayData = [];
   showSortMissingText = false;
   showFilterMissingText = false;
-  showfilterRangeErrorText = true;
+  showFilterRangeErrorText = true;
   showNoRecords = false;
   clientSearchValue = '';
   hideSkeletonText = true;
@@ -61,9 +61,9 @@ export class AdvSearchPage implements OnInit {
   checkFormValidation(formValue) {
     if (formValue.sortBy || formValue.filterBy) {
       if (formValue.filterBy) {
-        this.showfilterRangeErrorText =
+        this.showFilterRangeErrorText =
           formValue.filterMin || formValue.filterMax;
-        return this.showfilterRangeErrorText;
+        return this.showFilterRangeErrorText;
       }
       return true;
     } else {
@@ -76,12 +76,12 @@ export class AdvSearchPage implements OnInit {
   removeAllErrors() {
     this.showSortMissingText = false;
     this.showFilterMissingText = false;
-    this.showfilterRangeErrorText = true;
+    this.showFilterRangeErrorText = true;
   }
 
   postAdditionNewParams() {
     this.modal.dismiss();
-    this.commonService.presentToast('New model added');
+    this.commonService.presentToast('A new model has been added successfully.');
     this.sortAndFilterParams.forEach((ele) => (ele.active = 'light'));
     localStorage.setItem(
       'sortAndFilterParams',
@@ -182,10 +182,10 @@ export class AdvSearchPage implements OnInit {
         'sortAndFilterParams',
         JSON.stringify(this.sortAndFilterParams)
       );
-      this.commonService.presentToast('Params deleted successfuly');
+      this.commonService.presentToast('The parameters have been deleted successfully.');
     } else {
       this.commonService.presentToast(
-        'Select any params to delete',
+        'Please select a parameter to delete.',
         'failedToastClass',
         'alert-outline'
       );
@@ -193,7 +193,9 @@ export class AdvSearchPage implements OnInit {
   }
 
   getColor(detail) {
-    const tm = this.calculationService.calculateTimePeriod(detail?.startDate).tm;
+    const tm = this.calculationService.calculateTimePeriod(
+      detail?.startDate
+    ).tm;
     if (detail?.closedOn) {
       return 'success';
     } else if (tm >= 30) {

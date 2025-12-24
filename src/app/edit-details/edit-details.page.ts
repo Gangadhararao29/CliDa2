@@ -80,22 +80,22 @@ export class EditDetailsPage {
   async presentAlertConfirm(formRef) {
     const alert = await this.alertController.create({
       cssClass: 'alertStyle',
-      header: 'Confirm',
+      header: 'Save changes?',
+      message: 'Do you want to save your changes?',
       backdropDismiss: false,
       animated: true,
-      message: 'Do you want to save these changes?',
       buttons: [
         {
-          text: 'Yes',
+          text: 'Save',
+          cssClass: 'bg-success',
           handler: () => {
             this.commonService.presentLoading();
             this.saveClientsData(formRef);
           },
         },
         {
-          text: 'No',
+          text: 'Cancel',
           role: 'cancel',
-          cssClass: 'secondary',
         },
       ],
     });
@@ -122,7 +122,7 @@ export class EditDetailsPage {
         .then(() => {
           setTimeout(() => {
             this.commonService.presentToast(
-              'Your changes have been saved.<br>Redirecting to Clients-list tab'
+              'Your changes have been saved successfully.<br>Redirecting to the Clients List tab.'
             );
             this.router.navigate(['clients-list']);
           }, 1000);
@@ -130,7 +130,7 @@ export class EditDetailsPage {
     } else {
       setTimeout(() => {
         this.commonService.presentToast(
-          'Your changes have been saved.<br>Redirecting to Client-details tab'
+          'Your changes have been saved successfully.<br>Redirecting to the Client Details tab.'
         );
         this.router.navigate([
           'clients-list',
@@ -144,22 +144,22 @@ export class EditDetailsPage {
   async resetFieldsConfirmPopup() {
     const alert = await this.alertController.create({
       cssClass: 'alertStyle',
-      header: 'Confirm',
+      header: 'Reset closed details?',
+      message: 'This will clear the closed date and amount.',
       backdropDismiss: false,
       animated: true,
-      message: 'Do you want to reset closed details?',
       buttons: [
         {
-          text: 'Yes',
+          text: 'Reset',
+          cssClass: 'bg-danger',
           handler: () => {
             this.clientRecord.closedOn = null;
             this.clientRecord.closedAmount = 0;
           },
         },
         {
-          text: 'No',
+          text: 'Cancel',
           role: 'cancel',
-          cssClass: 'secondary',
         },
       ],
     });

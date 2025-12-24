@@ -163,7 +163,9 @@ export class CalculatorPage {
         );
 
         this.showCalculatedData = true;
-        this.commonService.presentToast('Interest calculated successfully');
+        this.commonService.presentToast(
+          'The interest has been calculated successfully.'
+        );
       } else {
         this.showCalculatedData = false;
         this.dateInputErrorAlert(formRef.timePeriodType === 'dates');
@@ -228,7 +230,7 @@ export class CalculatorPage {
       : 'Please check the time period';
     alert.message = isDateType
       ? 'The end date should be greater than the start date.'
-      : 'Atleast one of the time period should be greater than 0.';
+      : 'At least one of the time period should be greater than 0.';
     alert.buttons = ['Ok'];
     document.body.appendChild(alert);
     return alert.present();
@@ -250,7 +252,9 @@ export class CalculatorPage {
     } catch {
       const cb = navigator.clipboard;
       await cb.writeText(clipboardText);
-      this.commonService.presentToast('Copied to clipboard');
+      this.commonService.presentToast(
+        'The data has been copied to the clipboard successfully.'
+      );
     }
   }
 
@@ -275,36 +279,36 @@ export class CalculatorPage {
   const separator = `--------------------------------`;
 
   const lines: string[] = [
-    `Principal      : ${this.currencyFormat(principal)}`,
-    `Interest rate  : ${interest}`,
-    `End date       : ${endDate}`,
-    `Start date     : ${startDate}`,
+    `${'Principal'.padEnd(15)}: ${this.currencyFormat(principal)}`,
+    `${'Interest rate'.padEnd(15)}: ${interest}`,
+    `${'End date'.padEnd(15)}: ${endDate}`,
+    `${'Start date'.padEnd(15)}: ${startDate}`,
     `${separator}`,
-    `Time period    : ${y} y ${m} m ${d} d`,
+    `${'Time period'.padEnd(15)}: ${y} y ${m} m ${d} d`,
     `${separator}`,
-    `Time in months : ${tm.toFixed(2)}`
+    `${'Time in months'.padEnd(15)}: ${tm.toFixed(2)}`
   ];
 
   if (this.intArray.length === 1) {
     const interestAmt = this.intArray[0].intAmt;
 
     lines.push(
-      `Total interest : ${this.currencyFormat(interestAmt)}`,
+      `${'Total interest'.padEnd(15)}: ${this.currencyFormat(interestAmt)}`,
       `${separator}`,
-      `Total amount   : ${this.currencyFormat(interestAmt + principal)}`
+      `${'Total amount'.padEnd(15)}: ${this.currencyFormat(interestAmt + principal)}`
     );
   } else {
-    lines.push('Interest breakdown')
+    lines.push('Interest breakdown');
     this.intArray.forEach(({ start, end, intAmt }) => {
       lines.push(
         `${start}y - ${(+end).toFixed(2)}y     : ${this.currencyFormat(intAmt)}`,
-      )
+      );
     });
 
     lines.push(
-      `Total interest : ${this.currencyFormat(this.finalInterest)}`,
+      `${'Total interest'.padEnd(15)}: ${this.currencyFormat(this.finalInterest)}`,
       `${separator}`,
-      `Total amount   : ${this.currencyFormat(this.finalInterest + principal)}`
+      `${'Total amount'.padEnd(15)}: ${this.currencyFormat(this.finalInterest + principal)}`
     );
   }
 
