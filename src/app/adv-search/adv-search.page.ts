@@ -182,30 +182,15 @@ export class AdvSearchPage implements OnInit {
         'sortAndFilterParams',
         JSON.stringify(this.sortAndFilterParams)
       );
-      this.commonService.presentToast('The parameters have been deleted successfully.');
+      this.commonService.presentToast(
+        'The parameters have been deleted successfully.'
+      );
     } else {
       this.commonService.presentToast(
         'Please select a parameter to delete.',
         'failedToastClass',
         'alert-outline'
       );
-    }
-  }
-
-  getColor(detail) {
-    const tm = this.calculationService.calculateTimePeriod(
-      detail?.startDate
-    ).tm;
-    if (detail?.closedOn) {
-      return 'success';
-    } else if (tm >= 30) {
-      return 'danger';
-    } else if (tm >= 24) {
-      return 'warning';
-    } else if (tm >= 12) {
-      return 'primary';
-    } else {
-      return 'medium';
     }
   }
 

@@ -64,7 +64,7 @@ export class DataBaseService {
   }
 
   async editClientData(formData, clientData, index) {
-    formData.userName = this.utilsService.formatToCamelCase(formData.userName);
+    formData.userName = this.utilsService.formatToTitleCase(formData.userName);
     formData.principal =
       formData.recordType === 'credit'
         ? Math.abs(formData.principal)

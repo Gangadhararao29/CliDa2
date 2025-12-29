@@ -53,7 +53,7 @@ export class ClientDetailsPage {
     this.clientId = this.activatedRoute.snapshot.params.key;
     this.isOldStyle = localStorage.getItem('isOldStyle') === 'true';
     this.dataBaseService.getClientByKey(this.clientId).then((res) => {
-      this.client = res;
+      this.client = res || { name: 'Data not found', data: [] };
       this.client.id = this.clientId;
       this.updateDependencies(this.client);
       this.hideSkeletonText = true;
@@ -64,10 +64,6 @@ export class ClientDetailsPage {
         if (newClient) this.updateDependencies(newClient);
       }
     );
-  }
-
-  trackData(index, record) {
-    return record.id;
   }
 
   updateDependencies(res) {
@@ -96,9 +92,10 @@ export class ClientDetailsPage {
   }
 
   getColor(detail) {
-    const tm = this.calculationService.calculateTimePeriod(
+    const { tm } = this.calculationService.calculateTimePeriod(
       detail?.startDate
-    ).tm;
+    );
+
     if (detail?.closedOn) {
       return 'success';
     } else if (tm >= 30) {
@@ -165,8 +162,9 @@ export class ClientDetailsPage {
     this.onChipClick(data);
   }
 
-  accordionGroupChange(event) {
-    this.openedAccordion = event.detail.value;
+  accordionGroupChange(event: CustomEvent) {
+    const value = Number(event.detail?.value);
+    this.openedAccordion = Number.isFinite(value) ? value : undefined;
   }
 
   selectRecord(id) {
@@ -180,7 +178,7 @@ export class ClientDetailsPage {
   }
 
   toggleLayout() {
-    localStorage.setItem('isOldStyle', (!this.isOldStyle).toString());
     this.isOldStyle = !this.isOldStyle;
+    localStorage.setItem('isOldStyle', this.isOldStyle.toString());
   }
 }

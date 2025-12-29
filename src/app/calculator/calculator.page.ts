@@ -33,7 +33,7 @@ export class CalculatorPage {
     private dataBaseService: DataBaseService,
     private commonService: CommonService,
     private calculationService: CalculationService
-  ) {}
+  ) { }
 
   ionViewWillEnter() {
     this.theme = this.commonService.getTheme();
@@ -50,8 +50,8 @@ export class CalculatorPage {
 
     if (params.length == 4) {
       this.linkData = {
-        principal: params[0],
-        interest: params[1],
+        principal: +params[0],
+        interest: +params[1],
         startDate: params[2],
         endDate: params[3],
         timePeriodType: 'dates',
@@ -295,7 +295,7 @@ export class CalculatorPage {
     const { principal, interest, startDate, endDate } = this.linkData;
 
     const { y, m, d, tm } = this.timePeriodObject;
-    const separator = `--------------------------------`;
+    const separator = `------------------------------`;
 
     const lines: string[] = [
       `Principal : ${this.currencyFormat(principal)}`,

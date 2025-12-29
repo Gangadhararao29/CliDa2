@@ -48,7 +48,8 @@
 
     <ion-accordion-group class="m-2 text-center d-flex flex-wrap justify-content-evenly"
       (ionChange)="accordionGroupChange($event)">
-      <div *ngFor="let data of client?.data; let i=index; trackBy:trackData" class="my-1 listItem text-start">
+      @for (data of client?.data; let i = $index; track data.id) {
+      <div class="my-1 listItem  text-start">
         <ion-accordion [value]="i">
           <ion-item button slot="header" class="rounded" color="light">
             <ion-checkbox class="check-pad" slot="start" [checked]="isChipSelected(data?.id)"
@@ -56,10 +57,20 @@
               [attr.data-bs-theme]="theme">
             </ion-checkbox>
 
-            <ion-label class="d-flex ms-2" [color]="getColor(data)">
-              <span class="fw-bolder">₹ {{ isd.format(data?.principal) }}</span>
-              <span class="ms-auto fw-bolder">{{ data?.startDate | date : 'dd/MM/yyyy' }}</span>
+            @if (isOldStyle) {
+            <ion-label class="d-flex justify-content-between align-items-center fw-bolder" [color]="getColor(data)">
+              <span>₹ {{ isd.format(data?.principal) }}</span>
+              <span class="ms-auto">{{ data?.startDate | date:'dd/MM/yyyy' }}</span>
             </ion-label>
+            } @else {
+            <ion-label class="d-flex justify-content-between align-items-center fw-bolder">
+              <span>₹ {{ isd.format(data?.principal) }}</span>
+              <ion-badge class="rounded-pill px-2 py-1" [color]="getColor(data)">
+                {{ data?.startDate | date:'dd MMM yy' }}
+              </ion-badge>
+            </ion-label>
+            }
+
           </ion-item>
 
           <ion-list slot="content" lines="none" class="rounded mx-auto">
@@ -68,6 +79,7 @@
           </ion-list>
         </ion-accordion>
       </div>
+      }
     </ion-accordion-group>
 
     <ion-item *ngIf="isOldStyle" color="light" class="rounded text-center m-2" routerLink="/clients-list/add-client"
@@ -111,19 +123,29 @@
         <div *ngIf="isOldStyle" class="bgLight p-2 rounded text-center mx-2 mt-3 sticky-top">
           Current transactions
         </div>
-        <ng-container *ngFor="let data of client?.data; let i=index; trackBy:trackData">
-          <ion-item button class="rounded m-2" [ngClass]="{'selected': i === +openedAccordion}" color="light"
-            (click)="selectRecord(i)">
-            <ion-checkbox class="check-pad" slot="start" [checked]="isChipSelected(data?.id)"
-              (ionChange)="onCheckBoxClick($event, data)" (click)="$event.stopPropagation()" color="primary">
-            </ion-checkbox>
 
-            <ion-label class="d-flex ms-2" [color]="getColor(data)">
-              <span class="fw-bolder">₹ {{ isd.format(data?.principal) }}</span>
-              <span class="ms-auto fw-bolder">{{ data?.startDate | date : 'dd/MM/yyyy' }}</span>
-            </ion-label>
-          </ion-item>
-        </ng-container>
+        @for (data of client?.data; let i = $index; track data.id) {
+        <ion-item button class="rounded m-2" [ngClass]="{'selected': i === +openedAccordion}" color="light"
+          (click)="selectRecord(i)">
+          <ion-checkbox class="check-pad" slot="start" [checked]="isChipSelected(data?.id)"
+            (ionChange)="onCheckBoxClick($event, data)" (click)="$event.stopPropagation()" color="primary">
+          </ion-checkbox>
+
+          @if (isOldStyle) {
+          <ion-label class="d-flex justify-content-between align-items-center fw-bolder" [color]="getColor(data)">
+            <span>₹ {{ isd.format(data?.principal) }}</span>
+            <span>{{ data?.startDate | date:'dd/MM/yyyy' }}</span>
+          </ion-label>
+          } @else {
+          <ion-label class="d-flex justify-content-between align-items-center fw-bolder">
+            <span>₹ {{ isd.format(data?.principal) }}</span>
+            <ion-badge class="rounded-pill px-2 py-1" [color]="getColor(data)">
+              {{ data?.startDate | date:'dd MMM yy' }}
+            </ion-badge>
+          </ion-label>
+          }
+        </ion-item>
+        }
 
         <ion-item *ngIf="isOldStyle" color="light" class="rounded text-center m-2" routerLink="/clients-list/add-client"
           [queryParams]="{name:client?.name}"><ion-label class="text-danger fw-bolder">
@@ -143,11 +165,17 @@
 
         <div class="my-1 p-1" *ngIf="isOldStyle"></div>
 
-        <div class="rounded mx-auto mb-3 mt-2" *ngIf="openedAccordion != undefined">
+        @if (openedAccordion != undefined) {
+        <div class="rounded mx-auto mb-3 mt-2">
           <app-client-data-view [data]="client?.data[openedAccordion]" [client]="client" index="large"
             (cleanUp)="accordionCleanUp()"></app-client-data-view>
-
         </div>
+        } @else {
+        <div class="text-center text-muted mt-5 opacity-50" [attr.data-bs-theme]="theme">
+          <ion-icon name="documents-outline" style="font-size: 64px;"></ion-icon>
+          <p class="mt-2">Select a transaction to view details</p>
+        </div>
+        }
 
         <!-- Chips result info -->
         <app-summary-table [selectedChips]="selectedChips"></app-summary-table>

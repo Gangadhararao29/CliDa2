@@ -39,11 +39,11 @@ export class ClientDataViewComponent implements OnInit {
   ngOnInit() {}
 
   calculateDateDifference(startDate, endDate) {
-    const timeObject = this.calculationService.calculateTimePeriod(
+    const {y, m ,d} = this.calculationService.calculateTimePeriod(
       startDate,
       endDate
     );
-    return `${timeObject.y}y, ${timeObject.m}m, ${timeObject.d}d`;
+    return `${y}y, ${m}m, ${d}d`;
   }
 
   totalTimeInMonths(startDate, endDate) {

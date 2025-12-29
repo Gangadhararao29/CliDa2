@@ -18,7 +18,7 @@ export class UtilsService {
 
   generatePayLoad(formData, includeClosedDetails) {
     return {
-      name: this.formatToCamelCase(formData.userName),
+      name: this.formatToTitleCase(formData.userName),
       data: [
         {
           id: Date.now(),
@@ -38,7 +38,7 @@ export class UtilsService {
     };
   }
 
-  formatToCamelCase(name: string) {
+  formatToTitleCase(name: string) {
     return name.replace(
       /(^\w|\s\w)(\S*)/g,
       (_, m1, m2) => m1.toUpperCase() + m2.toLowerCase()

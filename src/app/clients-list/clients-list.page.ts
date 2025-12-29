@@ -67,7 +67,7 @@ export class ClientsListPage {
 
   getDisplayData() {
     this.dataBaseService.getAllClientsDataWithKeys().then((data) => {
-      this.showEntryText = data.length > 0 ? false : true;
+      this.showEntryText = data.length == 0;
       this.debitData = [];
       this.creditData = [];
 
@@ -123,23 +123,6 @@ export class ClientsListPage {
         },
       ],
     });
-  }
-
-  getColor(detail) {
-    const tm = this.calculationService.calculateTimePeriod(
-      detail?.startDate
-    ).tm;
-    if (detail?.closedOn) {
-      return 'success';
-    } else if (tm >= 30) {
-      return 'danger';
-    } else if (tm >= 24) {
-      return 'warning';
-    } else if (tm >= 12) {
-      return 'primary';
-    } else {
-      return 'medium';
-    }
   }
 
   setListType(type) {
