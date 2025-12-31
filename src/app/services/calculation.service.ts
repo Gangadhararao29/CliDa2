@@ -4,15 +4,9 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class CalculationService {
-  today = new Date()
-    .toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    })
-    .split('/')
-    .reverse()
-    .join('-');
+  today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 10);
 
   constructor() {}
 

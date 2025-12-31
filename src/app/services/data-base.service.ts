@@ -47,6 +47,34 @@ export class DataBaseService {
       .update(clientData);
   }
 
+  async bulkUpdateClientByKey(key, clientData, action) {
+    switch (action) {
+      case 'approve':
+        const approvedRecords = clientData.data.filter((r) => r.bulkApproved);
+        this.utilsService.addNewLogData(
+          'bulk approve',
+          { name: clientData.name, data: approvedRecords },
+          null
+        );
+        break;
+
+      case 'delete':
+        const deletedRecords = clientData.data.filter((r) => r.bulkDeleted);
+        this.utilsService.addNewLogData(
+          'bulk delete',
+          { name: clientData.name, data: deletedRecords },
+          null
+        );
+
+        clientData.data = clientData.data.filter((r) => !r.bulkDeleted);
+        if (clientData.data.length < 1) {
+          return this.deleteClientByKey(key);
+        }
+        break;
+    }
+    return await this.db.collection('clientsData').doc(key).update(clientData);
+  }
+
   async addNewClientData(formData, includeClosedDetails = false) {
     const payLoad = this.utilsService.generatePayLoad(
       formData,

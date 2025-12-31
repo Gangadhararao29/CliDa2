@@ -16,14 +16,21 @@ export class PieChartComponent implements OnChanges {
       legend: {
         display: true,
         position: 'top',
+        labels: { color: '#909090' }
       },
+      title: {
+        display: true,
+        text: 'Portfolio Composition',
+        color: '#909090',
+        font: { size: 16 }
+      }
     },
     aspectRatio: 1.235,
   };
   public pieChartData: ChartData<'pie', number[], string | string[]>;
   public pieChartType: ChartType = 'pie';
 
-  constructor() {}
+  constructor() { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (
@@ -41,12 +48,13 @@ export class PieChartComponent implements OnChanges {
       });
 
       this.pieChartData = {
-        labels: ['Debits', 'Credits'],
+        labels: ['Credits', 'Debits'],
         datasets: [
           {
-            data: [-1 * debit, credit],
-            backgroundColor: ['#dc2f02', '#0077b6'],
-            hoverBackgroundColor: ['#d00000', '#023e8a'],
+            data: [credit, -1 * debit],
+            backgroundColor: ['#29B6F6', '#FF5252'],
+            hoverBackgroundColor: ['#4FC3F7', '#FF8A80'],
+            borderColor: '#50505050'
           },
         ],
       };

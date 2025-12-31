@@ -18,17 +18,8 @@ export class ApproveModalComponent implements OnInit {
   hideApprovedControls = true;
   approvedAmount = 0;
   isd = Intl.NumberFormat('en-IN');
-  today = new Date()
-    .toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    })
-    .split('/')
-    .reverse()
-    .join('-');
+  today: string;
   theme: string;
-
 
   constructor(
     private modalController: ModalController,
@@ -38,6 +29,7 @@ export class ApproveModalComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.today = this.commonService.today;
     this.theme = this.commonService.getTheme();
     this.hideApprovedControls = true;
     this.approvedAmount = 0;

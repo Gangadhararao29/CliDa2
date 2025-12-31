@@ -1,4 +1,5 @@
 import { Component, OnInit, Renderer2 } from '@angular/core';
+import { NotificationService } from './services/notification.service';
 
 @Component({
   selector: 'app-root',
@@ -7,9 +8,13 @@ import { Component, OnInit, Renderer2 } from '@angular/core';
   standalone: false,
 })
 export class AppComponent implements OnInit {
-  constructor(private renderer: Renderer2) {}
+  constructor(
+    private renderer: Renderer2,
+    private notificationService: NotificationService
+  ) { }
 
   ngOnInit() {
+    this.notificationService.initializeListeners();
     const preferColorMode = window.matchMedia('(prefers-color-scheme:dark)');
     const theme = localStorage.getItem('theme');
     if (theme != null && theme !== 'auto') {

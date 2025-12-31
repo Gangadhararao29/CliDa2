@@ -18,6 +18,7 @@
     <ion-tab-button tab="about">
       <ion-icon name="person-sharp"></ion-icon>
       <ion-label>Info</ion-label>
+      <ion-badge color="danger" *ngIf="unreadCount > 0">{{ unreadCount }}</ion-badge>
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>

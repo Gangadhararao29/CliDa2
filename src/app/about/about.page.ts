@@ -9,6 +9,7 @@ import { Capacitor } from '@capacitor/core';
 import { FirebaseService } from '../services/firebase.service';
 import { CommonService } from '../services/common.service';
 import { DataBaseService } from '../services/data-base.service';
+import { NotificationService, NotificationSettings, PaymentNotification } from '../services/notification.service';
 
 @Component({
   selector: 'app-about',
@@ -33,6 +34,14 @@ export class AboutPage {
   theme: string;
   isWebVersion: boolean = false;
   isUpdateAvailable = false;
+  notificationSettings: NotificationSettings = {
+    enabled: false,
+    notifyBeforeMonths: 2,
+    minimumAgeYears: 2,
+    reminderIntervalWeeks: 2
+  };
+  notifications: any[] = [];
+  isNotificationModalOpen = false;
 
   constructor(
     public alertController: AlertController,
@@ -41,8 +50,9 @@ export class AboutPage {
     private httpClient: HttpClient,
     private firebaseService: FirebaseService,
     private commonService: CommonService,
-    private dataBaseService: DataBaseService
-  ) {}
+    private dataBaseService: DataBaseService,
+    private notificationService: NotificationService
+  ) { }
 
   ionViewWillEnter() {
     this.isWebVersion = Capacitor.getPlatform() != 'web' ? false : true;
@@ -55,6 +65,8 @@ export class AboutPage {
     } else {
       this.loadingData = false;
     }
+    this.notificationSettings = this.notificationService.getSettings();
+    this.loadNotifications();
   }
 
   ionViewDidEnter() {
@@ -455,5 +467,89 @@ export class AboutPage {
         this.router.navigate(['clients-list']);
       }, 1000);
     });
+  }
+
+  get lastCloudSync(): string | null {
+    return localStorage.getItem('lastCloudSync');
+  }
+
+  get lastDataModified(): string | null {
+    return localStorage.getItem('lastDataModified');
+  }
+
+  get isBackupNeeded(): boolean {
+    const sync = this.lastCloudSync;
+    const modified = this.lastDataModified;
+    if (!modified) return false;
+    if (!sync) return true;
+    return new Date(modified) > new Date(sync);
+  }
+
+  // Notification Methods
+
+  loadNotifications() {
+    const raw = this.notificationService.getAllNotifications();
+    this.notifications = raw;
+  }
+
+  onNotificationToggle() {
+    if (this.notificationSettings.enabled) {
+      this.notificationService.requestPermission(true).then(granted => {
+        if (!granted) {
+          this.notificationSettings.enabled = false;
+          this.commonService.presentToast('Notification permission denied', 'failedToastClass', 'alert-outline');
+        }
+        this.saveNotificationSettings();
+      });
+    } else {
+      this.saveNotificationSettings();
+    }
+  }
+
+  saveNotificationSettings() {
+    this.notificationService.saveSettings(this.notificationSettings);
+  }
+
+  async openNotifications() {
+    const rawNotifications = this.notificationService.getAllNotifications();
+    if (rawNotifications.length === 0) {
+      this.notifications = [];
+      this.isNotificationModalOpen = true;
+      return;
+    }
+
+    const allClients = await this.dataBaseService.getAllClientsDataWithKeys();
+
+    this.notifications = rawNotifications.map(note => {
+      const client = allClients.find(c => c.key === note.clientId);
+      if (!client) return null;
+
+      const transaction = client.data.data.find(t => t.id === note.transactionId);
+      if (!transaction) return null;
+
+      return {
+        ...note,
+        clientName: client.data.name,
+        amount: transaction.principal
+      };
+    }).filter(n => n !== null);
+
+    this.isNotificationModalOpen = true;
+  }
+
+  markAsRead(notification: any) {
+    this.notificationService.markAsRead(notification.id);
+    const note = this.notifications.find(n => n.id === notification.id);
+    if (note) note.read = true;
+  }
+
+  dismissNotification(notification: any) {
+    this.notificationService.dismissNotification(notification.id);
+    this.notifications = this.notifications.filter(n => n.id !== notification.id);
+  }
+
+  clearAllNotifications() {
+    this.notificationService.clearAllNotifications();
+    this.notifications = [];
   }
 }

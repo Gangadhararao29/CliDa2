@@ -7,7 +7,6 @@
 
 <ion-content>
   <div class="container my-2">
-
     <ion-card color="light" [hidden]="user || !isWebVersion" class="my-2 rounded shadow-sm">
       <div class="d-flex flex-column align-items-center text-center p-2 bgLight rounded">
         <div class="fw-medium mb-2">
@@ -22,66 +21,93 @@
     </ion-card>
 
 
-    <div [hidden]="!user || !isWebVersion">
+    <div [hidden]="!user || !isWebVersion" [attr.data-bs-theme]="theme">
       <ion-avatar class="mx-auto" style="height: 2rem">
         <img alt="Profile pic image" [src]="user?.photoURL" referrerpolicy="no-referrer" class="img-container" />
       </ion-avatar>
       <ion-card color="light">
         <ion-card-header>
-          <ion-card-title class="text-center m-1">
-            <br class="m-0 p-0" />
-            Hi {{user?.displayName}}
+          <ion-card-title class="text-center">
+            <br>
+            Hi {{user?.displayName}} <br>
           </ion-card-title>
+          <div class="text-muted text-center">{{user?.email}}</div>
         </ion-card-header>
         <ion-card-content>
-          <div class="d-flex gap-2 mx-2 my-1 justify-content-between">
-            <ion-button expand="block" class="w-100" (click)="loadCloudData()">
-              Download&nbsp;<ion-icon name="cloud-download-outline"></ion-icon>
-            </ion-button>
-            <ion-button expand="block" class="w-100" (click)="uploadToCloud()">
-              Upload&nbsp;<ion-icon name="cloud-upload-outline"></ion-icon>
-            </ion-button>
+          <div class="d-flex justify-content-between mx-2 mt-1 align-items-center">
+            <div>
+              <ion-icon name="time-outline" class="me-1"></ion-icon> Modified: {{ (lastDataModified | date:'medium')
+              ||
+              'Never' }}
+              <br>
+              <ion-icon name="cloud-done-outline" class="me-1"></ion-icon> Last Backup: {{ (lastCloudSync |
+              date:'medium')
+              || 'Never' }}
+            </div>
+            <div>
+              <span class="badge rounded-pill" [ngClass]="isBackupNeeded ? 'text-bg-warning' : 'text-bg-success'">
+                {{ isBackupNeeded ? 'Backup Needed' : 'Fully Backed Up' }}
+              </span>
+            </div>
           </div>
-          <ion-button class="mx-2 mb-2" expand="block" color="danger" (click)="logOutUser()">
+
+          <div class="d-flex gap-2 mx-2 mb-2">
+            <ion-button class="flex-fill" (click)="uploadToCloud()">
+              <ion-icon slot="end" name="cloud-upload-outline"></ion-icon>
+              Backup
+            </ion-button>
+
+            <ion-button class="flex-fill" (click)="loadCloudData()">
+              <ion-icon slot="end" name="cloud-download-outline"></ion-icon>
+              Restore
+            </ion-button>
+
+          </div>
+
+          <ion-button class="mx-2 mb-2" color="danger" expand="block" (click)="logOutUser()">
             Sign out
+            <ion-icon slot="end" name="log-out-outline"></ion-icon>
           </ion-button>
+
         </ion-card-content>
       </ion-card>
     </div>
 
+    <!-- Offline Data Sync -->
     <ion-card color="light">
       <ion-card-header>
-        <ion-card-title class="d-flex align-items-center">
-          <div>Sync Local Data</div>
-          <ion-icon id="help-section" name="help-sharp" size="small"
-            class="ms-auto border border-dark bg-warning rounded-circle text-dark p-1"></ion-icon>
+        <ion-card-title>
+          <div class="d-flex align-items-center">
+            <span>Offline Data Sync</span>
+
+            <ion-icon id="help-section" name="help-outline" size="small"
+              class="ms-auto border border-dark bg-warning rounded-circle text-dark p-1">
+            </ion-icon>
+          </div>
         </ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
-
         <ion-item color="light">
           <ion-select justify="space-between" interface="popover" label="Select file type" placeholder=""
             [(ngModel)]="fileType">
-            <ion-select-option value="json">Json</ion-select-option>
+            <ion-select-option value="json">JSON</ion-select-option>
             <ion-select-option value="excel">Excel (beta)</ion-select-option>
           </ion-select>
         </ion-item>
 
-        <ion-grid>
-          <ion-row>
-            <ion-col>
-              <ion-button expand="block" (click)="exportData()">
-                Export Data
-              </ion-button>
-            </ion-col>
-            <ion-col>
-              <ion-button expand="block" (click)="fileInput.click()">
-                Import Data
-              </ion-button>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
+        <div class="d-flex gap-2 mx-2 mb-1">
+          <ion-button class="flex-fill" (click)="exportData()">
+            <ion-icon name="share-outline" slot="start"></ion-icon>
+            Export Data
+          </ion-button>
+
+          <ion-button class="flex-fill" (click)="fileInput.click()">
+            <ion-icon name="download-outline" slot="start"></ion-icon>
+            Import Data
+          </ion-button>
+        </div>
+
       </ion-card-content>
     </ion-card>
 
@@ -107,7 +133,7 @@
 
     <ion-card color="light" class="my-3">
       <ion-card-header>
-        <ion-card-title>Data Settings</ion-card-title>
+        <ion-card-title>Data Maintenance</ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
@@ -155,7 +181,7 @@
 
     <ion-card color="light" class="my-3">
       <ion-card-header>
-        <ion-card-title>App Settings</ion-card-title>
+        <ion-card-title>Application</ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
@@ -165,9 +191,9 @@
               <ion-button expand="block" color="primary" fill="solid" (click)="handleThemeBtnClick()">
                 <ion-select #select2 style="min-height: 0px" (ionChange)="changeTheme($event)" label="Choose theme"
                   [value]="themeName" interface="popover" (click)="$event.stopPropagation()">
-                  <ion-select-option value="light">🌝 Light</ion-select-option>
-                  <ion-select-option value="dark">🌚 Dark</ion-select-option>
-                  <ion-select-option value="auto">🌗 Auto</ion-select-option>
+                  <ion-select-option value="light">Light</ion-select-option>
+                  <ion-select-option value="dark">Dark</ion-select-option>
+                  <ion-select-option value="auto">Default</ion-select-option>
                 </ion-select>
               </ion-button>
             </ion-col>
@@ -185,7 +211,7 @@
             <ion-col size="6">
               <ion-button expand="block" color="secondary" fill="solid" routerLink="logs">
                 <ion-icon name="document-text-outline" slot="start"></ion-icon>
-                Show logs
+                View logs
               </ion-button>
             </ion-col>
             <ion-col size="6">
@@ -254,7 +280,138 @@
         </ion-content>
       </ng-template>
     </ion-modal>
+
+    <!-- Notification Settings Card -->
+    <ion-card color="light">
+      <ion-card-header>
+        <ion-card-title class="d-flex align-items-center">
+          <ion-icon name="notifications-outline" slot="start" color="primary" class="me-2"></ion-icon>
+          Notifications
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+
+        <!-- Main Toggle -->
+        <ion-item lines="full">
+          <ion-toggle [(ngModel)]="notificationSettings.enabled" (ionChange)="onNotificationToggle()">
+            <ion-label>Payment Reminders</ion-label>
+            <ion-note>Get notified about long-running transactions</ion-note>
+          </ion-toggle>
+        </ion-item>
+
+        <!-- Conditional Settings -->
+        <ng-container *ngIf="notificationSettings.enabled">
+
+          <!-- Trigger After -->
+          <ion-item lines="full">
+            <ion-label>Trigger After <br>
+              <small>Minimum transaction age</small>
+            </ion-label>
+
+            <ion-select slot="end" [(ngModel)]="notificationSettings.minimumAgeYears"
+              (ionChange)="saveNotificationSettings()" interface="popover">
+              <ion-select-option [value]="1">1 Year</ion-select-option>
+              <ion-select-option [value]="2">2 Years</ion-select-option>
+              <ion-select-option [value]="3">3 Years</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <!-- Notify Before -->
+          <ion-item lines="full">
+            <ion-label>Notify Before <br>
+              <small>Time before threshold</small>
+            </ion-label>
+
+            <ion-select slot="end" [(ngModel)]="notificationSettings.notifyBeforeMonths"
+              (ionChange)="saveNotificationSettings()" interface="popover">
+              <ion-select-option [value]="1">1 Month</ion-select-option>
+              <ion-select-option [value]="2">2 Months</ion-select-option>
+              <ion-select-option [value]="3">3 Months</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <!-- Reminder Interval -->
+          <ion-item lines="full">
+            <ion-label class="ion-text-wrap d-flex flex-column">
+              <span>Reminder Frequency</span>
+            </ion-label>
+            <ion-select [(ngModel)]="notificationSettings.reminderIntervalWeeks"
+              (ionChange)="saveNotificationSettings()" interface="popover" slot="end">
+              <ion-select-option [value]="1">Every Week</ion-select-option>
+              <ion-select-option [value]="2">Every 2 Weeks</ion-select-option>
+              <ion-select-option [value]="3">Every 3 Weeks</ion-select-option>
+              <ion-select-option [value]="4">Every 4 Weeks</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <!-- View Notifications Button -->
+          <ion-item button lines="none" (click)="openNotifications()">
+            <ion-icon name="mail-unread-outline" slot="start" color="secondary"></ion-icon>
+            <ion-label>View Notifications</ion-label>
+            <ion-badge color="danger" slot="end" *ngIf="notifications.length > 0">
+              {{ notifications.length }}
+            </ion-badge>
+          </ion-item>
+
+        </ng-container>
+
+      </ion-card-content>
+    </ion-card>
   </div>
+
+  <!-- Notification Modal -->
+  <ion-modal [isOpen]="isNotificationModalOpen" (didDismiss)="isNotificationModalOpen = false">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Notifications (Beta)</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="isNotificationModalOpen = false">Close</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div *ngIf="notifications.length === 0"
+          class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+          <ion-icon name="notifications-off-outline" style="font-size: 4rem;"></ion-icon>
+          <p class="mt-2">No notifications yet</p>
+        </div>
+
+        <div *ngIf="notifications.length > 0">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-uppercase text-muted fs-small">Messages</span>
+            <ion-button fill="clear" size="small" color="danger" (click)="clearAllNotifications()">
+              Clear All
+            </ion-button>
+          </div>
+
+          <ion-list>
+            <ion-item-sliding *ngFor="let note of notifications">
+              <ion-item button (click)="markAsRead(note)" [detail]="false">
+                <div slot="start" [class.opacity-50]="note.read">
+                  <ion-icon name="wallet-outline" color="primary"></ion-icon>
+                </div>
+                <ion-label>
+                  <h2 [class.fw-bold]="!note.read">{{ note.clientName }}</h2>
+                  <p>₹{{ note.amount.toLocaleString('en-IN') }} &bull; Since {{ note.transactionStartDate | date:'MMM
+                    yyyy' }}</p>
+                  <ion-note color="medium" class="fs-small">{{ note.createdAt | date:'shortTime' }}</ion-note>
+                </ion-label>
+                <ion-badge color="primary" *ngIf="!note.read" dot="true" slot="end"></ion-badge>
+              </ion-item>
+
+              <ion-item-options side="end">
+                <ion-item-option color="danger" (click)="dismissNotification(note)">
+                  <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
+          </ion-list>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
   <div class="text-center mb-3" [attr.data-bs-theme]="theme">
     <div class="text-muted" style="font-size: 90%;">

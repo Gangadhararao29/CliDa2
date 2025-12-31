@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { NotificationService } from '../services/notification.service';
 
 @Component({
   selector: 'app-tabs',
@@ -8,6 +9,9 @@ import { Component } from '@angular/core';
 })
 export class TabsPage {
 
-  constructor() {}
+  constructor(public notificationService: NotificationService) { }
 
+  get unreadCount() {
+    return this.notificationService.getUnreadCount();
+  }
 }

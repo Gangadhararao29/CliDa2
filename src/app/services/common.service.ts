@@ -6,15 +6,9 @@ import { Subject } from 'rxjs';
   providedIn: 'root',
 })
 export class CommonService {
-  today = new Date()
-    .toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    })
-    .split('/')
-    .reverse()
-    .join('-');
+  today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 10);
   pageRefreshEmitter = new Subject<any>();
 
   constructor(

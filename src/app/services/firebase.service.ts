@@ -6,7 +6,7 @@ import { Firestore, collection, doc, getDocs, writeBatch } from '@angular/fire/f
   providedIn: 'root',
 })
 export class FirebaseService {
-  constructor(private auth: Auth, private firestore: Firestore) {}
+  constructor(private auth: Auth, private firestore: Firestore) { }
 
   onAuthStateChanged(callback: (user: User | null) => void) {
     return onAuthStateChanged(this.auth, callback);
@@ -37,5 +37,6 @@ export class FirebaseService {
       batch.set(clientRef, record);
     });
     await batch.commit();
+    localStorage.setItem('lastCloudSync', new Date().toISOString());
   }
 }

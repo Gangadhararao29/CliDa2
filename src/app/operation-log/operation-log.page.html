@@ -112,7 +112,8 @@
                     {{ log.newData.closedOn }}
                     <span *ngIf="log.orgData.closedOn == log.newData.closedOn" class="mx-1">•</span>
                     <br><del>{{ log.orgData.closedAmount }}</del>
-                    <span class="strong"> {{ log.newData.closedAmount | currency:'INR':'symbol':'1.0-0':'en-IN' }}</span>
+                    <span class="strong"> {{ log.newData.closedAmount | currency:'INR':'symbol':'1.0-0':'en-IN'
+                      }}</span>
                   </div>
                 </div>
 
@@ -131,6 +132,51 @@
                   </div>
                 </div>
               </ng-container>
+
+              <!-- ===================== -->
+              <!-- BULK APPROVE / DELETE -->
+              <!-- ===================== -->
+              <ng-container
+                *ngSwitchCase="log.operation === 'bulk approve' || log.operation === 'bulk delete' ? log.operation : 'other'">
+                <!-- LEFT -->
+                <div class="flex-grow-1">
+                  <!-- NAME -->
+                  <div class="fw-semibold" style="font-size: 120%;">{{ log.bulkData.name }}</div>
+
+                  @for (record of log.bulkData.data; track $index) {
+                  <div class="text-muted">
+                    {{ record.principal }}
+                    <span class="mx-1">•</span>
+                    {{ record.interest }}
+                    <span class="mx-1">•</span>
+                    {{ record.startDate }}
+                  </div>
+                  }
+
+                  @for (record of log.bulkData.data; track $index) {
+
+                  <span class="text-success mt-1 fw-bold">
+                    @let amount = log.operation == 'bulk approve' ? record.closedAmount : record.principal;
+                    {{ $first ? '' : amount >= 0 ? ' + ' : ' - ' }}
+                    {{ amount > 0 ? (amount).toFixed() : (-1 * amount).toFixed() }}
+                  </span>
+                  }
+
+                </div>
+                <!-- RIGHT -->
+                <div class="text-end ms-3">
+                  <ion-badge [color]="getStatusColor(log.operation)" class="mb-2 text-capitalize">
+                    {{ log.operation }}
+                  </ion-badge>
+
+                  <div class="fw-bold fs-5">
+                    {{ getBulkAmount(log.bulkData.data, log.operation) | currency:'INR':'symbol':'1.0-0':'en-IN' }}
+                  </div>
+
+                </div>
+
+              </ng-container>
+
             </div>
           </ion-card-content>
         </ion-card>

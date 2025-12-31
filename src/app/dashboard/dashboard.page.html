@@ -2,11 +2,8 @@
   <ion-toolbar>
     <ion-title>Dashboard</ion-title>
     <ion-buttons slot="primary" class="mx-2">
-      <ion-button (click)="toggleChart()" *ngIf="isPieChartVisible && dashPref?.graphs">
-        <ion-icon name="stats-chart-sharp"></ion-icon>
-      </ion-button>
-      <ion-button (click)="toggleChart()" *ngIf="!isPieChartVisible && dashPref?.graphs ">
-        <ion-icon name="pie-chart-sharp"></ion-icon>
+      <ion-button (click)="toggleChart()" *ngIf="dashPref?.graphs">
+        <ion-icon [name]="nextChartIcon"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-progress-bar [hidden]="hideSkeletonText" type="indeterminate"></ion-progress-bar>
@@ -67,10 +64,40 @@
       <div #chart2>
         <app-pie-chart [responseData]="totalArray"></app-pie-chart>
       </div>
+      <div #chart3>
+        <app-bar-chart-interest-distribution [rawData]="totalClients"></app-bar-chart-interest-distribution>
+      </div>
+      <div #chart4>
+        <app-bar-chart-top-clients [responseData]="totalArray"></app-bar-chart-top-clients>
+      </div>
     </div>
   </div>
 
+
   <div class="container-md">
+    <!-- Top Projected Earners -->
+    <ion-card color="light" [hidden]="!dashPref?.topEar">
+      <ion-item color="light" lines="full">
+        <ion-label><span class="heading">Top Earnings</span></ion-label>
+        <ion-button slot="end" color="light" (click)="sortTopEarGridChange()" class="mx-1">
+          <ion-icon [name]="topEarGridIcon" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ng-container
+        *ngFor="let client of topEarners | paginate: { itemsPerPage: 4, currentPage: topEarPage, id:'topEar'}; trackBy:trackData">
+        <ion-item [routerLink]="'client-details/' + client.key" color="light">
+          <ion-label>
+            <span class="d-flex">
+              <h2>{{client.name}}</h2>
+              <h2 class="ms-auto fw-bolder"> ₹{{isd.format(math.round(client.totalEarnings))}}</h2>
+            </span>
+          </ion-label>
+        </ion-item>
+      </ng-container>
+      <pagination-controls class="text-end" (pageChange)="topEarPage = $event" id="topEar" [responsive]="true"
+        [autoHide]="true"></pagination-controls>
+    </ion-card>
+
     <!-- Upcoming transactions -->
     <ion-card color="light" [hidden]="!dashPref?.upTrans">
       <ion-item color="light" lines="full">
@@ -222,6 +249,7 @@
       <div class="px-2 pb-2">
         <ion-chip [color]="dashPref?.stats ?'tertiary':''" (click)="toggleDashPref('stats')">Stats</ion-chip>
         <ion-chip [color]="dashPref?.graphs ?'tertiary':''" (click)="toggleDashPref('graphs')">Graphs</ion-chip>
+        <ion-chip [color]="dashPref?.topEar ?'tertiary':''" (click)="toggleDashPref('topEar')">Earners</ion-chip>
         <ion-chip [color]="dashPref?.upTrans ?'tertiary':''" (click)="toggleDashPref('upTrans')">Upcoming</ion-chip>
         <ion-chip [color]="dashPref?.recTrans ?'tertiary':''" (click)="toggleDashPref('recTrans')">Recent</ion-chip>
         <ion-chip [color]="dashPref?.cliSum ?'tertiary':''" (click)="toggleDashPref('cliSum')">Summary</ion-chip>

@@ -91,8 +91,10 @@ export class OperationLogPage {
       case 'new':
         return 'success';
       case 'delete':
+      case 'bulk delete':
         return 'danger';
       case 'edit - approve':
+      case 'bulk approve':
         return 'primary';
       case 'edit':
         return 'warning';
@@ -103,5 +105,13 @@ export class OperationLogPage {
 
   toggleGroup(date) {
     this.expandedGroups[date] = !this.expandedGroups[date];
+  }
+
+  getBulkAmount(logData, operation) {
+    return logData.reduce(
+      (sum, rec) =>
+        sum + (operation == 'bulk approve' ? rec.closedAmount : rec.principal),
+      0
+    );
   }
 }

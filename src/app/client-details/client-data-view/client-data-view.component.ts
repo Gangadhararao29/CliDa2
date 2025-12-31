@@ -18,15 +18,7 @@ export class ClientDataViewComponent implements OnInit {
   @Output() cleanUp = new EventEmitter<void>();
 
   isd = Intl.NumberFormat('en-IN');
-  today = new Date()
-    .toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    })
-    .split('/')
-    .reverse()
-    .join('-');
+  today: string;
 
   constructor(
     private router: Router,
@@ -36,7 +28,9 @@ export class ClientDataViewComponent implements OnInit {
     private commonService: CommonService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.today = this.commonService.today;
+  }
 
   calculateDateDifference(startDate, endDate) {
     const {y, m ,d} = this.calculationService.calculateTimePeriod(
@@ -86,6 +80,7 @@ export class ClientDataViewComponent implements OnInit {
     const clientDataIndex = this.client.data.findIndex((data) => data.id == id);
     this.presentAlertConfirm(clientDataIndex, this.client, this.client.id);
   }
+
   async presentAlertConfirm(clientDataIndex, clientData, key) {
     const alert = await this.alertController.create({
       header: 'Delete record?',

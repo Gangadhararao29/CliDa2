@@ -19,10 +19,28 @@ export class LineChartPage implements OnChanges {
       principalScale: {
         position: 'left',
         ticks: {
-          color: '#36a2eb',
+          color: '#909090',
           callback: (label: number) => Math.round(label / 100000) + 'L',
         },
+        grid: {
+          color: '#50505050'
+        }
       },
+      x: {
+        ticks: { color: '#909090' },
+        grid: { color: '#50505050' }
+      }
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: 'Cash Flow Trends',
+        color: '#909090',
+        font: { size: 16 }
+      },
+      legend: {
+        labels: { color: '#909090' }
+      }
     },
     interaction: {
       mode: 'index',
@@ -36,7 +54,7 @@ export class LineChartPage implements OnChanges {
   dataSet2 = [];
   dataArray = [];
 
-  constructor() {}
+  constructor() { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (
@@ -131,19 +149,19 @@ export class LineChartPage implements OnChanges {
           data: this.dataSet1,
           label: 'Credits',
           yAxisID: 'principalScale',
-          backgroundColor: '#3f51b5',
-          borderColor: '#36a2eb',
-          pointBackgroundColor: '#36a2eb',
-          pointHoverBorderColor: '#6495ED',
+          backgroundColor: '#29B6F6',
+          borderColor: '#29B6F6',
+          pointBackgroundColor: '#29B6F6',
+          pointHoverBorderColor: '#81D4FA',
         },
         {
           data: this.dataSet2,
           label: 'Debits',
           yAxisID: 'principalScale',
-          backgroundColor: '#dc3545',
-          borderColor: 'green',
-          pointBackgroundColor: 'green',
-          pointHoverBorderColor: 'green',
+          backgroundColor: '#FF5252',
+          borderColor: '#FF5252',
+          pointBackgroundColor: '#FF5252',
+          pointHoverBorderColor: '#FF8A80',
           fill: 'start',
         },
       ],

@@ -1,6 +1,6 @@
 import { Component, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IonAccordionGroup } from '@ionic/angular';
+import { AlertController, IonAccordionGroup } from '@ionic/angular';
 
 import { CalculationService } from '../services/calculation.service';
 import { CommonService } from '../services/common.service';
@@ -19,15 +19,7 @@ export class ClientDetailsPage {
   @ViewChildren('modal') modals: QueryList<any>;
   client: { id: string; name: string; data: any[] };
   clientId: any;
-  today = new Date()
-    .toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    })
-    .split('/')
-    .reverse()
-    .join('-');
+  today: string;
   isd = Intl.NumberFormat('en-IN');
   showClosedData = false;
   hideSkeletonText: boolean;
@@ -41,12 +33,14 @@ export class ClientDetailsPage {
 
   constructor(
     private activatedRoute: ActivatedRoute,
+    private alertController: AlertController,
     private dataBaseService: DataBaseService,
     private commonService: CommonService,
     private calculationService: CalculationService
-  ) {}
+  ) { }
 
   ionViewWillEnter() {
+    this.today = this.commonService.today;
     this.selectedChips = [];
     this.hideSkeletonText = false;
     this.theme = this.commonService.getTheme();
@@ -79,15 +73,12 @@ export class ClientDetailsPage {
     });
   }
 
-  calculateInterest(data, endDate) {
-    const intArr = this.calculationService.calculateTotalInterest(
-      {
-        principal: data.principal,
-        rate: data.interest,
-        startDate: data.startDate,
-      },
-      endDate
-    );
+  calculateInterest(data) {
+    const intArr = this.calculationService.calculateTotalInterest({
+      principal: data.principal,
+      rate: data.interest,
+      startDate: data.startDate,
+    });
     return Math.round(intArr[0].intAmt * 100) / 100;
   }
 
@@ -132,7 +123,7 @@ export class ClientDetailsPage {
       const calculatedObj = {
         id: data.id,
         principal: data.principal,
-        interest: this.calculateInterest(data, new Date()),
+        interest: this.calculateInterest(data),
       };
       this.selectedChips.push(calculatedObj);
     }
@@ -180,5 +171,96 @@ export class ClientDetailsPage {
   toggleLayout() {
     this.isOldStyle = !this.isOldStyle;
     localStorage.setItem('isOldStyle', this.isOldStyle.toString());
+  }
+
+  async bulkApprove() {
+    if (this.selectedChips.length === 0) return;
+
+    const alert = await this.alertController.create({
+      header: 'Bulk Approve',
+      message: `Are you sure you want to approve/close ${this.selectedChips.length} selected transactions?`,
+      cssClass: 'alertStyle',
+      buttons: [
+        {
+          text: 'Approve All',
+          cssClass: 'bg-success',
+          handler: () => this.bulkApproveHandler(),
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  bulkApproveHandler() {
+    this.commonService.presentLoading();
+
+    this.selectedChips.forEach((chip) => {
+      const record = this.client.data.find((r) => r.id === chip.id);
+      const displayDate = this.today.split('-').reverse().join('/');
+      if (record && !record.closedOn) {
+        record.closedOn = this.today;
+        record.closedAmount = record.principal + chip.interest;
+        record.bulkApproved = true;
+        record.comments = record.comments
+          ? record.comments + `\nClosed via bulk approve on ${displayDate}.`
+          : `Closed via bulk approve on ${displayDate}.`;
+      }
+    });
+
+    this.dataBaseService
+      .bulkUpdateClientByKey(this.client.id, this.client, 'approve')
+      .then(() => {
+        this.selectedChips = [];
+        this.updateDependencies(this.client);
+        this.commonService.presentToast('Selected transactions approved');
+      });
+  }
+
+  async bulkDelete() {
+    if (this.selectedChips.length === 0) return;
+
+    const alert = await this.alertController.create({
+      header: 'Bulk Delete',
+      message: `Are you sure you want to PERMANENTLY delete ${this.selectedChips.length} selected transactions?`,
+      cssClass: 'alertStyle',
+      buttons: [
+        {
+          text: 'Delete All',
+          cssClass: 'bg-danger',
+          handler: () => this.bulkDeleteHandler(),
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        }
+      ],
+    });
+    await alert.present();
+  }
+
+  bulkDeleteHandler() {
+    this.commonService.presentLoading();
+
+    const selectedIds = this.selectedChips.map((c) => c.id);
+    this.client.data.forEach((record) => {
+      if (selectedIds.includes(record.id)) {
+        record.bulkDeleted = true;
+      }
+    });
+
+    this.dataBaseService
+      .bulkUpdateClientByKey(this.client.id, this.client, 'delete')
+      .then(() => {
+        this.client.data = this.client.data.filter((record) => !record.deleted);
+        this.selectedChips = [];
+        this.updateDependencies(this.client);
+        this.commonService.presentToast(
+          'Selected transactions have been deleted successfully.'
+        );
+      });
   }
 }

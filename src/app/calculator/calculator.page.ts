@@ -33,7 +33,7 @@ export class CalculatorPage {
     private dataBaseService: DataBaseService,
     private commonService: CommonService,
     private calculationService: CalculationService
-  ) { }
+  ) {}
 
   ionViewWillEnter() {
     this.theme = this.commonService.getTheme();
@@ -143,15 +143,11 @@ export class CalculatorPage {
   }
 
   dateFormatter(date: Date): string {
-    return date
-      .toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      })
-      .split('/')
-      .reverse()
-      .join('-');
+    const localDate = new Date(
+      date.getTime() - date.getTimezoneOffset() * 60000
+    );
+
+    return localDate.toISOString().slice(0, 10);
   }
 
   onSubmit(formRef) {

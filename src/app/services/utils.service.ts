@@ -4,15 +4,9 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class UtilsService {
-  today = new Date()
-    .toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    })
-    .split('/')
-    .reverse()
-    .join('-');
+  today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 10);
 
   constructor() {}
 
@@ -58,6 +52,7 @@ export class UtilsService {
    * Operation Log functions
    */
   addNewLogData(operation, oldData, newData, index = null) {
+    this.markAsModified();
     const logData = JSON.parse(localStorage.getItem('logs') || '[]');
 
     switch (operation) {
@@ -93,9 +88,21 @@ export class UtilsService {
           orgData: oldData,
           newData,
         });
+
+      case 'bulk approve':
+      case 'bulk delete':
+        logData.push({
+          operation,
+          modifiedOn: this.today,
+          bulkData: oldData,
+        });
         break;
     }
 
     localStorage.setItem('logs', JSON.stringify(logData));
+  }
+
+  private markAsModified() {
+    localStorage.setItem('lastDataModified', new Date().toISOString());
   }
 }
