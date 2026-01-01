@@ -15,7 +15,6 @@ export class OperationLogPage {
   theme: string;
   constructor(
     private alertController: AlertController,
-    private toastController: ToastController,
     private commonService: CommonService
   ) {}
 
@@ -57,7 +56,7 @@ export class OperationLogPage {
           handler: () => {
             this.logData = [];
             localStorage.removeItem('logs');
-            this.presentToast('Logs cleared successfully');
+            this.commonService.presentToast('Logs cleared successfully');
           },
         },
         {
@@ -70,25 +69,10 @@ export class OperationLogPage {
     await alert.present();
   }
 
-  async presentToast(
-    message,
-    cssClass = 'successToastClass',
-    icon = 'checkmark-outline'
-  ) {
-    const toast = await this.toastController.create({
-      message,
-      position: 'top',
-      duration: 2500,
-      animated: true,
-      cssClass,
-      icon,
-    });
-    toast.present();
-  }
-
   getStatusColor(status: string) {
     switch (status) {
       case 'new':
+      case 'bulk new':
         return 'success';
       case 'delete':
       case 'bulk delete':

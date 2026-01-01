@@ -27,6 +27,7 @@ export class EditDetailsPage {
   clientRecordIndex: number;
   clientName: string;
   theme: string;
+  renameAllRecords: boolean = true;
   constructor(
     private activatedRoute: ActivatedRoute,
     public alertController: AlertController,
@@ -70,6 +71,12 @@ export class EditDetailsPage {
   onSubmit(formRef) {
     if (formRef.valid) {
       this.presentAlertConfirm(formRef);
+    } else {
+      this.commonService.presentToast(
+        'Please fill all the required fields.',
+        'failedToastClass',
+        'alert-circle'
+      );
     }
   }
 
@@ -90,7 +97,7 @@ export class EditDetailsPage {
           cssClass: 'bg-success',
           handler: () => {
             this.commonService.presentLoading();
-            this.saveClientsData(formRef);
+            this.saveRecord(formRef.value);
           },
         },
         {
@@ -103,31 +110,46 @@ export class EditDetailsPage {
     await alert.present();
   }
 
-  saveClientsData(formRef) {
-    this.dataBaseService
-      .editClientData(formRef.value, this.clientData, this.clientRecordIndex)
-      .then((res) => {
-        this.responseHandler(res.data.name);
-      });
+  generatePayload(record) {
+    return {
+      name: record.userName,
+      principal:
+        record.recordType === 'credit'
+          ? Math.abs(record.principal)
+          : -Math.abs(record.principal),
+      interest: record.interest,
+      startDate: record.startDate,
+      closedAmount: record.closedAmount,
+      closedOn: record.closedOn,
+      comments: record.comments,
+      id: this.clientRecordId,
+      key: this.clientKey,
+      index: this.clientRecordIndex,
+    };
   }
 
-  responseHandler(name) {
-    if (name !== this.clientName) {
+  saveRecord(formData) {
+    const payload = this.generatePayload(formData);
+
+    if (formData.userName != this.clientName) {
+      payload['renameAllRecords'] = this.renameAllRecords;
+
       this.dataBaseService
-        .deleteClientData(
-          this.clientData,
-          this.clientRecordIndex,
-          this.clientKey
-        )
-        .then(() => {
-          setTimeout(() => {
-            this.commonService.presentToast(
-              'Your changes have been saved successfully.<br>Redirecting to the Clients List tab.'
-            );
-            this.router.navigate(['clients-list']);
-          }, 1000);
+        .handleRecordTransfer(payload, this.clientData)
+        .then((res) => {
+          this.responseHandler(res.data);
         });
     } else {
+      this.dataBaseService
+        .saveClientRecord(payload, this.clientData)
+        .then((res) => {
+          this.responseHandler(res.data);
+        });
+    }
+  }
+
+  responseHandler(records) {
+    if (records.data?.length) {
       setTimeout(() => {
         this.commonService.presentToast(
           'Your changes have been saved successfully.<br>Redirecting to the Client Details tab.'
@@ -137,6 +159,13 @@ export class EditDetailsPage {
           'client-details',
           this.clientKey,
         ]);
+      }, 1000);
+    } else {
+      setTimeout(() => {
+        this.commonService.presentToast(
+          'Your changes have been saved successfully.<br>Redirecting to the Clients List tab.'
+        );
+        this.router.navigate(['clients-list']);
       }, 1000);
     }
   }

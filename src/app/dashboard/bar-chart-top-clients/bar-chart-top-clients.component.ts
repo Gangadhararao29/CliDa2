@@ -17,7 +17,7 @@ export class BarChartTopClientsComponent implements OnChanges {
       x: {
         stacked: true,
         ticks: { color: '#909090' },
-        grid: { color: '#50505050' }
+        grid: { color: '#50505050' },
       },
       y: {
         stacked: true,
@@ -26,27 +26,27 @@ export class BarChartTopClientsComponent implements OnChanges {
           color: '#909090',
           callback: (label: number) => Math.round(label / 100000) + 'L',
         },
-        grid: { color: '#50505050' }
+        grid: { color: '#50505050' },
       },
     },
     plugins: {
       legend: {
         display: true,
-        labels: { color: '#909090' }
+        labels: { color: '#909090' },
       },
       title: {
         display: true,
         text: 'Top Clients by Principal',
         color: '#909090',
-        font: { size: 16 }
-      }
+        font: { size: 16 },
+      },
     },
     aspectRatio: 1.2,
   };
   public barChartType: ChartType = 'bar';
   public barChartData: ChartData<'bar'>;
 
-  constructor() { }
+  constructor() {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.responseData && changes.responseData.currentValue) {
@@ -60,8 +60,12 @@ export class BarChartTopClientsComponent implements OnChanges {
       .sort((a, b) => Math.abs(b.totalPrincipal) - Math.abs(a.totalPrincipal))
       .slice(0, 5);
 
-    const positiveData = topClients.map(c => c.totalPrincipal >= 0 ? c.totalPrincipal : 0);
-    const negativeData = topClients.map(c => c.totalPrincipal < 0 ? Math.abs(c.totalPrincipal) : 0);
+    const positiveData = topClients.map((c) =>
+      c.totalPrincipal >= 0 ? c.totalPrincipal : 0
+    );
+    const negativeData = topClients.map((c) =>
+      c.totalPrincipal < 0 ? Math.abs(c.totalPrincipal) : 0
+    );
 
     this.barChartData = {
       labels: topClients.map((c) => c.name),
@@ -72,7 +76,7 @@ export class BarChartTopClientsComponent implements OnChanges {
           backgroundColor: '#26A69A',
           hoverBackgroundColor: '#00897B',
           borderColor: '#4DB6AC',
-          borderWidth: 1
+          borderWidth: 1,
         },
         {
           data: negativeData,
@@ -80,7 +84,7 @@ export class BarChartTopClientsComponent implements OnChanges {
           backgroundColor: '#EC407A',
           hoverBackgroundColor: '#D81B60',
           borderColor: '#F48FB1',
-          borderWidth: 1
+          borderWidth: 1,
         },
       ],
     };

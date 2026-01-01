@@ -42,12 +42,12 @@ export class ApproveModalComponent implements OnInit {
 
       if (this.hideApprovedControls || formRef.value.closeCurrentRecord) {
         this.client.data[index].closedOn = formRef.value.closedOn;
-        this.client.data[index].closedAmount = formRef.value.closedAmount;
+        this.client.data[index].closedAmount = +formRef.value.closedAmount;
 
         if (formRef.value.addNewRecord) {
           this.client.data.push({
             id: Date.now(),
-            principal: this.approvedAmount - formRef.value.closedAmount,
+            principal: this.approvedAmount - +formRef.value.closedAmount,
             interest: this.client.data[index].interest,
             startDate: formRef.value.closedOn,
           });
@@ -59,7 +59,7 @@ export class ApproveModalComponent implements OnInit {
           formRef.value.closedAmount
         )} on ${formRef.value.closedOn.split('-').reverse().join('/')}`;
         const balanceAmount = `Balance Amt: ₹ ${this.isd.format(
-          this.approvedAmount - formRef.value.closedAmount
+          this.approvedAmount - +formRef.value.closedAmount
         )}`;
         const newRecordAdded =
           formRef.value.addNewRecord && formRef.value.closeCurrentRecord
@@ -74,6 +74,7 @@ export class ApproveModalComponent implements OnInit {
       }
 
       this.commonService.presentLoading();
+
       this.dataBaseService
         .approveClientData(this.client, oldData, index)
         .then(() => {

@@ -1,6 +1,6 @@
 import { Component, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AlertController, IonAccordionGroup } from '@ionic/angular';
+import { IonAccordionGroup } from '@ionic/angular';
 
 import { CalculationService } from '../services/calculation.service';
 import { CommonService } from '../services/common.service';
@@ -33,11 +33,10 @@ export class ClientDetailsPage {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private alertController: AlertController,
     private dataBaseService: DataBaseService,
     private commonService: CommonService,
     private calculationService: CalculationService
-  ) { }
+  ) {}
 
   ionViewWillEnter() {
     this.today = this.commonService.today;
@@ -173,27 +172,49 @@ export class ClientDetailsPage {
     localStorage.setItem('isOldStyle', this.isOldStyle.toString());
   }
 
-  async bulkApprove() {
-    if (this.selectedChips.length === 0) return;
+  // async bulkApprove() {
+  //   if (this.selectedChips.length === 0) return;
 
-    const alert = await this.alertController.create({
-      header: 'Bulk Approve',
-      message: `Are you sure you want to approve/close ${this.selectedChips.length} selected transactions?`,
-      cssClass: 'alertStyle',
-      buttons: [
-        {
-          text: 'Approve All',
-          cssClass: 'bg-success',
-          handler: () => this.bulkApproveHandler(),
-        },
-        {
-          text: 'Cancel',
-          role: 'cancel',
-        },
-      ],
-    });
-    await alert.present();
-  }
+  //   const alert = await this.alertController.create({
+  //     header: 'Bulk Approve',
+  //     message: `Are you sure you want to approve/close ${this.selectedChips.length} selected transactions?`,
+  //     cssClass: 'alertStyle',
+  //     buttons: [
+  //       {
+  //         text: 'Approve All',
+  //         cssClass: 'bg-success',
+  //         handler: () => this.bulkApproveHandler(),
+  //       },
+  //       {
+  //         text: 'Cancel',
+  //         role: 'cancel',
+  //       },
+  //     ],
+  //   });
+  //   await alert.present();
+  // }
+
+  // async bulkDelete() {
+  //   if (this.selectedChips.length === 0) return;
+
+  //   const alert = await this.alertController.create({
+  //     header: 'Bulk Delete',
+  //     message: `Are you sure you want to PERMANENTLY delete ${this.selectedChips.length} selected transactions?`,
+  //     cssClass: 'alertStyle',
+  //     buttons: [
+  //       {
+  //         text: 'Delete All',
+  //         cssClass: 'bg-danger',
+  //         handler: () => this.bulkDeleteHandler(),
+  //       },
+  //       {
+  //         text: 'Cancel',
+  //         role: 'cancel',
+  //       },
+  //     ],
+  //   });
+  //   await alert.present();
+  // }
 
   bulkApproveHandler() {
     this.commonService.presentLoading();
@@ -218,28 +239,6 @@ export class ClientDetailsPage {
         this.updateDependencies(this.client);
         this.commonService.presentToast('Selected transactions approved');
       });
-  }
-
-  async bulkDelete() {
-    if (this.selectedChips.length === 0) return;
-
-    const alert = await this.alertController.create({
-      header: 'Bulk Delete',
-      message: `Are you sure you want to PERMANENTLY delete ${this.selectedChips.length} selected transactions?`,
-      cssClass: 'alertStyle',
-      buttons: [
-        {
-          text: 'Delete All',
-          cssClass: 'bg-danger',
-          handler: () => this.bulkDeleteHandler(),
-        },
-        {
-          text: 'Cancel',
-          role: 'cancel',
-        }
-      ],
-    });
-    await alert.present();
   }
 
   bulkDeleteHandler() {

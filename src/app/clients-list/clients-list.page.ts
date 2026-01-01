@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { AlertController, IonRouterOutlet, Platform } from '@ionic/angular';
 import { App } from '@capacitor/app';
 import { DataBaseService } from '../services/data-base.service';
-import { CalculationService } from '../services/calculation.service';
 import { CommonService } from '../services/common.service';
 import { NotificationService } from '../services/notification.service';
 
@@ -31,7 +30,6 @@ export class ClientsListPage {
     private alertController: AlertController,
     private dataBaseService: DataBaseService,
     private commonService: CommonService,
-    private calculationService: CalculationService,
     private notificationService: NotificationService
   ) {
     this.platform.backButton.subscribeWithPriority(-1, () => {
@@ -93,7 +91,7 @@ export class ClientsListPage {
         }
       });
       this.hideSkeletonText = true;
-      this.checkNotifications(data);
+      this.notificationService.checkForNotifications(data);
 
       if (event) {
         event.target.complete();
@@ -104,35 +102,6 @@ export class ClientsListPage {
         );
       }
     });
-  }
-
-  checkNotifications(data: any[]) {
-    const settings = this.notificationService.getSettings();
-    if (!settings.enabled || !this.notificationService.shouldRunCheck()) return;
-
-    data.forEach((client) => {
-      client.data.data.forEach((record) => {
-        // Only notify for open transactions
-        if (!record.closedOn) {
-          const startDate = new Date(record.startDate);
-          const shouldNotify = this.notificationService.shouldTriggerReminder(startDate);
-
-          if (shouldNotify.trigger) {
-            this.notificationService.schedulePaymentReminder(
-              client.key,
-              record.id,
-              client.data.name,
-              record.principal,
-              startDate,
-              shouldNotify.targetYear,
-              shouldNotify.monthsLeft
-            );
-          }
-        }
-      });
-    });
-
-    this.notificationService.markCheckComplete();
   }
 
   toggleSearch() {

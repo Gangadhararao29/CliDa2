@@ -141,26 +141,30 @@
         <ion-item detail="false" color="light">
 
           <ion-label>
-            <ion-text class="text-truncate">{{log?.data?.name || log?.orgData?.name}}</ion-text><br />
+            <ion-text class="text-truncate">{{log?.name}}</ion-text><br />
             <ion-note class="ion-text-wrap">
-              {{ log?.data?.interest || log?.newData?.interest }}
-              •
-              {{ log?.data?.startDate || log?.newData?.startDate }}
+              {{ log?.interest }} • {{ log?.startDate }}
             </ion-note>
           </ion-label>
 
           <div class="metadata-end-wrapper text-end" slot="end">
             <ion-text>
-              <span *ngIf="log.operation === 'new'" class="badge bg-success-subtle text-success small">+ New</span>
-              <span *ngIf="log.operation === 'delete'" class="badge bg-danger-subtle text-danger small">− Deleted</span>
+              <span *ngIf="log.operation === 'new'" class="badge bg-success-subtle text-success small">+ new</span>
+              <span *ngIf="log.operation === 'bulk new'" class="badge bg-success-subtle text-success small">+ bulk
+                new</span>
+              <span *ngIf="log.operation === 'delete'" class="badge bg-danger-subtle text-danger small">− delete</span>
+              <span *ngIf="log.operation === 'bulk delete'" class="badge bg-danger-subtle text-danger small">− bulk
+                delete</span>
               <span *ngIf="log.operation === 'edit'" class="badge bg-warning bg-opacity-75 text-dark small">✎
-                Edited</span>
+                edit</span>
               <span *ngIf="log.operation === 'edit - approve'" class="badge bg-primary-subtle text-primary small">✓
-                Approved</span>
+                approved</span>
+              <span *ngIf="log.operation === 'bulk approve'" class="badge bg-primary-subtle text-primary small">✓ bulk
+                approved</span>
               <br>
 
               <span class="fw-bolder text-nowrap mt-1">
-                ₹ {{ isd.format(log?.data?.principal || log?.newData?.principal) }}
+                ₹ {{ isd.format(log?.principal) }}
               </span>
             </ion-text>
           </div>

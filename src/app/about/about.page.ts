@@ -9,7 +9,10 @@ import { Capacitor } from '@capacitor/core';
 import { FirebaseService } from '../services/firebase.service';
 import { CommonService } from '../services/common.service';
 import { DataBaseService } from '../services/data-base.service';
-import { NotificationService, NotificationSettings, PaymentNotification } from '../services/notification.service';
+import {
+  NotificationService,
+  NotificationSettings,
+} from '../services/notification.service';
 
 @Component({
   selector: 'app-about',
@@ -36,9 +39,9 @@ export class AboutPage {
   isUpdateAvailable = false;
   notificationSettings: NotificationSettings = {
     enabled: false,
-    notifyBeforeMonths: 2,
-    minimumAgeYears: 2,
-    reminderIntervalWeeks: 2
+    notifyBeforeMonths: 6,
+    minimumAgeYears: 3,
+    reminderIntervalMonths: 2,
   };
   notifications: any[] = [];
   isNotificationModalOpen = false;
@@ -52,7 +55,7 @@ export class AboutPage {
     private commonService: CommonService,
     private dataBaseService: DataBaseService,
     private notificationService: NotificationService
-  ) { }
+  ) {}
 
   ionViewWillEnter() {
     this.isWebVersion = Capacitor.getPlatform() != 'web' ? false : true;
@@ -66,7 +69,7 @@ export class AboutPage {
       this.loadingData = false;
     }
     this.notificationSettings = this.notificationService.getSettings();
-    this.loadNotifications();
+    this.notifications = this.notificationService.getAllNotifications() || [];
   }
 
   ionViewDidEnter() {
@@ -480,24 +483,22 @@ export class AboutPage {
   get isBackupNeeded(): boolean {
     const sync = this.lastCloudSync;
     const modified = this.lastDataModified;
-    if (!modified) return false;
     if (!sync) return true;
+    if (!modified) return false;
     return new Date(modified) > new Date(sync);
   }
 
-  // Notification Methods
-
-  loadNotifications() {
-    const raw = this.notificationService.getAllNotifications();
-    this.notifications = raw;
-  }
-
+  // Notification Settings and Handling
   onNotificationToggle() {
     if (this.notificationSettings.enabled) {
-      this.notificationService.requestPermission(true).then(granted => {
+      this.notificationService.requestPermission(true).then((granted) => {
         if (!granted) {
           this.notificationSettings.enabled = false;
-          this.commonService.presentToast('Notification permission denied', 'failedToastClass', 'alert-outline');
+          this.commonService.presentToast(
+            'Notification permission denied',
+            'failedToastClass',
+            'alert-outline'
+          );
         }
         this.saveNotificationSettings();
       });
@@ -510,46 +511,68 @@ export class AboutPage {
     this.notificationService.saveSettings(this.notificationSettings);
   }
 
-  async openNotifications() {
-    const rawNotifications = this.notificationService.getAllNotifications();
-    if (rawNotifications.length === 0) {
-      this.notifications = [];
-      this.isNotificationModalOpen = true;
-      return;
-    }
-
-    const allClients = await this.dataBaseService.getAllClientsDataWithKeys();
-
-    this.notifications = rawNotifications.map(note => {
-      const client = allClients.find(c => c.key === note.clientId);
-      if (!client) return null;
-
-      const transaction = client.data.data.find(t => t.id === note.transactionId);
-      if (!transaction) return null;
-
-      return {
-        ...note,
-        clientName: client.data.name,
-        amount: transaction.principal
-      };
-    }).filter(n => n !== null);
-
+  openNotifications() {
+    // this.notifications = this.notificationService.getAllNotifications() || [];
     this.isNotificationModalOpen = true;
   }
 
   markAsRead(notification: any) {
     this.notificationService.markAsRead(notification.id);
-    const note = this.notifications.find(n => n.id === notification.id);
+    const note = this.notifications.find((n) => n.id === notification.id);
     if (note) note.read = true;
   }
 
   dismissNotification(notification: any) {
     this.notificationService.dismissNotification(notification.id);
-    this.notifications = this.notifications.filter(n => n.id !== notification.id);
+    this.notifications = this.notifications.filter(
+      (n) => n.id !== notification.id
+    );
   }
 
   clearAllNotifications() {
     this.notificationService.clearAllNotifications();
     this.notifications = [];
+  }
+
+  openNoteRecord(note: any) {
+    this.isNotificationModalOpen = false;
+    setTimeout(() => {
+      this.router.navigate(['clients-list', 'client-details', note.key]);
+    });
+  }
+
+  getFormattedDate(date: string | Date): string {
+    const noteDate = new Date(date);
+    const now = new Date();
+
+    // Today
+    if (
+      noteDate.getFullYear() === now.getFullYear() &&
+      noteDate.getMonth() === now.getMonth() &&
+      noteDate.getDate() === now.getDate()
+    ) {
+      return noteDate.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    }
+
+    // Yesterday
+    const yesterday = new Date();
+    yesterday.setDate(now.getDate() - 1);
+    if (
+      noteDate.getFullYear() === yesterday.getFullYear() &&
+      noteDate.getMonth() === yesterday.getMonth() &&
+      noteDate.getDate() === yesterday.getDate()
+    ) {
+      return 'Yesterday';
+    }
+
+    // Older → dd MMM yy
+    return noteDate.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: '2-digit',
+    });
   }
 }

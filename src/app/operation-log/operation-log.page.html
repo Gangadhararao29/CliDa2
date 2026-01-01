@@ -27,7 +27,7 @@
     <ng-container *ngFor="let group of logDataGroup">
       <!-- GROUP HEADER -->
       <div class="sticky-group-header">
-        <ion-item button color="light" class="rounded-3 fw-semibold my-2" (click)="toggleGroup(group.modifiedOn)">
+        <ion-item button color="light" class="rounded-3 my-2" (click)="toggleGroup(group.modifiedOn)">
           <ion-label>{{ group.modifiedOn }}</ion-label>
           <ion-icon slot="end" [name]="expandedGroups[group.modifiedOn] ? 'chevron-up' : 'chevron-down'">
           </ion-icon>
@@ -137,7 +137,7 @@
               <!-- BULK APPROVE / DELETE -->
               <!-- ===================== -->
               <ng-container
-                *ngSwitchCase="log.operation === 'bulk approve' || log.operation === 'bulk delete' ? log.operation : 'other'">
+                *ngSwitchCase="log.operation === 'bulk approve' || log.operation === 'bulk new' || log.operation === 'bulk delete' ? log.operation : 'other'">
                 <!-- LEFT -->
                 <div class="flex-grow-1">
                   <!-- NAME -->
@@ -160,6 +160,15 @@
                     {{ $first ? '' : amount >= 0 ? ' + ' : ' - ' }}
                     {{ amount > 0 ? (amount).toFixed() : (-1 * amount).toFixed() }}
                   </span>
+                  }
+
+                  @if(log.operation == 'bulk delete'){
+                  <br>
+                  <small class="text-muted" style="white-space: pre-line">
+                    @for (record of log.bulkData.data; track $index) {
+                    {{ record.comments ? record.comments + `\n` : '' }}
+                    }
+                  </small>
                   }
 
                 </div>

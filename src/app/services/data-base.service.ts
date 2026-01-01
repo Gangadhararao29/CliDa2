@@ -13,35 +13,39 @@ export class DataBaseService {
   }
 
   async getAllClientsDataWithKeys() {
-    return await this.db.collection('clientsData').get({ keys: true });
+    return this.db.collection('clientsData').get({ keys: true });
   }
 
   async getAllClientsData() {
-    return await this.db.collection('clientsData').get();
-  }
-
-  async getClientByName(name) {
-    return await this.db.collection('clientsData').doc({ name }).get();
+    return this.db.collection('clientsData').get();
   }
 
   async getClientByKey(key) {
-    return await this.db.collection('clientsData').doc(key).get();
+    return this.db.collection('clientsData').doc(key).get();
   }
 
   async saveNewClient(newClient) {
-    return await this.db.collection('clientsData').add(newClient);
+    return this.db.collection('clientsData').add(newClient);
+  }
+
+  async updateClientByKey(key, clientData) {
+    return this.db.collection('clientsData').doc(key).update(clientData);
   }
 
   async deleteClientByKey(id) {
-    return await this.db.collection('clientsData').doc(id).delete();
+    return this.db.collection('clientsData').doc(id).delete();
   }
 
   async deleteDataBase() {
-    return await this.db.delete();
+    return this.db.delete();
+  }
+
+  async getClientByName(name) {
+    return this.db.collection('clientsData').doc({ name }).get();
   }
 
   async updateClientRecordByName(clientData) {
-    return await this.db
+    return this.db
       .collection('clientsData')
       .doc({ name: clientData.name })
       .update(clientData);
@@ -51,20 +55,18 @@ export class DataBaseService {
     switch (action) {
       case 'approve':
         const approvedRecords = clientData.data.filter((r) => r.bulkApproved);
-        this.utilsService.addNewLogData(
-          'bulk approve',
-          { name: clientData.name, data: approvedRecords },
-          null
-        );
+        this.utilsService.addNewLogData('bulk approve', null, {
+          name: clientData.name,
+          data: approvedRecords,
+        });
         break;
 
       case 'delete':
         const deletedRecords = clientData.data.filter((r) => r.bulkDeleted);
-        this.utilsService.addNewLogData(
-          'bulk delete',
-          { name: clientData.name, data: deletedRecords },
-          null
-        );
+        this.utilsService.addNewLogData('bulk delete', null, {
+          name: clientData.name,
+          data: deletedRecords,
+        });
 
         clientData.data = clientData.data.filter((r) => !r.bulkDeleted);
         if (clientData.data.length < 1) {
@@ -72,45 +74,83 @@ export class DataBaseService {
         }
         break;
     }
-    return await this.db.collection('clientsData').doc(key).update(clientData);
+    return this.updateClientByKey(key, clientData);
   }
 
-  async addNewClientData(formData, includeClosedDetails = false) {
-    const payLoad = this.utilsService.generatePayLoad(
-      formData,
-      includeClosedDetails
-    );
-    this.utilsService.addNewLogData('new', null, payLoad);
-    return await this.getClientByName(payLoad.name).then((res) => {
-      if (res) {
-        res.data.push(payLoad.data[0]);
-        return this.updateClientRecordByName(res);
-      } else {
-        return this.saveNewClient(payLoad);
-      }
-    });
-  }
+  async createDataRecords(payload) {
+    payload.name = this.utilsService.formatToTitleCase(payload.name);
 
-  async editClientData(formData, clientData, index) {
-    formData.userName = this.utilsService.formatToTitleCase(formData.userName);
-    formData.principal =
-      formData.recordType === 'credit'
-        ? Math.abs(formData.principal)
-        : -Math.abs(formData.principal);
-
-    this.utilsService.addNewLogData('edit', clientData, formData, index);
-    if (formData.userName == clientData.name) {
-      delete formData.userName;
-      formData.id = clientData.data[index].id;
-      clientData.data[index] = formData;
-      return await this.updateClientRecordByName(clientData);
+    if (payload.data.length == 1) {
+      this.utilsService.addNewLogData('new', null, payload);
     } else {
-      return await this.addNewClientData(formData, true);
+      this.utilsService.addNewLogData('bulk new', null, payload);
+    }
+
+    const existingClient = await this.getClientByName(payload.name);
+
+    if (existingClient) {
+      existingClient.data.push(...payload.data);
+      return this.updateClientRecordByName(existingClient);
+    } else {
+      return this.saveNewClient(payload);
     }
   }
 
+  async handleRecordTransfer(payload, clientData) {
+    const name = this.utilsService.formatToTitleCase(payload.name);
+    const index = payload.index;
+    const key = payload.key;
+    const renameAllRecords = payload.renameAllRecords;
+    delete payload.name;
+    delete payload.index;
+    delete payload.key;
+    delete payload.renameAllRecords;
+
+    clientData.data[index] = payload;
+
+    const existingClient = await this.getClientByName(name);
+    if (existingClient) {
+      if (renameAllRecords) {
+        existingClient.data.push(...clientData.data);
+        await this.updateClientRecordByName(existingClient);
+        return this.deleteClientByKey(key);
+      } else {
+        existingClient.data.push(payload);
+        await this.updateClientRecordByName(existingClient);
+        return this.deleteClientData(clientData, key, index);
+      }
+    } else {
+      if (renameAllRecords) {
+        clientData.name = name;
+        return this.updateClientByKey(key, clientData);
+      } else {
+        const createPayload = {
+          name: name,
+          data: [payload],
+        };
+        await this.createDataRecords(createPayload);
+        return this.deleteClientData(clientData, key, index);
+      }
+    }
+  }
+
+  async saveClientRecord(payload, clientData) {
+    const name = this.utilsService.formatToTitleCase(payload.name);
+    const index = payload.index;
+    const key = payload.key;
+    delete payload.name;
+    delete payload.index;
+    delete payload.key;
+
+    this.utilsService.addNewLogData('edit', clientData, payload, index);
+
+    clientData.name = name;
+    clientData.data[index] = payload;
+    return this.updateClientByKey(key, clientData);
+  }
+
   async approveClientData(newData, oldData, index) {
-    return await this.updateClientRecordByName(newData).then(() => {
+    return this.updateClientRecordByName(newData).then(() => {
       this.utilsService.addNewLogData(
         'edit - approve',
         { name: newData.name, ...oldData },
@@ -131,7 +171,7 @@ export class DataBaseService {
 
   async saveBulkClients(clientsData, replaceStatus) {
     if (replaceStatus) {
-      return await this.db.collection('clientsData').set(clientsData);
+      return this.db.collection('clientsData').set(clientsData);
     } else {
       const promises = clientsData.map(async (client) => {
         const res = await this.getClientByName(client.name);
@@ -179,11 +219,11 @@ export class DataBaseService {
   }
 
   async loadSampleData(data) {
-    await this.db.collection('clientsData').set(data);
+    return this.db.collection('clientsData').set(data);
   }
 
   async cleanApprovedData() {
-    return await this.getAllClientsData().then((res) => {
+    return this.getAllClientsData().then((res) => {
       res = res.filter((client) => {
         client.data = client.data?.filter((record) => !record?.closedOn);
         return client?.name && client.data?.length;

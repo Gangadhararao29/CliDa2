@@ -33,7 +33,8 @@ export class UtilsService {
   }
 
   formatToTitleCase(name: string) {
-    return name.replace(
+    let name2 = name?.trim();
+    return name2.replace(
       /(^\w|\s\w)(\S*)/g,
       (_, m1, m2) => m1.toUpperCase() + m2.toLowerCase()
     );
@@ -88,13 +89,15 @@ export class UtilsService {
           orgData: oldData,
           newData,
         });
+        break;
 
       case 'bulk approve':
       case 'bulk delete':
+      case 'bulk new':
         logData.push({
           operation,
           modifiedOn: this.today,
-          bulkData: oldData,
+          bulkData: newData,
         });
         break;
     }
@@ -104,5 +107,51 @@ export class UtilsService {
 
   private markAsModified() {
     localStorage.setItem('lastDataModified', new Date().toISOString());
+  }
+
+  formatLogDataForUI() {
+    const rawLogData = localStorage.getItem('logs')
+      ? JSON.parse(localStorage.getItem('logs')).reverse()
+      : [];
+
+    return rawLogData.map((log) => {
+      switch (log.operation) {
+        case 'new':
+        case 'delete':
+          return {
+            operation: log.operation,
+            name: log.data.name,
+            interest: log.data.interest,
+            startDate: log.data.startDate,
+            principal: log.data.principal,
+          };
+        case 'edit':
+        case 'edit - approve':
+          return {
+            operation: log.operation,
+            name: log.orgData.name,
+            interest: log.newData.interest,
+            startDate: log.newData.startDate,
+            principal: log.newData.principal,
+          };
+
+        case 'bulk approve':
+        case 'bulk new':
+        case 'bulk delete':
+          return {
+            operation: log.operation,
+            name: log.bulkData.name,
+            interest: log.bulkData.data[0].interest,
+            startDate: log.bulkData.data[0].startDate,
+            principal: log.bulkData.data.reduce(
+              (acc, curr) => acc + curr.principal,
+              0
+            ),
+          };
+
+        default:
+          return log;
+      }
+    });
   }
 }

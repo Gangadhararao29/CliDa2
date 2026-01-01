@@ -30,7 +30,7 @@ export class AddClientPage {
     private dataBaseService: DataBaseService,
     private commonService: CommonService,
     private presetService: PresetService
-  ) { }
+  ) {}
 
   ionViewWillEnter() {
     this.theme = this.commonService.getTheme();
@@ -48,11 +48,13 @@ export class AddClientPage {
 
     // Initialize with one transaction
     if (this.transactions.length == 0) {
-      this.transactions = [{
-        principal: null,
-        interest: null,
-        startDate: this.commonService.today
-      }];
+      this.transactions = [
+        {
+          principal: null,
+          interest: null,
+          startDate: this.commonService.today,
+        },
+      ];
     }
   }
 
@@ -63,6 +65,7 @@ export class AddClientPage {
 
   getUserNameFeedback(userName) {
     const name: string = userName.control.value;
+
     if (name) {
       const existingClient = this.clientsData.find(
         (x) => x.name.toLowerCase() == name.toLowerCase()
@@ -71,6 +74,7 @@ export class AddClientPage {
         return 'Client already exists. This record will be added.';
       }
     }
+
     return 'A new client will be created using the entered name.';
   }
 
@@ -78,7 +82,7 @@ export class AddClientPage {
     this.transactions.push({
       principal: null,
       interest: null,
-      startDate: this.commonService.today
+      startDate: this.commonService.today,
     });
   }
 
@@ -88,32 +92,36 @@ export class AddClientPage {
     }
   }
 
+  generatePayLoad(record) {
+    const sign = record.recordType === 'credit' ? 1 : -1;
+    return {
+      name: record.userName,
+      data: this.transactions.map((t, index) => ({
+        id: Date.now() + index,
+        principal: sign * Math.abs(t.principal),
+        interest: t.interest,
+        startDate: t.startDate,
+        comments: record.comments,
+      })),
+    };
+  }
+
   async onSubmit(formRef) {
     if (!formRef.valid) {
+      this.commonService.presentToast(
+        'Please fill all the fields',
+        'failedToastClass',
+        'alert-circle'
+      );
       return;
     }
     this.isAddBtnDisable = true;
     this.commonService.presentLoading();
-
-    for (const transaction of this.transactions) {
-      const payload = {
-        userName: formRef.value.userName,
-        recordType: formRef.value.recordType,
-        comments: formRef.value.comments,
-        principal:
-          formRef.value.recordType === 'credit'
-            ? Math.abs(transaction.principal)
-            : -Math.abs(transaction.principal),
-        interest: transaction.interest,
-        startDate: transaction.startDate,
-      };
-
-      await this.dataBaseService.addNewClientData(payload);
-    }
+    const payload = this.generatePayLoad(formRef.value);
+    await this.dataBaseService.createDataRecords(payload);
 
     this.routeToClientList(formRef);
   }
-
 
   routeToClientList(formRef) {
     let message = 'These records have been added successfully.';
@@ -128,11 +136,17 @@ export class AddClientPage {
         this.router.navigate(['..']).then(() => {
           formRef.resetForm();
           // Reset transactions to just one after successful submit/navigate
-          this.transactions = [{
-            principal: null,
-            interest: null,
-            startDate: this.commonService.today
-          }];
+          this.transactions = [
+            {
+              principal: null,
+              interest: null,
+              startDate: this.commonService.today,
+            },
+          ];
+        });
+      } else {
+        this.dataBaseService.getAllClientsData().then((res) => {
+          this.clientsData = res;
         });
       }
     }, 1000);

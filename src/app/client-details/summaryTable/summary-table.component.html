@@ -1,6 +1,6 @@
-<div class="mx-2 py-0 px-1 summary rounded bgLight" *ngIf="selectedChips.length">
-  <table class="table table-sm caption-top" [attr.data-bs-theme]="theme">
-    <caption>Selected Records ({{selectedChips.length}})</caption>
+<div class="mx-2 py-0 px-1 summary bgLight" *ngIf="selectedChips.length">
+  <table class="table table-sm caption-top my-0" [attr.data-bs-theme]="theme">
+    <caption>Summary : {{selectedChips.length}} Selected</caption>
     <thead>
       <tr>
         <th>Principal</th>
@@ -24,4 +24,15 @@
       </tr>
     </tfoot>
   </table>
+</div>
+
+<div class="d-flex gap-2 mx-2 mt-2 mb-3 justify-content-end" *ngIf="selectedChips.length > 1">
+  <ion-button color="success" size="small" (click)="bulkApprove()">
+    <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
+    Approve
+  </ion-button>
+  <ion-button color="danger" size="small" (click)="bulkDelete()">
+    <ion-icon name="trash-outline" slot="start"></ion-icon>
+    Delete
+  </ion-button>
 </div>

@@ -1,3 +1,4 @@
+@if(data) {
 <div class="bgLight mx-2 mb-2 ps-2 rounded fw-bold py-1">
   <ion-grid>
     <ion-row>
@@ -119,6 +120,7 @@
     </ion-row>
   </ion-grid>
 </div>
+}
 
 <ion-modal #modal [trigger]="'approveScreen'+index" [initialBreakpoint]="1" [breakpoints]="[1]">
   <ng-template>

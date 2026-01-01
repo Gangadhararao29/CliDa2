@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { DataBaseService } from '../services/data-base.service';
 import { CalculationService } from '../services/calculation.service';
+import { UtilsService } from '../services/utils.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -49,16 +50,15 @@ export class DashboardPage {
 
   constructor(
     private dataBaseService: DataBaseService,
-    private calculationService: CalculationService
+    private calculationService: CalculationService,
+    private utilsService: UtilsService
   ) {
     this.math = Math;
   }
 
   ionViewWillEnter() {
     this.hideSkeletonText = false;
-    this.logData = localStorage.getItem('logs')
-      ? JSON.parse(localStorage.getItem('logs')).reverse()
-      : [];
+    this.logData = this.utilsService.formatLogDataForUI();
     this.dashPref = localStorage.getItem('dashPref')
       ? JSON.parse(localStorage.getItem('dashPref'))
       : Object.assign({}, this.defaultPref);
