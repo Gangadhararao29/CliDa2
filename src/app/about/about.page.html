@@ -225,7 +225,7 @@
       </ion-card-content>
     </ion-card>
 
-    <ion-modal #modal [isOpen]="isModalOpen">
+    <ion-modal #modal1 [isOpen]="isModalOpen">
       <ng-template>
         <ion-header class="ion-no-border">
           <ion-toolbar>
@@ -355,7 +355,7 @@
   </div>
 
   <!-- Notification Modal -->
-  <ion-modal [isOpen]="isNotificationModalOpen" (didDismiss)="isNotificationModalOpen = false">
+  <ion-modal #modal2 [isOpen]="isNotificationModalOpen">
     <ng-template>
       <ion-header translucent class="ion-no-border">
         <ion-toolbar>
@@ -391,7 +391,7 @@
           <ion-list [inset]="true">
             @for (note of notifications; track $index) {
             <ion-item-sliding>
-              <ion-item [button]="true" detail="false" (click)="markAsRead(note)">
+              <ion-item [button]="true" detail="false" (click)="markAsRead(note)" color="light">
                 <div class="unread-indicator-wrapper" slot="start">
                   <div class="unread-indicator" [class.opacity-0]="note.read"></div>
                 </div>

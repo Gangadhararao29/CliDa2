@@ -5,13 +5,13 @@ import { NotificationService } from '../services/notification.service';
   selector: 'app-tabs',
   templateUrl: 'tabs.page.html',
   styleUrls: ['tabs.page.scss'],
-  standalone: false
+  standalone: false,
 })
 export class TabsPage {
-
-  constructor(public notificationService: NotificationService) { }
+  constructor(public notificationService: NotificationService) {}
 
   get unreadCount() {
-    return this.notificationService.getUnreadCount();
+    const settings = this.notificationService.getSettings();
+    return settings.enabled ? this.notificationService.getUnreadCount() : 0;
   }
 }

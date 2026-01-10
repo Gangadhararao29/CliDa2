@@ -1,5 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { CommonService } from '../../services/common.service';
+import { Component, Input } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 
 @Component({
@@ -8,21 +7,14 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./summary-table.component.scss'],
   standalone: false,
 })
-export class SummaryTableComponent implements OnInit {
+export class SummaryTableComponent {
   @Input() selectedChips: any;
   @Input() bulkApproveHandler: () => {};
   @Input() bulkDeleteHandler: () => {};
-  theme: string;
+  @Input() theme: string;
   isd = Intl.NumberFormat('en-IN');
 
-  constructor(
-    private commonService: CommonService,
-    private alertController: AlertController
-  ) {}
-
-  ngOnInit() {
-    this.theme = this.commonService.getTheme();
-  }
+  constructor(private alertController: AlertController) {}
 
   getQuickMenuPrincipal() {
     return `₹ ${this.isd.format(

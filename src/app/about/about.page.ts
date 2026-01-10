@@ -21,7 +21,8 @@ import {
   standalone: false,
 })
 export class AboutPage {
-  @ViewChild('modal') modal: any;
+  @ViewChild('modal1') modal1: any;
+  @ViewChild('modal2') modal2: any;
   @ViewChild('select2') select2;
 
   themeName = localStorage.getItem('theme');
@@ -574,5 +575,12 @@ export class AboutPage {
       month: 'short',
       year: '2-digit',
     });
+  }
+
+  ionViewWillLeave() {
+    this.isNotificationModalOpen = false;
+    this.isModalOpen = false;
+    this.modal1.dismiss();
+    this.modal2.dismiss();
   }
 }
