@@ -45,7 +45,7 @@
   </app-datalist>
   }
 
-  @if(!showEntryText && (showDebitList ? debitData.length === 0 : creditData.length === 0)){
+  @if(!showEntryText && hideSkeletonText && (showDebitList ? debitData.length === 0 : creditData.length === 0)){
   <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted text-center"
     [attr.data-bs-theme]="theme">
     <ion-icon name="server-outline" class="mb-3" style="font-size: 4rem"></ion-icon>
