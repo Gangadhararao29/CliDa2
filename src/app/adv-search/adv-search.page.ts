@@ -19,6 +19,7 @@ export class AdvSearchPage implements OnInit {
   showNoRecords = false;
   clientSearchValue = '';
   hideSkeletonText = true;
+  theme: string;
 
   constructor(
     private dataBaseService: DataBaseService,
@@ -30,6 +31,10 @@ export class AdvSearchPage implements OnInit {
     const storedValue = JSON.parse(localStorage.getItem('sortAndFilterParams'));
     this.sortAndFilterParams = storedValue ? storedValue : [];
     this.resetDisplayData();
+  }
+
+  ionViewWillEnter() {
+    this.theme = this.commonService.getTheme();
   }
 
   resetDisplayData() {

@@ -17,8 +17,8 @@
 </ion-header>
 
 <ion-content>
-  <ion-searchbar animated="true" color="light" class="bgMedium" placeholder="Search clients here..."
-    [(ngModel)]="clientSearchValue" enterkeyhint="search" search-icon="none" show-clear-button="focus"></ion-searchbar>
+  <ion-searchbar animated="true" color="light" placeholder="Search clients here..." [(ngModel)]="clientSearchValue"
+    enterkeyhint="search" search-icon="none" show-clear-button="focus"></ion-searchbar>
 
   <div class="d-flex align-items-center overflow-auto flex-nowrap my-1 px-1" style="height: fit-content;">
     <div *ngFor="let params of sortAndFilterParams; let i = index" class="ms-1">
@@ -94,11 +94,19 @@
     </ng-template>
   </ion-modal>
 
-  <div class="my-2">
-    <div [hidden]="!showNoRecords" class="p-3 mx-2 text-center bgLight rounded-3 text-danger">
-      No Records found
-    </div>
 
-    <app-datalist [dataList]="displayData" [clientSearchValue]="clientSearchValue"></app-datalist>
+  @if(showNoRecords) {
+  <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted text-center"
+    [attr.data-bs-theme]="theme">
+    <ion-icon name="server-outline" class="mb-3" style="font-size: 4rem"></ion-icon>
+    <p class="mb-0">No records found</p>
   </div>
+  }
+
+  <app-datalist [dataList]="displayData" [clientSearchValue]="clientSearchValue">
+    <div class="text-muted mt-3" [attr.data-bs-theme]="theme">
+      No records found
+    </div>
+  </app-datalist>
+
 </ion-content>

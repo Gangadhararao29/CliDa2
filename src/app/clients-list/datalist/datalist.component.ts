@@ -29,8 +29,4 @@ export class DatalistComponent {
       return 'medium';
     }
   }
-
-  trackData(index, client) {
-    return client.key;
-  }
 }

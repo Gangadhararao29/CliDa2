@@ -5,7 +5,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content [attr.data-bs-theme]="theme">
   <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)" class="container my-2">
 
     <!-- Quick Presets -->
@@ -15,9 +15,6 @@
           {{ formatPresetLabel(preset) }}
         </ion-badge>
       </ng-container>
-      <ion-badge color="light" class="mx-1 mb-1 p-2" (click)="saveCurrentAsPreset()" style="cursor: pointer;">
-        +
-      </ion-badge>
     </div>
 
     <div class="mb-2 bgLight pt-2 rounded">
@@ -36,7 +33,7 @@
       </ion-radio-group>
     </div>
 
-    <div class="form-floating my-1" [attr.data-bs-theme]="theme">
+    <div class="form-floating my-1">
       <input type="text" class="form-control" id="name" placeholder="Enter name" list="nameRef" name="userName" ngModel
         #userName="ngModel" required [class.is-valid]="userName.valid"
         [class.is-invalid]="userName.invalid && formRef.submitted" />
@@ -52,23 +49,19 @@
 
     <!-- Transaction Loop -->
     @for (trxn of transactions; track $index) {
-    <div class="d-flex align-items-center" [attr.data-bs-theme]="theme">
+    <div class="d-flex align-items-center mb-1 mx-1">
       <div class="fw-semibold text-muted">Transaction {{ $index + 1 }}</div>
-      <hr class="flex-grow-1 my-0 mx-2">
+      <hr class="flex-grow-1 mx-1">
 
-      @if ($last) {
-      <button type="button" class="btn btn-link text-danger p-0 fw-bold" (click)="addTransaction()">
-        + Add new
-      </button>
-      } @else {
+      @if($count != 1){
       <button type="button" class="btn btn-link text-danger p-0 fw-bold" (click)="removeTransaction($index)">
         − Remove
       </button>
       }
     </div>
 
-    <div class="border rounded-2 p-1" [attr.data-bs-theme]="theme">
-      <div class="row g-2 mb-2">
+    <div class="mx-1">
+      <div class="row g-1 mb-2">
         <div class="col-6">
           <div class="form-floating">
             <input type="number" class="form-control" [id]="'principal_' + $index" placeholder="100000"
@@ -98,9 +91,24 @@
         <div class="invalid-feedback">Please enter start date.</div>
       </div>
     </div>
+
+    @if($last){
+    <div class="d-flex align-items-center mt-1 mx-1">
+      <ion-badge color="light" class="me-1 p-2" (click)="saveCurrentAsPreset()" style="cursor: pointer;">
+        +
+      </ion-badge>
+      <ion-badge color="light" class="mx-1 p-2" (click)="removeFirstPreset()" style="cursor: pointer;">
+        -
+      </ion-badge>
+      <hr class="flex-grow-1 mx-1">
+      <button type="button" class="btn btn-link text-danger p-0 fw-bold" (click)="addTransaction()">
+        + Add new
+      </button>
+    </div>
+    }
     }
 
-    <div class="form-floating mt-2" [attr.data-bs-theme]="theme">
+    <div class="form-floating mt-2">
       <textarea class="form-control" placeholder="Leave a comment here" id="comments" (input)="getCommentHeight($event)"
         ngModel name="comments" #comments="ngModel"></textarea>
       <label for="comments"><span class="formLabel">Comments</span></label>

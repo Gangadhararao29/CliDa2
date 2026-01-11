@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content [attr.data-bs-theme]="theme">
   <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)" class="container my-2">
     <div class="mb-2 bgLight pt-2 rounded">
       <ion-radio-group name="recordType" [ngModel]="clientRecord.principal < 0?'debit':'credit'" #recordType="ngModel">
@@ -25,7 +25,7 @@
       </ion-radio-group>
     </div>
 
-    <div class="bgLight p-2 rounded" [attr.data-bs-theme]="theme">
+    <div class="bgLight p-2 rounded">
       <span class="fs-5 mx-1">Primary details</span>
       <div class="form-floating mb-2">
         <input type="text" class="form-control" id="userName" placeholder="100000" #userName="ngModel" name="userName"
@@ -64,27 +64,33 @@
         }
       </div>
 
-      <div class="mb-2 d-flex justify-content-between">
-        <div class="form-floating d-inline-block w-100">
-          <input type="number" class="form-control" id="principal" placeholder="100000" #principal="ngModel"
-            name="principal" [ngModel]="clientRecord.principal" required [class.is-valid]="principal.valid"
-            [class.is-invalid]="principal.invalid &&  formRef.submitted" />
-          <label for="principal">Principal</label>
-          <div id="principal" class="invalid-feedback">
-            Please enter Principal amount.
+
+      <div class="row g-1 mb-2">
+        <div class="col-6">
+          <div class="form-floating">
+            <input type="number" class="form-control" id="principal" placeholder="100000" #principal="ngModel"
+              name="principal" [ngModel]="clientRecord.principal" required [class.is-valid]="principal.valid"
+              [class.is-invalid]="principal.invalid &&  formRef.submitted" />
+            <label for="principal">Principal</label>
+            <div id="principal" class="invalid-feedback">
+              Please enter Principal amount.
+            </div>
           </div>
         </div>
 
-        <div class="form-floating d-inline-block w-100">
-          <input type="number" class="form-control" id="interest" placeholder="1.50" [ngModel]="clientRecord.interest"
-            name="interest" #interest="ngModel" required [class.is-valid]="interest.valid"
-            [class.is-invalid]="interest.invalid &&  formRef.submitted" />
-          <label for="interest">Interest</label>
-          <div id="interest" class="invalid-feedback">
-            Please enter interest value.
+        <div class="col-6">
+          <div class="form-floating">
+            <input type="number" class="form-control" id="interest" placeholder="1.50" [ngModel]="clientRecord.interest"
+              name="interest" #interest="ngModel" required [class.is-valid]="interest.valid"
+              [class.is-invalid]="interest.invalid &&  formRef.submitted" />
+            <label for="interest">Interest</label>
+            <div id="interest" class="invalid-feedback">
+              Please enter interest value.
+            </div>
           </div>
         </div>
       </div>
+
       <div class="form-floating">
         <input type="date" class="form-control" id="startDate" [ngModel]="clientRecord.startDate" name="startDate"
           required #startDate="ngModel" [class.is-valid]="startDate.valid"
@@ -96,13 +102,13 @@
       </div>
     </div>
 
-    <div class="form-floating my-2" [attr.data-bs-theme]="theme">
+    <div class="form-floating my-2">
       <textarea class="form-control" id="comments" [ngModel]="clientRecord.comments" (input)="getCommentHeight($event)"
         name="comments" placeholder="Enter comments here" #comments="ngModel" #commentHeight></textarea>
       <label for="comments">Comments</label>
     </div>
 
-    <div *ngIf="clientRecord.closedOn" class="bgLight p-2 rounded" [attr.data-bs-theme]="theme">
+    <div *ngIf="clientRecord.closedOn" class="bgLight p-2 rounded">
       <span class="fs-5 mb-2">Closed details</span>
       <div class="d-flex mb-2 pb-1 justify-content-between">
         <div class="form-floating">

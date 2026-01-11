@@ -22,7 +22,6 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <app-intro [theme]="theme" *ngIf="showEntryText" (reloadClientList)="ionViewWillEnter()"></app-intro>
 
   <div class="collapse sticky-top" id="collapseExample">
     <div class="d-flex align-items-center">
@@ -34,13 +33,31 @@
     </div>
   </div>
 
-  <ng-container *ngIf="!showEntryText" #creditDebitList>
-    <app-datalist [dataList]="creditData" [clientSearchValue]="clientSearchValue"
-      [hidden]="showDebitList"></app-datalist>
+  @if(showEntryText) {
+  <app-intro [theme]="theme" (reloadClientList)="ionViewWillEnter()"></app-intro>
+  } @else if(showDebitList) {
+  <app-datalist [dataList]="debitData" [clientSearchValue]="clientSearchValue">
+    <ng-container *ngTemplateOutlet="noRecordsTpl"></ng-container>
+  </app-datalist>
+  } @else{
+  <app-datalist [dataList]="creditData" [clientSearchValue]="clientSearchValue">
+    <ng-container *ngTemplateOutlet="noRecordsTpl"></ng-container>
+  </app-datalist>
+  }
 
-    <app-datalist [dataList]="debitData" [clientSearchValue]="clientSearchValue"
-      [hidden]="!showDebitList"></app-datalist>
-  </ng-container>
+  @if(!showEntryText && (showDebitList ? debitData.length === 0 : creditData.length === 0)){
+  <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted text-center"
+    [attr.data-bs-theme]="theme">
+    <ion-icon name="server-outline" class="mb-3" style="font-size: 4rem"></ion-icon>
+    <p class="mb-0">No records yet</p>
+  </div>
+  }
+
+  <ng-template #noRecordsTpl>
+    <div class="text-muted mt-3" [attr.data-bs-theme]="theme">
+      No records found
+    </div>
+  </ng-template>
 
   <ion-item color="medium" lines="none"></ion-item>
 

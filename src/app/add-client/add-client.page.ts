@@ -189,11 +189,22 @@ export class AddClientPage {
         );
       } else {
         this.commonService.presentToast(
-          'Enter principal and interest in last transaction',
+          `Enter principal and interest in Transaction ${transLen}`,
           'failedToastClass',
           'alert-circle'
         );
       }
     }
+  }
+
+  removeFirstPreset() {
+    this.presetService.removePreset(0);
+    const message =
+      this.presets.length == 1
+        ? 'Presets have been reset'
+        : 'First preset has been removed';
+
+    this.presets = this.presetService.getPresets();
+    this.commonService.presentToast(message, 'successToastClass', 'bookmark');
   }
 }

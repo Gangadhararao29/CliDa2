@@ -13,14 +13,22 @@
 </ion-header>
 
 <ion-content>
-  <div *ngIf="!logData.length" class="h-100 d-flex align-items-center justify-content-center text-center">
+  <!-- <div *ngIf="!logData.length" class="h-100 d-flex align-items-center justify-content-center text-center">
     <ion-card *ngIf="!(logData?.length)" color="light" class="w-100">
       <ion-card-content>
         <ion-icon name="alert-circle-outline" color="danger" size="large"></ion-icon>
         <h2>No Logs Found</h2>
       </ion-card-content>
     </ion-card>
+  </div> -->
+
+  @if(logData?.length == 0){
+    <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted text-center"
+    [attr.data-bs-theme]="theme">
+    <ion-icon name="journal-outline" class="mb-3" style="font-size: 4rem"></ion-icon>
+    <p class="mb-0">No logs found</p>
   </div>
+  }
 
 
   <div class="container my-2">

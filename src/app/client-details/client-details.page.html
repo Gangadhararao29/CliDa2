@@ -13,7 +13,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content [attr.data-bs-theme]="theme">
   <div class="dis-small">
     <div class="bgLight p-2 rounded text-center mx-2 mt-3" *ngIf="isOldStyle">
       Current transactions
@@ -53,8 +53,7 @@
         <ion-accordion [value]="i">
           <ion-item button slot="header" class="rounded" color="light">
             <ion-checkbox class="check-pad" slot="start" [checked]="isChipSelected(data?.id)"
-              (ionChange)="onCheckBoxClick($event, data)" (click)="$event.stopPropagation()"
-              [attr.data-bs-theme]="theme">
+              (ionChange)="onCheckBoxClick($event, data)" (click)="$event.stopPropagation()">
             </ion-checkbox>
 
             @if (isOldStyle) {
@@ -92,12 +91,8 @@
       </ion-chip>
     </div>
 
-    <app-summary-table
-       [selectedChips]="selectedChips"
-       [bulkApproveHandler]="bulkApproveHandler.bind(this)"
-      [bulkDeleteHandler]="bulkDeleteHandler.bind(this)"
-      [theme]="theme"
-      ></app-summary-table>
+    <app-summary-table [selectedChips]="selectedChips" [bulkApproveHandler]="bulkApproveHandler.bind(this)"
+      [bulkDeleteHandler]="bulkDeleteHandler.bind(this)" [theme]="theme"></app-summary-table>
   </div>
 
   <div class="dis-large">
@@ -176,18 +171,15 @@
             (cleanUp)="accordionCleanUp()"></app-client-data-view>
         </div>
         } @else if(selectedChips.length == 0){
-        <div class="text-center text-muted mt-5 opacity-50" [attr.data-bs-theme]="theme">
+        <div class="text-center text-muted mt-5 opacity-50">
           <ion-icon name="documents-outline" style="font-size: 64px;"></ion-icon>
           <p class="mt-2">Select a transaction to view details</p>
         </div>
         }
 
         <div class="mt-2">
-          <app-summary-table
-            [selectedChips]="selectedChips"
-            [bulkApproveHandler]="bulkApproveHandler.bind(this)"
-            [bulkDeleteHandler]="bulkDeleteHandler.bind(this)"
-            [theme]="theme">
+          <app-summary-table [selectedChips]="selectedChips" [bulkApproveHandler]="bulkApproveHandler.bind(this)"
+            [bulkDeleteHandler]="bulkDeleteHandler.bind(this)" [theme]="theme">
           </app-summary-table>
         </div>
       </div>

@@ -23,13 +23,12 @@ export class IntroComponent {
 
   async loadSampleData() {
     const data = sampleData['default'];
-    await this.dataBaseService.loadSampleData(data).then(() => {
-      this.reloadClientList.emit(true);
-      setTimeout(() => {
-        this.creditDebitList.nativeElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-        });
+    await this.dataBaseService.loadSampleData(data);
+    this.reloadClientList.emit(true);
+    setTimeout(() => {
+      this.creditDebitList.nativeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
       });
     });
   }
