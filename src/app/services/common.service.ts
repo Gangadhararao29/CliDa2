@@ -42,6 +42,11 @@ export class CommonService {
     await loading.present();
   }
 
+  getCommentHeight(event) {
+    event.target.style.height = 0;
+    event.target.style.height = `${event.target.scrollHeight}px`;
+  }
+
   getTheme() {
     let theme = localStorage.getItem('theme');
     const preferColorMode = window.matchMedia('(prefers-color-scheme:dark)');

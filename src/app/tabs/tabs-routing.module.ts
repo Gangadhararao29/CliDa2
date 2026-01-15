@@ -73,6 +73,13 @@ const routes: Routes = [
         redirectTo: 'calculator/MHww', // '0' encoded in base64 for fallback
       },
       {
+        path: 'calculator2',
+        loadChildren: () =>
+          import('../calculator2/calculator2.module').then(
+            (m) => m.Calculator2PageModule
+          ),
+      },
+      {
         path: 'about',
         loadChildren: () =>
           import('../about/about.module').then((m) => m.AboutPageModule),

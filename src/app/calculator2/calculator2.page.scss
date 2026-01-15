@@ -1,0 +1,31 @@
+ion-content {
+  --ion-background-color: var(--ion-color-medium);
+}
+
+.bgLight {
+  background-color: var(--ion-color-light);
+}
+
+.transition {
+  transition: transform 0.25s ease;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+ion-card {
+  margin: 15px 0px !important;
+  border-radius: 8px;
+}
+
+ion-col {
+  --ion-grid-column-padding: 0.15rem;
+}
+
+.borderHighLight {
+  color: var(--ion-color-success-tint);
+  padding: 2px auto;
+  border-top: 2px solid var(--ion-color-success);
+  border-bottom: 2px solid var(--ion-color-success);
+}

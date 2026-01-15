@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Share } from '@capacitor/share';
 import { CommonService } from '../services/common.service';
 import { DataBaseService } from '../services/data-base.service';
@@ -32,7 +32,8 @@ export class CalculatorPage {
     private activatedRoute: ActivatedRoute,
     private dataBaseService: DataBaseService,
     private commonService: CommonService,
-    private calculationService: CalculationService
+    private calculationService: CalculationService,
+    private router: Router
   ) {}
 
   ionViewWillEnter() {
@@ -284,6 +285,10 @@ export class CalculatorPage {
 
   openHistory() {
     this.calcsHistoryComp.openModal();
+  }
+
+  routeToCalculator2(){
+    this.router.navigate(['/calculator2']);
   }
 
   // prettier-ignore

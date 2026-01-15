@@ -1,0 +1,351 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Lease calculator</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="routeToCalculator()">
+        <span class="position-relative d-inline-block">
+          <ion-icon name="calculator-outline" class="fs-4"></ion-icon>
+          <span class="position-absolute rounded-pill bg-success rounded start-50 top-0"
+            style="font-size:0.6rem; padding: 0.15rem">
+            I
+          </span>
+        </span>
+      </ion-button>
+      @if(activeLease?.id > 0){
+      <ion-button (click)="deleteLease()">
+        <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      }@else {
+      <ion-button (click)="addNewLease()">
+        <ion-icon name="add-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      }
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [attr.data-bs-theme]="theme">
+  <div class="container my-2">
+
+    <div class="d-flex gap-1">
+      @for (client of leaseClients; track $index) {
+
+      <div class="d-flex align-items-center gap-1 mb-1 flex-column2">
+        @let isActive = client.id == activeLease?.id;
+        <ion-badge [color]="isActive ? 'primary' : 'light'" class="p-2" style="cursor: pointer;"
+          (click)="changeActiveClient(client)">
+          {{client.acres}}A | {{client.lastPaidYear}}
+        </ion-badge>
+
+        @if(isActive){
+        @if(isNewTransaction){
+        <ion-button color="light" size="small" (click)="cancelTransaction()">
+          <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+        }@else{
+        <ion-button color="danger" size="small" (click)="addNewTransaction()">
+          <ion-icon name="add-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+        }
+        }
+      </div>
+      }
+    </div>
+
+    @if(isNewTransaction){
+    <form #formRef="ngForm" (ngSubmit)="onLeaseSubmit(formRef)">
+
+      <div class="fs-6 text-muted mb-1 mx-1"> Enter lease details </div>
+
+      <!-- Lease Name -->
+      <div class="form-floating mb-2">
+        <input type="text" class="form-control" id="name" placeholder="Lease name" name="name"
+          [ngModel]="activeLease?.name" required #name="ngModel" [class.is-valid]="name.valid"
+          [class.is-invalid]="name.invalid &&  formRef.submitted" />
+        <label for="name"><span class="formLabel">Lease name</span></label>
+      </div>
+
+      <!-- Acres & Last Paid Year -->
+      <div class="row g-1 mb-2">
+        <div class="col-6">
+          <div class="form-floating">
+            <input type="number" class="form-control" id="acres" placeholder="1" #acres="ngModel" name="acres"
+              [ngModel]="activeLease?.acres" required [class.is-valid]="acres.valid"
+              [class.is-invalid]="acres.invalid &&  formRef.submitted" />
+            <label for="acres">Acres</label>
+            <div id="acres" class="invalid-feedback">
+              Please enter Acres value
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="form-floating">
+            <select class="form-select" id="lastPaidYear" aria-label="Last paid year" [ngModel]="getLastPaidYear()"
+              name="lastPaidYear" #lastPaidYear="ngModel" required [class.is-valid]="lastPaidYear.valid"
+              [class.is-invalid]="lastPaidYear.invalid &&  formRef.submitted">
+              @for (year of pendingYears; track $index) {
+              <option [value]="year">{{year}}</option>
+              }
+            </select>
+            <label for="floatingSelect">last paid year</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transaction Loop -->
+      @for (trxn of activeLease?.transactions; track $index) {
+      <div class="d-flex align-items-center mb-1 mx-1">
+        <hr class="mx-1 border-2" width="8px">
+        <div class="fw-semibold text-muted">
+          {{ getOnlyYear(trxn.startDate) }} | {{currencyFormat(trxn.amountPerAcre * acres.value)}}
+        </div>
+        <hr class="flex-grow-1 mx-1 border-2">
+
+        @if($count != 1){
+        <button type="button" class="btn btn-link text-danger p-0 fw-bold" (click)="removeRecord($index)">
+          − Remove
+        </button>
+        }
+      </div>
+
+      <div class="mx-1">
+        <div class="row g-1 mb-2">
+          <div class="col-6">
+            <div class="form-floating">
+              <input type="number" class="form-control" [id]="'principal_' + $index" placeholder="100000"
+                [(ngModel)]="trxn.amountPerAcre" [name]="'principal_' + $index" required #principal="ngModel"
+                [class.is-valid]="principal.valid" [class.is-invalid]="principal.invalid && formRef.submitted">
+              <label [for]="'principal_' + $index">Amount / acre</label>
+              <div class="invalid-feedback">Please enter Amount / acre</div>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="form-floating">
+              <input type="number" class="form-control" [id]="'interest_' + $index" placeholder="1.50"
+                [(ngModel)]="trxn.interest" [name]="'interest_' + $index" required #interest="ngModel"
+                [class.is-valid]="interest.valid" [class.is-invalid]="interest.invalid && formRef.submitted">
+              <label [for]="'interest_' + $index">Interest</label>
+              <div class="invalid-feedback">Please enter Interest rate.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-floating">
+          <input type="date" class="form-control" [id]="'startDate_' + $index" [(ngModel)]="trxn.startDate"
+            [name]="'startDate_' + $index" required #startDate="ngModel" [class.is-valid]="startDate.valid"
+            [class.is-invalid]="startDate.invalid && formRef.submitted">
+          <label [for]="'startDate_' + $index">Start date</label>
+          <div class="invalid-feedback">Please enter start date.</div>
+        </div>
+      </div>
+
+      @if($last){
+      <div class="d-flex align-items-center mt-1 mx-1">
+
+        <hr class="flex-grow-1 mx-1">
+        <button type="button" class="btn btn-link text-danger p-0 fw-bold" (click)="addRecord()">
+          + Add new
+        </button>
+
+      </div>
+      }
+      }
+
+      <!-- End Date -->
+      <div class="form-floating mb-2">
+        <input type="date" class="form-control" id="endDate" [ngModel]="activeLease.endDate" name="endDate" required
+          #endDate="ngModel" [class.is-valid]="endDate.valid"
+          [class.is-invalid]="endDate.invalid &&  formRef.submitted" />
+        <label for="endDate"><span class="formLabel">End date</span></label>
+        <div id="endDate" class="invalid-feedback">
+          Please enter end Date.
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="form-floating mb-2">
+        <textarea class="form-control" placeholder="Add notes here" id="notes" (input)="getCommentHeight($event)"
+          [ngModel]="activeLease.notes" name="notes" #notes="ngModel" #notesSection></textarea>
+        <label for="notes"><span class="formLabel">Notes</span></label>
+      </div>
+
+      <div class="my-2 d-flex gap-1 justify-content-between">
+        <div class="col-6">
+          <ion-button *ngIf="showLeaseCalculatedData && !formRef.dirty" color="success" expand="block"
+            (click)="addPayment()">
+            Add payment
+          </ion-button>
+        </div>
+        <div class="col-6">
+          <ion-button color="warning" expand="block" type="submit">
+            Calculate
+          </ion-button>
+        </div>
+      </div>
+    </form>
+    }
+  </div>
+
+  <div class="rounded container" *ngIf="showLeaseCalculatedData">
+    <ion-card color="light">
+      <ion-item color="light" lines="full">
+        <ion-label class="fw-bold fs-5">
+          Calculated Result
+        </ion-label>
+
+        <ion-buttons slot="end">
+          <ion-button fill="clear" aria-label="Share result" (click)="shareToClipboard()">
+            <ion-icon slot="icon-only" name="share-social-outline" color="primary">
+            </ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+
+      <div class="bgLight rounded-bottom fw-semibold fs-6">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="5"> Name </ion-col>
+            <ion-col size="1">:</ion-col>
+            <ion-col size="6">{{activeLease?.name}}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="5"> Acres </ion-col>
+            <ion-col size="1">:</ion-col>
+            <ion-col size="6">{{activeLease?.acres}}</ion-col>
+          </ion-row>
+
+          <div *ngFor="let result of calculationResults; let i = index">
+            <div class="d-flex align-items-center">
+              <hr class="flex-grow-1 mx-1 mt-0 mb-1 border-2">
+              <div class="fw-semibold text-muted">
+                {{ result.year }}
+              </div>
+              <!-- <hr class="mx-1 my-0 border-2" width="8px"> -->
+            </div>
+
+            <ion-row>
+              <ion-col size="5"> Principal </ion-col>
+              <ion-col size="1">:</ion-col>
+              <ion-col size="6">{{result.amountPerAcre}} x {{activeLease?.acres}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5"> Int rate </ion-col>
+              <ion-col size="1">:</ion-col>
+              <ion-col size="6">{{result.interestRate}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5"> Start date </ion-col>
+              <ion-col size="1">:</ion-col>
+              <ion-col size="6">{{result.startDate | date: 'yyyy-MM-dd'}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5"> End date </ion-col>
+              <ion-col size="1">:</ion-col>
+              <ion-col size="6">{{result.endDate | date: 'yyyy-MM-dd'}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5"> Time taken </ion-col>
+              <ion-col size="1">:</ion-col>
+              <ion-col size="6">
+                <span class="borderHighLight">
+                  {{result.timePeriod?.y}}y {{result.timePeriod?.m}}m
+                  {{result.timePeriod?.d}}d
+                </span>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5"> in months </ion-col>
+              <ion-col size="1">:</ion-col>
+              <ion-col size="6">{{result.timePeriod?.tm | number:'1.0-2'}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5"> Interest </ion-col>
+              <ion-col size="1">:</ion-col>
+              <ion-col size="6">{{currencyFormat(result.interest)}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="5"> Total {{i + 1}} </ion-col>
+              <ion-col size="1">:</ion-col>
+              <ion-col size="6">
+                <span class="borderHighLight">
+                  {{currencyFormat(result.totalAmount)}}
+                </span>
+              </ion-col>
+            </ion-row>
+          </div>
+
+          <ion-row class="border-bottom border-top border-success border-2 mb-1 mt-2">
+            <ion-col size="5"> Final amount </ion-col>
+            <ion-col size="1">:</ion-col>
+            <ion-col size="6" class="highlight">
+              {{currencyFormat(finalAmount)}}
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </ion-card>
+  </div>
+
+  @if (activeLease?.closedTrans?.length > 0 && isNewTransaction) {
+
+  <div class="d-flex align-items-center gap-2 mb-1 mx-1">
+    <hr class="flex-grow-1">
+    <button type="button" class="btn btn-link text-muted p-0 fw-semibold d-flex align-items-center gap-1 text-nowrap"
+      (click)="toggleHistory()" aria-expanded="{{ isHistoryOpen }}">
+      <ion-icon name="chevron-down-outline" class="transition" [class.rotate-180]="isHistoryOpen">
+      </ion-icon>
+      <span>
+        {{ isHistoryOpen ? 'Hide transaction history' : 'Show transaction history' }}
+      </span>
+    </button>
+    <hr class="flex-grow-1">
+  </div>
+  }
+
+  @if(isHistoryOpen){
+
+  <div class="bgLight p-2 mx-2 mb-2 rounded">
+    <div class="d-flex justify-content-between ">
+      <div class="fw-bold">{{activeLease?.name}}</div>
+      <!-- <div class="fw-bold">{{activeLease?.acres}} A</div> -->
+    </div>
+  </div>
+
+  @for(trxn of activeLease?.closedTrans; track $index){
+  <div class="bgLight p-2 mx-2 mb-2 rounded">
+
+    <div class="d-flex align-items-center">
+      <hr class="flex-grow-1 mx-1 mt-0 mb-1 border-2">
+      <div class="fw-semibold text-muted">
+        {{ trxn.year }}
+      </div>
+      <!-- <hr class="mx-1 my-0 border-2" width="8px"> -->
+    </div>
+
+    <div>
+      {{currencyFormat(trxn.amountPerAcre)}} x {{activeLease?.acres}} A | {{trxn.interestRate}}
+      I<small>r</small>
+    </div>
+    <div class="text-muted small">{{trxn.startDate | date:'dd/MM/yyyy' }} - {{trxn.endDate |
+      date:'dd/MM/yyyy'}} | {{(trxn.tm / 12.00) | number:'1.0-2'}}Y
+    </div>
+    <hr class="my-1 mx-2 p-0">
+    <div class="d-flex justify-content-between">
+      <div>{{currencyFormat(trxn.principal)}}</div>
+      <div>{{currencyFormat(trxn.interest)}}</div>
+      <div class="fw-bold">{{currencyFormat(trxn.totalAmount)}}</div>
+    </div>
+
+  </div>
+  }
+
+  <div *ngIf="activeLease?.notes" class="bgLight p-2 rounded m-2" style="border-left: 4px solid #ffc107;">
+    <small class="fw-bold d-block">📒 Notes</small>
+    <small style="white-space: pre-line">{{activeLease?.notes}}</small>
+  </div>
+
+  }
+
+</ion-content>
