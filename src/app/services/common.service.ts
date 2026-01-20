@@ -13,13 +13,13 @@ export class CommonService {
 
   constructor(
     private toastController: ToastController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
   ) {}
 
   async presentToast(
     message,
     cssClass = 'successToastClass',
-    icon = 'checkmark-outline'
+    icon = 'checkmark-outline',
   ) {
     const toast = await this.toastController.create({
       message,
@@ -63,21 +63,24 @@ export class CommonService {
     const logs = localStorage.getItem('logs');
     const tabSection = localStorage.getItem('tabSection');
     const calcLogs = localStorage.getItem('calcsHistory');
+    const leases = localStorage.getItem('leaseClients');
     return {
       userPreference: { theme, dashPref, oldStyle, tabSection },
       userData: null,
       logs,
       calcLogs,
+      leases,
     };
   }
 
   setUserPreferences(preferences) {
-    const { userPreference, logs, calcLogs } = preferences;
+    const { userPreference, logs, calcLogs, leases } = preferences;
     localStorage.setItem('theme', userPreference.theme);
     localStorage.setItem('dashPref', userPreference.dashPref);
     localStorage.setItem('isOldStyle', userPreference.oldStyle);
     localStorage.setItem('tabSection', userPreference.tabSection);
     localStorage.setItem('logs', logs);
     localStorage.setItem('calcsHistory', calcLogs);
+    localStorage.setItem('leaseClients', leases);
   }
 }

@@ -9,7 +9,8 @@ export interface ClosedTransaction {
   interestRate: number;
   startDate: string | Date;
   endDate: string | Date;
-  tm: number;
+  timePeriod: { d: number; m: number; y: number; tm: number };
+  tm?: number;
   principal: number;
   interest: number;
   totalAmount: number;

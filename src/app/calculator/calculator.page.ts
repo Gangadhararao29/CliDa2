@@ -33,7 +33,7 @@ export class CalculatorPage {
     private dataBaseService: DataBaseService,
     private commonService: CommonService,
     private calculationService: CalculationService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ionViewWillEnter() {
@@ -128,7 +128,7 @@ export class CalculatorPage {
       formRefValue.endDate = new Date(
         startDate.getFullYear() + y,
         startDate.getMonth() + m,
-        startDate.getDate() + d
+        startDate.getDate() + d,
       );
     } else {
       const endDate = this.linkData.endDate
@@ -137,7 +137,7 @@ export class CalculatorPage {
       formRefValue.startDate = new Date(
         endDate.getFullYear() - y,
         endDate.getMonth() - m,
-        endDate.getDate() - d
+        endDate.getDate() - d,
       );
       formRefValue.endDate = endDate;
     }
@@ -145,7 +145,7 @@ export class CalculatorPage {
 
   dateFormatter(date: Date): string {
     const localDate = new Date(
-      date.getTime() - date.getTimezoneOffset() * 60000
+      date.getTime() - date.getTimezoneOffset() * 60000,
     );
 
     return localDate.toISOString().slice(0, 10);
@@ -153,6 +153,8 @@ export class CalculatorPage {
 
   onSubmit(formRef) {
     if (formRef.valid) {
+      formRef.form.markAsPristine();
+
       if (formRef.value.timePeriodType === 'period') {
         this.timePeriodObject.tm = this.generateTmFromPeriod();
         this.generateStartEndDate(formRef.value);
@@ -164,7 +166,7 @@ export class CalculatorPage {
       } else {
         this.timePeriodObject = this.calculationService.calculateTimePeriod(
           formRef.value.startDate,
-          formRef.value.endDate
+          formRef.value.endDate,
         );
       }
 
@@ -176,16 +178,16 @@ export class CalculatorPage {
             startDate: formRef.value.startDate,
           },
           formRef.value.endDate,
-          formRef.value.compInt
+          formRef.value.compInt,
         );
         this.finalInterest = this.intArray.reduce(
           (prev, curr) => prev + curr.intAmt,
-          0
+          0,
         );
 
         this.showCalculatedData = true;
         this.commonService.presentToast(
-          'The interest has been calculated successfully.'
+          'The interest has been calculated successfully.',
         );
       } else {
         this.showCalculatedData = false;
@@ -259,7 +261,7 @@ export class CalculatorPage {
 
   currencyFormat(value) {
     const formattedValue = new Intl.NumberFormat('en-IN').format(
-      Math.round(value * 100) / 100
+      Math.round(value * 100) / 100,
     );
     return `₹ ${formattedValue}`;
   }
@@ -274,7 +276,7 @@ export class CalculatorPage {
       const cb = navigator.clipboard;
       await cb.writeText(clipboardText);
       this.commonService.presentToast(
-        'The data has been copied to the clipboard successfully.'
+        'The data has been copied to the clipboard successfully.',
       );
     }
   }
@@ -287,7 +289,7 @@ export class CalculatorPage {
     this.calcsHistoryComp.openModal();
   }
 
-  routeToCalculator2(){
+  routeToCalculator2() {
     this.router.navigate(['/calculator2']);
   }
 
@@ -339,6 +341,50 @@ export class CalculatorPage {
     const localURL = `http://localhost:4200/calculator/${encoded}`;
 
     lines.push(`${separator}`, serverURL);
+
+    return lines.join('\n');
+  }
+
+  generateResultHtml2() {
+    const { principal, interest, startDate, endDate } = this.linkData;
+    const { y, m, d, tm } = this.timePeriodObject;
+    const lines: string[] = [
+      `💰 *Interest Calculation Summary*`,
+      ``,
+      `Principal: ${this.currencyFormat(principal)}`,
+      `Interest Rate: ${interest}%`,
+      `Period: ${startDate} → ${endDate}`,
+      `Duration: ${y}y ${m}m ${d}d (${tm.toFixed(2)} months)`,
+      ``,
+    ];
+
+    if (this.intArray.length === 1) {
+      const interestAmt = this.intArray[0].intAmt;
+      lines.push(
+        `Interest Earned: ${this.currencyFormat(interestAmt)}`,
+        `*Total Amount: ${this.currencyFormat(interestAmt + principal)}*`,
+        ``,
+      );
+    } else {
+      lines.push(`📊 *Interest Breakdown:*`);
+      this.intArray.forEach(({ start, end, intAmt }) => {
+        lines.push(
+          `  Year ${start}-${(+end).toFixed(2)}: ${this.currencyFormat(intAmt)}`,
+        );
+      });
+      lines.push(
+        ``,
+        `Total Interest: ${this.currencyFormat(this.finalInterest)}`,
+        `*Total Amount: ${this.currencyFormat(this.finalInterest + principal)}*`,
+        ``,
+      );
+    }
+
+    const jsonString = `${principal}|${interest}|${startDate}|${endDate}`;
+    const encoded = encodeURIComponent(btoa(jsonString));
+    const serverURL = `https://clida3.web.app/calculator/${encoded}`;
+
+    lines.push(`🔗 View full details:`, serverURL);
 
     return lines.join('\n');
   }

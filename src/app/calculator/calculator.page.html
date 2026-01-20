@@ -5,9 +5,8 @@
       <ion-button (click)="routeToCalculator2()">
         <span class="position-relative d-inline-block">
           <ion-icon name="calculator-outline" class="fs-4"></ion-icon>
-          <span class="position-absolute rounded-pill bg-success rounded start-50 top-0"
-            style="font-size:0.6rem; padding: 0.15rem">
-            L
+          <span class="position-absolute  start-50 top-0" style="font-size:0.6rem;">
+            🔽
           </span>
         </span>
       </ion-button>
@@ -43,7 +42,7 @@
           <div class="col-6">
             <div class="form-floating">
               <input type="number" class="form-control" id="principal" placeholder="100000" #principal="ngModel"
-                name="principal" [ngModel]="linkData.principal" required [class.is-valid]="principal.valid"
+                name="principal" [(ngModel)]="linkData.principal" required [class.is-valid]="principal.valid"
                 [class.is-invalid]="principal.invalid &&  formRef.submitted" />
               <label for="principal">Principal</label>
               <div id="principal" class="invalid-feedback">
@@ -54,7 +53,7 @@
 
           <div class="col-6">
             <div class="form-floating">
-              <input type="number" class="form-control" id="interest" placeholder="1.50" [ngModel]="linkData.interest"
+              <input type="number" class="form-control" id="interest" placeholder="1.50" [(ngModel)]="linkData.interest"
                 name="interest" #interest="ngModel" required [class.is-valid]="interest.valid"
                 [class.is-invalid]="interest.invalid &&  formRef.submitted" />
               <label for="interest">Interest rate</label>
@@ -182,7 +181,7 @@
     </form>
   </div>
 
-  <div class="container mx-auto" *ngIf="showCalculatedData">
+  <div class="container" *ngIf="showCalculatedData && !form.dirty">
     <ion-card color="light">
       <ion-item color="light" lines="full">
         <ion-label class="fw-bold fs-5">
