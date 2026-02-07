@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertController, IonItemSliding } from '@ionic/angular';
 import { NgForm } from '@angular/forms';
 import { CommonService } from '../services/common.service';
 import { LeaseService } from '../services/lease.service';
@@ -42,15 +42,15 @@ export class Calculator2Page {
     this.today = this.commonService.today;
     this.initializeYearOptions();
     this.leaseClients = this.leaseService.getLeaseClients();
-    if (this.leaseClients.length > 0) {
-      this.activeLease = this.leaseClients[0];
+
+    if (this.leaseClients?.length > 0) {
+      this.activeLease = this.activeLease ?? this.leaseClients[0];
       this.isHistoryOpen = true;
     } else {
       this.activeLease = this.activeLease ?? this.createLeaseClient();
       this.isHistoryOpen = false;
       this.isNewTransaction = true;
     }
-    console.log(this.activeLease);
   }
 
   initializeYearOptions() {
@@ -67,6 +67,31 @@ export class Calculator2Page {
     this.isNewTransaction = false;
     this.isHistoryOpen = !isSameClient;
     this.showLeaseCalculatedData = false;
+  }
+
+  setFirstStartDate(event) {
+    const presentTransactions = this.activeLease.transactions;
+    this.activeLease.transactions = [];
+
+    let targetYear = +event.target.value;
+
+    for (; targetYear <= this.pendingYears[0]; targetYear++) {
+      var existingTransaction = presentTransactions.find(
+        (x) => targetYear == this.getYearFromDate(x.startDate),
+      );
+
+      if (existingTransaction) {
+        this.activeLease.transactions.push({
+          ...existingTransaction,
+          startDate: `${targetYear}-07-01`,
+        });
+      } else {
+        this.activeLease.transactions.push({
+          ...presentTransactions[0],
+          startDate: `${targetYear}-07-01`,
+        });
+      }
+    }
   }
 
   navigateToCalculator() {
@@ -151,15 +176,6 @@ export class Calculator2Page {
     });
 
     await alert.present();
-  }
-
-  saveLease() {
-    this.leaseService.saveLeaseClients(this.leaseClients);
-    this.commonService.presentToast(
-      'Data saved successfully',
-      'successToastClass',
-      'save-outline',
-    );
   }
 
   calculateLease(formRef) {
@@ -264,12 +280,12 @@ export class Calculator2Page {
 
     return {
       id: Date.now(),
-      acres: null as any,
+      acres: null as number,
       name: '',
       lastPaidYear: lastYear,
       transactions: [
         {
-          amountPerAcre: null as any,
+          amountPerAcre: null as number,
           interest: 1.5,
           startDate: `${lastYear}-07-01`,
         },
@@ -280,7 +296,7 @@ export class Calculator2Page {
     };
   }
 
-  formatCurrency(value) {
+  formatCurrency(value: number) {
     if (value === undefined || value === null) return '';
     const formattedValue = new Intl.NumberFormat('en-IN').format(
       Math.round(value * 100) / 100,
@@ -320,8 +336,8 @@ export class Calculator2Page {
         `Principal : ${result.amountPerAcre} * ${this.activeLease.acres} = ${this.formatCurrency(principal)}`,
         `Interest rate : ${result.interestRate}%`,
         ``,
-        `Start date: ${result.startDate}`,
-        `End date: ${result.endDate}`,
+        `Start date: ${this.formatDate(result.startDate)}`,
+        `End date: ${this.formatDate(result.endDate)}`,
         `Duration : ${y}y ${m}m ${d}d`,
         `in months : ${tm.toFixed(2)}`,
         ``,
@@ -354,6 +370,16 @@ export class Calculator2Page {
   finalizePayment() {
     let calculation = null;
 
+    if (
+      this.activeLease.transactions.length !== this.calculationResults.length
+    ) {
+      this.commonService.presentToast(
+        'Error: Calculation mismatch. Please recalculate.',
+        'dangerToastClass',
+      );
+      return;
+    }
+
     this.activeLease.transactions.forEach((trans) => {
       calculation = this.calculationResults.find(
         (x) =>
@@ -367,11 +393,12 @@ export class Calculator2Page {
         interestRate: trans.interest,
         startDate: trans.startDate,
         endDate: this.activeLease.endDate,
+        acres: this.activeLease.acres,
         timePeriod: calculation.timePeriod,
         principal: calculation.principal,
         interest: calculation.interest,
         totalAmount: calculation.totalAmount,
-        year: this.getYearFromDate(trans.startDate),
+        year: calculation.year,
       });
     });
 
@@ -391,5 +418,38 @@ export class Calculator2Page {
       'successToastClass',
       'checkmark-circle-outline',
     );
+  }
+
+  async deleteTransaction(index: number, slidingItem?: IonItemSliding) {
+    if (slidingItem) {
+      slidingItem.close();
+    }
+    const alert = await this.alertController.create({
+      header: 'Delete Transaction?',
+      message: 'Are you sure you want to delete this transaction?',
+      cssClass: 'alertStyle',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Delete',
+          cssClass: 'bg-danger',
+          handler: () => {
+            this.activeLease.closedTrans.splice(index, 1);
+            this.leaseService.saveLeaseClients(this.activeLease);
+            this.leaseClients = this.leaseService.getLeaseClients();
+            this.commonService.presentToast(
+              'Transaction deleted successfully',
+              'successToastClass',
+              'trash-outline',
+            );
+          },
+        },
+      ],
+    });
+
+    await alert.present();
   }
 }

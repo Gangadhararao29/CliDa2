@@ -12,9 +12,9 @@ import { LineChartPage } from './line-chart/line-chart.page';
 import { PieChartComponent } from './pie-chart/pie-chart.component';
 import { BarChartTopClientsComponent } from './bar-chart-top-clients/bar-chart-top-clients.component';
 import { BarChartInterestDistributionComponent } from './bar-chart-interest-distribution/bar-chart-interest-distribution.component';
-import { FilterByYearPipe } from './filter-by-year.pipe';
 import { BaseChartDirective } from 'ng2-charts';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { FilterByYearPipe } from '../pipes/filter-by-year.pipe';
 
 @NgModule({
   imports: [
@@ -35,4 +35,4 @@ import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
     FilterByYearPipe,
   ],
 })
-export class DashboardPageModule { }
+export class DashboardPageModule {}

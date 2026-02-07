@@ -362,7 +362,7 @@
           <ion-title>Notifications</ion-title>
           <ion-buttons slot="end">
             <ion-button fill="clear" (click)="isNotificationModalOpen = false">
-              Close
+              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
             </ion-button>
           </ion-buttons>
         </ion-toolbar>
@@ -372,25 +372,35 @@
 
         @if(notifications.length){
         <div class="d-flex justify-content-between align-items-center mx-3 mt-2">
-          <span class="text-uppercase text-muted small fw-semibold">Messages</span>
+          <span class="text-uppercase text-muted fw-semibold ps-1">
+            {{ notifications.length }} Message{{notifications.length > 1 ? 's' : '' }}
+          </span>
           <ion-button fill="clear" size="small" color="danger" (click)="clearAllNotifications()">
+            <ion-icon name="trash-outline" slot="start"></ion-icon>
             Clear All
           </ion-button>
         </div>
 
-        <ion-list [inset]="true">
+        <ion-list [inset]="true" style="--ion-item-background: transparent; background: transparent;" class="mx-3 my-0">
           @for (note of notifications; track $index) {
           <ion-item-sliding>
-            <ion-item [button]="true" detail="false" (click)="markAsRead(note)" color="light">
+            <ion-item [button]="true" detail="false" (click)="markAsRead(note)" color="light" class="mb-3 rounded">
               <div class="unread-indicator-wrapper" slot="start">
                 <div class="unread-indicator" [class.opacity-0]="note.read"></div>
               </div>
               <ion-label>
+
                 <span class="note-title">{{note.name}}</span>
-                <ion-text>₹{{ note.principal }} &bull; {{ note.startDate | date:'dd/MM/yyyy' }}</ion-text><br />
-                <ion-note class="ion-text-wrap">
-                  {{note.body.split('|')[1]}}
-                </ion-note>
+                <span class="text-muted">{{note.body.split('|')[1]}}</span>
+                <div class="d-flex justify-content-between align-items-center mt-1">
+                  <div>
+                    <ion-icon name="calendar-outline" color="secondary" class="me-1"></ion-icon>
+                    <span class="text-muted">{{ note.startDate | date:'dd/MM/yyyy' }}</span>
+                  </div>
+                  <div class="fw-bold text-primary fs-5">
+                    ₹{{ note.principal }}
+                  </div>
+                </div>
               </ion-label>
               <div class="metadata-end-wrapper" slot="end">
                 <ion-note>{{ getFormattedDate(note.createdAt) }}</ion-note>
@@ -410,9 +420,11 @@
         </ion-list>
         }
         @else {
-        <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted text-center">
-          <ion-icon name="notifications-off-outline" class="mb-3" style="font-size: 4rem"></ion-icon>
-          <p class="mb-0">No notifications yet</p>
+        <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted text-center px-4">
+          <ion-icon name="notifications-off-outline" class="mb-3" style="font-size: 4.5rem; opacity: 0.5;"></ion-icon>
+          <h4 class="fw-semibold mb-2">No Notifications</h4>
+          <p class="mb-0" style="opacity: 0.7;">You're all caught up! Notifications will appear here when you have
+            payment reminders.</p>
         </div>
         }
 

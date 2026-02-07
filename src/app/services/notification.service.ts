@@ -89,13 +89,13 @@ export class NotificationService {
             `/clients-list/client-details/${data.clientId}`,
           ]);
         }
-      }
+      },
     );
   }
 
   shouldTriggerReminder(
     startDate: Date,
-    checkDate: Date
+    checkDate: Date,
   ): {
     trigger: boolean;
     targetYear?: number;
@@ -147,7 +147,7 @@ export class NotificationService {
     name: string,
     principal: string,
     targetYear: number,
-    monthsLeft: number
+    monthsLeft: number,
   ): string {
     if (monthsLeft > 0) {
       return `${name}: ₹${principal} | Approaching ${targetYear}y in ${monthsLeft} months`;
@@ -158,7 +158,7 @@ export class NotificationService {
     }
 
     return `${name}: ₹${principal} | Crossed ${targetYear}y by ${Math.abs(
-      monthsLeft
+      monthsLeft,
     )} months`;
   }
 
@@ -170,7 +170,7 @@ export class NotificationService {
     startDate: Date,
     targetYear: number,
     monthsLeft: number,
-    checkDate: Date
+    checkDate: Date,
   ) {
     const formattedPrincipal = principal.toLocaleString('en-IN');
 
@@ -178,7 +178,7 @@ export class NotificationService {
       name,
       formattedPrincipal,
       targetYear,
-      monthsLeft
+      monthsLeft,
     );
 
     const notification: PaymentNotification = {
@@ -216,6 +216,8 @@ export class NotificationService {
       return;
     }
 
+    return;
+
     // Web notifications
     if ('Notification' in window && Notification.permission === 'granted') {
       const n = new Notification('Payment Reminder', {
@@ -237,7 +239,7 @@ export class NotificationService {
 
     // Find the latest notification for this transaction
     const latest = notifications.find(
-      (n) => n.id.split('_')[1] === transactionId
+      (n) => n.id.split('_')[1] === transactionId,
     );
 
     if (!latest) return false; // Never notified, so run it.
@@ -270,7 +272,7 @@ export class NotificationService {
       notification.read = true;
       localStorage.setItem(
         this.NOTIFICATIONS_KEY,
-        JSON.stringify(notifications)
+        JSON.stringify(notifications),
       );
     }
   }
@@ -322,7 +324,7 @@ export class NotificationService {
   private processNotificationsBatch(
     nextCheckDate: Date,
     today: Date,
-    data: any[]
+    data: any[],
   ) {
     if (today < nextCheckDate) {
       return;
@@ -349,8 +351,8 @@ export class NotificationService {
     return from(data).pipe(
       mergeMap(
         (client) => this.processClientNotifications(client, checkDate),
-        this.MAX_CONCURRENT_TASKS
-      )
+        this.MAX_CONCURRENT_TASKS,
+      ),
     );
   }
 
@@ -358,8 +360,8 @@ export class NotificationService {
     return from(client.data.data).pipe(
       mergeMap(
         (record) => this.processRecord(client, record, checkDate),
-        this.MAX_CONCURRENT_TASKS
-      )
+        this.MAX_CONCURRENT_TASKS,
+      ),
     );
   }
 
@@ -380,11 +382,11 @@ export class NotificationService {
               startDate,
               shouldNotify.targetYear,
               shouldNotify.monthsLeft,
-              checkDate
+              checkDate,
             );
           }
         }
-      })
+      }),
     );
   }
 }

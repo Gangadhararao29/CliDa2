@@ -83,17 +83,19 @@
           <ion-icon [name]="topEarGridIcon" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-item>
-      <ng-container
-        *ngFor="let client of topEarners | paginate: { itemsPerPage: 4, currentPage: topEarPage, id:'topEar'}; trackBy:trackData">
-        <ion-item [routerLink]="'client-details/' + client.key" color="light">
-          <ion-label>
-            <span class="d-flex">
-              <h2>{{client.name}}</h2>
-              <h2 class="ms-auto fw-bolder"> ₹{{isd.format(math.round(client.totalEarnings))}}</h2>
-            </span>
-          </ion-label>
-        </ion-item>
-      </ng-container>
+      <div class="fixed-list-container">
+        <ng-container
+          *ngFor="let client of topEarners | paginate: { itemsPerPage: 4, currentPage: topEarPage, id:'topEar'}; trackBy:trackData">
+          <ion-item [routerLink]="'client-details/' + client.key" color="light">
+            <ion-label>
+              <span class="d-flex">
+                <h2>{{client.name}}</h2>
+                <h2 class="ms-auto fw-bolder"> ₹{{isd.format(math.round(client.totalEarnings))}}</h2>
+              </span>
+            </ion-label>
+          </ion-item>
+        </ng-container>
+      </div>
       <pagination-controls class="text-end" (pageChange)="topEarPage = $event" id="topEar" [responsive]="true"
         [autoHide]="true"></pagination-controls>
     </ion-card>
@@ -109,18 +111,20 @@
           <ion-icon name="filter" slot="icon-only" [color]="+selectYear.value ? 'primary' : ''"></ion-icon>
         </ion-button>
       </ion-item>
-      <ng-container
-        *ngFor="let client of array2 | filterByYear : selectYear.value | paginate: { itemsPerPage: 4, currentPage: upTransPage, id:'upTrans'}; trackBy:trackData">
-        <ion-item [routerLink]="'client-details/' + client.key" color="light">
-          <ion-label>
-            <span class="d-flex">
-              <h2>{{client.name}}</h2>
-              <h2 class="ms-auto fw-bolder">{{math.trunc((client.greaterTimePeriod)/12) + "Y " +
-                math.trunc(client.greaterTimePeriod%12)+ "M"}}</h2>
-            </span>
-          </ion-label>
-        </ion-item>
-      </ng-container>
+      <div class="fixed-list-container">
+        <ng-container
+          *ngFor="let client of array2 | filterByYear : selectYear.value | paginate: { itemsPerPage: 4, currentPage: upTransPage, id:'upTrans'}; trackBy:trackData">
+          <ion-item [routerLink]="'client-details/' + client.key" color="light">
+            <ion-label>
+              <span class="d-flex">
+                <h2>{{client.name}}</h2>
+                <h2 class="ms-auto fw-bolder">{{math.trunc((client.greaterTimePeriod)/12) + "Y " +
+                  math.trunc(client.greaterTimePeriod%12)+ "M"}}</h2>
+              </span>
+            </ion-label>
+          </ion-item>
+        </ng-container>
+      </div>
       <pagination-controls class="text-end" (pageChange)="upTransPage = $event" id="upTrans" [responsive]="true"
         [autoHide]="true"></pagination-controls>
     </ion-card>
@@ -136,40 +140,42 @@
         </ion-button>
       </ion-item>
 
-      <ng-container
-        *ngFor="let log of logData | paginate: { itemsPerPage: 3, currentPage: recTransPage, id:'recTrans'};">
-        <ion-item detail="false" color="light">
+      <div style="min-height: 210px;">
+        <ng-container
+          *ngFor="let log of logData | paginate: { itemsPerPage: 3, currentPage: recTransPage, id:'recTrans'};">
+          <ion-item detail="false" color="light">
 
-          <ion-label>
-            <ion-text class="text-truncate">{{log?.name}}</ion-text><br />
-            <ion-note class="ion-text-wrap">
-              {{ log?.interest }} • {{ log?.startDate }}
-            </ion-note>
-          </ion-label>
+            <ion-label>
+              <ion-text class="text-truncate">{{log?.name}}</ion-text><br />
+              <ion-note class="ion-text-wrap">
+                {{ log?.interest }} • {{ log?.startDate }}
+              </ion-note>
+            </ion-label>
 
-          <div class="metadata-end-wrapper text-end" slot="end">
-            <ion-text>
-              <span *ngIf="log.operation === 'new'" class="badge bg-success-subtle text-success small">+ new</span>
-              <span *ngIf="log.operation === 'bulk new'" class="badge bg-success-subtle text-success small">+ bulk
-                new</span>
-              <span *ngIf="log.operation === 'delete'" class="badge bg-danger-subtle text-danger small">− delete</span>
-              <span *ngIf="log.operation === 'bulk delete'" class="badge bg-danger-subtle text-danger small">− bulk
-                delete</span>
-              <span *ngIf="log.operation === 'edit'" class="badge bg-warning bg-opacity-75 text-dark small">✎
-                edit</span>
-              <span *ngIf="log.operation === 'edit - approve'" class="badge bg-primary-subtle text-primary small">✓
-                approved</span>
-              <span *ngIf="log.operation === 'bulk approve'" class="badge bg-primary-subtle text-primary small">✓ bulk
-                approved</span>
-              <br>
+            <div class="metadata-end-wrapper text-end" slot="end">
+              <ion-text>
+                <span *ngIf="log.operation === 'new'" class="badge bg-success-subtle text-success small">+ New</span>
+                <span *ngIf="log.operation === 'bulk new'" class="badge bg-success-subtle text-success small">+ Bulk
+                  New</span>
+                <span *ngIf="log.operation === 'delete'" class="badge bg-danger-subtle text-danger small">− Del</span>
+                <span *ngIf="log.operation === 'bulk delete'" class="badge bg-danger-subtle text-danger small">− Bulk
+                  Del</span>
+                <span *ngIf="log.operation === 'edit'" class="badge bg-warning bg-opacity-75 text-dark small">✎
+                  Edit</span>
+                <span *ngIf="log.operation === 'edit - approve'" class="badge bg-primary-subtle text-primary small">✓
+                  Appr</span>
+                <span *ngIf="log.operation === 'bulk approve'" class="badge bg-primary-subtle text-primary small">✓
+                  Bulk Appr</span>
+                <br>
 
-              <span class="fw-bolder text-nowrap mt-1">
-                ₹ {{ isd.format(log?.principal) }}
-              </span>
-            </ion-text>
-          </div>
-        </ion-item>
-      </ng-container>
+                <span class="fw-bolder text-nowrap mt-1">
+                  ₹ {{ isd.format(log?.principal) }}
+                </span>
+              </ion-text>
+            </div>
+          </ion-item>
+        </ng-container>
+      </div>
       <pagination-controls class="text-end" (pageChange)="recTransPage = $event" id="recTrans" [responsive]="true"
         [autoHide]="true"></pagination-controls>
     </ion-card>
@@ -230,17 +236,19 @@
           <ion-icon [name]="principalGridIcon" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-item>
-      <ng-container
-        *ngFor="let client of array1 | paginate: { itemsPerPage: 4, currentPage: cliSumPage, id:'cliSum'}; trackBy:trackData">
-        <ion-item [routerLink]="'client-details/' + client.key" color="light">
-          <ion-label>
-            <span class="d-flex">
-              <h2>{{client.name}}</h2>
-              <h2 class="ms-auto fw-bolder"> ₹{{isd.format(client.totalPrincipal)}}</h2>
-            </span>
-          </ion-label>
-        </ion-item>
-      </ng-container>
+      <div class="fixed-list-container">
+        <ng-container
+          *ngFor="let client of array1 | paginate: { itemsPerPage: 4, currentPage: cliSumPage, id:'cliSum'}; trackBy:trackData">
+          <ion-item [routerLink]="'client-details/' + client.key" color="light">
+            <ion-label>
+              <span class="d-flex">
+                <h2>{{client.name}}</h2>
+                <h2 class="ms-auto fw-bolder"> ₹{{isd.format(client.totalPrincipal)}}</h2>
+              </span>
+            </ion-label>
+          </ion-item>
+        </ng-container>
+      </div>
       <pagination-controls class="text-end" (pageChange)="cliSumPage = $event" id="cliSum" [responsive]="true"
         [autoHide]="true"></pagination-controls>
     </ion-card>

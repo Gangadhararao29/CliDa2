@@ -55,7 +55,7 @@ export class AboutPage {
     private firebaseService: FirebaseService,
     private commonService: CommonService,
     private dataBaseService: DataBaseService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
   ) {}
 
   ionViewWillEnter() {
@@ -134,7 +134,7 @@ export class AboutPage {
     })
       .then(() => {
         this.commonService.presentToast(
-          `The file has been saved successfully in <br> Documents/${fileName}.`
+          `The file has been saved successfully in <br> Documents/${fileName}.`,
         );
       })
       .catch((err) => {
@@ -142,7 +142,7 @@ export class AboutPage {
         this.commonService.presentToast(
           errString,
           'failedToastClass',
-          'alert-outline'
+          'alert-outline',
         );
       });
   }
@@ -160,7 +160,7 @@ export class AboutPage {
           this.commonService.presentToast(
             err,
             'failedToastClass',
-            'alert-outline'
+            'alert-outline',
           );
           this.inputClientData = '';
         }
@@ -215,7 +215,7 @@ export class AboutPage {
         setTimeout(() => {
           this.inputClientData = '';
           this.commonService.presentToast(
-            'Data imported successfully. <br> Redirecting to the Clients List tab.'
+            'Data imported successfully. <br> Redirecting to the Clients List tab.',
           );
           this.router.navigate(['clients-list']);
         }, 1000);
@@ -253,7 +253,7 @@ export class AboutPage {
     this.changeTheme({ detail: { value: 'auto' } });
     this.select2.value = 'auto';
     this.commonService.presentToast(
-      'The factory reset has been completed successfully.'
+      'The factory reset has been completed successfully.',
     );
   }
 
@@ -275,7 +275,7 @@ export class AboutPage {
       }
       case 'auto': {
         const preferColorMode = window.matchMedia(
-          '(prefers-color-scheme:dark)'
+          '(prefers-color-scheme:dark)',
         );
         if (preferColorMode.matches) {
           this.theme = 'dark';
@@ -323,7 +323,7 @@ export class AboutPage {
         this.dataBaseService.saveBulkClients(clients, true).then((res) => {
           setTimeout(() => {
             this.commonService.presentToast(
-              'The data has been sorted successfully.'
+              'The data has been sorted successfully.',
             );
             event.target.disabled = false;
             event.target.value = null;
@@ -337,7 +337,7 @@ export class AboutPage {
     this.dataBaseService.cleanClientsData().then((res) => {
       this.commonService.presentLoading().then(() => {
         this.commonService.presentToast(
-          'All empty data and errors have been fixed.'
+          'All empty data and errors have been fixed.',
         );
       });
     });
@@ -367,7 +367,7 @@ export class AboutPage {
       this.commonService.presentToast(
         err.message,
         'failedToastClass',
-        'alert-outline'
+        'alert-outline',
       );
     }
   }
@@ -381,7 +381,7 @@ export class AboutPage {
       this.commonService.presentToast(
         'Error signing out: <br>' + error,
         'failedToastClass',
-        'alert-outline'
+        'alert-outline',
       );
     }
   }
@@ -399,7 +399,7 @@ export class AboutPage {
       this.commonService.presentToast(
         'Error loading cloud data: <br>' + error,
         'failedToastClass',
-        'alert-outline'
+        'alert-outline',
       );
     }
   }
@@ -416,7 +416,7 @@ export class AboutPage {
       this.commonService.presentToast(
         'Error uploading data to cloud: <br>' + error,
         'failedToastClass',
-        'alert-outline'
+        'alert-outline',
       );
     }
   }
@@ -451,7 +451,7 @@ export class AboutPage {
     data.forEach((record: any) => {
       record.id = id++;
       const clientIndex = clientsData.findIndex(
-        (client) => client.name === record.name
+        (client) => client.name === record.name,
       );
       if (clientIndex > -1) {
         delete record.name;
@@ -466,7 +466,7 @@ export class AboutPage {
       setTimeout(() => {
         this.inputClientData = '';
         this.commonService.presentToast(
-          'Data imported successfully <br>Redirecting to Clients-list tab'
+          'Data imported successfully <br>Redirecting to Clients-list tab',
         );
         this.router.navigate(['clients-list']);
       }, 1000);
@@ -498,7 +498,7 @@ export class AboutPage {
           this.commonService.presentToast(
             'Notification permission denied',
             'failedToastClass',
-            'alert-outline'
+            'alert-outline',
           );
         }
         this.saveNotificationSettings();
@@ -526,7 +526,7 @@ export class AboutPage {
   dismissNotification(notification: any) {
     this.notificationService.dismissNotification(notification.id);
     this.notifications = this.notifications.filter(
-      (n) => n.id !== notification.id
+      (n) => n.id !== notification.id,
     );
   }
 
@@ -546,19 +546,26 @@ export class AboutPage {
     const noteDate = new Date(date);
     const now = new Date();
 
-    // Today
+    // Check if it's today
     if (
       noteDate.getFullYear() === now.getFullYear() &&
       noteDate.getMonth() === now.getMonth() &&
       noteDate.getDate() === now.getDate()
     ) {
-      return noteDate.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      });
+      // For today, show relative time
+      const diffMs = now.getTime() - noteDate.getTime();
+      const diffMins = Math.floor(diffMs / (1000 * 60));
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+
+      if (diffMins < 1) {
+        return 'Just now';
+      } else if (diffMins < 60) {
+        return `${diffMins} min${diffMins !== 1 ? 's' : ''} ago`;
+      } else {
+        return `${diffHours} hr${diffHours !== 1 ? 's' : ''} ago`;
+      }
     }
 
-    // Yesterday
     const yesterday = new Date();
     yesterday.setDate(now.getDate() - 1);
     if (
@@ -569,7 +576,6 @@ export class AboutPage {
       return 'Yesterday';
     }
 
-    // Older → dd MMM yy
     return noteDate.toLocaleDateString('en-GB', {
       day: '2-digit',
       month: 'short',

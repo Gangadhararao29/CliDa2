@@ -10,7 +10,8 @@ export class LeaseService {
 
   getLeaseClients() {
     let lcString = localStorage.getItem(LEASE_KEY);
-    return lcString ? JSON.parse(lcString) : [];
+    let parsedLc = lcString ? JSON.parse(lcString) : [];
+    return parsedLc ?? [];
   }
 
   saveLeaseClients(client) {

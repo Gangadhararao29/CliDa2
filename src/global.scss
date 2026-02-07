@@ -26,14 +26,14 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 * {
-  font-family: "Work Sans", sans-serif;
+  font-family: "Outfit", system-ui, sans-serif; /* Modern, geometric font */
   font-optical-sizing: auto;
   font-style: normal;
 }
 
 .alertStyle .alert-wrapper,
 .alertMultiStyle .alert-wrapper {
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 8px;
   background-color: var(--ion-color-medium);
 
@@ -55,7 +55,7 @@
     padding: 0px;
     button {
       // border: 2px solid var(--ion-color-primary);
-      border-radius: 8px;
+      border-radius: 10px;
       // background: var(--ion-color-primary);
       color: white;
       &:last-child {

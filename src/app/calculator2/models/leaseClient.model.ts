@@ -15,6 +15,7 @@ export interface ClosedTransaction {
   interest: number;
   totalAmount: number;
   year: number;
+  acres: number;
 }
 
 export interface CalculationResult {
@@ -24,7 +25,7 @@ export interface CalculationResult {
   interestRate: number;
   startDate: string | Date;
   endDate: string | Date;
-  timePeriod: any;
+  timePeriod: { d: number; m: number; y: number; tm: number };
   interest: number;
   totalAmount: number;
 }
