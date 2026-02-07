@@ -8,7 +8,7 @@ import { ClientsSearchPipe } from '../pipes/client-search.pipe';
 
 @NgModule({
   declarations: [IntroComponent, DatalistComponent, ClientsSearchPipe],
-  exports: [IntroComponent, DatalistComponent],
+  exports: [IntroComponent, DatalistComponent, ClientsSearchPipe],
   imports: [CommonModule, RouterModule, IonicModule],
 })
 export class SharedModule {}
