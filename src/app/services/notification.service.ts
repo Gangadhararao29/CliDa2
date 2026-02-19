@@ -216,8 +216,6 @@ export class NotificationService {
       return;
     }
 
-    return;
-
     // Web notifications
     if ('Notification' in window && Notification.permission === 'granted') {
       const n = new Notification('Payment Reminder', {
