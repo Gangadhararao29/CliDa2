@@ -74,6 +74,7 @@ export class DataBaseService {
         }
         break;
     }
+    clientData.lastModifiedOn = Date.now();
     return this.updateClientByKey(key, clientData);
   }
 
@@ -90,8 +91,10 @@ export class DataBaseService {
 
     if (existingClient) {
       existingClient.data.push(...payload.data);
+      existingClient.lastModifiedOn = Date.now();
       return this.updateClientRecordByName(existingClient);
     } else {
+      payload.lastModifiedOn = Date.now();
       return this.saveNewClient(payload);
     }
   }
@@ -110,6 +113,7 @@ export class DataBaseService {
 
     const existingClient = await this.getClientByName(name);
     if (existingClient) {
+      existingClient.lastModifiedOn = Date.now();
       if (renameAllRecords) {
         existingClient.data.push(...clientData.data);
         await this.updateClientRecordByName(existingClient);
@@ -122,6 +126,7 @@ export class DataBaseService {
     } else {
       if (renameAllRecords) {
         clientData.name = name;
+        clientData.lastModifiedOn = Date.now();
         return this.updateClientByKey(key, clientData);
       } else {
         const createPayload = {
@@ -145,16 +150,18 @@ export class DataBaseService {
     this.utilsService.addNewLogData('edit', clientData, payload, index);
 
     clientData.name = name;
+    clientData.lastModifiedOn = Date.now();
     clientData.data[index] = payload;
     return this.updateClientByKey(key, clientData);
   }
 
   async approveClientData(newData, oldData, index) {
+    newData.lastModifiedOn = Date.now();
     return this.updateClientRecordByName(newData).then(() => {
       this.utilsService.addNewLogData(
         'edit - approve',
         { name: newData.name, ...oldData },
-        newData.data[index]
+        newData.data[index],
       );
     });
   }
@@ -165,6 +172,7 @@ export class DataBaseService {
     if (clientData.data.length < 1) {
       return this.deleteClientByKey(key);
     } else {
+      clientData.lastModifiedOn = Date.now();
       return this.updateClientRecordByName(clientData);
     }
   }
@@ -177,7 +185,7 @@ export class DataBaseService {
         const res = await this.getClientByName(client.name);
         if (res) {
           const recordIndex = res.data.findIndex(
-            (clientData) => clientData.id === res.id
+            (clientData) => clientData.id === res.id,
           );
           if (recordIndex > -1) {
             res.push(client.data);
@@ -204,10 +212,10 @@ export class DataBaseService {
           data: client.data
             .filter(
               (record) =>
-                record?.principal && record?.interest && record?.startDate
+                record?.principal && record?.interest && record?.startDate,
             )
             .map((record) =>
-              this.utilsService.replaceUndefinedWithNull(record)
+              this.utilsService.replaceUndefinedWithNull(record),
             ),
         }))
         .filter((client) => client?.name && client.data?.length);
