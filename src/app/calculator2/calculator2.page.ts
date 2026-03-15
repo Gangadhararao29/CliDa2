@@ -414,7 +414,7 @@ export class Calculator2Page {
     this.leaseService.saveLeaseClients(this.activeLease);
     this.leaseClients = this.leaseService.getLeaseClients();
     this.commonService.presentToast(
-      'Payment finalized successfully',
+      'Payment saved successfully',
       'successToastClass',
       'checkmark-circle-outline',
     );

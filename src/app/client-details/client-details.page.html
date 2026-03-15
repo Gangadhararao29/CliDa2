@@ -97,13 +97,11 @@
 
   <div class="dis-large">
     <!-- Header -->
-    <div class="mx-2 my-2 d-flex align-items-center gap-2" *ngIf="!isOldStyle">
+    <div class="d-flex align-items-center gap-2 m-2" *ngIf="!isOldStyle">
       <div>
-        <span class="fw-semibold">
-          Transactions :
-          <ion-chip class="active-chip my-0 me-1 ms-0">Active : {{transactions.active}}</ion-chip>
-          <ion-chip class="closed-chip ms-1 m-0">Closed : {{transactions.closed}}</ion-chip>
-        </span>
+        <span class="fw-semibold">Transactions :</span>
+        <ion-chip class="active-chip my-0">Active : {{transactions.active}}</ion-chip>
+        <ion-chip class="closed-chip my-0">Closed : {{transactions.closed}}</ion-chip>
       </div>
 
       <ion-chip class="total-chip fw-semibold ms-auto me-0 my-0" (click)="toggleTotalChips()">

@@ -15,7 +15,7 @@ export class OperationLogPage {
   theme: string;
   constructor(
     private alertController: AlertController,
-    private commonService: CommonService
+    private commonService: CommonService,
   ) {}
 
   ionViewWillEnter() {
@@ -28,7 +28,7 @@ export class OperationLogPage {
 
     this.logData.forEach((log) => {
       index = this.logDataGroup.findIndex(
-        (logGroup) => logGroup.modifiedOn === log.modifiedOn
+        (logGroup) => logGroup.modifiedOn === log.modifiedOn,
       );
 
       if (index === -1) {
@@ -95,7 +95,7 @@ export class OperationLogPage {
     return logData.reduce(
       (sum, rec) =>
         sum + (operation == 'bulk approve' ? rec.closedAmount : rec.principal),
-      0
+      0,
     );
   }
 }

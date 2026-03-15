@@ -29,43 +29,52 @@
         <ion-card-header>
           <ion-card-title class="text-center">
             <br />
-            Hi {{user?.displayName}} <br />
+            Hi {{ user?.displayName }}
           </ion-card-title>
           <div class="text-muted text-center">{{user?.email}}</div>
         </ion-card-header>
         <ion-card-content>
+
+          <!-- Backup Info -->
           <div class="d-flex justify-content-between mx-2 mt-1 align-items-center">
             <div>
-              <ion-icon name="time-outline" class="me-1"></ion-icon> Modified:
-              {{ (lastDataModified | date:'medium') || 'Never' }}
-              <br />
-              <ion-icon name="cloud-done-outline" class="me-1"></ion-icon> Last
-              Backup: {{ (lastCloudSync | date:'medium') || 'Never' }}
+              <ion-icon name="time-outline" class="me-1"></ion-icon>
+              Modified: {{ lastDataModified ? (lastDataModified | date:'dd MMM yy, h:mm a') : 'Never' }} <br>
+
+              <ion-icon name="cloud-done-outline" class="me-1"></ion-icon>
+              Synced: {{ lastCloudSync ? (lastCloudSync | date:'dd MMM yy, h:mm a') : 'Never' }}
             </div>
-            <div>
+
+            <div class="mx-1">
               <span class="badge rounded-pill" [ngClass]="isBackupNeeded ? 'text-bg-warning' : 'text-bg-success'">
-                {{ isBackupNeeded ? 'Backup Needed' : 'Fully Backed Up' }}
+                <ion-icon [name]="isBackupNeeded ? 'cloud-upload-outline' : 'checkmark-circle-outline'"></ion-icon>
+                {{ isBackupNeeded ? 'Backup' : 'Synced' }}
               </span>
             </div>
           </div>
 
-          <div class="d-flex gap-2 mx-2 mb-2">
+          <!-- Buttons -->
+          <div class="d-flex gap-2 mx-2 mb-2 mt-2">
+
             <ion-button class="flex-fill" (click)="uploadToCloud()">
-              <ion-icon slot="end" name="cloud-upload-outline"></ion-icon>
+              <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
               Backup
             </ion-button>
 
             <ion-button class="flex-fill" (click)="loadCloudData()">
-              <ion-icon slot="end" name="cloud-download-outline"></ion-icon>
+              <ion-icon slot="start" name="cloud-download-outline"></ion-icon>
               Restore
             </ion-button>
+
           </div>
 
           <ion-button class="mx-2 mb-2" color="danger" expand="block" (click)="logOutUser()">
+            <ion-icon slot="start" name="log-out-outline"></ion-icon>
             Sign out
-            <ion-icon slot="end" name="log-out-outline"></ion-icon>
           </ion-button>
+
         </ion-card-content>
+
       </ion-card>
     </div>
 
@@ -433,10 +442,10 @@
   </ion-modal>
 
   <div class="text-center mb-3" [attr.data-bs-theme]="theme">
-    <div class="text-muted" style="font-size: 90%">
-      <strong class="text-grad">CliDa</strong> v{{currentVersion}} by
-      <span class="">ChaGa</span><br />
-      <span class="badge bg-info text-dark">{{isWebVersion ? 'Web Version' : 'Android Version'}}</span>
+    <div class="text-muted">
+      <strong class="text-grad">CliDa</strong><br>
+      <span class="badge bg-info text-dark">{{isWebVersion ? 'Web Version' : 'Android Version'}} :
+        {{currentVersion}}</span>
     </div>
   </div>
 </ion-content>

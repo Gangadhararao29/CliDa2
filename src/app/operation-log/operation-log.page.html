@@ -6,198 +6,196 @@
     <ion-title>Logs</ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="showClearLogsAlert()">
-        <ion-icon name="trash-bin-outline" slot="icon-only"></ion-icon>
+        <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <!-- <div *ngIf="!logData.length" class="h-100 d-flex align-items-center justify-content-center text-center">
-    <ion-card *ngIf="!(logData?.length)" color="light" class="w-100">
-      <ion-card-content>
-        <ion-icon name="alert-circle-outline" color="danger" size="large"></ion-icon>
-        <h2>No Logs Found</h2>
-      </ion-card-content>
-    </ion-card>
-  </div> -->
 
   @if(logData?.length == 0){
-    <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted text-center"
+  <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted text-center"
     [attr.data-bs-theme]="theme">
     <ion-icon name="journal-outline" class="mb-3" style="font-size: 4rem"></ion-icon>
-    <p class="mb-0">No logs found</p>
+    <h4>No logs found</h4>
   </div>
   }
 
+  <div class="container" [attr.data-bs-theme]="theme">
 
-  <div class="container my-2">
-    <ng-container *ngFor="let group of logDataGroup">
-      <!-- GROUP HEADER -->
-      <div class="sticky-group-header">
-        <ion-item button color="light" class="rounded-3 my-2" (click)="toggleGroup(group.modifiedOn)">
-          <ion-label>{{ group.modifiedOn }}</ion-label>
-          <ion-icon slot="end" [name]="expandedGroups[group.modifiedOn] ? 'chevron-up' : 'chevron-down'">
-          </ion-icon>
-        </ion-item>
-      </div>
+    @for (group of logDataGroup; track $index) {
+    <!-- Group header -->
+    <div class="sticky-group-header">
+      <ion-item button color="light" class="rounded-3 my-2" (click)="toggleGroup(group.modifiedOn)">
+        <ion-label>{{ group.modifiedOn | date : 'MMMM dd, yyyy'}}</ion-label>
+        <ion-icon slot="end" [name]="expandedGroups[group.modifiedOn] ? 'chevron-up' : 'chevron-down'">
+        </ion-icon>
+      </ion-item>
+    </div>
 
-      <!-- COLLAPSIBLE CONTENT -->
-      <div *ngIf="expandedGroups[group.modifiedOn]" class="mt-2">
-        <ion-card *ngFor="let log of group.logs" class="mb-2 shadow-sm rounded-3" color="light">
-          <ion-card-content>
-            <div class="d-flex" [ngSwitch]="log.operation" [attr.data-bs-theme]="theme">
-              <!-- ===================== -->
-              <!-- NEW / DELETE -->
-              <!-- ===================== -->
-              <ng-container
-                *ngSwitchCase="log.operation === 'new' || log.operation === 'delete' ? log.operation : 'other'">
-                <!-- LEFT -->
-                <div class="flex-grow-1">
-                  <div class="fw-semibold" style="font-size: 120%;">{{ log.data.name }}</div>
+    <!-- Collapsible content -->
+    @if(expandedGroups[group.modifiedOn]){
 
-                  <div class="text-muted">
-                    {{ log.data.interest }}
-                    <span class="mx-1">•</span>
-                    {{ log.data.startDate }}
-                  </div>
+    @for (log of group.logs; track $index) {
+    <ion-card color="light" class="mb-2 rounded-3">
+      <ion-card-content>
 
-                  <div *ngIf="log.data.comments" class="small mt-1 text-muted" style="white-space: pre-line">
-                    {{ log.data.comments }}
-                  </div>
+        <!-- New / Delete block -->
+        @if(['new','delete'].includes(log.operation)) {
+        <div class="d-flex">
+          <!-- Left section -->
+          <div class="flex-grow-1">
+            <span class="fw-semibold fs-6">{{log.data.name}}</span> <br>
+            <span class="text-muted">
+              {{log.data.interest}}
+              <span class="mx-1">•</span>
+              {{log.data.startDate}}
+            </span> <br>
 
-                  <div *ngIf="log.data.closedAmount > 0 && log.data.closedOn" class="mt-1 text-success">
-                    {{ log.data.closedOn }}
-                    <span class="mx-1">•</span>
-                    <span class="strong"> {{ log.data.closedAmount | currency:'INR':'symbol':'1.0-0':'en-IN' }} </span>
-                  </div>
-                </div>
+            @if(log.data.comments){
+            <span class="small mt-1 text-muted" style="white-space: pre-line;">{{ log.data.comments }}</span> <br>
+            }
 
-                <!-- RIGHT -->
-                <div class="text-end ms-3">
-                  <ion-badge [color]="getStatusColor(log.operation)" class="mb-2 text-capitalize">
-                    {{ log.operation }}
-                  </ion-badge>
+            @if (log.data.closedAmount > 0 && log.data.closedOn) {
+            <span class="mt-1 text-success">
+              {{ log.data.closedOn }} • {{ log.data.closedAmount | currency:'INR':'symbol':'1.0-0':'en-IN' }}
+            </span>
+            }
+          </div>
 
-                  <div class="fw-bold fs-5">{{ log.data.principal | currency:'INR':'symbol':'1.0-0':'en-IN' }}
-                  </div>
-                </div>
-              </ng-container>
+          <!-- Right section -->
+          <div class="text-end">
+            <ion-badge [color]="getStatusColor(log.operation)">{{log.operation}}</ion-badge>
 
-              <!-- ===================== -->
-              <!-- EDIT / EDIT APPROVE -->
-              <!-- ===================== -->
-              <ng-container
-                *ngSwitchCase="log.operation === 'edit' || log.operation === 'edit - approve' ? log.operation : 'other'">
-                <!-- LEFT -->
-                <div class="flex-grow-1">
-                  <!-- NAME -->
-                  <div class="fw-semibold" style="font-size: 120%;">{{ log.orgData.name }}</div>
+            <div class="fw-bold fs-5">
+              {{ log.data.principal | currency:'INR':'symbol':'1.0-0':'en-IN' }}
+            </div>
 
-                  <!-- INTEREST + START DATE -->
-                  <div class="text-muted">
-                    <del *ngIf="log.orgData.interest !== log.newData.interest">
-                      {{ log.orgData.interest }}
-                    </del>
-                    {{ log.newData.interest }}
-                    <span *ngIf="log.orgData.startDate == log.newData.startDate" class="mx-1">•</span>
-                    <del *ngIf="log.orgData.startDate !== log.newData.startDate">
-                      <br>{{ log.orgData.startDate }}
-                    </del>
-                    {{ log.newData.startDate }}
-                  </div>
+          </div>
+        </div>
+        }
 
-                  <!-- COMMENTS -->
-                  <div *ngIf="log.orgData.comments !== log.newData.comments" class="small mt-1 text-muted"
-                    style="white-space: pre-line;">
-                    <del>{{ log.orgData.comments }}</del>
-                    {{ log.newData.comments }}
-                  </div>
+        <!-- Edit / Edit -Approve block -->
+        @if(['edit','edit - approve'].includes(log.operation)) {
+        <div class="d-flex">
+          <!-- Left section -->
+          <div class="flex-grow-1">
+            <span class="fw-semibold fs-6">{{log.orgData.name}}</span> <br>
+            <span class="text-muted">
 
-                  <!-- CLOSED -->
-                  <div *ngIf="log.orgData.closedOn !== log.newData.closedOn" class="mt-1 text-success">
-                    <del>{{ log.orgData.closedOn }}</del>
-                    {{ log.newData.closedOn }}
-                    <span *ngIf="log.orgData.closedOn == log.newData.closedOn" class="mx-1">•</span>
-                    <br><del>{{ log.orgData.closedAmount }}</del>
-                    <span class="strong"> {{ log.newData.closedAmount | currency:'INR':'symbol':'1.0-0':'en-IN'
-                      }}</span>
-                  </div>
-                </div>
+              @if(log.orgData.interest !== log.newData.interest){
+              <del>{{log.orgData.interest}}</del> &#x2192;
+              <span>{{log.newData.interest}}</span> <br>
+              }
+              @else {
+              <span>{{log.newData.interest}}</span> •
+              }
 
-                <!-- RIGHT -->
-                <div class="text-end ms-3">
-                  <ion-badge [color]="getStatusColor(log.operation)" class="mb-2 text-capitalize">
-                    {{ log.operation }}
-                  </ion-badge>
+              @if(log.orgData.startDate !== log.newData.startDate){
+              <del>{{log.orgData.startDate}}</del> &#x2192;
+              }
+              <span>{{log.newData.startDate}}</span> <br>
+            </span>
 
-                  <div class="fw-bold fs-5">
-                    <del *ngIf="log.orgData.principal !== log.newData.principal">
-                      {{ log.orgData.principal }}<br>
-                    </del>
+            @if(log.orgData.comments !== log.newData.comments){
+            <span class="small mt-1 text-muted" style="white-space: pre-line;">
+              <del>{{ log.orgData.comments }}</del> <br>
+              {{ log.newData.comments }}<br>
+            </span>
+            }
 
-                    {{ log.newData.principal | currency:'INR':'symbol':'1.0-0':'en-IN' }}
-                  </div>
-                </div>
-              </ng-container>
+            @if ((log.orgData.closedOn || log.newData.closedOn) && log.orgData.closedOn !== log.newData.closedOn) {
+            <div class="mt-1 text-success">
+              <del>{{ log.orgData.closedOn }}</del>
+              {{ log.newData.closedOn }}
 
-              <!-- ===================== -->
-              <!-- BULK APPROVE / DELETE -->
-              <!-- ===================== -->
-              <ng-container
-                *ngSwitchCase="log.operation === 'bulk approve' || log.operation === 'bulk new' || log.operation === 'bulk delete' ? log.operation : 'other'">
-                <!-- LEFT -->
-                <div class="flex-grow-1">
-                  <!-- NAME -->
-                  <div class="fw-semibold" style="font-size: 120%;">{{ log.bulkData.name }}</div>
+              @if (log.orgData.closedOn == log.newData.closedOn) {
+              <span class="mx-1">•</span>
+              }
+              <br>
 
-                  @for (record of log.bulkData.data; track $index) {
-                  <div class="text-muted">
-                    {{ record.principal }}
-                    <span class="mx-1">•</span>
-                    {{ record.interest }}
-                    <span class="mx-1">•</span>
-                    {{ record.startDate }}
-                  </div>
-                  }
+              <del>{{ log.orgData.closedAmount }}</del>
+              <span class="strong">
+                {{ log.newData.closedAmount | currency:'INR':'symbol':'1.0-0':'en-IN' }}
+              </span>
+            </div>
+            }
+          </div>
 
-                  @for (record of log.bulkData.data; track $index) {
+          <!-- Right section -->
+          <div class="text-end ms-3">
+            <ion-badge [color]="getStatusColor(log.operation)" class="mb-2">{{log.operation}}</ion-badge>
 
-                  <span class="text-success mt-1 fw-bold">
-                    @let amount = log.operation == 'bulk approve' ? record.closedAmount : record.principal;
-                    {{ $first ? '' : amount >= 0 ? ' + ' : ' - ' }}
-                    {{ amount > 0 ? (amount).toFixed() : (-1 * amount).toFixed() }}
-                  </span>
-                  }
+            <div class="fw-bold fs-5">
 
-                  @if(log.operation == 'bulk delete'){
-                  <br>
-                  <small class="text-muted" style="white-space: pre-line">
-                    @for (record of log.bulkData.data; track $index) {
-                    {{ record.comments ? record.comments + `\n` : '' }}
-                    }
-                  </small>
-                  }
+              @if (log.orgData.principal !== log.newData.principal) {
+              <del>
+                {{ log.orgData.principal }}<br>
+              </del>
+              }
 
-                </div>
-                <!-- RIGHT -->
-                <div class="text-end ms-3">
-                  <ion-badge [color]="getStatusColor(log.operation)" class="mb-2 text-capitalize">
-                    {{ log.operation }}
-                  </ion-badge>
-
-                  <div class="fw-bold fs-5">
-                    {{ getBulkAmount(log.bulkData.data, log.operation) | currency:'INR':'symbol':'1.0-0':'en-IN' }}
-                  </div>
-
-                </div>
-
-              </ng-container>
+              {{ log.newData.principal | currency:'INR':'symbol':'1.0-0':'en-IN' }}
 
             </div>
-          </ion-card-content>
-        </ion-card>
-      </div>
-    </ng-container>
+          </div>
+        </div>
+
+        }
+
+        <!-- Bulk approve / delete section -->
+        @if(['bulk approve','bulk new','bulk delete'].includes(log.operation)) {
+        <div class="d-flex">
+          <!-- Left section -->
+          <div class="flex-grow-1">
+            <span class="fw-semibold fs-6">{{log.bulkData.name}}</span> <br>
+
+            @for (record of log.bulkData.data; track $index) {
+            <div class="text-muted">
+              {{ record.principal }}
+              <span class="mx-1">•</span>
+              {{ record.interest }}
+              <span class="mx-1">•</span>
+              {{ record.startDate }}
+            </div>
+            }
+
+            @for (record of log.bulkData.data; track $index) {
+            <span class="text-success mt-1 fw-bold">
+              @let amount = log.operation == 'bulk approve' ? record.closedAmount : record.principal;
+              {{ $first ? '' : amount >= 0 ? ' + ' : ' - ' }}
+              {{ amount > 0 ? (amount).toFixed() : (-1 * amount).toFixed() }}
+            </span>
+            }
+
+            @if(log.operation == 'bulk delete'){
+            <br>
+            <small class="text-muted" style="white-space: pre-line">
+              @for (record of log.bulkData.data; track $index) {
+              {{ record.comments ? record.comments + `\n` : '' }}
+              }
+            </small>
+            }
+          </div>
+
+          <!-- Right section -->
+          <div class="text-end ms-3">
+            <ion-badge [color]="getStatusColor(log.operation)" class="mb-2">{{log.operation}}</ion-badge>
+
+            <div class="fw-bold fs-5">
+              {{ getBulkAmount(log.bulkData.data, log.operation) | currency:'INR':'symbol':'1.0-0':'en-IN' }}
+            </div>
+
+          </div>
+        </div>
+        }
+
+      </ion-card-content>
+
+    </ion-card>
+    }
+    }
+    }
+
   </div>
 </ion-content>

@@ -10,8 +10,16 @@ export class LeaseService {
 
   getLeaseClients() {
     let lcString = localStorage.getItem(LEASE_KEY);
-    let parsedLc = lcString ? JSON.parse(lcString) : [];
-    return parsedLc ?? [];
+    if (!lcString) {
+      return [];
+    }
+
+    try {
+      return JSON.parse(lcString);
+    } catch (e) {
+      console.error(`Error parsing : ${lcString}`, e);
+      return [];
+    }
   }
 
   saveLeaseClients(client) {
