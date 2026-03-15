@@ -7,7 +7,7 @@
     {{ client?.data.name }}
 
     <div class="ms-auto text-end mt-1">
-      @for (clientDetail of client.data.data; track clientDetail) {
+      @for (clientDetail of client.data.data; track clientDetail.id) {
       <ion-badge [color]="getColor(clientDetail)" class="ms-1">
         {{ (clientDetail.principal / 1000).toFixed() + 'K' }}
       </ion-badge>

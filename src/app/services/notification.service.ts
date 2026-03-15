@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';
-import { from, mergeMap, concatMap } from 'rxjs';
+import { from, mergeMap } from 'rxjs';
 
 export interface PaymentNotification {
   id: string;

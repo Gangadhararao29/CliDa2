@@ -10,11 +10,15 @@ import { NotificationService } from './services/notification.service';
 export class AppComponent implements OnInit {
   constructor(
     private renderer: Renderer2,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
   ) {}
 
   ngOnInit() {
+    this.setAppTheme();
     this.notificationService.initializeListeners();
+  }
+
+  private setAppTheme() {
     const preferColorMode = window.matchMedia('(prefers-color-scheme:dark)');
     const theme = localStorage.getItem('theme');
     if (theme != null && theme !== 'auto') {

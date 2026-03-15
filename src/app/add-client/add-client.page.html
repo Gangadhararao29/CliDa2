@@ -9,13 +9,15 @@
   <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)" class="container my-2">
 
     <!-- Quick Presets -->
-    <div *ngIf="presets.length > 0">
-      <ng-container *ngFor="let preset of presets; let i = index">
-        <ion-badge color="light" class="mx-1 mb-1 p-2" (click)="applyPreset(preset)" style="cursor: pointer;">
-          {{ formatPresetLabel(preset) }}
-        </ion-badge>
-      </ng-container>
+    @if (presets.length > 0) {
+    <div class="sticky-top">
+      @for (present of presets; track $index) {
+      <ion-badge color="light" class="mx-1 mb-1 p-2" (click)="applyPreset(present)" style="cursor: pointer;">
+        {{ formatPresetLabel(present) }}
+      </ion-badge>
+      }
     </div>
+    }
 
     <div class="mb-2 bgLight pt-2 rounded">
       <ion-radio-group name="recordType" ngModel #recordType="ngModel">
