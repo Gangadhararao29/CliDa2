@@ -116,7 +116,7 @@ export class AddClientPage {
       return;
     }
     this.isAddBtnDisable = true;
-    this.commonService.presentLoading();
+    this.commonService.presentLoading("Adding record...");
     const payload = this.generatePayLoad(formRef.value);
     await this.dataBaseService.createDataRecords(payload);
 
@@ -130,6 +130,7 @@ export class AddClientPage {
       : '<br>Redirecting to the Clients List tab.';
 
     setTimeout(() => {
+      this.commonService.dismissLoading();
       this.isAddBtnDisable = false;
       this.commonService.presentToast(message);
       if (!formRef.value.multiRecordsSelected) {

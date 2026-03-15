@@ -96,7 +96,7 @@ export class EditDetailsPage {
           text: 'Save',
           cssClass: 'bg-success',
           handler: () => {
-            this.commonService.presentLoading();
+            this.commonService.presentLoading('Saving...', 1000);
             this.saveRecord(formRef.value);
           },
         },
@@ -119,8 +119,8 @@ export class EditDetailsPage {
           : -Math.abs(record.principal),
       interest: record.interest,
       startDate: record.startDate,
-      closedAmount: record.closedAmount,
-      closedOn: record.closedOn,
+      closedAmount: record.closedAmount || null,
+      closedOn: record.closedOn || null,
       comments: record.comments,
       id: this.clientRecordId,
       key: this.clientKey,

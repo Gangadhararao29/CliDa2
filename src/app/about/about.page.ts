@@ -30,7 +30,7 @@ export class AboutPage {
   isUpdateLoading = false;
   isModalOpen = false;
   latestVersion = '0.0.0';
-  currentVersion = '3.25.12';
+  currentVersion = '3.26.03';
   gitHubResponse = [];
   loadingData = true;
   user: any = null;
@@ -180,7 +180,6 @@ export class AboutPage {
           text: 'Replace existing',
           cssClass: 'bg-primary',
           handler: () => {
-            this.commonService.presentLoading();
             this.importHandler(clientsData, true);
           },
         },
@@ -188,7 +187,6 @@ export class AboutPage {
           text: 'Merge with existing',
           cssClass: 'bg-primary',
           handler: () => {
-            this.commonService.presentLoading();
             this.importHandler(clientsData, false);
           },
         },
@@ -204,22 +202,24 @@ export class AboutPage {
     await alert.present();
   }
 
-  importHandler(clientsData, replaceStatus) {
-    if (clientsData.hasOwnProperty('userData')) {
+  async importHandler(clientsData, replaceStatus) {
+    await this.commonService.presentLoading('Importing data...');
+
+    if (clientsData?.userData) {
       this.commonService.setUserPreferences(clientsData);
       clientsData = clientsData.userData;
     }
-    this.dataBaseService
-      .saveBulkClients(clientsData, replaceStatus)
-      .then(() => {
-        setTimeout(() => {
-          this.inputClientData = '';
-          this.commonService.presentToast(
-            'Data imported successfully. <br> Redirecting to the Clients List tab.',
-          );
-          this.router.navigate(['clients-list']);
-        }, 1000);
-      });
+
+    await this.dataBaseService.saveBulkClients(clientsData, replaceStatus);
+
+    await this.commonService.dismissLoading();
+    setTimeout(() => {
+      this.inputClientData = '';
+      this.commonService.presentToast(
+        'Data imported successfully. <br> Redirecting to the Clients List tab.',
+      );
+      this.router.navigate(['clients-list']);
+    }, 1000);
   }
 
   async presentDeleteAlert() {
@@ -291,7 +291,7 @@ export class AboutPage {
 
   changeSort(event) {
     if (event.target.value) {
-      this.commonService.presentLoading();
+      this.commonService.presentLoading("Sorting data...");
       event.target.disabled = true;
       this.dataBaseService.getAllClientsData().then((clients) => {
         clients.map((ele) => {
@@ -322,6 +322,7 @@ export class AboutPage {
 
         this.dataBaseService.saveBulkClients(clients, true).then((res) => {
           setTimeout(() => {
+            this.commonService.dismissLoading();
             this.commonService.presentToast(
               'The data has been sorted successfully.',
             );
@@ -335,7 +336,7 @@ export class AboutPage {
 
   cleanData() {
     this.dataBaseService.cleanClientsData().then((res) => {
-      this.commonService.presentLoading().then(() => {
+      this.commonService.presentLoading('Cleaning data...', 1000).then(() => {
         this.commonService.presentToast(
           'All empty data and errors have been fixed.',
         );
@@ -345,7 +346,7 @@ export class AboutPage {
 
   cleanApproveData() {
     this.dataBaseService.cleanApprovedData().then((res) => {
-      this.commonService.presentLoading().then(() => {
+      this.commonService.presentLoading('Removing closed records...', 1000).then(() => {
         this.commonService.presentToast('All approved data has been removed.');
       });
     });
@@ -406,13 +407,15 @@ export class AboutPage {
 
   async uploadToCloud() {
     try {
+      this.commonService.presentLoading('Uploading ...');
       const clientsData = await this.dataBaseService.getAllClientsData();
       await this.firebaseService.uploadToCloud(this.user.uid, clientsData);
-      this.commonService.presentLoading();
+      await this.commonService.dismissLoading();
       setTimeout(() => {
         this.commonService.presentToast('The upload was successful.');
       }, 1500);
     } catch (error) {
+      this.commonService.dismissLoading();
       this.commonService.presentToast(
         'Error uploading data to cloud: <br>' + error,
         'failedToastClass',

@@ -94,7 +94,7 @@ export class ClientDataViewComponent implements OnInit {
           role: 'submit',
           cssClass: 'bg-danger',
           handler: () => {
-            this.commonService.presentLoading();
+            this.commonService.presentLoading('Deleting...', 1000);
             this.dataBaseService
               .deleteClientData(clientData, clientDataIndex, key)
               .then(() => {

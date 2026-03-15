@@ -73,7 +73,7 @@ export class ApproveModalComponent implements OnInit {
         }${paymentDetails}\n${balanceAmount}${newRecordAdded}`;
       }
 
-      this.commonService.presentLoading();
+      this.commonService.presentLoading('Closing record...', 1000);
 
       this.dataBaseService
         .approveClientData(this.client, oldData, index)

@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { LoadingController, ToastController } from '@ionic/angular';
+import {
+  LoadingController,
+  LoadingOptions,
+  ToastController,
+} from '@ionic/angular';
 import { Subject } from 'rxjs';
 
 @Injectable({
@@ -10,6 +14,7 @@ export class CommonService {
     .toISOString()
     .slice(0, 10);
   pageRefreshEmitter = new Subject<any>();
+  loadingInstance: HTMLIonLoadingElement | null = null;
 
   constructor(
     private toastController: ToastController,
@@ -32,14 +37,23 @@ export class CommonService {
     toast.present();
   }
 
-  async presentLoading() {
-    const loading = await this.loadingController.create({
+  async presentLoading(message = 'Loading...', duration = 3000) {
+    let loadingConfig: LoadingOptions = {
       animated: true,
-      message: 'Loading...',
-      duration: 1000,
       spinner: 'lines',
-    });
-    await loading.present();
+      message,
+      duration,
+    };
+
+    this.loadingInstance = await this.loadingController.create(loadingConfig);
+    this.loadingInstance.present();
+  }
+
+  async dismissLoading() {
+    if (this.loadingInstance) {
+      await this.loadingInstance.dismiss();
+      this.loadingInstance = null;
+    }
   }
 
   getCommentHeight(event) {

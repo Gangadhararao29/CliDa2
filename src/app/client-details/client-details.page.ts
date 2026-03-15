@@ -217,7 +217,7 @@ export class ClientDetailsPage {
   // }
 
   bulkApproveHandler() {
-    this.commonService.presentLoading();
+    this.commonService.presentLoading("Approving...");
 
     this.selectedChips.forEach((chip) => {
       const record = this.client.data.find((r) => r.id === chip.id);
@@ -235,6 +235,7 @@ export class ClientDetailsPage {
     this.dataBaseService
       .bulkUpdateClientByKey(this.client.id, this.client, 'approve')
       .then(() => {
+        this.commonService.dismissLoading()
         this.selectedChips = [];
         this.updateDependencies(this.client);
         this.commonService.presentToast('Selected transactions approved');
@@ -242,7 +243,7 @@ export class ClientDetailsPage {
   }
 
   bulkDeleteHandler() {
-    this.commonService.presentLoading();
+    this.commonService.presentLoading('Deleting...');
 
     const selectedIds = this.selectedChips.map((c) => c.id);
     this.client.data.forEach((record) => {
@@ -254,6 +255,7 @@ export class ClientDetailsPage {
     this.dataBaseService
       .bulkUpdateClientByKey(this.client.id, this.client, 'delete')
       .then(() => {
+        this.commonService.dismissLoading();
         this.client.data = this.client.data.filter((record) => !record.deleted);
         this.selectedChips = [];
         this.updateDependencies(this.client);
