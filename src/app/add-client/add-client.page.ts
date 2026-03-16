@@ -29,7 +29,7 @@ export class AddClientPage {
     private activatedRoute: ActivatedRoute,
     private dataBaseService: DataBaseService,
     private commonService: CommonService,
-    private presetService: PresetService
+    private presetService: PresetService,
   ) {}
 
   ionViewWillEnter() {
@@ -68,7 +68,7 @@ export class AddClientPage {
 
     if (name) {
       const existingClient = this.clientsData.find(
-        (x) => x.name.toLowerCase() == name.toLowerCase()
+        (x) => x.name.toLowerCase() == name.toLowerCase(),
       );
       if (existingClient) {
         return 'Client already exists. This record will be added.';
@@ -111,26 +111,26 @@ export class AddClientPage {
       this.commonService.presentToast(
         'Please fill all the fields',
         'failedToastClass',
-        'alert-circle'
+        'alert-circle',
       );
       return;
     }
     this.isAddBtnDisable = true;
-    this.commonService.presentLoading("Adding record...");
+    await this.commonService.presentLoading('Adding record...');
     const payload = this.generatePayLoad(formRef.value);
     await this.dataBaseService.createDataRecords(payload);
 
-    this.routeToClientList(formRef);
+    await this.routeToClientList(formRef);
   }
 
-  routeToClientList(formRef) {
+  async routeToClientList(formRef) {
     let message = 'These records have been added successfully.';
     message += formRef.value.multiRecordsSelected
       ? ''
       : '<br>Redirecting to the Clients List tab.';
 
+    await this.commonService.dismissLoading();
     setTimeout(() => {
-      this.commonService.dismissLoading();
       this.isAddBtnDisable = false;
       this.commonService.presentToast(message);
       if (!formRef.value.multiRecordsSelected) {
@@ -170,7 +170,7 @@ export class AddClientPage {
     this.commonService.presentToast(
       'Preset applied to last transaction',
       'successToastClass',
-      'checkmark-circle'
+      'checkmark-circle',
     );
   }
 
@@ -186,13 +186,13 @@ export class AddClientPage {
         this.commonService.presentToast(
           'Preset saved',
           'successToastClass',
-          'bookmark'
+          'bookmark',
         );
       } else {
         this.commonService.presentToast(
           `Enter principal and interest in Transaction ${transLen}`,
           'failedToastClass',
-          'alert-circle'
+          'alert-circle',
         );
       }
     }

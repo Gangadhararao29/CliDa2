@@ -77,3 +77,27 @@ ion-modal {
     font-size: 1.15rem;
   }
 }
+
+ion-note {
+  overflow: hidden;
+  white-space: nowrap;
+  display: block;
+
+  .scrolling-text {
+    display: inline-block;
+    pointer-events: auto;
+
+    @media (max-width: 390px) {
+      animation: marquee 12s linear infinite;
+
+      &:hover {
+        animation-play-state: paused; // pause on hover
+      }
+    }
+  }
+}
+
+@keyframes marquee {
+  0%   { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}

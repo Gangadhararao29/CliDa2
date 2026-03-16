@@ -6,13 +6,18 @@ import { HttpClient } from '@angular/common/http';
 import { App } from '@capacitor/app';
 import { read, utils, writeFileXLSX } from 'xlsx';
 import { Capacitor } from '@capacitor/core';
-import { FirebaseService } from '../services/firebase.service';
+import {
+  FirebaseService,
+  AutoBackupSettings,
+} from '../services/firebase.service';
 import { CommonService } from '../services/common.service';
 import { DataBaseService } from '../services/data-base.service';
 import {
   NotificationService,
   NotificationSettings,
 } from '../services/notification.service';
+import { localStorConsts, LocalStorageUtils } from '../shared/local-storage';
+import { LeaseService } from '../services/lease.service';
 
 @Component({
   selector: 'app-about',
@@ -25,7 +30,7 @@ export class AboutPage {
   @ViewChild('modal2') modal2: any;
   @ViewChild('select2') select2;
 
-  themeName = localStorage.getItem('theme');
+  themeName = LocalStorageUtils.getItem(localStorConsts.theme);
   inputClientData: any;
   isUpdateLoading = false;
   isModalOpen = false;
@@ -38,6 +43,9 @@ export class AboutPage {
   theme: string;
   isWebVersion: boolean = false;
   isUpdateAvailable = false;
+  autoBackupEnabled: boolean = false;
+  backupInterval: string = '1';
+  cloudSyncType: string = 'soft';
   notificationSettings: NotificationSettings = {
     enabled: false,
     notifyBeforeMonths: 6,
@@ -56,6 +64,7 @@ export class AboutPage {
     private commonService: CommonService,
     private dataBaseService: DataBaseService,
     private notificationService: NotificationService,
+    private leaseService: LeaseService,
   ) {}
 
   ionViewWillEnter() {
@@ -71,6 +80,11 @@ export class AboutPage {
     }
     this.notificationSettings = this.notificationService.getSettings();
     this.notifications = this.notificationService.getAllNotifications() || [];
+
+    // Load auto-backup settings
+    const backupSettings = this.firebaseService.getAutoBackupSettings();
+    this.autoBackupEnabled = backupSettings.enabled;
+    this.backupInterval = `${backupSettings.interval}`;
   }
 
   ionViewDidEnter() {
@@ -100,15 +114,13 @@ export class AboutPage {
   }
 
   exportData() {
-    this.dataBaseService.getAllClientsData().then((data) => {
+    this.firebaseService.generateBackupResponse().then((backupData) => {
       if (this.fileType === 'json') {
-        const userObj = this.commonService.getUserPreferences();
-        userObj.userData = data;
-        const clientDataString = JSON.stringify(userObj);
+        const clientDataString = JSON.stringify(backupData);
         this.writeSecretFile(clientDataString);
         this.nativeSaveByUrl(clientDataString);
       } else {
-        this.excelExport(data);
+        this.excelExport(backupData.clients);
       }
     });
   }
@@ -177,17 +189,17 @@ export class AboutPage {
       animated: true,
       buttons: [
         {
-          text: 'Replace existing',
-          cssClass: 'bg-primary',
-          handler: () => {
-            this.importHandler(clientsData, true);
-          },
-        },
-        {
-          text: 'Merge with existing',
+          text: 'Sync with local',
           cssClass: 'bg-primary',
           handler: () => {
             this.importHandler(clientsData, false);
+          },
+        },
+        {
+          text: 'Replace All',
+          cssClass: 'bg-primary',
+          handler: () => {
+            this.importHandler(clientsData, true);
           },
         },
         {
@@ -205,12 +217,20 @@ export class AboutPage {
   async importHandler(clientsData, replaceStatus) {
     await this.commonService.presentLoading('Importing data...');
 
-    if (clientsData?.userData) {
+    if (clientsData?.userPreferences) {
       this.commonService.setUserPreferences(clientsData);
-      clientsData = clientsData.userData;
     }
 
-    await this.dataBaseService.saveBulkClients(clientsData, replaceStatus);
+    if (clientsData?.leases?.length) {
+      await this.leaseService.restoreFromCloud(clientsData.leases);
+    }
+
+    if (clientsData?.clients?.length) {
+      await this.dataBaseService.saveBulkClients(
+        clientsData.clients,
+        replaceStatus,
+      );
+    }
 
     await this.commonService.dismissLoading();
     setTimeout(() => {
@@ -249,6 +269,7 @@ export class AboutPage {
 
   resetData() {
     this.dataBaseService.deleteDataBase();
+    this.leaseService.deleteDataBase();
     localStorage.clear();
     this.changeTheme({ detail: { value: 'auto' } });
     this.select2.value = 'auto';
@@ -262,7 +283,7 @@ export class AboutPage {
   }
 
   changeTheme(event) {
-    localStorage.setItem('theme', event.detail.value);
+    LocalStorageUtils.setStringItem(localStorConsts.theme, event.detail.value);
     this.theme = event.detail.value;
     switch (event.detail.value) {
       case 'light': {
@@ -289,47 +310,45 @@ export class AboutPage {
     }
   }
 
-  changeSort(event) {
+  async changeSort(event) {
     if (event.target.value) {
-      this.commonService.presentLoading("Sorting data...");
+      await this.commonService.presentLoading('Sorting data...');
       event.target.disabled = true;
-      this.dataBaseService.getAllClientsData().then((clients) => {
-        clients.map((ele) => {
-          ele.data.sort((a, b) => {
-            let keyA = new Date(a.startDate);
-            let keyB = new Date(b.startDate);
-            if (!(a.closedOn && b.closedOn)) {
-              if (a.closedOn) keyA = new Date();
-              if (b.closedOn) keyB = new Date();
-            }
-            return keyA < keyB ? -1 : +1;
-          });
+      const clients = await this.dataBaseService.getAllClientsData();
+      clients.map((ele) => {
+        ele.data.sort((a, b) => {
+          let keyA = new Date(a.startDate);
+          let keyB = new Date(b.startDate);
+          if (!(a.closedOn && b.closedOn)) {
+            if (a.closedOn) keyA = new Date();
+            if (b.closedOn) keyB = new Date();
+          }
+          return keyA < keyB ? -1 : +1;
         });
+      });
 
-        if (event.target.value === 'name') {
-          clients.sort((a, b) => (a.name < b.name ? -1 : +1));
-        } else if (event.target.value === 'year') {
-          clients.sort((a, b) => {
-            let keyA = new Date(a.data[0].startDate);
-            let keyB = new Date(b.data[0].startDate);
-            if (!(a.data[0].closedOn && b.data[0].closedOn)) {
-              if (a.data[0].closedOn) keyA = new Date();
-              if (b.data[0].closedOn) keyB = new Date();
-            }
-            return keyA < keyB ? -1 : +1;
-          });
-        }
-
-        this.dataBaseService.saveBulkClients(clients, true).then((res) => {
-          setTimeout(() => {
-            this.commonService.dismissLoading();
-            this.commonService.presentToast(
-              'The data has been sorted successfully.',
-            );
-            event.target.disabled = false;
-            event.target.value = null;
-          }, 1000);
+      if (event.target.value === 'name') {
+        clients.sort((a, b) => (a.name < b.name ? -1 : +1));
+      } else if (event.target.value === 'year') {
+        clients.sort((a, b) => {
+          let keyA = new Date(a.data[0].startDate);
+          let keyB = new Date(b.data[0].startDate);
+          if (!(a.data[0].closedOn && b.data[0].closedOn)) {
+            if (a.data[0].closedOn) keyA = new Date();
+            if (b.data[0].closedOn) keyB = new Date();
+          }
+          return keyA < keyB ? -1 : +1;
         });
+      }
+
+      await this.dataBaseService.saveBulkClients(clients, true);
+      await this.commonService.dismissLoading();
+      setTimeout(() => {
+        this.commonService.presentToast(
+          'The data has been sorted successfully.',
+        );
+        event.target.disabled = false;
+        event.target.value = null;
       });
     }
   }
@@ -346,9 +365,13 @@ export class AboutPage {
 
   cleanApproveData() {
     this.dataBaseService.cleanApprovedData().then((res) => {
-      this.commonService.presentLoading('Removing closed records...', 1000).then(() => {
-        this.commonService.presentToast('All approved data has been removed.');
-      });
+      this.commonService
+        .presentLoading('Removing closed records...', 1000)
+        .then(() => {
+          this.commonService.presentToast(
+            'All approved data has been removed.',
+          );
+        });
     });
   }
 
@@ -387,14 +410,16 @@ export class AboutPage {
     }
   }
 
-  async loadCloudData() {
+  async loadCloudData(isSoftRestore = false) {
     try {
       const res = await this.firebaseService.loadCloudData(this.user?.uid);
-      if (!res.length) {
+      const hasClients = res.clients.length > 0 || res.leases.length > 0;
+      if (!hasClients) {
         this.commonService.presentToast('No data was found.');
       } else {
-        this.importDataAlert(res);
+        this.importHandler(res, !isSoftRestore);
       }
+      console.log(res);
     } catch (error) {
       console.log('Error loading cloud data:', error);
       this.commonService.presentToast(
@@ -405,16 +430,19 @@ export class AboutPage {
     }
   }
 
-  async uploadToCloud() {
+  async uploadToCloud(isSoftBackup = false) {
     try {
-      this.commonService.presentLoading('Uploading ...');
-      const clientsData = await this.dataBaseService.getAllClientsData();
-      await this.firebaseService.uploadToCloud(this.user.uid, clientsData);
+      await this.commonService.presentLoading('Uploading ...');
+      let payload = await this.firebaseService.getModifiedData(
+        isSoftBackup,
+        this.user?.uid,
+      );
+
       await this.commonService.dismissLoading();
-      setTimeout(() => {
-        this.commonService.presentToast('The upload was successful.');
-      }, 1500);
+
+      await this.uploadDataAlert(payload);
     } catch (error) {
+      console.error('Error uploading data to cloud:', error);
       this.commonService.dismissLoading();
       this.commonService.presentToast(
         'Error uploading data to cloud: <br>' + error,
@@ -422,6 +450,43 @@ export class AboutPage {
         'alert-outline',
       );
     }
+  }
+
+  async uploadDataAlert(payload: any) {
+    let message = `${payload.updatedClients.length} clients updated<br>${payload.clients.length - payload.updatedClients.length} clients unmodified<br>${payload.removedClients.length} clients removed`;
+
+    const alert = await this.alertController.create({
+      header: 'Please confirm to backup your existing data?',
+      cssClass: 'alertStyle',
+      backdropDismiss: false,
+      animated: true,
+      message,
+      buttons: [
+        {
+          text: 'Confirm',
+          cssClass: 'bg-primary',
+          handler: async () => await this.uploadDataHandler(payload),
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {},
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  async uploadDataHandler(payload: any) {
+    await this.commonService.presentLoading('Uploading data to cloud...');
+    await this.firebaseService.uploadToCloud(this.user.uid, payload);
+    await this.commonService.dismissLoading();
+    await this.commonService.presentToast('The upload was successful.');
+    LocalStorageUtils.setStringItem(
+      localStorConsts.lastCloudSync,
+      new Date().toISOString(),
+    );
   }
 
   excelExport(res) {
@@ -477,11 +542,11 @@ export class AboutPage {
   }
 
   get lastCloudSync(): string | null {
-    return localStorage.getItem('lastCloudSync');
+    return LocalStorageUtils.getStringItem(localStorConsts.lastCloudSync);
   }
 
   get lastDataModified(): string | null {
-    return localStorage.getItem('lastDataModified');
+    return LocalStorageUtils.getStringItem(localStorConsts.lastDataModified);
   }
 
   get isBackupNeeded(): boolean {
@@ -490,6 +555,31 @@ export class AboutPage {
     if (!sync) return true;
     if (!modified) return false;
     return new Date(modified) > new Date(sync);
+  }
+
+  get lastBackupDate(): string | null {
+    return this.firebaseService.getLastBackupDate();
+  }
+
+  get nextBackupDate(): Date | null {
+    return this.firebaseService.getNextBackupDate();
+  }
+
+  onAutoBackupToggle() {
+    this.saveAutoBackupSettings();
+  }
+
+  onBackupIntervalChange() {
+    this.saveAutoBackupSettings();
+  }
+
+  private saveAutoBackupSettings() {
+    const settings: AutoBackupSettings = {
+      enabled: this.autoBackupEnabled,
+      interval: +this.backupInterval,
+    };
+    this.firebaseService.saveAutoBackupSettings(settings);
+    this.firebaseService.initializeAutoBackup();
   }
 
   // Notification Settings and Handling

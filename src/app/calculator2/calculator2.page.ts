@@ -41,16 +41,17 @@ export class Calculator2Page {
     this.theme = this.commonService.getTheme();
     this.today = this.commonService.today;
     this.initializeYearOptions();
-    this.leaseClients = this.leaseService.getLeaseClients();
-
-    if (this.leaseClients?.length > 0) {
-      this.activeLease = this.activeLease ?? this.leaseClients[0];
-      this.isHistoryOpen = true;
-    } else {
-      this.activeLease = this.activeLease ?? this.createLeaseClient();
-      this.isHistoryOpen = false;
-      this.isNewTransaction = true;
-    }
+    this.leaseService.getLeaseClients().then((leases) => {
+      this.leaseClients = leases;
+      if (this.leaseClients?.length > 0) {
+        this.activeLease = this.activeLease ?? this.leaseClients[0];
+        this.isHistoryOpen = true;
+      } else {
+        this.activeLease = this.activeLease ?? this.createLeaseClient();
+        this.isHistoryOpen = false;
+        this.isNewTransaction = true;
+      }
+    });
   }
 
   initializeYearOptions() {
@@ -149,24 +150,7 @@ export class Calculator2Page {
         {
           text: 'Delete',
           cssClass: 'bg-danger',
-          handler: () => {
-            index =
-              index ??
-              this.leaseClients.findIndex((x) => x.id == this.activeLease.id);
-            this.leaseClients.splice(index, 1);
-            this.leaseService.deleteLeaseClient(this.activeLease.id);
-
-            this.activeLease = null;
-            this.showLeaseCalculatedData = false;
-            this.isNewTransaction = false;
-            this.isHistoryOpen = false;
-
-            this.commonService.presentToast(
-              'Lease deleted successfully',
-              'successToastClass',
-              'trash-outline',
-            );
-          },
+          handler: () => this.deleteActiveLeaseHandler(index),
         },
         {
           text: 'Cancel',
@@ -176,6 +160,27 @@ export class Calculator2Page {
     });
 
     await alert.present();
+  }
+
+  deleteActiveLeaseHandler(index?: number) {
+    index =
+      index ?? this.leaseClients.findIndex((x) => x.id == this.activeLease.id);
+
+    if (index >= 0) {
+      this.leaseClients.splice(index, 1);
+      this.leaseService.deleteLeaseClient(this.activeLease.id);
+    }
+
+    this.activeLease = null;
+    this.showLeaseCalculatedData = false;
+    this.isNewTransaction = false;
+    this.isHistoryOpen = false;
+
+    this.commonService.presentToast(
+      'Lease deleted successfully',
+      'successToastClass',
+      'trash-outline',
+    );
   }
 
   calculateLease(formRef) {
@@ -367,7 +372,7 @@ export class Calculator2Page {
     });
   }
 
-  finalizePayment() {
+  async finalizePayment() {
     let calculation = null;
 
     if (
@@ -411,8 +416,8 @@ export class Calculator2Page {
     this.isHistoryOpen = true;
     this.isNewTransaction = false;
 
-    this.leaseService.saveLeaseClients(this.activeLease);
-    this.leaseClients = this.leaseService.getLeaseClients();
+    await this.leaseService.saveLeaseClients(this.activeLease);
+    this.leaseClients = await this.leaseService.getLeaseClients();
     this.commonService.presentToast(
       'Payment saved successfully',
       'successToastClass',
@@ -436,10 +441,10 @@ export class Calculator2Page {
         {
           text: 'Delete',
           cssClass: 'bg-danger',
-          handler: () => {
+          handler: async () => {
             this.activeLease.closedTrans.splice(index, 1);
-            this.leaseService.saveLeaseClients(this.activeLease);
-            this.leaseClients = this.leaseService.getLeaseClients();
+            await this.leaseService.saveLeaseClients(this.activeLease);
+            this.leaseClients = await this.leaseService.getLeaseClients();
             this.commonService.presentToast(
               'Transaction deleted successfully',
               'successToastClass',

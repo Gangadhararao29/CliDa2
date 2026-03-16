@@ -5,6 +5,7 @@ import { CommonService } from '../services/common.service';
 import { DataBaseService } from '../services/data-base.service';
 import { CalculationService } from '../services/calculation.service';
 import { NgForm } from '@angular/forms';
+import { LocalStorageUtils, localStorConsts } from '../shared/local-storage';
 
 @Component({
   selector: 'app-calculator',
@@ -38,7 +39,7 @@ export class CalculatorPage {
 
   ionViewWillEnter() {
     this.theme = this.commonService.getTheme();
-    this.calcsHistory = JSON.parse(localStorage.getItem('calcsHistory')) || [];
+    this.calcsHistory = LocalStorageUtils.getItem(localStorConsts.calcsHistory) || [];
 
     const encoded = this.activatedRoute.snapshot.params.encoded;
     let params;
@@ -230,8 +231,7 @@ export class CalculatorPage {
 
     this.calcsHistory[0].value = historyArr;
 
-    const text = JSON.stringify(this.calcsHistory);
-    localStorage.setItem('calcsHistory', text);
+    LocalStorageUtils.setItem(localStorConsts.calcsHistory, this.calcsHistory);
   }
 
   resetForm(formRef) {

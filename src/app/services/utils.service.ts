@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { LocalStorageUtils, localStorConsts } from '../shared/local-storage';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +11,7 @@ export class UtilsService {
 
   constructor() {}
 
-  generatePayLoad(formData, includeClosedDetails) {
+  private generatePayLoad(formData, includeClosedDetails) {
     return {
       name: this.formatToTitleCase(formData.userName),
       data: [
@@ -36,7 +37,7 @@ export class UtilsService {
     let name2 = name?.trim();
     return name2.replace(
       /(^\w|\s\w)(\S*)/g,
-      (_, m1, m2) => m1.toUpperCase() + m2.toLowerCase()
+      (_, m1, m2) => m1.toUpperCase() + m2.toLowerCase(),
     );
   }
 
@@ -52,9 +53,9 @@ export class UtilsService {
   /**
    * Operation Log functions
    */
-  addNewLogData(operation, oldData, newData, index = null) {
+  addOperationLog(operation, oldData, newData, index = null) {
     this.markAsModified();
-    const logData = JSON.parse(localStorage.getItem('logs') || '[]');
+    const logData = LocalStorageUtils.getItem(localStorConsts.logs) || [];
 
     switch (operation) {
       case 'new':
@@ -102,16 +103,16 @@ export class UtilsService {
         break;
     }
 
-    localStorage.setItem('logs', JSON.stringify(logData));
+    LocalStorageUtils.setItem(localStorConsts.logs, logData);
   }
 
   private markAsModified() {
-    localStorage.setItem('lastDataModified', new Date().toISOString());
+    LocalStorageUtils.setStringItem(localStorConsts.lastDataModified, new Date().toISOString());
   }
 
   formatLogDataForUI() {
-    const rawLogData = localStorage.getItem('logs')
-      ? JSON.parse(localStorage.getItem('logs')).reverse()
+    const rawLogData = LocalStorageUtils.getItem(localStorConsts.logs)
+      ? LocalStorageUtils.getItem(localStorConsts.logs).reverse()
       : [];
 
     return rawLogData.map((log) => {
@@ -145,12 +146,9 @@ export class UtilsService {
             startDate: log.bulkData.data[0].startDate,
             principal: log.bulkData.data.reduce(
               (acc, curr) => acc + curr.principal,
-              0
+              0,
             ),
           };
-
-        default:
-          return log;
       }
     });
   }

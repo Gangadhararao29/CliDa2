@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { LocalStorageUtils, localStorConsts } from '../shared/local-storage';
 
 export interface TransactionPreset {
   principal: number;
@@ -10,7 +11,6 @@ export interface TransactionPreset {
   providedIn: 'root',
 })
 export class PresetService {
-  private readonly PRESETS_KEY = 'transaction_presets';
   private readonly MAX_PRESETS = 10;
 
   // Default presets
@@ -22,7 +22,7 @@ export class PresetService {
   ];
 
   getPresets(): TransactionPreset[] {
-    const stored = localStorage.getItem(this.PRESETS_KEY) || '[]';
+    const stored = LocalStorageUtils.getStringItem(localStorConsts.transactionPresets) || '[]';
     const presets = JSON.parse(stored);
     return presets.length ? presets : [...this.defaultPresets];
   }
@@ -43,14 +43,14 @@ export class PresetService {
         presets.pop();
       }
 
-      localStorage.setItem(this.PRESETS_KEY, JSON.stringify(presets));
+      LocalStorageUtils.setItem(localStorConsts.transactionPresets, presets);
     }
   }
 
   removePreset(index: number) {
     const presets = this.getPresets();
     presets.splice(index, 1);
-    localStorage.setItem(this.PRESETS_KEY, JSON.stringify(presets));
+    LocalStorageUtils.setItem(localStorConsts.transactionPresets, presets);
   }
 
   formatPresetLabel(preset: TransactionPreset): string {

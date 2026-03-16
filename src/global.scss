@@ -25,6 +25,10 @@
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
+:root {
+  --ion-font-family: "Outfit", system-ui, sans-serif;
+}
+
 * {
   font-family: "Outfit", system-ui, sans-serif; /* Modern, geometric font */
   font-optical-sizing: auto;

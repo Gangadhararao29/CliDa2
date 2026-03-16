@@ -2,6 +2,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { DataBaseService } from '../services/data-base.service';
 import { CalculationService } from '../services/calculation.service';
 import { UtilsService } from '../services/utils.service';
+import { localStorConsts, LocalStorageUtils } from '../shared/local-storage';
 
 @Component({
   selector: 'app-dashboard',
@@ -59,9 +60,7 @@ export class DashboardPage {
   ionViewWillEnter() {
     this.hideSkeletonText = false;
     this.logData = this.utilsService.formatLogDataForUI();
-    this.dashPref = localStorage.getItem('dashPref')
-      ? JSON.parse(localStorage.getItem('dashPref'))
-      : Object.assign({}, this.defaultPref);
+    this.dashPref = LocalStorageUtils.getItem(localStorConsts.dashPref) || Object.assign({}, this.defaultPref);
   }
 
   ionViewDidEnter() {
@@ -214,7 +213,7 @@ export class DashboardPage {
         block: 'center',
       });
     });
-    localStorage.setItem('dashPref', JSON.stringify(this.dashPref));
+    LocalStorageUtils.setItem(localStorConsts.dashPref, this.dashPref);
   }
 
   toggleChart() {

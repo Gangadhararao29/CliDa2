@@ -6,6 +6,7 @@ import { CalculationService } from '../services/calculation.service';
 import { CommonService } from '../services/common.service';
 import { DataBaseService } from '../services/data-base.service';
 import { Subscription } from 'rxjs';
+import { localStorConsts, LocalStorageUtils } from '../shared/local-storage';
 
 @Component({
   selector: 'app-client-details',
@@ -44,7 +45,7 @@ export class ClientDetailsPage {
     this.hideSkeletonText = false;
     this.theme = this.commonService.getTheme();
     this.clientId = this.activatedRoute.snapshot.params.key;
-    this.isOldStyle = localStorage.getItem('isOldStyle') === 'true';
+    this.isOldStyle = LocalStorageUtils.getStringItem(localStorConsts.isOldStyle) === 'true';
     this.dataBaseService.getClientByKey(this.clientId).then((res) => {
       this.client = res || { name: 'Data not found', data: [] };
       this.client.id = this.clientId;
@@ -169,7 +170,7 @@ export class ClientDetailsPage {
 
   toggleLayout() {
     this.isOldStyle = !this.isOldStyle;
-    localStorage.setItem('isOldStyle', this.isOldStyle.toString());
+    LocalStorageUtils.setStringItem(localStorConsts.isOldStyle, this.isOldStyle.toString());
   }
 
   // async bulkApprove() {

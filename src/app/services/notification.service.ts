@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';
 import { from, mergeMap } from 'rxjs';
+import { DataBaseService } from './data-base.service';
+import { LocalStorageUtils, localStorConsts } from '../shared/local-storage';
 
 export interface PaymentNotification {
   id: string;
@@ -26,13 +28,13 @@ export interface NotificationSettings {
   providedIn: 'root',
 })
 export class NotificationService {
-  private readonly NOTIFICATIONS_KEY = 'app_notifications';
-  private readonly SETTINGS_KEY = 'notification_settings';
-  private readonly LAST_CHECK_KEY = 'notification_last_check';
   private readonly MAX_CONCURRENT_TASKS = 5;
   private isNative = Capacitor.isNativePlatform();
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private dataBaseService: DataBaseService,
+  ) {}
 
   defaults: NotificationSettings = {
     enabled: false,
@@ -43,7 +45,7 @@ export class NotificationService {
 
   getSettings(): NotificationSettings {
     try {
-      const stored = localStorage.getItem(this.SETTINGS_KEY);
+      const stored = LocalStorageUtils.getStringItem(localStorConsts.notificationSettings);
       return stored
         ? { ...this.defaults, ...JSON.parse(stored) }
         : this.defaults;
@@ -53,7 +55,7 @@ export class NotificationService {
   }
 
   saveSettings(settings: NotificationSettings) {
-    localStorage.setItem(this.SETTINGS_KEY, JSON.stringify(settings));
+    LocalStorageUtils.setItem(localStorConsts.notificationSettings, settings);
   }
 
   async requestPermission(requested?: boolean): Promise<boolean> {
@@ -251,12 +253,11 @@ export class NotificationService {
   private saveNotification(notification: PaymentNotification) {
     const notifications = this.getAllNotifications();
     notifications.unshift(notification);
-    localStorage.setItem(this.NOTIFICATIONS_KEY, JSON.stringify(notifications));
+    LocalStorageUtils.setItem(localStorConsts.appNotifications, notifications);
   }
 
   getAllNotifications(): PaymentNotification[] {
-    const data = localStorage.getItem(this.NOTIFICATIONS_KEY);
-    return data ? JSON.parse(data) : [];
+    return LocalStorageUtils.getItem(localStorConsts.appNotifications) || [];
   }
 
   getUnreadCount(): number {
@@ -268,9 +269,9 @@ export class NotificationService {
     const notification = notifications.find((n) => n.id === id);
     if (notification) {
       notification.read = true;
-      localStorage.setItem(
-        this.NOTIFICATIONS_KEY,
-        JSON.stringify(notifications),
+      LocalStorageUtils.setItem(
+        localStorConsts.appNotifications,
+        notifications,
       );
     }
   }
@@ -278,20 +279,20 @@ export class NotificationService {
   markAllAsRead() {
     const notifications = this.getAllNotifications();
     notifications.forEach((n) => (n.read = true));
-    localStorage.setItem(this.NOTIFICATIONS_KEY, JSON.stringify(notifications));
+    LocalStorageUtils.setItem(localStorConsts.appNotifications, notifications);
   }
 
   dismissNotification(id: string) {
     const notifications = this.getAllNotifications().filter((n) => n.id !== id);
-    localStorage.setItem(this.NOTIFICATIONS_KEY, JSON.stringify(notifications));
+    LocalStorageUtils.setItem(localStorConsts.appNotifications, notifications);
   }
 
   clearAllNotifications() {
-    localStorage.removeItem(this.NOTIFICATIONS_KEY);
+    LocalStorageUtils.removeItem(localStorConsts.appNotifications);
   }
 
   getNextCheckDate(): Date {
-    const stored = localStorage.getItem(this.LAST_CHECK_KEY);
+    const stored = LocalStorageUtils.getStringItem(localStorConsts.notificationLastCheck);
 
     if (!stored) {
       return new Date();
@@ -304,19 +305,26 @@ export class NotificationService {
   }
 
   markCheckComplete(date?: Date) {
-    localStorage.setItem(this.LAST_CHECK_KEY, date.toString());
+    LocalStorageUtils.setStringItem(localStorConsts.notificationLastCheck, date.toString());
   }
 
-  checkForNotifications(data: any[]) {
+  initializeNotificationCheck(): void {
+    console.log('[NotificationService] Initializing notification check...');
     const settings = this.getSettings();
     if (!settings.enabled) return;
 
-    let nextCheckDate = this.getNextCheckDate();
-    let today = new Date();
+    const nextCheckDate = this.getNextCheckDate();
+    const today = new Date();
     nextCheckDate.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
 
-    this.processNotificationsBatch(nextCheckDate, today, data);
+    if (today < nextCheckDate) return;
+
+    this.dataBaseService
+      .getAllClientsDataWithKeys()
+      .then((data) =>
+        this.processNotificationsBatch(nextCheckDate, today, data),
+      );
   }
 
   private processNotificationsBatch(
@@ -344,7 +352,9 @@ export class NotificationService {
   }
 
   private handleCheckForNotifications(checkDate: Date, data: any[]) {
-    console.log(`Checking for notifications on ${checkDate.toDateString()}`);
+    console.log(
+      `[NotificationService] Checking for notifications on ${checkDate.toDateString()}`,
+    );
 
     return from(data).pipe(
       mergeMap(

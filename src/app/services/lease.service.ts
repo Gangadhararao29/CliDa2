@@ -1,44 +1,76 @@
 import { Injectable } from '@angular/core';
+import LocalBase from 'localbase';
 
-const LEASE_KEY = 'leaseClients';
+const LEASE_DB_NAME = 'leaseDB';
+const LEASE_COLLECTION = 'leaseClients';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LeaseService {
-  constructor() {}
+  private db = new LocalBase(LEASE_DB_NAME);
 
-  getLeaseClients() {
-    let lcString = localStorage.getItem(LEASE_KEY);
-    if (!lcString) {
-      return [];
-    }
+  constructor() {
+    this.db.config.debug = false;
+  }
 
+  async getLeaseClients() {
     try {
-      return JSON.parse(lcString);
+      return await this.db.collection(LEASE_COLLECTION).get();
     } catch (e) {
-      console.error(`Error parsing : ${lcString}`, e);
+      console.error('Error getting lease clients:', e);
       return [];
     }
   }
 
-  saveLeaseClients(client) {
-    let existingClients = this.getLeaseClients();
-    const index = existingClients.findIndex((x) => x.id === client.id);
-    if (index > -1) {
-      existingClients[index] = client;
-    } else {
-      existingClients.push(client);
+  async saveLeaseClients(client) {
+    try {
+      const existing = await this.db
+        .collection(LEASE_COLLECTION)
+        .doc({ id: client.id })
+        .get();
+      if (existing) {
+        await this.db
+          .collection(LEASE_COLLECTION)
+          .doc({ id: client.id })
+          .update(client);
+      } else {
+        await this.db.collection(LEASE_COLLECTION).add(client);
+      }
+    } catch (e) {
+      console.error('Error saving lease client:', e);
     }
-    localStorage.setItem(LEASE_KEY, JSON.stringify(existingClients));
   }
 
-  deleteLeaseClient(id: number) {
-    let existingClients = this.getLeaseClients();
-    const index = existingClients.findIndex((x) => x.id === id);
-    if (index > -1) {
-      existingClients.splice(index, 1);
+  async deleteLeaseClient(id: number) {
+    try {
+      await this.db.collection(LEASE_COLLECTION).doc({ id }).delete();
+    } catch (e) {
+      console.error('Error deleting lease client:', e);
     }
-    localStorage.setItem(LEASE_KEY, JSON.stringify(existingClients));
+  }
+
+  async deleteDataBase() {
+    return this.db.delete();
+  }
+
+  async upLoadToCloud() {
+    const clients = await this.getLeaseClients();
+
+    if (clients.length === 0) return;
+
+    const payload = {
+      name: 'LEASE_CLIENTS',
+      data: clients,
+    };
+
+    return payload;
+  }
+
+  async restoreFromCloud(cloudData: Array<any>) {
+    if (cloudData?.length == 0) return;
+    cloudData.forEach(async (record) => {
+      await this.saveLeaseClients(record);
+    });
   }
 }

@@ -2,6 +2,11 @@
   <ion-toolbar>
     <ion-title>Lease Calculator</ion-title>
     <ion-buttons slot="primary">
+      @if(activeLease?.id > 0){
+      <ion-button (click)="deleteActiveLease()">
+        <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+      }
       <ion-button (click)="navigateToCalculator()">
         <span class="position-relative d-inline-block">
           <ion-icon name="calculator-outline" class="fs-4"></ion-icon>
@@ -10,15 +15,9 @@
           </span>
         </span>
       </ion-button>
-      @if(activeLease?.id > 0){
-      <ion-button (click)="deleteActiveLease()">
-        <ion-icon name="trash-outline"></ion-icon>
-      </ion-button>
-      }@else {
       <ion-button (click)="initNewLease()">
         <ion-icon name="add-outline"></ion-icon>
       </ion-button>
-      }
     </ion-buttons>
   </ion-toolbar>
 </ion-header>

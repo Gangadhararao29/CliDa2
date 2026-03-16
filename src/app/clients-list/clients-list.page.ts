@@ -4,7 +4,7 @@ import { AlertController, IonRouterOutlet, Platform } from '@ionic/angular';
 import { App } from '@capacitor/app';
 import { DataBaseService } from '../services/data-base.service';
 import { CommonService } from '../services/common.service';
-import { NotificationService } from '../services/notification.service';
+import { localStorConsts, LocalStorageUtils } from '../shared/local-storage';
 
 @Component({
   selector: 'app-clients-list',
@@ -30,7 +30,6 @@ export class ClientsListPage {
     private alertController: AlertController,
     private dataBaseService: DataBaseService,
     private commonService: CommonService,
-    private notificationService: NotificationService
   ) {
     this.platform.backButton.subscribeWithPriority(-1, () => {
       if (!this.routerOutlet.canGoBack()) {
@@ -56,7 +55,7 @@ export class ClientsListPage {
     this.hideSkeletonText = false;
     this.theme = this.commonService.getTheme();
     this.getDisplayData();
-    if (localStorage.getItem('tabSection') === 'debits') {
+    if (LocalStorageUtils.getStringItem(localStorConsts.tabSection) === 'debits') {
       this.tabSection = 'debits';
       this.showDebitList = true;
     } else {
@@ -91,7 +90,6 @@ export class ClientsListPage {
         }
       });
       this.hideSkeletonText = true;
-      this.notificationService.checkForNotifications(data);
 
       if (event) {
         event.target.complete();
@@ -141,6 +139,6 @@ export class ClientsListPage {
 
   setListType(type) {
     this.showDebitList = type === 'debits' ? true : false;
-    localStorage.setItem('tabSection', type);
+    LocalStorageUtils.setStringItem(localStorConsts.tabSection, type);
   }
 }

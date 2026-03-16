@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { DataBaseService } from '../services/data-base.service';
 import { CommonService } from '../services/common.service';
 import { CalculationService } from '../services/calculation.service';
+import { LocalStorageUtils, localStorConsts } from '../shared/local-storage';
 
 @Component({
   selector: 'app-adv-search',
@@ -28,7 +29,7 @@ export class AdvSearchPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    const storedValue = JSON.parse(localStorage.getItem('sortAndFilterParams'));
+    const storedValue = LocalStorageUtils.getItem(localStorConsts.sortAndFilterParams);
     this.sortAndFilterParams = storedValue ? storedValue : [];
     this.resetDisplayData();
   }
@@ -88,9 +89,9 @@ export class AdvSearchPage implements OnInit {
     this.modal.dismiss();
     this.commonService.presentToast('A new model has been added successfully.');
     this.sortAndFilterParams.forEach((ele) => (ele.active = 'light'));
-    localStorage.setItem(
-      'sortAndFilterParams',
-      JSON.stringify(this.sortAndFilterParams)
+    LocalStorageUtils.setItem(
+      localStorConsts.sortAndFilterParams,
+      this.sortAndFilterParams
     );
     this.applyParams(0);
   }
@@ -183,9 +184,9 @@ export class AdvSearchPage implements OnInit {
     if (paramIndex > -1) {
       this.sortAndFilterParams.splice(paramIndex, 1);
       this.resetDisplayData();
-      localStorage.setItem(
-        'sortAndFilterParams',
-        JSON.stringify(this.sortAndFilterParams)
+      LocalStorageUtils.setItem(
+        localStorConsts.sortAndFilterParams,
+        this.sortAndFilterParams
       );
       this.commonService.presentToast(
         'The parameters have been deleted successfully.'

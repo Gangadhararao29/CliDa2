@@ -55,7 +55,7 @@ export class DataBaseService {
     switch (action) {
       case 'approve':
         const approvedRecords = clientData.data.filter((r) => r.bulkApproved);
-        this.utilsService.addNewLogData('bulk approve', null, {
+        this.utilsService.addOperationLog('bulk approve', null, {
           name: clientData.name,
           data: approvedRecords,
         });
@@ -63,7 +63,7 @@ export class DataBaseService {
 
       case 'delete':
         const deletedRecords = clientData.data.filter((r) => r.bulkDeleted);
-        this.utilsService.addNewLogData('bulk delete', null, {
+        this.utilsService.addOperationLog('bulk delete', null, {
           name: clientData.name,
           data: deletedRecords,
         });
@@ -82,9 +82,9 @@ export class DataBaseService {
     payload.name = this.utilsService.formatToTitleCase(payload.name);
 
     if (payload.data.length == 1) {
-      this.utilsService.addNewLogData('new', null, payload);
+      this.utilsService.addOperationLog('new', null, payload);
     } else {
-      this.utilsService.addNewLogData('bulk new', null, payload);
+      this.utilsService.addOperationLog('bulk new', null, payload);
     }
 
     const existingClient = await this.getClientByName(payload.name);
@@ -147,7 +147,7 @@ export class DataBaseService {
     delete payload.index;
     delete payload.key;
 
-    this.utilsService.addNewLogData('edit', clientData, payload, index);
+    this.utilsService.addOperationLog('edit', clientData, payload, index);
 
     clientData.name = name;
     clientData.lastModifiedOn = Date.now();
@@ -158,7 +158,7 @@ export class DataBaseService {
   async approveClientData(newData, oldData, index) {
     newData.lastModifiedOn = Date.now();
     return this.updateClientRecordByName(newData).then(() => {
-      this.utilsService.addNewLogData(
+      this.utilsService.addOperationLog(
         'edit - approve',
         { name: newData.name, ...oldData },
         newData.data[index],
@@ -167,7 +167,7 @@ export class DataBaseService {
   }
 
   async deleteClientData(clientData, index, key) {
-    this.utilsService.addNewLogData('delete', clientData, [], index);
+    this.utilsService.addOperationLog('delete', clientData, [], index);
     clientData.data.splice(index, 1);
     if (clientData.data.length < 1) {
       return this.deleteClientByKey(key);
@@ -183,16 +183,15 @@ export class DataBaseService {
     } else {
       const promises = clientsData.map(async (client) => {
         const res = await this.getClientByName(client.name);
+
         if (res) {
-          const recordIndex = res.data.findIndex(
-            (clientData) => clientData.id === res.id,
-          );
-          if (recordIndex > -1) {
-            res.push(client.data);
+          if (!client.lastModifiedOn || !res.lastModifiedOn) {
+            return this.updateClientRecordByName(res);
           } else {
-            res.data[recordIndex] = client.data;
+            if (res.lastModifiedOn > client.lastModifiedOn) {
+              return this.updateClientRecordByName(res);
+            }
           }
-          return this.updateClientRecordByName(res);
         } else {
           return this.saveNewClient(client);
         }
@@ -217,6 +216,7 @@ export class DataBaseService {
             .map((record) =>
               this.utilsService.replaceUndefinedWithNull(record),
             ),
+          lastModifiedOn: client.lastModifiedOn || Date.now(),
         }))
         .filter((client) => client?.name && client.data?.length);
 

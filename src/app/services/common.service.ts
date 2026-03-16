@@ -5,6 +5,7 @@ import {
   ToastController,
 } from '@ionic/angular';
 import { Subject } from 'rxjs';
+import { localStorConsts, LocalStorageUtils } from '../shared/local-storage';
 
 @Injectable({
   providedIn: 'root',
@@ -18,8 +19,8 @@ export class CommonService {
 
   constructor(
     private toastController: ToastController,
-    private loadingController: LoadingController,
-  ) {}
+    private loadingController: LoadingController
+  ) { }
 
   async presentToast(
     message,
@@ -37,7 +38,7 @@ export class CommonService {
     toast.present();
   }
 
-  async presentLoading(message = 'Loading...', duration = 3000) {
+  async presentLoading(message = 'Loading...', duration = 5000) {
     let loadingConfig: LoadingOptions = {
       animated: true,
       spinner: 'lines',
@@ -62,7 +63,7 @@ export class CommonService {
   }
 
   getTheme() {
-    let theme = localStorage.getItem('theme');
+    let theme = LocalStorageUtils.getItem(localStorConsts.theme);
     const preferColorMode = window.matchMedia('(prefers-color-scheme:dark)');
     if (theme == null || theme == 'auto') {
       theme = preferColorMode.matches ? 'dark' : 'light';
@@ -71,30 +72,35 @@ export class CommonService {
   }
 
   getUserPreferences() {
-    const theme = localStorage.getItem('theme');
-    const dashPref = localStorage.getItem('dashPref');
-    const oldStyle = localStorage.getItem('isOldStyle');
-    const logs = localStorage.getItem('logs');
-    const tabSection = localStorage.getItem('tabSection');
-    const calcLogs = localStorage.getItem('calcsHistory');
-    const leases = localStorage.getItem('leaseClients');
+    const theme = LocalStorageUtils.getStringItem(localStorConsts.theme);
+    const dashPref = LocalStorageUtils.getStringItem(localStorConsts.dashPref);
+    const oldStyle = LocalStorageUtils.getStringItem(localStorConsts.isOldStyle);
+    const tabSection = LocalStorageUtils.getStringItem(localStorConsts.tabSection);
+    const logs = LocalStorageUtils.getItem(localStorConsts.logs);
+    const calcLogs = LocalStorageUtils.getItem(localStorConsts.calcsHistory);
     return {
-      userPreference: { theme, dashPref, oldStyle, tabSection },
-      userData: null,
+      userPreferences: { theme, dashPref, oldStyle, tabSection },
       logs,
-      calcLogs,
-      leases,
+      calcLogs
     };
   }
 
   setUserPreferences(preferences) {
-    const { userPreference, logs, calcLogs, leases } = preferences;
-    localStorage.setItem('theme', userPreference.theme);
-    localStorage.setItem('dashPref', userPreference.dashPref);
-    localStorage.setItem('isOldStyle', userPreference.oldStyle);
-    localStorage.setItem('tabSection', userPreference.tabSection);
-    localStorage.setItem('logs', logs);
-    localStorage.setItem('calcsHistory', calcLogs);
-    localStorage.setItem('leaseClients', leases);
+    const { userPreferences, logs, calcLogs } = preferences;
+    LocalStorageUtils.setStringItem(localStorConsts.theme, userPreferences.theme);
+    LocalStorageUtils.setStringItem(
+      localStorConsts.dashPref,
+      userPreferences.dashPref,
+    );
+    LocalStorageUtils.setStringItem(
+      localStorConsts.isOldStyle,
+      userPreferences.oldStyle,
+    );
+    LocalStorageUtils.setStringItem(
+      localStorConsts.tabSection,
+      userPreferences.tabSection,
+    );
+    LocalStorageUtils.setItem(localStorConsts.logs, logs || []);
+    LocalStorageUtils.setItem(localStorConsts.calcsHistory, calcLogs || []);
   }
 }

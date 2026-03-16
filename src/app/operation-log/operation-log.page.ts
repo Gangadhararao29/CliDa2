@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { CommonService } from '../services/common.service';
+import { localStorConsts, LocalStorageUtils } from '../shared/local-storage';
 
 @Component({
   selector: 'app-operation-log',
@@ -16,12 +17,12 @@ export class OperationLogPage {
   constructor(
     private alertController: AlertController,
     private commonService: CommonService,
-  ) {}
+  ) { }
 
   ionViewWillEnter() {
-    const logsString = localStorage.getItem('logs');
+    const logs = LocalStorageUtils.getItem(localStorConsts.logs);
     this.theme = this.commonService.getTheme();
-    this.logData = logsString ? JSON.parse(logsString).reverse() : [];
+    this.logData = logs ? logs.reverse() : [];
     let index = -1;
 
     this.logDataGroup = [];
@@ -55,7 +56,7 @@ export class OperationLogPage {
           cssClass: 'bg-danger',
           handler: () => {
             this.logData = [];
-            localStorage.removeItem('logs');
+            LocalStorageUtils.removeItem(localStorConsts.logs);
             this.commonService.presentToast('Logs cleared successfully');
           },
         },
