@@ -1,0 +1,17 @@
+/* Ionic accordion styling - minimal SCSS */
+ion-accordion {
+  margin-bottom: 0.5rem;
+}
+
+ion-item[slot='header'] {
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+}
+
+.bg-medium-tint {
+  background-color: var(--ion-color-medium-tint);
+}
+
+.bgLight {
+  background-color: var(--ion-color-light);
+}

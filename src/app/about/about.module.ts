@@ -10,6 +10,7 @@ import { AboutPage } from './about.page';
 import { HttpClientModule } from '@angular/common/http';
 import { AngularFireModule } from '@angular/fire/compat';
 import { environment } from 'src/environments/environment';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
@@ -19,6 +20,7 @@ import { environment } from 'src/environments/environment';
     AboutPageRoutingModule,
     HttpClientModule,
     AngularFireModule.initializeApp(environment.firebase),
+    SharedModule,
   ],
   declarations: [AboutPage],
 })

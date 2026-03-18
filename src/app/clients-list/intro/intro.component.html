@@ -53,12 +53,17 @@
   <div class="d-flex mt-3 bgLight align-items-center rounded-3 bg-warning">
     <div class="px-3 py-2 text-dark" style="font-size: 200%;">!</div>
     <div class="justifyText bgLight px-3 py-2 rounded-end " style="flex: 1">
-      This app uses local storage to save your data, which may be lost if you clear your browser's data.
+      <strong>📱 Offline-Focused App</strong>
+      <br>
+      This app stores your data locally in your browser for offline access.
       <br />
-      <i>
-        Regularly back up your data or sign in with your Google account to securely store it in the cloud.
-      </i>
+      Please sign in and turn on <strong>Auto Backup</strong> to prevent any accidental data loss.
+      <br />
+      On a new device? Refer to the <strong>FAQ</strong> section below to learn how to restore your data from the cloud.
     </div>
   </div>
+
+  <!-- FAQ Section -->
+  <app-faq [theme]="theme"></app-faq>
 
 </div>
