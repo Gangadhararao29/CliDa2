@@ -1,0 +1,30 @@
+/* Full-height modal */
+.modal-right {
+  width: 100%; /* Change this to your desired width percentage */
+  max-width: 285px;
+  // height: 100vh; /* Full height of the viewport */
+  margin: 0;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  position: fixed;
+  top: 0;
+  right: 0;
+  color: var(--ion-color-dark);
+}
+
+/* Make the modal slide in from the right */
+.show .modal-dialog.modal-custom {
+  transform: translateX(0);
+}
+
+/* Ensure modal backdrop appears */
+.modal.show.d-block {
+  display: block;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Remove default Bootstrap modal centering */
+.modal-dialog {
+  margin: 0;
+  height: 100%;
+}

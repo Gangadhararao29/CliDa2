@@ -1,14 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { ClientDataService } from '../services/client-data.service';
+import { CommonService } from '../services/common.service';
+import { DataBaseService } from '../services/data-base.service';
 
 @Component({
   selector: 'app-edit-details',
   templateUrl: './edit-details.page.html',
   styleUrls: ['./edit-details.page.scss'],
+  standalone: false,
 })
 export class EditDetailsPage {
+  @ViewChild('formRef') formRefVariable: any;
+  @ViewChild('commentHeight') commentSection: any;
   clientRecord = {
     principal: 0,
     interest: 0,
@@ -20,35 +24,59 @@ export class EditDetailsPage {
   clientData: any;
   clientRecordId: any;
   clientKey: any;
-  recordType = '';
   clientRecordIndex: number;
   clientName: string;
+  theme: string;
+  renameAllRecords: boolean = true;
   constructor(
     private activatedRoute: ActivatedRoute,
-    private clientDataService: ClientDataService,
     public alertController: AlertController,
-    private router: Router
+    private router: Router,
+    private dataBaseService: DataBaseService,
+    private commonService: CommonService
   ) {}
 
   ionViewWillEnter() {
+    this.theme = this.commonService.getTheme();
     this.activatedRoute.params.subscribe((params) => {
       this.clientKey = params.key;
       this.clientRecordId = params.clientId;
-      this.clientDataService.getClientByKey(params.key).then((record) => {
+      this.dataBaseService.getClientByKey(params.key).then((record) => {
         this.clientData = record;
         this.clientName = record.name;
         this.clientRecordIndex = record.data.findIndex(
           (row) => row.id == params.clientId
         );
-        this.clientRecord = this.clientData.data[this.clientRecordIndex];
-        this.recordType = this.clientRecord.principal > 0 ? 'credit' : 'debit';
+        this.clientRecord = { ...this.clientData.data[this.clientRecordIndex] };
+        this.setCommentHeight();
       });
     });
+  }
+
+  setCommentHeight() {
+    setTimeout(() => {
+      this.commentSection.nativeElement.style.height = `${this.commentSection.nativeElement.scrollHeight}px`;
+    });
+  }
+
+  getCommentHeight(event) {
+    event.target.style.height = 0;
+    event.target.style.height = `${event.target.scrollHeight}px`;
+  }
+
+  changeRadio(event) {
+    this.formRefVariable.form.controls.recordType.setValue(event);
   }
 
   onSubmit(formRef) {
     if (formRef.valid) {
       this.presentAlertConfirm(formRef);
+    } else {
+      this.commonService.presentToast(
+        'Please fill all the required fields.',
+        'failedToastClass',
+        'alert-circle'
+      );
     }
   }
 
@@ -59,22 +87,22 @@ export class EditDetailsPage {
   async presentAlertConfirm(formRef) {
     const alert = await this.alertController.create({
       cssClass: 'alertStyle',
-      header: 'Confirm',
+      header: 'Save changes?',
+      message: 'Do you want to save your changes?',
       backdropDismiss: false,
       animated: true,
-      message: '<b>Do you want to save these changes?</b>',
       buttons: [
         {
-          text: 'Yes',
+          text: 'Save',
+          cssClass: 'bg-success',
           handler: () => {
-            this.clientDataService.presentLoading();
-            this.saveClientsData(formRef);
+            this.commonService.presentLoading('Saving...', 1000);
+            this.saveRecord(formRef.value);
           },
         },
         {
-          text: 'No',
+          text: 'Cancel',
           role: 'cancel',
-          cssClass: 'secondary',
         },
       ],
     });
@@ -82,46 +110,62 @@ export class EditDetailsPage {
     await alert.present();
   }
 
-  saveClientsData(formRef) {
-    this.clientDataService
-      .editClientData(
-        formRef.value,
-        this.recordType,
-        this.clientData,
-        this.clientRecordIndex
-      )
-      .then((res) => {
-        this.responseHandler(res.data.name);
-      });
+  generatePayload(record) {
+    return {
+      name: record.userName,
+      principal:
+        record.recordType === 'credit'
+          ? Math.abs(record.principal)
+          : -Math.abs(record.principal),
+      interest: record.interest,
+      startDate: record.startDate,
+      closedAmount: record.closedAmount || null,
+      closedOn: record.closedOn || null,
+      comments: record.comments,
+      id: this.clientRecordId,
+      key: this.clientKey,
+      index: this.clientRecordIndex,
+    };
   }
 
-  responseHandler(name) {
-    if (name !== this.clientName) {
-      this.clientDataService
-        .deleteClientData(
-          this.clientData,
-          this.clientRecordIndex,
-          this.clientKey
-        )
-        .then(() => {
-          setTimeout(() => {
-            this.clientDataService.presentToast(
-              'Your changes have been saved.<br>Redirecting to Clients-list tab'
-            );
-            this.router.navigate(['clida', 'clients-list']);
-          }, 1000);
+  saveRecord(formData) {
+    const payload = this.generatePayload(formData);
+
+    if (formData.userName != this.clientName) {
+      payload['renameAllRecords'] = this.renameAllRecords;
+
+      this.dataBaseService
+        .handleRecordTransfer(payload, this.clientData)
+        .then((res) => {
+          this.responseHandler(res.data);
         });
     } else {
+      this.dataBaseService
+        .saveClientRecord(payload, this.clientData)
+        .then((res) => {
+          this.responseHandler(res.data);
+        });
+    }
+  }
+
+  responseHandler(records) {
+    if (records.data?.length) {
       setTimeout(() => {
-        this.clientDataService.presentToast(
-          'Your changes have been saved.<br>Redirecting to Client-Details tab'
+        this.commonService.presentToast(
+          'Your changes have been saved successfully.<br>Redirecting to the Client Details tab.'
         );
         this.router.navigate([
-          'clida',
           'clients-list',
           'client-details',
           this.clientKey,
         ]);
+      }, 1000);
+    } else {
+      setTimeout(() => {
+        this.commonService.presentToast(
+          'Your changes have been saved successfully.<br>Redirecting to the Clients List tab.'
+        );
+        this.router.navigate(['clients-list']);
       }, 1000);
     }
   }
@@ -129,22 +173,22 @@ export class EditDetailsPage {
   async resetFieldsConfirmPopup() {
     const alert = await this.alertController.create({
       cssClass: 'alertStyle',
-      header: 'Confirm',
+      header: 'Reset closed details?',
+      message: 'This will clear the closed date and amount.',
       backdropDismiss: false,
       animated: true,
-      message: '<strong>Do you want to reset closed details?</strong>',
       buttons: [
         {
-          text: 'Yes',
+          text: 'Reset',
+          cssClass: 'bg-danger',
           handler: () => {
             this.clientRecord.closedOn = null;
             this.clientRecord.closedAmount = 0;
           },
         },
         {
-          text: 'No',
+          text: 'Cancel',
           role: 'cancel',
-          cssClass: 'secondary',
         },
       ],
     });

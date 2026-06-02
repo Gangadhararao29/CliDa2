@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 32 32">
+  <!-- Scale down the entire group -->
+  <g transform="translate(3,1.5) scale(0.24)" fill="none" stroke="#FFC045" stroke-width="8" stroke-linejoin="round" stroke-linecap="round">
+    
+    <!-- Horizontal block -->
+    <g transform="translate(0, 90)" fill="#065471">
+      <rect x="0" y="0" width="110" height="30" rx="2"/>
+      <rect x="36.66" y="0" width="36.66" height="30" rx="2"/>
+    </g>
+
+    <!-- Rotated block -30° -->
+    <g transform="translate(2, 90) rotate(-30)" fill="#065471">
+      <rect x="0" y="0" width="105" height="30" rx="2"/>
+      <rect x="36.66" y="0" width="36.66" height="30" rx="2"/>
+    </g>
+
+    <!-- Rotated block -65° -->
+    <g transform="translate(2, 105) rotate(-65)" fill="#065471">
+      <rect x="0" y="0" width="110" height="30" rx="2"/>
+      <rect x="36.66" y="0" width="36.66" height="30" rx="2"/>
+    </g>
+
+    <!-- Spine -->
+    <g fill="#065471">
+      <rect x="0" y="0" width="30" height="120" rx="2"/>
+      <circle cx="15" cy="100" r="2" fill="#FFC045"/>
+    </g>
+  </g>
+</svg>

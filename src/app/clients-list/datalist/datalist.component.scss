@@ -1,0 +1,18 @@
+.listItem {
+  @media screen and (max-width: 747px) {
+    width: 96%;
+    margin: 2px 2%;
+  }
+
+  @media screen and (min-width: 747px) {
+    width: 98%;
+    margin: 2px 1%;
+    max-width: 48%;
+  }
+
+  @media screen and (min-width: 1121px) {
+    width: 98%;
+    margin: 2px 1%;
+    max-width: 31%;
+  }
+}

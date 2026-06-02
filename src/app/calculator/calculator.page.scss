@@ -1,15 +1,6 @@
-ion-content {
-  --ion-background-color: var(--ion-color-medium);
-}
-
-input,
-input:focus {
-  background-color: var(--ion-color-dark-contrast);
-  color: var(--ion-color-dark);
-}
-
-input:disabled {
-  background-color: var(--ion-color-medium);
+ion-card {
+  margin: 15px 0px !important;
+  border-radius: 8px;
 }
 
 .bgLight {
@@ -17,6 +8,45 @@ input:disabled {
 }
 
 .highlight {
+  color: var(--ion-color-success-tint);
+}
+
+ion-col {
+  --ion-grid-column-padding: 0.15rem;
+}
+
+ion-range {
+  padding: 0;
+  margin: 0;
+  height: 1rem;
+}
+
+table {
+  background-color: var(--ion-color-medium);
+  color: var(--ion-color-dark);
+  text-align: center;
+}
+
+.a {
   color: #198754;
-  font-weight: bold;
+}
+
+.borderHighLight {
+  color: var(--ion-color-success-tint);
+  padding: 2px auto;
+  border-top: 2px solid var(--ion-color-success);
+  border-bottom: 2px solid var(--ion-color-success);
+}
+
+ion-content {
+  --ion-background-color: var(--ion-color-medium);
+}
+
+.fs-med {
+  font-size: 1.5rem !important;
+}
+
+.popover-width {
+  --width: 95vw;
+  --max-width: 300px;
 }

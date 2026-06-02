@@ -1,41 +1,61 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, IonRouterOutlet, Platform } from '@ionic/angular';
 import { App } from '@capacitor/app';
-import { ClientDataService } from '../services/client-data.service';
+import { DataBaseService } from '../services/data-base.service';
+import { CommonService } from '../services/common.service';
+import { localStorConsts, LocalStorageUtils } from '../shared/local-storage';
 
 @Component({
   selector: 'app-clients-list',
   templateUrl: './clients-list.page.html',
   styleUrls: ['./clients-list.page.scss'],
+  standalone: false,
 })
 export class ClientsListPage {
-  clientsData: any;
+  @ViewChild('searchbar') searchbar: any;
   clientSearchValue = '';
   showEntryText: boolean;
   debitData = [];
   creditData = [];
   showDebitList: boolean;
   tabSection = 'credits';
-  searchIcon = 'search-sharp';
+  isSearchVisible = false;
   hideSkeletonText: boolean;
+  theme: string;
   constructor(
     private router: Router,
     private platform: Platform,
     private routerOutlet: IonRouterOutlet,
     private alertController: AlertController,
-    private clientDataService: ClientDataService
+    private dataBaseService: DataBaseService,
+    private commonService: CommonService,
   ) {
     this.platform.backButton.subscribeWithPriority(-1, () => {
       if (!this.routerOutlet.canGoBack()) {
-        this.presentAlertConfirm();
+        this.backButtonAction();
       }
     });
   }
 
+  async backButtonAction() {
+    const alert = await this.alertController.getTop();
+
+    if (alert) {
+      await alert.dismiss();
+    } else if (this.router.url === '/clients-list') {
+      const alert = await this.getCloseAlert();
+      await alert.present();
+    } else {
+      this.router.navigate(['/clients-list']);
+    }
+  }
+
   ionViewWillEnter() {
+    this.hideSkeletonText = false;
+    this.theme = this.commonService.getTheme();
     this.getDisplayData();
-    if (localStorage.getItem('tabSection') === 'debits') {
+    if (LocalStorageUtils.getStringItem(localStorConsts.tabSection) === 'debits') {
       this.tabSection = 'debits';
       this.showDebitList = true;
     } else {
@@ -44,14 +64,13 @@ export class ClientsListPage {
     }
   }
 
-  getDisplayData() {
-    this.clientDataService.getAllClientsDataWithKeys().then((data) => {
-      this.clientsData = data;
-      this.showEntryText = data.length > 0 ? false : true;
+  getDisplayData(event?: any) {
+    this.dataBaseService.getAllClientsDataWithKeys().then((data) => {
+      this.showEntryText = data.length == 0;
       this.debitData = [];
       this.creditData = [];
 
-      this.clientsData.forEach((client) => {
+      data.forEach((client) => {
         const name = client.data.name;
         const key = client.key;
         const tempDebitData = [];
@@ -71,60 +90,55 @@ export class ClientsListPage {
         }
       });
       this.hideSkeletonText = true;
+
+      if (event) {
+        event.target.complete();
+        this.commonService.presentToast(
+          'List refreshed',
+          'successToastClass',
+          'refresh-outline'
+        );
+      }
     });
   }
 
-  resetSearch() {
+  toggleSearch() {
     this.clientSearchValue = null;
-    this.searchIcon =
-      this.searchIcon === 'search-sharp' ? 'remove-sharp' : 'search-sharp';
+    this.isSearchVisible = !this.isSearchVisible;
+    if (this.isSearchVisible) {
+      this.searchbar.setFocus();
+    }
   }
 
-  openClientDetails(key) {
-    this.router.navigate(['clida/clients-list/client-details', key]);
-  }
-
-  async presentAlertConfirm() {
-    const alert = await this.alertController.create({
-      header: 'Exit',
+  async getCloseAlert() {
+    return await this.alertController.create({
+      header: 'Exit app?',
+      message: 'Are you sure you want to exit the app?',
       cssClass: 'alertStyle',
       backdropDismiss: false,
       animated: true,
-      message: '<strong>Do you want to close the app?</strong>',
       buttons: [
         {
-          text: 'No',
+          text: 'Cancel',
           role: 'cancel',
-          cssClass: 'secondary',
         },
         {
-          text: 'Yes',
+          text: 'Exit',
+          cssClass: 'bg-primary',
           handler: () => {
             App.exitApp();
           },
         },
       ],
     });
-    await alert.present();
   }
 
-  getColor(detail) {
-    const tm = this.clientDataService.calculateTimeperiod(detail?.startDate).tm;
-    if (detail?.closedOn) {
-      return 'success';
-    } else if (tm >= 30) {
-      return 'danger';
-    } else if (tm >= 24) {
-      return 'warning';
-    } else if (tm >= 12) {
-      return 'secondary';
-    } else {
-      return 'primary';
-    }
+  async handleRefresh(event: any) {
+    this.getDisplayData(event);
   }
 
-  setrecordType(event) {
-    this.showDebitList = event.detail.value === 'debits' ? true : false;
-    localStorage.setItem('tabSection', event.detail.value);
+  setListType(type) {
+    this.showDebitList = type === 'debits' ? true : false;
+    LocalStorageUtils.setStringItem(localStorConsts.tabSection, type);
   }
 }

@@ -4,9 +4,14 @@ import { TabsPage } from './tabs.page';
 
 const routes: Routes = [
   {
-    path: 'clida',
+    path: '',
     component: TabsPage,
     children: [
+      {
+        path: '',
+        redirectTo: 'clients-list',
+        pathMatch: 'full',
+      },
       {
         path: 'clients-list',
         loadChildren: () =>
@@ -22,17 +27,10 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'dashboard/adv-search',
+        path: 'clients-list/adv-search',
         loadChildren: () =>
           import('../adv-search/adv-search.module').then(
             (m) => m.AdvSearchPageModule
-          ),
-      },
-      {
-        path: 'dashboard/adv-search/client-details/:key',
-        loadChildren: () =>
-          import('../client-details/client-details.module').then(
-            (m) => m.ClientDetailsPageModule
           ),
       },
       {
@@ -43,6 +41,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'clients-list/adv-search/client-details/:key',
+        loadChildren: () =>
+          import('../client-details/client-details.module').then(
+            (m) => m.ClientDetailsPageModule
+          ),
+      },
+      {
         path: 'dashboard/client-details/:key',
         loadChildren: () =>
           import('../client-details/client-details.module').then(
@@ -50,7 +55,14 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'calculator/:key/:id',
+        path: 'dashboard/logs',
+        loadChildren: () =>
+          import('../operation-log/operation-log.module').then(
+            (m) => m.OperationLogPageModule
+          ),
+      },
+      {
+        path: 'calculator/:encoded',
         loadChildren: () =>
           import('../calculator/calculator.module').then(
             (m) => m.CalculatorPageModule
@@ -58,7 +70,14 @@ const routes: Routes = [
       },
       {
         path: 'calculator',
-        redirectTo: 'calculator/0/0',
+        redirectTo: 'calculator/MHww', // '0' encoded in base64 for fallback
+      },
+      {
+        path: 'calculator2',
+        loadChildren: () =>
+          import('../calculator2/calculator2.module').then(
+            (m) => m.Calculator2PageModule
+          ),
       },
       {
         path: 'about',
@@ -66,7 +85,7 @@ const routes: Routes = [
           import('../about/about.module').then((m) => m.AboutPageModule),
       },
       {
-        path: 'about/log',
+        path: 'about/logs',
         loadChildren: () =>
           import('../operation-log/operation-log.module').then(
             (m) => m.OperationLogPageModule
@@ -89,8 +108,8 @@ const routes: Routes = [
     ],
   },
   {
-    path: '',
-    redirectTo: '/clida/clients-list',
+    path: '**',
+    redirectTo: '/clients-list',
     pathMatch: 'full',
   },
 ];

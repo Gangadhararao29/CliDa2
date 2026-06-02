@@ -4,15 +4,15 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.application.clida",
+  "applicationId": "clida3.web.app",
   "variantName": "release",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 3,
-      "versionName": "3.2",
+      "versionCode": 241116,
+      "versionName": "3.26.03",
       "outputFile": "app-release.apk"
     }
   ],

@@ -1,3 +1,103 @@
 ion-content {
   --ion-background-color: var(--ion-color-medium);
 }
+
+.bgLight {
+  background-color: var(--ion-color-light);
+}
+
+.subDivision {
+  color: #0d6efd;
+  border-width: 2px;
+  opacity: 1;
+}
+
+.justifyText {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+ion-card {
+  border-radius: 7px;
+  margin: 10px 0;
+}
+
+ion-card-header {
+  padding: 8px 10px 4px 10px;
+  border-bottom: 2px solid var(--ion-color-medium) !important;
+}
+
+ion-card-content {
+  padding: 0px;
+}
+
+ion-col {
+  --ion-grid-column-padding: 2.75px;
+}
+
+.img-container {
+  position: absolute;
+  z-index: 10;
+  top: 0.5rem;
+  left: auto;
+  width: 70px;
+  height: 70px;
+}
+
+.buttonSpacing {
+  margin: 13px 8px;
+}
+
+ion-modal {
+  .unread-indicator {
+    background: var(--ion-color-primary);
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    position: absolute;
+    inset-inline-start: 12px;
+    top: 12px;
+  }
+
+  .metadata-end-wrapper {
+    position: absolute;
+    top: 10px;
+    inset-inline-end: 10px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+  }
+
+  ion-label .note-title {
+    display: block;
+    max-width: calc(100% - 60px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+    font-size: 1.15rem;
+  }
+}
+
+ion-note {
+  overflow: hidden;
+  white-space: nowrap;
+  display: block;
+
+  .scrolling-text {
+    display: inline-block;
+    pointer-events: auto;
+
+    @media (max-width: 390px) {
+      animation: marquee 12s linear infinite;
+
+      &:hover {
+        animation-play-state: paused; // pause on hover
+      }
+    }
+  }
+}
+
+@keyframes marquee {
+  0%   { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}

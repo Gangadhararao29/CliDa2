@@ -7,14 +7,16 @@ import { IonicModule } from '@ionic/angular';
 import { AdvSearchPageRoutingModule } from './adv-search-routing.module';
 
 import { AdvSearchPage } from './adv-search.page';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    AdvSearchPageRoutingModule
+    AdvSearchPageRoutingModule,
+    SharedModule,
   ],
-  declarations: [AdvSearchPage]
+  declarations: [AdvSearchPage],
 })
 export class AdvSearchPageModule {}

@@ -1,253 +1,210 @@
-<ion-header [translucent]="true">
+<ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-title>{{client?.name}}</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="toggleLayout()">
+        <ion-icon slot="icon-only" name="repeat"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-progress-bar *ngIf="!hideSkeletonText" type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <div class="mx-2 mt-1">
-    <ion-accordion toggle-icon="none" readonly="true">
-      <ion-item slot="header" color="primary" class="rounded-1">
-        <ion-label class="d-flex ms-2">
-          <span class="fw-bolder">Principal</span>
-          <span class="ms-auto fw-bolder">Start date</span>
-        </ion-label>
-      </ion-item>
-    </ion-accordion>
-    <ion-accordion-group class="mb-2">
-      <div *ngFor="let data of client?.data; let i=index;" class="mt-2">
+<ion-content [attr.data-bs-theme]="theme">
+  <div class="dis-small">
+    <div class="bgLight p-2 rounded text-center mx-2 mt-3" *ngIf="isOldStyle">
+      Current transactions
+    </div>
+
+
+    <div class="d-flex flex-column mx-2 mt-2 gap-2" *ngIf="!isOldStyle">
+      <div class="d-flex align-items-center justify-content-between">
+        <span class="fw-semibold ms-1">Transactions : </span>
+        <div class="d-flex gap-2">
+          <ion-chip class="active-chip m-0">
+            Active : {{transactions.active}}
+          </ion-chip>
+          <ion-chip class="closed-chip m-0">
+            Closed : {{transactions.closed}}
+          </ion-chip>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center justify-content-between">
+        <ion-chip class="total-chip fw-semibold m-0" (click)="toggleTotalChips()">
+          Total: ₹ {{isd.format(totalAmount)}}
+        </ion-chip>
+
+        <ion-button color="danger" shape="round" size="small" class="add-button" routerLink="/clients-list/add-client"
+          [queryParams]="{name:client?.name}">
+          <ion-icon slot="start" name="add-outline"></ion-icon>
+          New transaction
+        </ion-button>
+      </div>
+    </div>
+
+    <ion-accordion-group class="m-2 text-center d-flex flex-wrap justify-content-evenly"
+      (ionChange)="accordionGroupChange($event)">
+      @for (data of client?.data; let i = $index; track data.id) {
+      <div class="my-1 listItem  text-start">
         <ion-accordion [value]="i">
-          <ion-item slot="header" [color]="getColor(data)" class="rounded-3">
-            <ion-label class="d-flex ms-2">
-              <span class="fw-bolder">₹ {{ isd.format(data?.principal) }}</span>
-              <span class="ms-auto fw-bolder"
-                >{{data?.startDate.split('-').reverse().join('/')}}</span
-              ></ion-label
-            >
+          <ion-item button slot="header" class="rounded" color="light">
+            <ion-checkbox class="check-pad" slot="start" [checked]="isChipSelected(data?.id)"
+              (ionChange)="onCheckBoxClick($event, data)" (click)="$event.stopPropagation()">
+            </ion-checkbox>
+
+            @if (isOldStyle) {
+            <ion-label class="d-flex justify-content-between align-items-center fw-bolder" [color]="getColor(data)">
+              <span>₹ {{ isd.format(data?.principal) }}</span>
+              <span class="ms-auto">{{ data?.startDate | date:'dd/MM/yyyy' }}</span>
+            </ion-label>
+            } @else {
+            <ion-label class="d-flex justify-content-between align-items-center fw-bolder">
+              <span>₹ {{ isd.format(data?.principal) }}</span>
+              <ion-badge class="rounded-pill px-2 py-1" [color]="getColor(data)">
+                {{ data?.startDate | date:'dd MMM yy' }}
+              </ion-badge>
+            </ion-label>
+            }
+
           </ion-item>
 
-          <ion-list slot="content" class="rounded-3">
-            <div class="bgLight p-2 rounded-3 mt-0">
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
-                <div class="col-1"></div>
-                <div class="col-4">Principal</div>
-                <div class="col-1">:</div>
-                <div class="col-6">₹ {{isd.format(data?.principal)}}</div>
-              </div>
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
-                <div class="col-1"></div>
-                <div class="col-4">Interest</div>
-                <div class="col-1">:</div>
-                <div class="col-6">{{data?.interest}}</div>
-              </div>
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
-                <div class="col-1"></div>
-                <div class="col-4">Start Date</div>
-                <div class="col-1">:</div>
-                <div class="col-6">
-                  {{data?.startDate.split('-').reverse().join('/')}}
-                </div>
-              </div>
-              <div class="d-flex justify-content-between fw-bolder fs-6">
-                <div class="col-1"></div>
-                <div class="col-4">End Date</div>
-                <div class="col-1">:</div>
-                <div class="col-6">
-                  {{today.split('-').reverse().join('/')}}
-                </div>
-              </div>
-            </div>
-
-            <div class="bgLight p-2 rounded-3 mt-2">
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
-                <div class="col-1"></div>
-                <div class="col-4">Time Period</div>
-                <div class="col-1">:</div>
-                <div class="col-6">
-                  {{calculateDateDifference(data?.startDate,today)}}
-                </div>
-              </div>
-
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
-                <div class="col-1"></div>
-                <div class="col-4">in months</div>
-                <div class="col-1">:</div>
-                <div class="col-6">
-                  {{totalTimeinMonths(data?.startDate,today).toFixed(2)}}m
-                </div>
-              </div>
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
-                <div class="col-1"></div>
-                <div class="col-4">Interest Amt</div>
-                <div class="col-1">:</div>
-                <div class="col-6">
-                  ₹ {{isd.format(calculateInterest(data))}}
-                </div>
-              </div>
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
-                <div class="col-1"></div>
-                <div class="col-4">Total Amt</div>
-                <div class="col-1">:</div>
-                <div class="col-6">
-                  ₹ {{isd.format(data?.principal + calculateInterest(data))}}
-                </div>
-              </div>
-            </div>
-
-            <div
-              *ngIf="data?.comments"
-              class="rounded-3 px-3 py-1 mt-2 bgLight"
-            >
-              <small class="fw-bolder">Comments: </small>
-              <small>{{data?.comments}}</small>
-            </div>
-
-            <div
-              *ngIf="data?.closedOn"
-              class="bgLight py-2 rounded-3 mt-2 border-success border-3 border"
-            >
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
-                <div class="col-1"></div>
-                <div class="col-4">Closed on</div>
-                <div class="col-1">:</div>
-                <div class="col-6">
-                  {{data?.closedOn.split('-').reverse().join('/')}}
-                </div>
-              </div>
-
-              <div class="d-flex mb-1 justify-content-between fw-bolder fs-6">
-                <div class="col-1"></div>
-                <div class="col-4">Paid Amt</div>
-                <div class="col-1">:</div>
-                <div class="col-6">₹ {{isd.format(data?.closedAmount)}}</div>
-              </div>
-            </div>
-
-            <div
-              *ngIf="totalTimeinMonths(data?.startDate,today)>36"
-              class="d-flex mt-2 p-2 justify-content-around align-items-center bg-warning rounded-3"
-            >
-              <ion-icon
-                name="alert-circle-outline"
-                size="large"
-                slot="start"
-              ></ion-icon>
-              <div>
-                Interest calculated for 3 years only.<br />
-                Please use calculate option.
-              </div>
-            </div>
-
-            <div
-              *ngIf="showCloseDiv"
-              class="my-2 px-2 py-1 border rounded-3 bgLight"
-            >
-              <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
-                <div class="fw-bolder mx-1 mb-1">Enter closed details</div>
-                <div class="d-flex">
-                  <div class="form-floating mb-2">
-                    <input
-                      type="date"
-                      class="form-control"
-                      id="closedOn"
-                      [ngModel]="today"
-                      #closedOn="ngModel"
-                      name="closedOn"
-                      required
-                      [class.is-valid]="closedOn.valid"
-                      [class.is-invalid]="closedOn.invalid &&  formRef.submitted"
-                    />
-                    <label for="closedOn">On</label>
-                    <div id="closedOn" class="invalid-feedback">
-                      Please enter On-date.
-                    </div>
-                  </div>
-
-                  <div class="form-floating mb-2 w-100">
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="closedAmount"
-                      [ngModel]="(data?.principal + calculateInterest(data))"
-                      name="closedAmount"
-                      #closedAmount="ngModel"
-                      required
-                      [class.is-valid]="closedAmount.valid"
-                      [class.is-invalid]="closedAmount.invalid &&  formRef.submitted"
-                    />
-                    <label for="closedAmount">Amount</label>
-                    <div id="closedAmount" class="invalid-feedback">
-                      Please enter Amount.
-                    </div>
-                  </div>
-                </div>
-                <div class="d-grid gap-2 mb-1">
-                  <button
-                    class="btn btn-success"
-                    type="submit"
-                    [disabled]="data?.closedOn"
-                  >
-                    Submit
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            <div class="bgLight rounded-3 py-2 px-1 mt-2">
-              <div class="d-flex">
-                <div class="col mx-1">
-                  <button
-                    class="btn btn-primary block w-100"
-                    (click)="editClientData(data?.id)"
-                  >
-                    Edit
-                  </button>
-                </div>
-                <div class="col mx-1">
-                  <button
-                    class="btn btn-warning w-100"
-                    (click)="openCalculator(data?.id)"
-                  >
-                    Calculate
-                  </button>
-                </div>
-              </div>
-
-              <div class="d-flex mt-2">
-                <div class="col mx-1">
-                  <button
-                    class="btn btn-success w-100"
-                    (click)="approveData(data?.id)"
-                    [disabled]="data?.closedOn"
-                  >
-                    Approve
-                  </button>
-                </div>
-                <div class="col mx-1">
-                  <button
-                    class="btn btn-danger w-100"
-                    (click)="deleteData(data?.id)"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </div>
+          <ion-list slot="content" lines="none" class="rounded mx-auto">
+            <app-client-data-view [data]="data" [client]="client" [index]="
+              i" (cleanUp)="accordionCleanUp()"></app-client-data-view>
           </ion-list>
         </ion-accordion>
       </div>
+      }
     </ion-accordion-group>
 
-    <ion-item
-      color="light"
-      class="rounded-3 text-center mb-2"
-      routerLink="/clida/clients-list/add-client"
-      ><ion-label class="text-danger fw-bolder"
-        >+ Add new record</ion-label
-      ></ion-item
-    >
+    <ion-item *ngIf="isOldStyle" color="light" class="rounded text-center m-2" routerLink="/clients-list/add-client"
+      [queryParams]="{name:client?.name}"><ion-label class="text-danger fw-bolder"> + Add new record </ion-label>
+    </ion-item>
+
+    <div class="text-center fw-semibold my-2" *ngIf="isOldStyle">
+      <ion-chip (click)="toggleTotalChips()">
+        Total amount: ₹ {{isd.format(totalAmount)}}
+      </ion-chip>
+    </div>
+
+    <app-summary-table [selectedChips]="selectedChips" [bulkApproveHandler]="bulkApproveHandler.bind(this)"
+      [bulkDeleteHandler]="bulkDeleteHandler.bind(this)" [theme]="theme"></app-summary-table>
+  </div>
+
+  <div class="dis-large">
+    <!-- Header -->
+    <div class="d-flex align-items-center gap-2 m-2" *ngIf="!isOldStyle">
+      <div>
+        <span class="fw-semibold">Transactions :</span>
+        <ion-chip class="active-chip my-0">Active : {{transactions.active}}</ion-chip>
+        <ion-chip class="closed-chip my-0">Closed : {{transactions.closed}}</ion-chip>
+      </div>
+
+      <ion-chip class="total-chip fw-semibold ms-auto me-0 my-0" (click)="toggleTotalChips()">
+        Total: ₹ {{isd.format(totalAmount)}}
+      </ion-chip>
+
+      <ion-button color="danger" size="small" shape="round" routerLink="/clients-list/add-client"
+        [queryParams]="{name:client?.name}" class="add-button">
+        <ion-icon slot="start" name="add-outline"></ion-icon>
+        New transaction
+      </ion-button>
+    </div>
+
+    <div class="d-flex" style="flex: 1; overflow: hidden">
+      <!-- side menu content-->
+      <div style="min-width: 325px; overflow-y: auto; height: 100%">
+        <div *ngIf="isOldStyle" class="bgLight p-2 rounded text-center mx-2 mt-3 sticky-top">
+          Current transactions
+        </div>
+
+        @for (data of client?.data; let i = $index; track data.id) {
+        <ion-item button class="rounded m-2" [ngClass]="{'selected': i === +openedAccordion}" color="light"
+          (click)="selectRecord(i)">
+          <ion-checkbox class="check-pad" slot="start" [checked]="isChipSelected(data?.id)"
+            (ionChange)="onCheckBoxClick($event, data)" (click)="$event.stopPropagation()" color="primary">
+          </ion-checkbox>
+
+          @if (isOldStyle) {
+          <ion-label class="d-flex justify-content-between align-items-center fw-bolder" [color]="getColor(data)">
+            <span>₹ {{ isd.format(data?.principal) }}</span>
+            <span>{{ data?.startDate | date:'dd/MM/yyyy' }}</span>
+          </ion-label>
+          } @else {
+          <ion-label class="d-flex justify-content-between align-items-center fw-bolder">
+            <span>₹ {{ isd.format(data?.principal) }}</span>
+            <ion-badge class="rounded-pill px-2 py-1" [color]="getColor(data)">
+              {{ data?.startDate | date:'dd MMM yy' }}
+            </ion-badge>
+          </ion-label>
+          }
+        </ion-item>
+        }
+
+        <ion-item *ngIf="isOldStyle" color="light" class="rounded text-center m-2" routerLink="/clients-list/add-client"
+          [queryParams]="{name:client?.name}"><ion-label class="text-danger fw-bolder">
+            + Add new record
+          </ion-label>
+        </ion-item>
+
+        <div class="text-center mb-3 fw-semibold" *ngIf="isOldStyle">
+          <ion-chip (click)="toggleTotalChips()">
+            Total amount: ₹ {{isd.format(totalAmount)}}
+          </ion-chip>
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <div class="w-100" style="overflow-y: auto; height: 100%">
+
+        <div class="my-1 p-1" *ngIf="isOldStyle"></div>
+
+        @if (openedAccordion != undefined) {
+        <div class="rounded mx-auto mb-3 mt-2">
+          <app-client-data-view [data]="client?.data[openedAccordion]" [client]="client" index="large"
+            (cleanUp)="accordionCleanUp()"></app-client-data-view>
+        </div>
+        } @else if(selectedChips.length == 0){
+        <div class="text-center text-muted mt-5 opacity-50">
+          <ion-icon name="documents-outline" style="font-size: 64px;"></ion-icon>
+          <p class="mt-2">Select a transaction to view details</p>
+        </div>
+        }
+
+        <div class="mt-2">
+          <app-summary-table [selectedChips]="selectedChips" [bulkApproveHandler]="bulkApproveHandler.bind(this)"
+            [bulkDeleteHandler]="bulkDeleteHandler.bind(this)" [theme]="theme">
+          </app-summary-table>
+        </div>
+      </div>
+    </div>
   </div>
 </ion-content>
+
+
+<!-- @if (selectedChips.length > 1) {
+<ion-footer>
+  <ion-toolbar color="light">
+    <div class="d-flex justify-content-between align-items-center px-2 py-1">
+      <div class="d-flex flex-column">
+        <span class="fw-bold">{{selectedChips.length}} selected</span>
+        <small class="text-muted">₹{{isd.format(totalAmount)}}</small>
+      </div>
+      <div class="d-flex gap-2">
+        <ion-button color="success" size="small" (click)="bulkApprove()">
+          <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
+          Approve
+        </ion-button>
+        <ion-button color="danger" size="small" (click)="bulkDelete()">
+          <ion-icon name="trash-outline" slot="start"></ion-icon>
+          Delete
+        </ion-button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-footer>
+} -->

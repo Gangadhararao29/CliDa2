@@ -5,3 +5,67 @@ ion-content {
 .bgLight {
   background-color: var(--ion-color-light);
 }
+
+.scrollable-container {
+  display: flex;
+  overflow-x: auto;
+  width: 100%;
+  text-align: center;
+}
+
+.chart {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+ion-col {
+  margin: 5px;
+  padding: 10px;
+  background-color: var(--ion-color-light);
+  border-radius: 8px;
+}
+
+ion-card {
+  margin: 15px 0px !important;
+  border-radius: 8px;
+}
+
+ion-grid {
+  margin: 0px;
+  padding: 0px;
+}
+
+.enlarge {
+  font-size: 1.15rem;
+}
+
+.stat-item {
+  width: 24%;
+  padding: 1%;
+  background-color: var(--ion-color-light);
+  border-radius: 8px;
+  border-left: 4px solid var(--ion-color-primary);
+
+  @media screen and (max-width: 768px) {
+    width: 46%;
+    margin: 5px 0%;
+    padding: 1.5%;
+  }
+}
+
+.stat-icon {
+  font-size: 150%;
+  padding: 0px 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heading {
+  font-size: 125%;
+  font-weight: bolder;
+}
+
+.fixed-list-container {
+  min-height: 192px;
+}

@@ -9,7 +9,12 @@ import { NgxPaginationModule } from 'ngx-pagination';
 
 import { DashboardPage } from './dashboard.page';
 import { LineChartPage } from './line-chart/line-chart.page';
-import { NgChartsModule } from 'ng2-charts';
+import { PieChartComponent } from './pie-chart/pie-chart.component';
+import { BarChartTopClientsComponent } from './bar-chart-top-clients/bar-chart-top-clients.component';
+import { BarChartInterestDistributionComponent } from './bar-chart-interest-distribution/bar-chart-interest-distribution.component';
+import { BaseChartDirective } from 'ng2-charts';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { FilterByYearPipe } from '../pipes/filter-by-year.pipe';
 
 @NgModule({
   imports: [
@@ -17,9 +22,17 @@ import { NgChartsModule } from 'ng2-charts';
     FormsModule,
     IonicModule,
     DashboardPageRoutingModule,
-    NgChartsModule,
     NgxPaginationModule,
+    BaseChartDirective,
   ],
-  declarations: [DashboardPage, LineChartPage],
+  providers: [provideCharts(withDefaultRegisterables())],
+  declarations: [
+    DashboardPage,
+    LineChartPage,
+    PieChartComponent,
+    BarChartTopClientsComponent,
+    BarChartInterestDistributionComponent,
+    FilterByYearPipe,
+  ],
 })
 export class DashboardPageModule {}

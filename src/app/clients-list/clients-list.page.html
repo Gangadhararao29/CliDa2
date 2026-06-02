@@ -1,139 +1,64 @@
-<ion-header [translucent]="true">
-  <ion-toolbar class="d-flex">
-    <ion-title> Clients list </ion-title>
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>
+      <span class="text-grad me-2">CliDa</span>
+      <ion-chip [hidden]="showEntryText" [ngClass]="{'tabActive': !showDebitList}"
+        (click)="setListType('credits')">Credits</ion-chip>
+      <ion-chip [hidden]="showEntryText" [ngClass]="{'tabActive': showDebitList}"
+        (click)="setListType('debits')">Debits</ion-chip>
+    </ion-title>
     <ion-buttons slot="primary">
-      <ion-button
-        [hidden]="showEntryText"
-        (click)="resetSearch()"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseExample"
-        ><ion-icon [name]="searchIcon" slot="icon-only"></ion-icon
-      ></ion-button>
+      <ion-button [hidden]="showEntryText" (click)="toggleSearch()" data-bs-toggle="collapse"
+        data-bs-target="#collapseExample">
+        <ion-icon name="search" slot="icon-only" [color]="isSearchVisible ? 'primary' : ''"></ion-icon>
+      </ion-button>
     </ion-buttons>
+    <ion-progress-bar [hidden]="hideSkeletonText" type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div [hidden]="!showEntryText" class="container my-2">
-    <ion-item
-      color="light"
-      lines="none"
-      class="border border-primary border-3 text-center rounded-3"
-    >
-      <ion-label class="fs-5"> Clida says Hello 👋</ion-label>
-    </ion-item>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
-    <div class="bgLight rounded-3 px-3 py-2 my-2">
-      <div class="justifyText mb-2">
-        To load already saved data from json file, click on Export/Import button
-        or go to the Share tab from the bottom navigation bar.
-      </div>
-      <div class="text-center mb-1">
-        <button class="btn btn-primary" routerLink="/clida/about">
-          Export / Import
-        </button>
-      </div>
-    </div>
-
-    <div class="bgLight rounded-3 px-3 py-2 mb-2">
-      <div class="justifyText mb-2">
-        To add the clients manually, click on the below button or click on the
-        bottom right add button.
-      </div>
-      <div class="text-center mb-1">
-        <button
-          class="btn btn-danger"
-          routerLink="/clida/clients-list/add-client"
-        >
-          Add new Client
-        </button>
-      </div>
-    </div>
-
-    <div class="mt-2">
-      <div class="text-center bg-warning rounded-3 mt-2 pt-2">
-        <ion-icon name="alert-circle-outline" size="large"></ion-icon>
-      </div>
-      <div class="justifyText bgLight py-2 px-3 rounded-3">
-        Please save your data periodically using the Share tab. The data will be
-        saved in the documents folder in your phone's internal storage, when you
-        click on export button.
-      </div>
-    </div>
-  </div>
-
-  <div [hidden]="showEntryText" class="m-1">
-    <ion-segment [value]="tabSection" (ionChange)="setrecordType($event)">
-      <ion-segment-button value="credits">
-        <ion-label>Credits</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="debits">
-        <ion-label>Debits</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </div>
 
   <div class="collapse sticky-top" id="collapseExample">
-    <ion-searchbar
-      animated
-      color="light"
-      placeholder="Type to search clients..."
-      [(ngModel)]="clientSearchValue"
-      enterkeyhint="search"
-      search-icon="search-outline"
-    ></ion-searchbar>
-  </div>
-
-  <div [hidden]="hideSkeletonText" class="mx-2">
-    <ion-progress-bar type="indeterminate"></ion-progress-bar>
-  </div>
-
-  <div [hidden]="showEntryText">
-    <div class="debitList" [hidden]="!showDebitList">
-      <ion-item
-        *ngFor="let client of debitData | clientsSearch:clientSearchValue"
-        (click)="openClientDetails(client.key)"
-        color="light"
-        class="m-2 rounded-3"
-        lines="none"
-      >
-        <div>{{client?.data.name}}</div>
-        <div class="ms-auto d-flex text-end">
-          <div class="mt-1">
-            <ion-badge
-              *ngFor="let clientDetail of client.data.data"
-              class="ms-1"
-              [color]="getColor(clientDetail)"
-              slot="end"
-              >{{(clientDetail.principal/1000).toFixed() + 'K'}}
-            </ion-badge>
-          </div>
-        </div>
-      </ion-item>
-    </div>
-    <div class="creditList" [hidden]="showDebitList">
-      <ion-item
-        *ngFor="let client of creditData | clientsSearch:clientSearchValue"
-        (click)="openClientDetails(client.key)"
-        color="light"
-        class="m-2 rounded-3"
-        lines="none"
-      >
-        <div>{{client?.data.name}}</div>
-        <div class="ms-auto d-flex text-end">
-          <div class="mt-1">
-            <ion-badge
-              *ngFor="let clientDetail of client.data.data"
-              class="ms-1"
-              [color]="getColor(clientDetail)"
-              slot="end"
-              >{{(clientDetail.principal/1000).toFixed() + 'K'}}
-            </ion-badge>
-          </div>
-        </div>
-      </ion-item>
+    <div class="d-flex align-items-center">
+      <ion-searchbar #searchbar animated="true" color="light" placeholder="Search clients here..."
+        [(ngModel)]="clientSearchValue" enterkeyhint="search" show-clear-button="focus"></ion-searchbar>
+      <ion-button color="light" routerLink="adv-search" class="me-2">
+        <ion-icon name="funnel-outline" slot="icon-only"></ion-icon>
+      </ion-button>
     </div>
   </div>
+
+  @if(showEntryText) {
+  <app-intro [theme]="theme" (reloadClientList)="ionViewWillEnter()"></app-intro>
+  } @else if(showDebitList) {
+  <app-datalist [dataList]="debitData" [clientSearchValue]="clientSearchValue">
+    <ng-container *ngTemplateOutlet="noRecordsTpl"></ng-container>
+  </app-datalist>
+  } @else{
+  <app-datalist [dataList]="creditData" [clientSearchValue]="clientSearchValue">
+    <ng-container *ngTemplateOutlet="noRecordsTpl"></ng-container>
+  </app-datalist>
+  }
+
+  @if(!showEntryText && hideSkeletonText && (showDebitList ? debitData.length === 0 : creditData.length === 0)){
+  <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted text-center"
+    [attr.data-bs-theme]="theme">
+    <ion-icon name="server-outline" class="mb-3" style="font-size: 4rem"></ion-icon>
+    <p class="mb-0">No records yet</p>
+  </div>
+  }
+
+  <ng-template #noRecordsTpl>
+    <div class="text-muted mt-3" [attr.data-bs-theme]="theme">
+      No records found
+    </div>
+  </ng-template>
+
   <ion-item color="medium" lines="none"></ion-item>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">

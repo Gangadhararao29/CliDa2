@@ -1,0 +1,22 @@
+<div class="text-center mt-2">
+
+  @let filteredClients = (dataList | clientsSearch: clientSearchValue);
+  @if (filteredClients.length > 0) {
+  @for (client of filteredClients; track client.key) {
+  <ion-item color="light" class="rounded-2 listItem d-inline-block" [routerLink]="'client-details/' + client.key">
+    {{ client?.data.name }}
+
+    <div class="ms-auto text-end mt-1">
+      @for (clientDetail of client.data.data; track clientDetail.id) {
+      <ion-badge [color]="getColor(clientDetail)" class="ms-1">
+        {{ (clientDetail.principal / 1000).toFixed() + 'K' }}
+      </ion-badge>
+      }
+    </div>
+  </ion-item>
+  }
+  } @else if(dataList.length > 0) {
+  <ng-content></ng-content>
+  }
+
+</div>

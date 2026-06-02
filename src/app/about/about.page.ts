@@ -1,44 +1,135 @@
-import { Component, Renderer2 } from '@angular/core';
+import { Component, Renderer2, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
-import { ClientDataService } from '../services/client-data.service';
+import { HttpClient } from '@angular/common/http';
+import { App } from '@capacitor/app';
+import { read, utils, writeFileXLSX } from 'xlsx';
+import { Capacitor } from '@capacitor/core';
+import {
+  FirebaseService,
+  AutoBackupSettings,
+} from '../services/firebase.service';
+import { CommonService } from '../services/common.service';
+import { DataBaseService } from '../services/data-base.service';
+import {
+  NotificationService,
+  NotificationSettings,
+} from '../services/notification.service';
+import { localStorConsts, LocalStorageUtils } from '../shared/local-storage';
+import { LeaseService } from '../services/lease.service';
 
 @Component({
   selector: 'app-about',
   templateUrl: './about.page.html',
   styleUrls: ['./about.page.scss'],
+  standalone: false,
 })
 export class AboutPage {
-  downloadJsonHref: any;
-  importedJSON: any;
-  jsonFile: any;
-  clientsData: string;
-  darkModeFlag = false;
-  themeName = localStorage.getItem('theme');
+  @ViewChild('modal1') modal1: any;
+  @ViewChild('modal2') modal2: any;
+  @ViewChild('select2') select2;
+
+  themeName = LocalStorageUtils.getItem(localStorConsts.theme);
   inputClientData: any;
-  sortValue: any;
+  isUpdateLoading = false;
+  isModalOpen = false;
+  latestVersion = '0.0.0';
+  currentVersion = '3.26.03';
+  gitHubResponse = [];
+  loadingData = true;
+  user: any = null;
+  fileType = 'json';
+  theme: string;
+  isWebVersion: boolean = false;
+  isUpdateAvailable = false;
+  autoBackupEnabled: boolean = false;
+  backupInterval: string = '1';
+  cloudSyncType: string = 'soft';
+  notificationSettings: NotificationSettings = {
+    enabled: false,
+    notifyBeforeMonths: 6,
+    minimumAgeYears: 3,
+    reminderIntervalMonths: 2,
+  };
+  notifications: any[] = [];
+  isNotificationModalOpen = false;
 
   constructor(
     public alertController: AlertController,
     private router: Router,
-    private clientDataService: ClientDataService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private httpClient: HttpClient,
+    private firebaseService: FirebaseService,
+    private commonService: CommonService,
+    private dataBaseService: DataBaseService,
+    private notificationService: NotificationService,
+    private leaseService: LeaseService,
   ) {}
 
+  ionViewWillEnter() {
+    this.isWebVersion = Capacitor.getPlatform() != 'web' ? false : true;
+    this.theme = this.commonService.getTheme();
+    if (this.isWebVersion) {
+      this.firebaseService.onAuthStateChanged((user) => {
+        this.user = user ?? null;
+        this.loadingData = false;
+      });
+    } else {
+      this.loadingData = false;
+    }
+    this.notificationSettings = this.notificationService.getSettings();
+    this.notifications = this.notificationService.getAllNotifications() || [];
+
+    // Load auto-backup settings
+    const backupSettings = this.firebaseService.getAutoBackupSettings();
+    this.autoBackupEnabled = backupSettings.enabled;
+    this.backupInterval = `${backupSettings.interval}`;
+  }
+
+  ionViewDidEnter() {
+    const lv = this.latestVersion.split('.');
+    const cv = this.currentVersion.split('.');
+    this.isUpdateAvailable = lv[0] > cv[0] || lv[1] > cv[1] || lv[2] > cv[2];
+  }
+
+  checkForUpdate() {
+    this.isUpdateLoading = true;
+    this.isModalOpen = false;
+    App.getInfo().then((suc) => {
+      this.currentVersion = suc.version;
+    });
+    this.httpClient
+      .get('https://api.github.com/repos/gangadhararao29/clida2/releases')
+      .subscribe((res: Array<any>) => {
+        this.gitHubResponse = res;
+        this.latestVersion = this.gitHubResponse[0].tag_name.slice(1);
+        this.isUpdateLoading = false;
+        this.isModalOpen = true;
+      });
+  }
+
+  setOpen(isOpen: boolean) {
+    this.isModalOpen = isOpen;
+  }
+
   exportData() {
-    this.clientDataService.getAllClientsData().then((data) => {
-      this.clientsData = JSON.stringify(data);
-      this.writeSecretFile(this.clientsData);
-      this.nativeSaveByUrl();
+    this.firebaseService.generateBackupResponse().then((backupData) => {
+      if (this.fileType === 'json') {
+        const clientDataString = JSON.stringify(backupData);
+        this.writeSecretFile(clientDataString);
+        this.nativeSaveByUrl(clientDataString);
+      } else {
+        this.excelExport(backupData.clients);
+      }
     });
   }
 
-  nativeSaveByUrl() {
+  nativeSaveByUrl(clientsDataString) {
     const a = document.createElement('a');
-    const file = new Blob([this.clientsData], { type: 'text/plain' });
+    const file = new Blob([clientsDataString], { type: 'text/plain' });
     a.href = URL.createObjectURL(file);
-    a.download = 'clientsData.json';
+    a.download = `clientsData_${new Date().toJSON().slice(0, 10)}.json`;
     a.click();
   }
 
@@ -54,48 +145,66 @@ export class AboutPage {
       recursive: true,
     })
       .then(() => {
-        this.clientDataService.presentToast(
-          `File saved successfully in <br> Documents/${fileName}.`
+        this.commonService.presentToast(
+          `The file has been saved successfully in <br> Documents/${fileName}.`,
         );
       })
       .catch((err) => {
-        const errString = 'No Data found.<br>' + err.toString().slice(6);
-        this.clientDataService.presentToast(
+        const errString = 'No data found. <br>' + err.toString().slice(6);
+        this.commonService.presentToast(
           errString,
           'failedToastClass',
-          'alert-outline'
+          'alert-outline',
         );
       });
   }
 
   importData(target) {
-    this.jsonFile = target.files.item(0);
-    this.presentImportDataAlert(this.jsonFile);
+    if (this.fileType === 'excel') {
+      this.excelImport(target);
+    } else {
+      const fileReader = new FileReader();
+      fileReader.readAsText(target.files.item(0));
+      fileReader.onload = (e) => {
+        try {
+          this.importDataAlert(JSON.parse(fileReader.result.toString()));
+        } catch (err) {
+          this.commonService.presentToast(
+            err,
+            'failedToastClass',
+            'alert-outline',
+          );
+          this.inputClientData = '';
+        }
+      };
+    }
   }
 
-  async presentImportDataAlert(file) {
+  async importDataAlert(clientsData) {
     const alert = await this.alertController.create({
-      header: 'Existing Data will?',
+      header: 'Import data',
+      message: 'You already have data. How would you like to handle it?',
       cssClass: 'alertMultiStyle',
       backdropDismiss: false,
       animated: true,
       buttons: [
         {
-          text: 'Replace with new data',
+          text: 'Sync with local',
+          cssClass: 'bg-primary',
           handler: () => {
-            this.clientDataService.presentLoading();
-            this.importHandler(file, true);
+            this.importHandler(clientsData, false);
           },
         },
         {
-          text: 'Merge with new data',
+          text: 'Replace All',
+          cssClass: 'bg-primary',
           handler: () => {
-            this.clientDataService.presentLoading();
-            this.importHandler(file, false);
+            this.importHandler(clientsData, true);
           },
         },
         {
           text: 'Cancel',
+          role: 'cancel',
           handler: () => {
             this.inputClientData = '';
           },
@@ -105,41 +214,53 @@ export class AboutPage {
     await alert.present();
   }
 
-  importHandler(file, replaceStatus) {
-    const fileReader = new FileReader();
-    fileReader.readAsText(file);
-    fileReader.onload = (e) => {
-      this.importedJSON = fileReader.result;
-      this.clientDataService
-        .saveBulkClients(this.importedJSON, replaceStatus)
-        .then((res) => {
-          setTimeout(() => {
-            this.inputClientData = '';
-            this.clientDataService.presentToast(
-              'Data imported succcessfully <br>Redirecting to Clients List Tab'
-            );
-            this.router.navigate(['clida', 'clients-list']);
-          }, 1000);
-        });
-    };
+  async importHandler(clientsData, replaceStatus) {
+    await this.commonService.presentLoading('Importing data...');
+
+    if (clientsData?.userPreferences) {
+      this.commonService.setUserPreferences(clientsData);
+    }
+
+    if (clientsData?.leases?.length) {
+      await this.leaseService.restoreFromCloud(clientsData.leases);
+    }
+
+    if (clientsData?.clients?.length) {
+      await this.dataBaseService.saveBulkClients(
+        clientsData.clients,
+        replaceStatus,
+      );
+    }
+
+    await this.commonService.dismissLoading();
+    setTimeout(() => {
+      this.inputClientData = '';
+      this.commonService.presentToast(
+        'Data imported successfully. <br> Redirecting to the Clients List tab.',
+      );
+      this.router.navigate(['clients-list']);
+    }, 1000);
   }
 
   async presentDeleteAlert() {
     const alert = await this.alertController.create({
-      header: 'Do you want to reset the app data?',
+      header: 'Reset app data?',
+      message: 'This will remove all saved data and restore default settings.',
       backdropDismiss: false,
       animated: true,
       cssClass: 'alertStyle',
       buttons: [
         {
-          text: 'Confirm',
+          text: 'Reset',
+          role: 'submit',
+          cssClass: 'bg-danger',
           handler: () => {
             this.resetData();
           },
         },
         {
           text: 'Cancel',
-          handler: () => {},
+          role: 'cancel',
         },
       ],
     });
@@ -147,12 +268,23 @@ export class AboutPage {
   }
 
   resetData() {
-    this.clientDataService.deleteDataBase();
-    this.clientDataService.presentToast('Data successfully deleted');
+    this.dataBaseService.deleteDataBase();
+    this.leaseService.deleteDataBase();
+    localStorage.clear();
+    this.changeTheme({ detail: { value: 'auto' } });
+    this.select2.value = 'auto';
+    this.commonService.presentToast(
+      'The factory reset has been completed successfully.',
+    );
+  }
+
+  handleThemeBtnClick() {
+    this.select2?.el?.click();
   }
 
   changeTheme(event) {
-    localStorage.setItem('theme', event.detail.value);
+    LocalStorageUtils.setStringItem(localStorConsts.theme, event.detail.value);
+    this.theme = event.detail.value;
     switch (event.detail.value) {
       case 'light': {
         this.renderer.removeClass(document.body, 'dark');
@@ -164,11 +296,13 @@ export class AboutPage {
       }
       case 'auto': {
         const preferColorMode = window.matchMedia(
-          '(prefers-color-scheme:dark)'
+          '(prefers-color-scheme:dark)',
         );
         if (preferColorMode.matches) {
+          this.theme = 'dark';
           this.renderer.addClass(document.body, 'dark');
         } else {
+          this.theme = 'light';
           this.renderer.removeClass(document.body, 'dark');
         }
         break;
@@ -176,47 +310,376 @@ export class AboutPage {
     }
   }
 
-  changeSort(event) {
+  async changeSort(event) {
     if (event.target.value) {
-      this.clientDataService.presentLoading();
+      await this.commonService.presentLoading('Sorting data...');
       event.target.disabled = true;
-      this.clientDataService.getAllClientsData().then((clients) => {
-        clients.map((ele) => {
-          ele.data.sort((a, b) => {
-            const keyA = new Date(a.startDate);
-            const keyB = new Date(b.startDate);
-            return keyA < keyB ? -1 : +1;
-          });
+      const clients = await this.dataBaseService.getAllClientsData();
+      clients.map((ele) => {
+        ele.data.sort((a, b) => {
+          let keyA = new Date(a.startDate);
+          let keyB = new Date(b.startDate);
+          if (!(a.closedOn && b.closedOn)) {
+            if (a.closedOn) keyA = new Date();
+            if (b.closedOn) keyB = new Date();
+          }
+          return keyA < keyB ? -1 : +1;
         });
+      });
 
-        if (event.target.value === 'name') {
-          clients.sort((a, b) => (a.name < b.name ? -1 : +1));
-        } else if (event.target.value === 'year') {
-          clients.sort((a, b) => {
-            const keyA = new Date(a.data[0].startDate);
-            const keyB = new Date(b.data[0].startDate);
-            return keyA < keyB ? -1 : +1;
-          });
-        }
+      if (event.target.value === 'name') {
+        clients.sort((a, b) => (a.name < b.name ? -1 : +1));
+      } else if (event.target.value === 'year') {
+        clients.sort((a, b) => {
+          let keyA = new Date(a.data[0].startDate);
+          let keyB = new Date(b.data[0].startDate);
+          if (!(a.data[0].closedOn && b.data[0].closedOn)) {
+            if (a.data[0].closedOn) keyA = new Date();
+            if (b.data[0].closedOn) keyB = new Date();
+          }
+          return keyA < keyB ? -1 : +1;
+        });
+      }
 
-        this.clientDataService
-          .saveBulkClients(JSON.stringify(clients), true)
-          .then((res) => {
-            setTimeout(() => {
-              this.clientDataService.presentToast('Data sorted successfully');
-              event.target.disabled = false;
-              event.target.value = null;
-            }, 1000);
-          });
+      await this.dataBaseService.saveBulkClients(clients, true);
+      await this.commonService.dismissLoading();
+      setTimeout(() => {
+        this.commonService.presentToast(
+          'The data has been sorted successfully.',
+        );
+        event.target.disabled = false;
+        event.target.value = null;
       });
     }
   }
 
   cleanData() {
-    this.clientDataService.cleanClientsData().then((res) => {
-      this.clientDataService.presentToast(
-        'All the empty Data and errors are fixed.'
-      );
+    this.dataBaseService.cleanClientsData().then((res) => {
+      this.commonService.presentLoading('Cleaning data...', 1000).then(() => {
+        this.commonService.presentToast(
+          'All empty data and errors have been fixed.',
+        );
+      });
     });
+  }
+
+  cleanApproveData() {
+    this.dataBaseService.cleanApprovedData().then((res) => {
+      this.commonService
+        .presentLoading('Removing closed records...', 1000)
+        .then(() => {
+          this.commonService.presentToast(
+            'All approved data has been removed.',
+          );
+        });
+    });
+  }
+
+  getDateString(dateString) {
+    return new Date(dateString).toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  }
+
+  async signInWithGoogle() {
+    try {
+      this.user = await this.firebaseService.signInWithGoogle();
+      this.commonService.presentToast('You have signed in successfully.');
+    } catch (err: any) {
+      this.commonService.presentToast(
+        err.message,
+        'failedToastClass',
+        'alert-outline',
+      );
+    }
+  }
+
+  async logOutUser() {
+    try {
+      await this.firebaseService.signOutUser();
+      this.user = null;
+      this.commonService.presentToast('You have signed out successfully.');
+    } catch (error) {
+      this.commonService.presentToast(
+        'Error signing out: <br>' + error,
+        'failedToastClass',
+        'alert-outline',
+      );
+    }
+  }
+
+  async loadCloudData(isSoftRestore = false) {
+    try {
+      const res = await this.firebaseService.loadCloudData(this.user?.uid);
+      const hasClients = res.clients.length > 0 || res.leases.length > 0;
+      if (!hasClients) {
+        this.commonService.presentToast('No data was found.');
+      } else {
+        this.importHandler(res, !isSoftRestore);
+      }
+      console.log(res);
+    } catch (error) {
+      console.log('Error loading cloud data:', error);
+      this.commonService.presentToast(
+        'Error loading cloud data: <br>' + error,
+        'failedToastClass',
+        'alert-outline',
+      );
+    }
+  }
+
+  async uploadToCloud(isSoftBackup = false) {
+    try {
+      await this.commonService.presentLoading('Uploading ...');
+      let payload = await this.firebaseService.getModifiedData(
+        isSoftBackup,
+        this.user?.uid,
+      );
+
+      await this.commonService.dismissLoading();
+
+      await this.uploadDataAlert(payload);
+    } catch (error) {
+      console.error('Error uploading data to cloud:', error);
+      this.commonService.dismissLoading();
+      this.commonService.presentToast(
+        'Error uploading data to cloud: <br>' + error,
+        'failedToastClass',
+        'alert-outline',
+      );
+    }
+  }
+
+  async uploadDataAlert(payload: any) {
+    let message = `${payload.updatedClients.length} clients updated<br>${payload.clients.length - payload.updatedClients.length} clients unmodified<br>${payload.removedClients.length} clients removed`;
+
+    const alert = await this.alertController.create({
+      header: 'Please confirm to backup your existing data?',
+      cssClass: 'alertStyle',
+      backdropDismiss: false,
+      animated: true,
+      message,
+      buttons: [
+        {
+          text: 'Confirm',
+          cssClass: 'bg-primary',
+          handler: async () => await this.uploadDataHandler(payload),
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {},
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  async uploadDataHandler(payload: any) {
+    await this.commonService.presentLoading('Uploading data to cloud...');
+    await this.firebaseService.uploadToCloud(this.user.uid, payload);
+    await this.commonService.dismissLoading();
+    await this.commonService.presentToast('The upload was successful.');
+    LocalStorageUtils.setStringItem(
+      localStorConsts.lastCloudSync,
+      new Date().toISOString(),
+    );
+  }
+
+  excelExport(res) {
+    const fileName = `clientsData_${new Date().toJSON().slice(0, 10)}.xlsx`;
+    const excelArray = [];
+    res.forEach((client) => {
+      client.data.forEach((record) => {
+        excelArray.push({
+          name: client.name,
+          principal: record.principal,
+          interest: record.interest,
+          startDate: record.startDate,
+          comments: record.comments,
+          closedOn: record.closedOn,
+          closedAmount: record.closedAmount,
+        });
+      });
+    });
+    const ws = utils.json_to_sheet(excelArray);
+    const wb = utils.book_new();
+    utils.book_append_sheet(wb, ws, 'Clients Data');
+    writeFileXLSX(wb, fileName);
+  }
+
+  async excelImport(target) {
+    const wb = read(await target.files[0].arrayBuffer());
+    const data = utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+    const clientsData = [];
+    let id = Date.now();
+    data.forEach((record: any) => {
+      record.id = id++;
+      const clientIndex = clientsData.findIndex(
+        (client) => client.name === record.name,
+      );
+      if (clientIndex > -1) {
+        delete record.name;
+        clientsData[clientIndex].data.push(record);
+      } else {
+        const newClient = record.name;
+        delete record.name;
+        clientsData.push({ name: newClient, data: [record] });
+      }
+    });
+    this.dataBaseService.saveBulkClients(clientsData, true).then(() => {
+      setTimeout(() => {
+        this.inputClientData = '';
+        this.commonService.presentToast(
+          'Data imported successfully <br>Redirecting to Clients-list tab',
+        );
+        this.router.navigate(['clients-list']);
+      }, 1000);
+    });
+  }
+
+  get lastCloudSync(): string | null {
+    return LocalStorageUtils.getStringItem(localStorConsts.lastCloudSync);
+  }
+
+  get lastDataModified(): string | null {
+    return LocalStorageUtils.getStringItem(localStorConsts.lastDataModified);
+  }
+
+  get isBackupNeeded(): boolean {
+    const sync = this.lastCloudSync;
+    const modified = this.lastDataModified;
+    if (!sync) return true;
+    if (!modified) return false;
+    return new Date(modified) > new Date(sync);
+  }
+
+  get lastBackupDate(): string | null {
+    return this.firebaseService.getLastBackupDate();
+  }
+
+  get nextBackupDate(): Date | null {
+    return this.firebaseService.getNextBackupDate();
+  }
+
+  onAutoBackupToggle() {
+    this.saveAutoBackupSettings();
+  }
+
+  onBackupIntervalChange() {
+    this.saveAutoBackupSettings();
+  }
+
+  private saveAutoBackupSettings() {
+    const settings: AutoBackupSettings = {
+      enabled: this.autoBackupEnabled,
+      interval: +this.backupInterval,
+    };
+    this.firebaseService.saveAutoBackupSettings(settings);
+    this.firebaseService.initializeAutoBackup();
+  }
+
+  // Notification Settings and Handling
+  onNotificationToggle() {
+    if (this.notificationSettings.enabled) {
+      this.notificationService.requestPermission(true).then((granted) => {
+        if (!granted) {
+          this.notificationSettings.enabled = false;
+          this.commonService.presentToast(
+            'Notification permission denied',
+            'failedToastClass',
+            'alert-outline',
+          );
+        }
+        this.saveNotificationSettings();
+      });
+    } else {
+      this.saveNotificationSettings();
+    }
+  }
+
+  saveNotificationSettings() {
+    this.notificationService.saveSettings(this.notificationSettings);
+  }
+
+  openNotifications() {
+    // this.notifications = this.notificationService.getAllNotifications() || [];
+    this.isNotificationModalOpen = true;
+  }
+
+  markAsRead(notification: any) {
+    this.notificationService.markAsRead(notification.id);
+    const note = this.notifications.find((n) => n.id === notification.id);
+    if (note) note.read = true;
+  }
+
+  dismissNotification(notification: any) {
+    this.notificationService.dismissNotification(notification.id);
+    this.notifications = this.notifications.filter(
+      (n) => n.id !== notification.id,
+    );
+  }
+
+  clearAllNotifications() {
+    this.notificationService.clearAllNotifications();
+    this.notifications = [];
+  }
+
+  openNoteRecord(note: any) {
+    this.isNotificationModalOpen = false;
+    setTimeout(() => {
+      this.router.navigate(['clients-list', 'client-details', note.key]);
+    });
+  }
+
+  getFormattedDate(date: string | Date): string {
+    const noteDate = new Date(date);
+    const now = new Date();
+
+    // Check if it's today
+    if (
+      noteDate.getFullYear() === now.getFullYear() &&
+      noteDate.getMonth() === now.getMonth() &&
+      noteDate.getDate() === now.getDate()
+    ) {
+      // For today, show relative time
+      const diffMs = now.getTime() - noteDate.getTime();
+      const diffMins = Math.floor(diffMs / (1000 * 60));
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+
+      if (diffMins < 1) {
+        return 'Just now';
+      } else if (diffMins < 60) {
+        return `${diffMins} min${diffMins !== 1 ? 's' : ''} ago`;
+      } else {
+        return `${diffHours} hr${diffHours !== 1 ? 's' : ''} ago`;
+      }
+    }
+
+    const yesterday = new Date();
+    yesterday.setDate(now.getDate() - 1);
+    if (
+      noteDate.getFullYear() === yesterday.getFullYear() &&
+      noteDate.getMonth() === yesterday.getMonth() &&
+      noteDate.getDate() === yesterday.getDate()
+    ) {
+      return 'Yesterday';
+    }
+
+    return noteDate.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: '2-digit',
+    });
+  }
+
+  ionViewWillLeave() {
+    this.isNotificationModalOpen = false;
+    this.isModalOpen = false;
+    this.modal1.dismiss();
+    this.modal2.dismiss();
   }
 }

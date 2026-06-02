@@ -1,152 +1,129 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-back-button slot="start"></ion-back-button>
     <ion-title>Add new record</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <div class="mx-2 my-2 bgLight pt-2 rounded-3">
-    <ion-radio-group value="credit" [(ngModel)]="recordType">
-      <ion-label position="stacked" class="mx-3">
-        <span style="font-size: large; font-weight: 300"
-          >Select Record type</span
-        >
-      </ion-label>
-      <div class="d-flex justify-content-between">
-        <ion-item color="light" class="col rounded-3">
-          <ion-label>Credit</ion-label>
-          <ion-radio slot="start" value="credit"></ion-radio>
-        </ion-item>
-        <ion-item color="light" class="col rounded-3">
-          <ion-label>Debit</ion-label>
-          <ion-radio slot="start" value="debit"></ion-radio>
-        </ion-item>
-      </div>
-    </ion-radio-group>
-  </div>
+<ion-content [attr.data-bs-theme]="theme">
+  <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)" class="container my-2">
 
-  <div class="mx-2">
-    <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
-      <div class="p-2 bgLight rounded-3">
-        <div class="form-floating mt-1 mb-2">
-          <input
-            type="text"
-            class="form-control"
-            id="name"
-            placeholder="Enter name"
-            list="nameRef"
-            name="userName"
-            ngModel
-            #userName="ngModel"
-            required
-            [class.is-valid]="userName.valid"
-            [class.is-invalid]="userName.invalid && formRef.submitted"
-          />
-          <label for="name"><span class="formLabel">Name</span></label>
-          <div id="name" class="invalid-feedback">Please enter a Name.</div>
-          <datalist id="nameRef" #nameList>
-            <option *ngFor="let client of clientsData" [value]="client.name">
-              {{client.name}}
-            </option>
-          </datalist>
+    <!-- Quick Presets -->
+    @if (presets.length > 0) {
+    <div class="sticky-top">
+      @for (present of presets; track $index) {
+      <ion-badge color="light" class="mx-1 mb-1 p-2" (click)="applyPreset(present)" style="cursor: pointer;">
+        {{ formatPresetLabel(present) }}
+      </ion-badge>
+      }
+    </div>
+    }
+
+    <div class="mb-2 bgLight pt-2 rounded">
+      <ion-radio-group name="recordType" ngModel #recordType="ngModel">
+        <ion-label position="stacked" class="mx-3">
+          <span class="fw-semibold">Select Record type</span>
+        </ion-label>
+        <div class="d-flex justify-content-between">
+          <ion-item color="light" class="col rounded" (click)="changeRadio('credit')">
+            <ion-radio value="credit" labelPlacement="end" justify="start">Credit</ion-radio>
+          </ion-item>
+          <ion-item color="light" class="col rounded" (click)="changeRadio('debit')">
+            <ion-radio value="debit" labelPlacement="end" justify="start">Debit</ion-radio>
+          </ion-item>
         </div>
-        <div class="mb-2 justify-content-between d-flex">
-          <div class="form-floating d-inline-block">
-            <input
-              type="number"
-              class="form-control"
-              id="principal"
-              placeholder="100000"
-              ngModel
-              #principal="ngModel"
-              name="principal"
-              required
-              [class.is-valid]="principal.valid"
-              [class.is-invalid]="principal.invalid &&  formRef.submitted"
-            />
-            <label for="principal"
-              ><span class="formLabel">Principal</span></label
-            >
-            <div id="principal" class="invalid-feedback">
-              Please enter Principal amount.
-            </div>
-          </div>
+      </ion-radio-group>
+    </div>
 
-          <div class="form-floating d-inline-block">
-            <input
-              type="number"
-              class="form-control"
-              id="interest"
-              placeholder="1.50"
-              ngModel
-              name="interest"
-              #interest="ngModel"
-              required
-              [class.is-valid]="interest.valid"
-              [class.is-invalid]="interest.invalid &&  formRef.submitted"
-            />
-            <label for="interest"
-              ><span class="formLabel">Interest</span></label
-            >
-            <div id="interest" class="invalid-feedback">
-              Please enter Interest rate.
-            </div>
+    <div class="form-floating my-1">
+      <input type="text" class="form-control" id="name" placeholder="Enter name" list="nameRef" name="userName" ngModel
+        #userName="ngModel" required [class.is-valid]="userName.valid"
+        [class.is-invalid]="userName.invalid && formRef.submitted" />
+      <label for="name"><span class="formLabel">Name</span></label>
+      <div id="name" class="invalid-feedback">Please enter a Name.</div>
+      <div class="valid-feedback">{{getUserNameFeedback(userName)}}</div>
+      <datalist id="nameRef" #nameList>
+        <option *ngFor="let client of clientsData" [value]="client.name">
+          {{client.name}}
+        </option>
+      </datalist>
+    </div>
+
+    <!-- Transaction Loop -->
+    @for (trxn of transactions; track $index) {
+    <div class="d-flex align-items-center mb-1 mx-1">
+      <div class="fw-semibold text-muted">Transaction {{ $index + 1 }}</div>
+      <hr class="flex-grow-1 mx-1">
+
+      @if($count != 1){
+      <button type="button" class="btn btn-link text-danger p-0 fw-bold" (click)="removeTransaction($index)">
+        − Remove
+      </button>
+      }
+    </div>
+
+    <div class="mx-1">
+      <div class="row g-1 mb-2">
+        <div class="col-6">
+          <div class="form-floating">
+            <input type="number" class="form-control" [id]="'principal_' + $index" placeholder="100000"
+              [(ngModel)]="trxn.principal" [name]="'principal_' + $index" required #principal="ngModel"
+              [class.is-valid]="principal.valid" [class.is-invalid]="principal.invalid && formRef.submitted">
+            <label [for]="'principal_' + $index">Principal</label>
+            <div class="invalid-feedback">Please enter Principal amount.</div>
           </div>
         </div>
 
-        <div class="form-floating mb-1">
-          <input
-            type="date"
-            class="form-control"
-            id="startDate"
-            ngModel
-            name="startDate"
-            required
-            #startDate="ngModel"
-            [ngModel]="today"
-            [class.is-valid]="startDate.valid"
-            [class.is-invalid]="startDate.invalid &&  formRef.submitted"
-          />
-          <label for="startDate"
-            ><span class="formLabel">Start date</span></label
-          >
-          <div id="startDate" class="invalid-feedback">
-            Please enter start Date.
+        <div class="col-6">
+          <div class="form-floating">
+            <input type="number" class="form-control" [id]="'interest_' + $index" placeholder="1.50"
+              [(ngModel)]="trxn.interest" [name]="'interest_' + $index" required #interest="ngModel"
+              [class.is-valid]="interest.valid" [class.is-invalid]="interest.invalid && formRef.submitted">
+            <label [for]="'interest_' + $index">Interest</label>
+            <div class="invalid-feedback">Please enter Interest rate.</div>
           </div>
         </div>
       </div>
 
-      <div class="form-floating mt-2">
-        <textarea
-          class="form-control"
-          placeholder="Leave a comment here"
-          id="comments"
-          ngModel
-          name="comments"
-          #comments="ngModel"
-        ></textarea>
-        <label for="comments"><span class="formLabel">Comments</span></label>
+      <div class="form-floating">
+        <input type="date" class="form-control" [id]="'startDate_' + $index" [(ngModel)]="trxn.startDate"
+          [name]="'startDate_' + $index" required #startDate="ngModel" [class.is-valid]="startDate.valid"
+          [class.is-invalid]="startDate.invalid && formRef.submitted">
+        <label [for]="'startDate_' + $index">Start date</label>
+        <div class="invalid-feedback">Please enter start date.</div>
       </div>
+    </div>
 
-      <ion-item class="mt-2 rounded-3" lines="none" color="light">
-        <ion-label>Add multiple records</ion-label>
-        <ion-toggle
-          color="danger"
-          [ngModel]="false"
-          name="multiRecordsSelected"
-        ></ion-toggle>
-      </ion-item>
+    @if($last){
+    <div class="d-flex align-items-center mt-1 mx-1">
+      <ion-badge color="light" class="me-1 p-2" (click)="saveCurrentAsPreset()" style="cursor: pointer;">
+        &plus;
+      </ion-badge>
+      <span class="text-muted mx-1">Presets</span>
+      <ion-badge color="light" class="mx-1 p-2" (click)="removeFirstPreset()" style="cursor: pointer;">
+        &minus;
+      </ion-badge>
+      <hr class="flex-grow-1 mx-1">
+      <button type="button" class="btn btn-link text-danger p-0 fw-bold" (click)="addTransaction()">
+        + Add new
+      </button>
+    </div>
+    }
+    }
 
-      <ion-button
-        color="danger"
-        expand="block"
-        type="submit"
-        class="my-2"
-        [disabled]="isAddBtnDisable"
-      >
-        Add new client
-      </ion-button>
-    </form>
-  </div>
+    <div class="form-floating mt-2">
+      <textarea class="form-control" placeholder="Leave a comment here" id="comments" (input)="getCommentHeight($event)"
+        ngModel name="comments" #comments="ngModel"></textarea>
+      <label for="comments"><span class="formLabel">Comments</span></label>
+    </div>
+
+    <ion-item class="my-2 rounded" lines="none" color="light">
+      <ion-toggle color="danger" [ngModel]="false" name="multiRecordsSelected">Add multiple clients
+      </ion-toggle>
+    </ion-item>
+
+    <ion-button #submitButton color="danger" expand="block" class="my-3" type="submit" [disabled]="isAddBtnDisable">
+      Add {{ transactions.length > 1 ? transactions.length + ' records' : 'record' }}
+    </ion-button>
+  </form>
 </ion-content>
