@@ -1,11 +1,6 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-title>Dashboard</ion-title>
-    <ion-buttons slot="primary" class="mx-2">
-      <ion-button (click)="toggleChart()" *ngIf="dashPref?.graphs">
-        <ion-icon [name]="nextChartIcon"></ion-icon>
-      </ion-button>
-    </ion-buttons>
     <ion-progress-bar [hidden]="hideSkeletonText" type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
@@ -13,11 +8,11 @@
 <ion-content>
 
   <div class="my-2" [hidden]="!dashPref?.stats">
-    <!-- <ion-card >
-      <ion-item color="light" lines="none">
-        <ion-icon name="analytics-sharp" slot="start" color="primary"></ion-icon>
-        <ion-label><span class="header-title">Statistics</span></ion-label>
-      </ion-item> -->
+
+    <div class="px-3 pb-1 d-flex align-items-center gap-2">
+      <ion-icon name="analytics-sharp" color="primary" class="heading"></ion-icon>
+      <span class="heading">Statistics</span>
+    </div>
     <div class="d-flex flex-wrap justify-content-evenly">
       <div class="stat-item">
         <span class="d-flex">
@@ -51,11 +46,25 @@
         <h4>₹ {{(isd.format(getFinalAmount()))}}</h4>
       </div>
     </div>
-    <!-- </ion-card> -->
 
   </div>
 
   <div [hidden]="!dashPref?.graphs">
+    <div class="d-flex justify-content-center gap-2 my-2">
+      <ion-button [fill]="visibleChartIndex === 0 ? 'solid' : 'outline'" color="dark" size="small" (click)="segmentChanged(0)">
+        <ion-icon slot="icon-only" name="trending-up-sharp"></ion-icon>
+      </ion-button>
+      <ion-button [fill]="visibleChartIndex === 1 ? 'solid' : 'outline'" color="dark" size="small" (click)="segmentChanged(1)">
+        <ion-icon slot="icon-only" name="pie-chart-sharp"></ion-icon>
+      </ion-button>
+      <ion-button [fill]="visibleChartIndex === 2 ? 'solid' : 'outline'" color="dark" size="small" (click)="segmentChanged(2)">
+        <ion-icon slot="icon-only" name="bar-chart-sharp"></ion-icon>
+      </ion-button>
+      <ion-button [fill]="visibleChartIndex === 3 ? 'solid' : 'outline'" color="dark" size="small" (click)="segmentChanged(3)">
+        <ion-icon slot="icon-only" name="people-sharp"></ion-icon>
+      </ion-button>
+    </div>
+
     <div #scrollableContainer class="d-flex overflow-auto justify-content-lg-around align-items-center mt-2"
       (scroll)="onScroll()">
       <div #chart1>

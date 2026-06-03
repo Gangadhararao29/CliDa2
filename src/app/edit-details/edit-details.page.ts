@@ -28,12 +28,18 @@ export class EditDetailsPage {
   clientName: string;
   theme: string;
   renameAllRecords: boolean = true;
+  splitMode: boolean = false;
+  splitAmounts = {
+    first: 0,
+    second: 0,
+  };
+  sliderValue: number = 50; // percentage (0-100)
   constructor(
     private activatedRoute: ActivatedRoute,
     public alertController: AlertController,
     private router: Router,
     private dataBaseService: DataBaseService,
-    private commonService: CommonService
+    private commonService: CommonService,
   ) {}
 
   ionViewWillEnter() {
@@ -45,7 +51,7 @@ export class EditDetailsPage {
         this.clientData = record;
         this.clientName = record.name;
         this.clientRecordIndex = record.data.findIndex(
-          (row) => row.id == params.clientId
+          (row) => row.id == params.clientId,
         );
         this.clientRecord = { ...this.clientData.data[this.clientRecordIndex] };
         this.setCommentHeight();
@@ -68,6 +74,52 @@ export class EditDetailsPage {
     this.formRefVariable.form.controls.recordType.setValue(event);
   }
 
+  toggleSplitMode() {
+    if (this.clientRecord.closedOn) {
+      return;
+    }
+
+    const total = Math.abs(this.clientRecord.principal || 0);
+    if (!total) {
+      this.commonService.presentToast(
+        'You need a valid principal amount before splitting.',
+        'failedToastClass',
+        'alert-circle',
+      );
+      return;
+    }
+
+    this.splitMode = !this.splitMode;
+
+    if (this.splitMode) {
+      // initialize slider to 50% and split amounts to equal halves
+      this.sliderValue = 50;
+      const half = Math.round((total / 2) * 100) / 100;
+      this.splitAmounts.first = half;
+      this.splitAmounts.second = half;
+    }
+  }
+
+  onSliderChange(event: any) {
+    const total = Math.abs(this.clientRecord.principal || 0);
+    const percent =
+      typeof event === 'number'
+        ? event
+        : Number(event?.detail?.value ?? this.sliderValue ?? 0);
+    this.sliderValue = percent;
+    const first = Math.round((percent / 100) * total * 100) / 100;
+    const second = Math.round((total - first) * 100) / 100;
+    this.splitAmounts.first = first;
+    this.splitAmounts.second = second;
+  }
+
+  displayTotalPrincipal() {
+    return (
+      Math.abs(this.splitAmounts.first || 0) +
+      Math.abs(this.splitAmounts.second || 0)
+    );
+  }
+
   onSubmit(formRef) {
     if (formRef.valid) {
       this.presentAlertConfirm(formRef);
@@ -75,7 +127,7 @@ export class EditDetailsPage {
       this.commonService.presentToast(
         'Please fill all the required fields.',
         'failedToastClass',
-        'alert-circle'
+        'alert-circle',
       );
     }
   }
@@ -110,13 +162,76 @@ export class EditDetailsPage {
     await alert.present();
   }
 
+  async splitRecord(formData) {
+    const total = Math.abs(this.clientRecord.principal || 0);
+    const first = Number(this.splitAmounts.first);
+    const second = Number(this.splitAmounts.second);
+    const sum = first + second;
+    const tolerance = 0.001;
+
+    if (!first || !second || Math.abs(sum - total) > tolerance) {
+      this.commonService.presentToast(
+        'Split amounts must be valid and total the original principal.',
+        'failedToastClass',
+        'alert-circle',
+      );
+      return;
+    }
+
+    if (formData.userName != this.clientName) {
+      this.commonService.presentToast(
+        'Please save name changes before splitting this record.',
+        'failedToastClass',
+        'alert-circle',
+      );
+      return;
+    }
+
+    const sign = formData.recordType === 'credit' ? 1 : -1;
+    const firstPrincipal = sign * first;
+    const secondPrincipal = sign * second;
+
+    const currentPayload = this.generatePayload(formData);
+    currentPayload.principal = firstPrincipal;
+
+    const secondRecord = {
+      id: Date.now() + 1,
+      principal: secondPrincipal,
+      interest: formData.interest,
+      startDate: formData.startDate,
+      comments: formData.comments,
+    };
+
+    await this.commonService.presentLoading('Splitting record...', 1000);
+    await this.dataBaseService.saveClientRecord(
+      currentPayload,
+      this.clientData,
+    );
+    await this.dataBaseService.createDataRecords({
+      name: formData.userName,
+      data: [secondRecord],
+    });
+
+    this.commonService.presentToast(
+      'The record has been split into two entries.',
+      'successToastClass',
+      'checkmark-circle',
+    );
+
+    this.router.navigate(['clients-list', 'client-details', this.clientKey]);
+  }
+
   generatePayload(record) {
+    const principalValue =
+      record.principal !== undefined
+        ? record.principal
+        : this.clientRecord.principal;
     return {
       name: record.userName,
       principal:
         record.recordType === 'credit'
-          ? Math.abs(record.principal)
-          : -Math.abs(record.principal),
+          ? Math.abs(principalValue)
+          : -Math.abs(principalValue),
       interest: record.interest,
       startDate: record.startDate,
       closedAmount: record.closedAmount || null,
@@ -129,6 +244,11 @@ export class EditDetailsPage {
   }
 
   saveRecord(formData) {
+    if (this.splitMode) {
+      this.splitRecord(formData);
+      return;
+    }
+
     const payload = this.generatePayload(formData);
 
     if (formData.userName != this.clientName) {
@@ -152,7 +272,7 @@ export class EditDetailsPage {
     if (records.data?.length) {
       setTimeout(() => {
         this.commonService.presentToast(
-          'Your changes have been saved successfully.<br>Redirecting to the Client Details tab.'
+          'Your changes have been saved successfully.<br>Redirecting to the Client Details tab.',
         );
         this.router.navigate([
           'clients-list',
@@ -163,7 +283,7 @@ export class EditDetailsPage {
     } else {
       setTimeout(() => {
         this.commonService.presentToast(
-          'Your changes have been saved successfully.<br>Redirecting to the Clients List tab.'
+          'Your changes have been saved successfully.<br>Redirecting to the Clients List tab.',
         );
         this.router.navigate(['clients-list']);
       }, 1000);

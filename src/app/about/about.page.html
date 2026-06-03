@@ -139,19 +139,22 @@
 
     }
     @else {
-    <ion-card color="light">
+    <ion-card color="light" class="rounded shadow-sm">
       <ion-card-content>
-        <div class=" d-flex flex-column align-items-center gap-2">
-          <ion-icon name="cloud-outline" class="signin-icon" size="large"></ion-icon>
-          <span class="fw-medium text-center">
-            Connect your Google account to securely sync and backup your data
-            across devices.
-          </span>
-          <ion-button (click)="signInWithGoogle()" [disabled]="loadingData" fill="solid" class="google-btn">
-            <ion-icon name="logo-google" slot="start"></ion-icon>
-            Continue with Google
-          </ion-button>
-        </div>
+
+        <ion-item color=light>
+          <ion-icon name="cloud-outline" color="primary" size="large" slot="start"></ion-icon>
+          <ion-label>
+            <h2>Secure cloud backup</h2>
+            <p>Sign in with Google to sync your data and keep your records safe.</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-button expand="block" color="primary" fill="solid" class="rounded-pill mx-2 mb-2"
+          (click)="signInWithGoogle()" [disabled]="loadingData">
+          <ion-icon name="logo-google" slot="start"></ion-icon>
+          Continue with Google
+        </ion-button>
       </ion-card-content>
     </ion-card>
     }
@@ -522,7 +525,7 @@
   </ion-modal>
 
 
-  <div class="text-center mb-3" [attr.data-bs-theme]="theme">
+  <div class="text-center mb-2" [attr.data-bs-theme]="theme">
     <div class="text-muted">
       <strong class="text-grad">CliDa</strong><br>
       <span class="badge bg-info text-dark">{{isWebVersion ? 'Web Version' : 'Android Version'}} :

@@ -222,6 +222,12 @@ export class DashboardPage {
     this.updateIcon();
   }
 
+  segmentChanged(index: number) {
+    this.visibleChartIndex = index;
+    this.scrollToChart(index);
+    this.updateIcon();
+  }
+
   scrollToChart(index: number) {
     let el: ElementRef;
     switch (index) {
