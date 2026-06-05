@@ -1,16 +1,19 @@
-<ion-tabs>
-  <ion-tab-bar slot="bottom">
+<ion-tabs (ionTabsDidChange)="selectedTab = $event.tab">
+  <!-- @let isClientsTab = selectedTab == 'clients-list'; -->
+  @let isClientsTab = false;
+
+  <ion-tab-bar slot="bottom" class="floating-tab-bar">
     <ion-tab-button tab="clients-list">
       <ion-icon name="list-sharp"></ion-icon>
-      <ion-label>Clients list</ion-label>
+      <ion-label>Clients</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="dashboard">
+    <ion-tab-button tab="dashboard" [class.me-2]="isClientsTab">
       <ion-icon name="bar-chart-sharp"></ion-icon>
       <ion-label>Dashboard</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="calculator">
+    <ion-tab-button tab="calculator" [class.ms-2]="isClientsTab">
       <ion-icon name="calculator-sharp"></ion-icon>
       <ion-label>Calculator</ion-label>
     </ion-tab-button>
@@ -21,4 +24,10 @@
       <ion-badge color="danger" *ngIf="unreadCount > 0">{{ unreadCount }}</ion-badge>
     </ion-tab-button>
   </ion-tab-bar>
+
+  @if(isClientsTab){
+  <ion-button shape="round" color="danger" routerLink="/clients-list/add-client" class="center-fab-btn">
+    <ion-icon name="add" slot="icon-only"></ion-icon>
+  </ion-button>
+  }
 </ion-tabs>

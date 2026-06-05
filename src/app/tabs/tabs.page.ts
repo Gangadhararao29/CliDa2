@@ -8,6 +8,8 @@ import { NotificationService } from '../services/notification.service';
   standalone: false,
 })
 export class TabsPage {
+  selectedTab = 'clients-list';
+
   constructor(public notificationService: NotificationService) {}
 
   get unreadCount() {
