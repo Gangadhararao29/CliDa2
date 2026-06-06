@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import {
   Auth,
-  onAuthStateChanged,
   signInWithPopup,
   GoogleAuthProvider,
   signOut,
   User,
 } from '@angular/fire/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import {
   Firestore,
   doc,

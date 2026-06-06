@@ -1,0 +1,38 @@
+ion-card {
+  border-radius: 7px;
+  margin: 10px 0;
+}
+
+ion-card-header {
+  padding: 8px 10px 4px 10px;
+  border-bottom: 2px solid var(--ion-color-medium) !important;
+}
+
+ion-card-content {
+  padding: 0px;
+}
+
+/* Badge / Pills styling for consistent display */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.35em 0.65em;
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 50rem; /* default to rounded-pill */
+}
+
+.text-bg-success {
+  color: #fff !important;
+  background-color: #198754 !important;
+}
+
+.text-bg-warning {
+  color: #000 !important;
+  background-color: #ffc107 !important;
+}
