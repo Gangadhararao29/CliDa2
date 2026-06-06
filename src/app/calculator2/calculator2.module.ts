@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { Calculator2PageRoutingModule } from './calculator2-routing.module';
 
 import { Calculator2Page } from './calculator2.page';
-import { DateYearPipe } from '../pipes/date-year.pipe';
+import { SharedModule } from "../shared/shared.module";
 
 @NgModule({
   imports: [
@@ -15,7 +15,8 @@ import { DateYearPipe } from '../pipes/date-year.pipe';
     FormsModule,
     IonicModule,
     Calculator2PageRoutingModule,
-  ],
-  declarations: [Calculator2Page, DateYearPipe],
+    SharedModule
+],
+  declarations: [Calculator2Page]
 })
 export class Calculator2PageModule {}
