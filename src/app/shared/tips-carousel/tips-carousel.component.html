@@ -1,0 +1,22 @@
+<ion-card color="light">
+    <div class="carousel-container">
+        <div #carouselTrack class="carousel-track" (scroll)="onCarouselScroll($event)">
+            @for (tip of tips; track $index) {
+            <div class="carousel-slide my-auto">
+                <ion-item lines="none" color="light">
+                    <ion-icon [name]="tip.img" slot="start" [color]="tip.imgColor" size="large"></ion-icon>
+                    <ion-label class="ion-text-wrap">
+                        <h2>{{ tip.header }}</h2>
+                        <p class="text-muted">{{ tip.body }}</p>
+                    </ion-label>
+                </ion-item>
+            </div>
+            }
+        </div>
+        <div class="carousel-dots">
+            @for (tip of tips; track $index) {
+            <span class="dot" [class.active]="$index === activeTipIndex"></span>
+            }
+        </div>
+    </div>
+</ion-card>

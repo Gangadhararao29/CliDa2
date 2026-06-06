@@ -1,0 +1,63 @@
+.carousel-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.carousel-track {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  touch-action: pan-x;
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-slide {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin: 4px 0 8px;
+}
+
+.carousel-dots .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ion-color-medium-tint);
+  transition:
+    width 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.carousel-dots .dot.active {
+  width: 14px;
+  border-radius: 3px;
+  background: var(--ion-color-primary);
+}
+
+ion-card {
+  padding: 0px !important;
+  border-radius: 8px;
+}
+
+ion-item {
+  --inner-padding-top: 0;
+  --inner-padding-bottom: 0;
+}
+
+ion-icon[slot="start"] {
+  align-self: center;
+}
