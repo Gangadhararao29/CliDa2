@@ -1,14 +1,16 @@
+@let isCredits = tabSection === 'credits';
+@let isDebits = tabSection === 'debits';
+@let isLeases = tabSection === 'leases';
+
 <ion-header class="ion-no-border">
   <ion-toolbar>
-    <ion-title>
-      <span class="text-grad me-2">CliDa</span>
-      <ion-chip [hidden]="showEntryText" [ngClass]="{'tabActive': !showDebitList}"
-        (click)="setListType('credits')">Credits</ion-chip>
-      <ion-chip [hidden]="showEntryText" [ngClass]="{'tabActive': showDebitList}"
-        (click)="setListType('debits')">Debits</ion-chip>
+    <ion-title class="pad-xs-0">
+      <ion-chip [ngClass]="{'tabActive': isCredits}" (click)="setListType('credits')">Credits</ion-chip>
+      <ion-chip [ngClass]="{'tabActive': isDebits}" (click)="setListType('debits')">Debits</ion-chip>
+      <ion-chip [ngClass]="{'tabActive': isLeases}" (click)="setListType('leases')">Leases</ion-chip>
     </ion-title>
     <ion-buttons slot="primary">
-      <ion-button [hidden]="showEntryText" (click)="toggleSearch()" data-bs-toggle="collapse"
+      <ion-button [hidden]="isDataEmpty || isLeases" (click)="toggleSearch()" data-bs-toggle="collapse"
         data-bs-target="#collapseExample">
         <ion-icon name="search" slot="icon-only" [color]="isSearchVisible ? 'primary' : ''"></ion-icon>
       </ion-button>
@@ -33,37 +35,50 @@
     </div>
   </div>
 
-  @if(showEntryText) {
-  <app-intro [theme]="theme" (reloadClientList)="ionViewWillEnter()"></app-intro>
-  } @else if(showDebitList) {
+  @if(isDataEmpty && tabSection !== 'leases') {
+  <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted text-center px-4"
+    [attr.data-bs-theme]="theme">
+    <ion-icon name="server-outline" class="mb-3" style="font-size: 4rem"></ion-icon>
+
+    <p class="mb-0 small">
+      No records found.<br />
+      Add your first client by tapping the <strong>+</strong> button <br />
+      at the bottom-right corner.
+    </p>
+  </div>
+  } @else if(tabSection === 'leases') {
+  <app-leases [theme]="theme" #leaseCalculator></app-leases>
+  } @else if(isDebits) {
   <app-datalist [dataList]="debitData" [clientSearchValue]="clientSearchValue">
     <ng-container *ngTemplateOutlet="noRecordsTpl"></ng-container>
   </app-datalist>
-  } @else{
+  } @else if(isCredits) {
   <app-datalist [dataList]="creditData" [clientSearchValue]="clientSearchValue">
     <ng-container *ngTemplateOutlet="noRecordsTpl"></ng-container>
   </app-datalist>
   }
 
-  @if(!showEntryText && hideSkeletonText && (showDebitList ? debitData.length === 0 : creditData.length === 0)){
-  <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted text-center"
-    [attr.data-bs-theme]="theme">
-    <ion-icon name="server-outline" class="mb-3" style="font-size: 4rem"></ion-icon>
-    <p class="mb-0">No records yet</p>
-  </div>
-  }
-
   <ng-template #noRecordsTpl>
-    <div class="text-muted mt-3" [attr.data-bs-theme]="theme">
-      No records found
+    <div class="text-muted mt-3 px-2" [attr.data-bs-theme]="theme">
+      No records found <br>
+      Try adjusting your search criteria. <br>
+      You can also search by client name, amount, year, or interest rate.
     </div>
   </ng-template>
 
   <ion-item color="medium" lines="none"></ion-item>
 
+  @if(!isLeases) {
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button color="danger" routerLink="add-client">
       <ion-icon name="add" size="large"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+  } @else {
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="danger" (click)="initNewLease()">
+      <ion-icon name="add" size="large"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  }
 </ion-content>

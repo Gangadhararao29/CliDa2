@@ -9,63 +9,63 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'clients-list',
+        redirectTo: 'dashboard',
         pathMatch: 'full',
       },
       {
         path: 'clients-list',
         loadChildren: () =>
           import('../clients-list/clients-list.module').then(
-            (m) => m.ClientsListPageModule
+            (m) => m.ClientsListPageModule,
           ),
       },
       {
         path: 'clients-list/client-details/:key',
         loadChildren: () =>
           import('../client-details/client-details.module').then(
-            (m) => m.ClientDetailsPageModule
+            (m) => m.ClientDetailsPageModule,
           ),
       },
       {
         path: 'clients-list/adv-search',
         loadChildren: () =>
           import('../adv-search/adv-search.module').then(
-            (m) => m.AdvSearchPageModule
+            (m) => m.AdvSearchPageModule,
           ),
       },
       {
         path: 'dashboard',
         loadChildren: () =>
           import('../dashboard/dashboard.module').then(
-            (m) => m.DashboardPageModule
+            (m) => m.DashboardPageModule,
           ),
       },
       {
         path: 'clients-list/adv-search/client-details/:key',
         loadChildren: () =>
           import('../client-details/client-details.module').then(
-            (m) => m.ClientDetailsPageModule
+            (m) => m.ClientDetailsPageModule,
           ),
       },
       {
         path: 'dashboard/client-details/:key',
         loadChildren: () =>
           import('../client-details/client-details.module').then(
-            (m) => m.ClientDetailsPageModule
+            (m) => m.ClientDetailsPageModule,
           ),
       },
       {
         path: 'dashboard/logs',
         loadChildren: () =>
           import('../operation-log/operation-log.module').then(
-            (m) => m.OperationLogPageModule
+            (m) => m.OperationLogPageModule,
           ),
       },
       {
         path: 'calculator/:encoded',
         loadChildren: () =>
           import('../calculator/calculator.module').then(
-            (m) => m.CalculatorPageModule
+            (m) => m.CalculatorPageModule,
           ),
       },
       {
@@ -76,7 +76,7 @@ const routes: Routes = [
         path: 'calculator2',
         loadChildren: () =>
           import('../calculator2/calculator2.module').then(
-            (m) => m.Calculator2PageModule
+            (m) => m.Calculator2PageModule,
           ),
       },
       {
@@ -88,21 +88,21 @@ const routes: Routes = [
         path: 'about/logs',
         loadChildren: () =>
           import('../operation-log/operation-log.module').then(
-            (m) => m.OperationLogPageModule
+            (m) => m.OperationLogPageModule,
           ),
       },
       {
         path: 'clients-list/add-client',
         loadChildren: () =>
           import('../add-client/add-client.module').then(
-            (m) => m.AddClientPageModule
+            (m) => m.AddClientPageModule,
           ),
       },
       {
         path: 'clients-list/client-details/:key/edit-details/:clientId',
         loadChildren: () =>
           import('../edit-details/edit-details.module').then(
-            (m) => m.EditDetailsPageModule
+            (m) => m.EditDetailsPageModule,
           ),
       },
     ],

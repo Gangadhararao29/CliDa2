@@ -28,3 +28,9 @@ ion-fab {
   margin-bottom: 70px;
   margin-right: 10px;
 }
+
+.pad-xs-0 {
+  @media screen and (max-width: 325px) {
+    padding-left: 10px;
+  }
+}

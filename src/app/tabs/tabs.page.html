@@ -3,14 +3,15 @@
   @let isClientsTab = false;
 
   <ion-tab-bar slot="bottom" class="floating-tab-bar">
+
+    <ion-tab-button tab="dashboard" [class.me-2]="isClientsTab">
+      <ion-icon name="home-sharp"></ion-icon>
+      <ion-label>Home</ion-label>
+    </ion-tab-button>
+
     <ion-tab-button tab="clients-list">
       <ion-icon name="list-sharp"></ion-icon>
       <ion-label>Clients</ion-label>
-    </ion-tab-button>
-
-    <ion-tab-button tab="dashboard" [class.me-2]="isClientsTab">
-      <ion-icon name="bar-chart-sharp"></ion-icon>
-      <ion-label>Dashboard</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="calculator" [class.ms-2]="isClientsTab">

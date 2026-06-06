@@ -2,7 +2,9 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { DataBaseService } from '../services/data-base.service';
 import { CalculationService } from '../services/calculation.service';
 import { UtilsService } from '../services/utils.service';
+import { CommonService } from '../services/common.service';
 import { localStorConsts, LocalStorageUtils } from '../shared/local-storage';
+import { FirebaseService } from '../services/firebase.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,20 +28,20 @@ export class DashboardPage {
   principalGridIcon = 'arrow-down-outline';
   topEarGridIcon = 'arrow-down-outline';
   hideSkeletonText = false;
-  @ViewChild('scrollableContainer', { static: true })
+  theme: string;
+  @ViewChild('modal') modal: any;
+  @ViewChild('scrollableContainer')
   scrollableContainer!: ElementRef;
-  @ViewChild('toggleDashSection', { static: true })
-  toggleDashSection;
-  @ViewChild('chart1', { static: true }) chart1!: ElementRef;
-  @ViewChild('chart2', { static: true }) chart2!: ElementRef;
-  @ViewChild('chart3', { static: true }) chart3!: ElementRef;
-  @ViewChild('chart4', { static: true }) chart4!: ElementRef;
+  @ViewChild('toggleDashSection') toggleDashSection;
+  @ViewChild('chart1') chart1!: ElementRef;
+  @ViewChild('chart2') chart2!: ElementRef;
+  @ViewChild('chart3') chart3!: ElementRef;
+  @ViewChild('chart4') chart4!: ElementRef;
 
   visibleChartIndex = 0; // 0: Line, 1: Pie, 2: Top Clients, 3: Interest
   nextChartIcon = 'pie-chart-sharp'; // Default next is pie
   scrollTimeout: any;
   logData: any[];
-  dashPref: any;
   defaultPref = {
     stats: true,
     graphs: true,
@@ -47,20 +49,31 @@ export class DashboardPage {
     upTrans: true,
     cliSum: true,
     topEar: true,
+    tips: true,
   };
-
+  dashPref = this.defaultPref;
+  user: any = null;
   constructor(
     private dataBaseService: DataBaseService,
     private calculationService: CalculationService,
-    private utilsService: UtilsService
+    private utilsService: UtilsService,
+    private commonService: CommonService,
+    private firebaseService: FirebaseService,
   ) {
     this.math = Math;
   }
 
   ionViewWillEnter() {
     this.hideSkeletonText = false;
+    this.theme = this.commonService.getTheme();
     this.logData = this.utilsService.formatLogDataForUI();
-    this.dashPref = LocalStorageUtils.getItem(localStorConsts.dashPref) || Object.assign({}, this.defaultPref);
+    this.dashPref =
+      LocalStorageUtils.getItem(localStorConsts.dashPref) ||
+      Object.assign({}, this.defaultPref);
+
+    this.firebaseService.onAuthStateChanged((user) => {
+      this.user = user ?? null;
+    });
   }
 
   ionViewDidEnter() {
@@ -97,7 +110,7 @@ export class DashboardPage {
 
       client.data.data.forEach((record) => {
         const timeObject = this.calculationService.calculateTimePeriod(
-          record.startDate
+          record.startDate,
         );
         const intArr = this.calculationService.calculateTotalInterest({
           principal: record.principal,
@@ -157,7 +170,7 @@ export class DashboardPage {
   getTotalPrincipalAmount() {
     return this.totalArray.reduce(
       (prev, curr) => prev + curr.totalPrincipal,
-      0
+      0,
     );
   }
 
@@ -167,7 +180,7 @@ export class DashboardPage {
 
   getFinalAmount() {
     return Math.round(
-      this.totalArray.reduce((prev, curr) => prev + curr.finalAmount, 0)
+      this.totalArray.reduce((prev, curr) => prev + curr.finalAmount, 0),
     );
   }
 
@@ -311,5 +324,9 @@ export class DashboardPage {
         this.updateIcon();
       }
     }, 100); // Reduced timeout for better responsiveness
+  }
+
+  ionViewWillLeave() {
+    if (this.modal) this.modal.dismiss();
   }
 }

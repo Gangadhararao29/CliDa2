@@ -5,6 +5,7 @@ import { App } from '@capacitor/app';
 import { DataBaseService } from '../services/data-base.service';
 import { CommonService } from '../services/common.service';
 import { localStorConsts, LocalStorageUtils } from '../shared/local-storage';
+import { LeasesComponent } from '../shared/leases/leases.component';
 
 @Component({
   selector: 'app-clients-list',
@@ -13,16 +14,19 @@ import { localStorConsts, LocalStorageUtils } from '../shared/local-storage';
   standalone: false,
 })
 export class ClientsListPage {
-  @ViewChild('searchbar') searchbar: any;
+  @ViewChild('searchbar') searchbar: any | undefined;
+  @ViewChild('leaseCalculator') leaseCalculator: LeasesComponent;
+
   clientSearchValue = '';
-  showEntryText: boolean;
-  debitData = [];
-  creditData = [];
-  showDebitList: boolean;
+  isDataEmpty: boolean = true;
+  debitData: Array<any> = [];
+  creditData: Array<any> = [];
+  leaseData: any[] = [];
   tabSection = 'credits';
   isSearchVisible = false;
-  hideSkeletonText: boolean;
-  theme: string;
+  hideSkeletonText: boolean = false;
+  theme: string = '';
+
   constructor(
     private router: Router,
     private platform: Platform,
@@ -55,27 +59,22 @@ export class ClientsListPage {
     this.hideSkeletonText = false;
     this.theme = this.commonService.getTheme();
     this.getDisplayData();
-    if (LocalStorageUtils.getStringItem(localStorConsts.tabSection) === 'debits') {
-      this.tabSection = 'debits';
-      this.showDebitList = true;
-    } else {
-      this.tabSection = 'credits';
-      this.showDebitList = false;
-    }
+    this.tabSection =
+      LocalStorageUtils.getStringItem(localStorConsts.tabSection) || 'credits';
   }
 
   getDisplayData(event?: any) {
-    this.dataBaseService.getAllClientsDataWithKeys().then((data) => {
-      this.showEntryText = data.length == 0;
+    this.dataBaseService.getAllClientsDataWithKeys().then((data: any[]) => {
+      this.isDataEmpty = data.length == 0;
       this.debitData = [];
       this.creditData = [];
 
-      data.forEach((client) => {
+      data.forEach((client: any) => {
         const name = client.data.name;
         const key = client.key;
-        const tempDebitData = [];
-        const tempCreditData = [];
-        client.data.data.forEach((record) => {
+        const tempDebitData: any[] = [];
+        const tempCreditData: any[] = [];
+        client.data.data.forEach((record: any) => {
           if (record.principal < 0) {
             tempDebitData.push(record);
           } else {
@@ -96,17 +95,17 @@ export class ClientsListPage {
         this.commonService.presentToast(
           'List refreshed',
           'successToastClass',
-          'refresh-outline'
+          'refresh-outline',
         );
       }
     });
   }
 
   toggleSearch() {
-    this.clientSearchValue = null;
+    this.clientSearchValue = '';
     this.isSearchVisible = !this.isSearchVisible;
     if (this.isSearchVisible) {
-      this.searchbar.setFocus();
+      this.searchbar?.setFocus();
     }
   }
 
@@ -137,8 +136,27 @@ export class ClientsListPage {
     this.getDisplayData(event);
   }
 
-  setListType(type) {
-    this.showDebitList = type === 'debits' ? true : false;
-    LocalStorageUtils.setStringItem(localStorConsts.tabSection, type);
+  setListType(type: string) {
+    switch (type) {
+      case 'debits':
+        this.tabSection = 'debits';
+        break;
+      case 'credits':
+        this.tabSection = 'credits';
+        break;
+      case 'leases':
+      default:
+        this.tabSection = 'leases';
+        break;
+    }
+
+    LocalStorageUtils.setStringItem(
+      localStorConsts.tabSection,
+      this.tabSection,
+    );
+  }
+
+  initNewLease() {
+    this.leaseCalculator.initNewLease();
   }
 }

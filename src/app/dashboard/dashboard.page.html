@@ -1,11 +1,31 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
-    <ion-title>Dashboard</ion-title>
+    <ion-title><span class="text-grad">CliDa</span></ion-title>
+    <ion-buttons slot="primary">
+      <ion-button id="openAccountModal" fill="clear" size="small">
+        @if (user && user.photoURL) {
+        <ion-avatar class="user-avatar" slot="icon-only">
+          <img [src]="user.photoURL" referrerpolicy="no-referrer" alt="User avatar" />
+        </ion-avatar>
+        } @else {
+        <ion-icon name="person-sharp" slot="icon-only" class="fs-3"></ion-icon>
+        }
+      </ion-button>
+    </ion-buttons>
     <ion-progress-bar [hidden]="hideSkeletonText" type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content [attr.data-bs-theme]="theme">
+
+  <!-- Swipable Tips & Updates Carousel -->
+  @if (hideSkeletonText && dashPref?.tips) {
+  <app-tips-carousel [user]="user"></app-tips-carousel>
+  }
+
+  @if(hideSkeletonText && totalClients && totalClients.length === 0) {
+  <app-intro [theme]="theme" (reloadClientList)="ionViewDidEnter()"></app-intro>
+  } @else {
 
   <div class="my-2" [hidden]="!dashPref?.stats">
 
@@ -51,16 +71,20 @@
 
   <div [hidden]="!dashPref?.graphs">
     <div class="d-flex justify-content-center gap-2 my-2">
-      <ion-button [fill]="visibleChartIndex === 0 ? 'solid' : 'outline'" color="dark" size="small" (click)="segmentChanged(0)">
+      <ion-button [fill]="visibleChartIndex === 0 ? 'solid' : 'outline'" color="dark" size="small"
+        (click)="segmentChanged(0)">
         <ion-icon slot="icon-only" name="trending-up-sharp"></ion-icon>
       </ion-button>
-      <ion-button [fill]="visibleChartIndex === 1 ? 'solid' : 'outline'" color="dark" size="small" (click)="segmentChanged(1)">
+      <ion-button [fill]="visibleChartIndex === 1 ? 'solid' : 'outline'" color="dark" size="small"
+        (click)="segmentChanged(1)">
         <ion-icon slot="icon-only" name="pie-chart-sharp"></ion-icon>
       </ion-button>
-      <ion-button [fill]="visibleChartIndex === 2 ? 'solid' : 'outline'" color="dark" size="small" (click)="segmentChanged(2)">
+      <ion-button [fill]="visibleChartIndex === 2 ? 'solid' : 'outline'" color="dark" size="small"
+        (click)="segmentChanged(2)">
         <ion-icon slot="icon-only" name="bar-chart-sharp"></ion-icon>
       </ion-button>
-      <ion-button [fill]="visibleChartIndex === 3 ? 'solid' : 'outline'" color="dark" size="small" (click)="segmentChanged(3)">
+      <ion-button [fill]="visibleChartIndex === 3 ? 'solid' : 'outline'" color="dark" size="small"
+        (click)="segmentChanged(3)">
         <ion-icon slot="icon-only" name="people-sharp"></ion-icon>
       </ion-button>
     </div>
@@ -81,7 +105,6 @@
       </div>
     </div>
   </div>
-
 
   <div class="container-md">
     <!-- Top Projected Earners -->
@@ -268,6 +291,7 @@
         <ion-label><span class="heading">Customize Dashboard</span></ion-label>
       </ion-item>
       <div class="px-2 pb-2">
+        <ion-chip [color]="dashPref?.tips ?'tertiary':''" (click)="toggleDashPref('tips')">Tips</ion-chip>
         <ion-chip [color]="dashPref?.stats ?'tertiary':''" (click)="toggleDashPref('stats')">Stats</ion-chip>
         <ion-chip [color]="dashPref?.graphs ?'tertiary':''" (click)="toggleDashPref('graphs')">Graphs</ion-chip>
         <ion-chip [color]="dashPref?.topEar ?'tertiary':''" (click)="toggleDashPref('topEar')">Earners</ion-chip>
@@ -278,4 +302,15 @@
     </ion-card>
 
   </div>
+  }
+
+  <!-- Account Modal -->
+  <ion-modal #modal trigger="openAccountModal" [initialBreakpoint]="1" [breakpoints]="[0, 1]">
+    <ng-template>
+      <div class="p-3">
+        <app-account-backup [theme]="theme"></app-account-backup>
+      </div>
+    </ng-template>
+  </ion-modal>
+
 </ion-content>

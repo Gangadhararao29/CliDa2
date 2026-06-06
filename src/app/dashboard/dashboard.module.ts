@@ -15,6 +15,7 @@ import { BarChartInterestDistributionComponent } from './bar-chart-interest-dist
 import { BaseChartDirective } from 'ng2-charts';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { FilterByYearPipe } from '../pipes/filter-by-year.pipe';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
@@ -24,6 +25,7 @@ import { FilterByYearPipe } from '../pipes/filter-by-year.pipe';
     DashboardPageRoutingModule,
     NgxPaginationModule,
     BaseChartDirective,
+    SharedModule,
   ],
   providers: [provideCharts(withDefaultRegisterables())],
   declarations: [
