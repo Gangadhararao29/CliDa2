@@ -22,11 +22,13 @@
     <ion-tab-button tab="about">
       <ion-icon name="person-sharp"></ion-icon>
       <ion-label>Info</ion-label>
-      <ion-badge color="danger" *ngIf="unreadCount > 0">{{ unreadCount }}</ion-badge>
+      @if (unreadCount > 0) {
+      <ion-badge color="danger">{{ unreadCount }}</ion-badge>
+      }
     </ion-tab-button>
   </ion-tab-bar>
 
-  @if(isClientsTab){
+  @if (isClientsTab) {
   <ion-button shape="round" color="danger" routerLink="/clients-list/add-client" class="center-fab-btn">
     <ion-icon name="add" slot="icon-only"></ion-icon>
   </ion-button>

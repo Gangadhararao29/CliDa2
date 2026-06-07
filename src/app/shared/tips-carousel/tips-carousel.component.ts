@@ -6,7 +6,6 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { CommonService } from '../../services/common.service';
 
 @Component({
   selector: 'app-tips-carousel',
@@ -22,6 +21,7 @@ export class TipsCarouselComponent implements OnInit, OnDestroy {
   private carouselInterval: any;
   scrollDebounce: any;
   isAutoScrolling = false;
+  isUserTouching = false; // ← NEW: tracks active touch
 
   tips = [
     {
@@ -134,7 +134,6 @@ export class TipsCarouselComponent implements OnInit, OnDestroy {
   constructor() {}
 
   ngOnInit() {
-    // this.tips = this.getDefaultTips();
     this.tips.forEach((tip) => {
       tip.body = this.replaceUserPlaceholder(tip.body);
       tip.imgColor = tip.imgColor || 'primary';
@@ -143,17 +142,36 @@ export class TipsCarouselComponent implements OnInit, OnDestroy {
     this.startCarouselAutoPlay();
   }
 
-  // getDefaultTips() {
-  //   return [];
-  // }
-
   ngOnDestroy() {
     this.clearCarouselInterval();
-
     if (this.scrollDebounce) {
       clearTimeout(this.scrollDebounce);
     }
   }
+
+  // ─── Touch guards ────────────────────────────────────────────────────────────
+
+  /** Called when the user puts a finger down — immediately kill auto-play. */
+  onTouchStart() {
+    this.isUserTouching = true;
+    this.clearCarouselInterval(); // stop interval so it can't fire mid-swipe
+    clearTimeout(this.scrollDebounce); // cancel any pending restart too
+  }
+
+  /**
+   * Called when the finger lifts.
+   * Wait a short moment for the snap animation to settle, then restart auto-play.
+   */
+  onTouchEnd() {
+    // Update active index after snap settles
+    this.scrollDebounce = setTimeout(() => {
+      this.isUserTouching = false;
+      this.syncIndexFromScroll();
+      this.startCarouselAutoPlay();
+    }, 400);
+  }
+
+  // ─── Auto-play ───────────────────────────────────────────────────────────────
 
   startCarouselAutoPlay() {
     this.clearCarouselInterval();
@@ -173,22 +191,25 @@ export class TipsCarouselComponent implements OnInit, OnDestroy {
   }
 
   scrollToActiveTip() {
-    if (this.carouselTrack && this.carouselTrack.nativeElement) {
+    if (this.carouselTrack?.nativeElement) {
       this.isAutoScrolling = true;
       const container = this.carouselTrack.nativeElement;
-      const width = container.offsetWidth;
       container.scrollTo({
-        left: this.activeTipIndex * width,
+        left: this.activeTipIndex * container.offsetWidth,
         behavior: 'smooth',
       });
-
       setTimeout(() => {
         this.isAutoScrolling = false;
       }, 500);
     }
   }
 
+  // ─── Scroll handler ──────────────────────────────────────────────────────────
+
   onCarouselScroll(event: any) {
+    // Ignore scroll events triggered by programmatic scrollToActiveTip()
+    if (this.isAutoScrolling) return;
+
     const container = event.target;
     if (container.offsetWidth) {
       const index = Math.round(container.scrollLeft / container.offsetWidth);
@@ -197,14 +218,26 @@ export class TipsCarouselComponent implements OnInit, OnDestroy {
       }
     }
 
-    if (this.isAutoScrolling) {
-      return;
-    }
+    // When the user is touching, onTouchEnd() owns the auto-play restart.
+    // Do NOT schedule a debounced restart here — it would double-fire.
+    if (this.isUserTouching) return;
 
+    // Mouse/trackpad drag fallback (non-touch environments)
     clearTimeout(this.scrollDebounce);
     this.scrollDebounce = setTimeout(() => {
       this.startCarouselAutoPlay();
     }, 300);
+  }
+
+  // ─── Helpers ─────────────────────────────────────────────────────────────────
+
+  /** Reads the current scroll position and syncs activeTipIndex. */
+  private syncIndexFromScroll() {
+    if (this.carouselTrack?.nativeElement) {
+      const container = this.carouselTrack.nativeElement;
+      const index = Math.round(container.scrollLeft / container.offsetWidth);
+      this.activeTipIndex = index;
+    }
   }
 
   replaceUserPlaceholder(body: string): string {

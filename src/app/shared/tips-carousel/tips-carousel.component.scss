@@ -13,7 +13,8 @@
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  touch-action: pan-x;
+  touch-action: pan-x; // allow horizontal swipe, block vertical interference
+  user-select: none; // prevent text selection during swipe
 }
 
 .carousel-track::-webkit-scrollbar {
@@ -25,11 +26,15 @@
   scroll-snap-align: center;
 }
 
+// ── Dots ──────────────────────────────────────────────────────────────────────
+
 .carousel-dots {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 5px;
-  margin: 4px 0 8px;
+  margin-top: 3px;
+  // margin: 2px 0 10px;
 }
 
 .carousel-dots .dot {
@@ -38,26 +43,43 @@
   border-radius: 50%;
   background: var(--ion-color-medium-tint);
   transition:
-    width 0.25s ease,
-    background-color 0.25s ease;
+    width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.3s ease,
+    border-radius 0.3s ease;
 }
 
 .carousel-dots .dot.active {
-  width: 14px;
+  width: 18px;
+  height: 6px;
   border-radius: 3px;
   background: var(--ion-color-primary);
 }
 
-ion-card {
-  padding: 0px !important;
-  border-radius: 8px;
-}
+// ── Item ─────────────────────────────────────────────────────────────────────
 
-ion-item {
-  --inner-padding-top: 0;
-  --inner-padding-bottom: 0;
+.tip-item {
+  --border-radius: var(--bs-border-radius-lg, 0.5rem);
+  overflow: hidden;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  margin-top: 10px;
 }
 
 ion-icon[slot="start"] {
   align-self: center;
+  margin-inline-end: 14px;
+  font-size: 28px;
+}
+
+ion-label {
+  h2 {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 3px;
+  }
+
+  p {
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
 }

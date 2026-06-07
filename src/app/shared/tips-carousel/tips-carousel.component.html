@@ -1,9 +1,10 @@
-<ion-card color="light">
+<div class="container-md">
     <div class="carousel-container">
-        <div #carouselTrack class="carousel-track" (scroll)="onCarouselScroll($event)">
+        <div #carouselTrack class="carousel-track" (scroll)="onCarouselScroll($event)" (touchstart)="onTouchStart()"
+            (touchend)="onTouchEnd()">
             @for (tip of tips; track $index) {
-            <div class="carousel-slide my-auto">
-                <ion-item lines="none" color="light">
+            <div class="carousel-slide">
+                <ion-item lines="none" color="light" class="rounded-3 tip-item">
                     <ion-icon [name]="tip.img" slot="start" [color]="tip.imgColor" size="large"></ion-icon>
                     <ion-label class="ion-text-wrap">
                         <h2>{{ tip.header }}</h2>
@@ -19,4 +20,4 @@
             }
         </div>
     </div>
-</ion-card>
+</div>

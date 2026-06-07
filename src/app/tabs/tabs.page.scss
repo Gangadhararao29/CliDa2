@@ -27,14 +27,37 @@ ion-tab-button {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 10px;
-  width: max(340px, 95vw);
-  max-width: 450px;
+  bottom: max(12px, env(safe-area-inset-bottom, 12px));
+  width: clamp(300px, 92vw, 460px);
   border-radius: 20px;
   z-index: 1000;
+  height: 60px;
   --background: rgba(var(--ion-color-light-rgb), 0.75) !important;
   --border: none !important;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  height: 65px;
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+
+  /* Frosted glass depth */
+  // box-shadow:
+  //   0 4px 24px rgba(0, 0, 0, 0.1),
+  //   0 1px 0px rgba(255, 255, 255, 0.6) inset,
+  //   0 0 0 0.5px rgba(0, 0, 0, 0.08);
+
+  padding-bottom: 0 !important;
+  overflow: visible; /* allow FAB to overflow */
+
+  ion-tab-button {
+    --color-selected: var(--ion-color-primary);
+    transition:
+      transform 0.18s ease,
+      opacity 0.18s ease;
+
+    &.tab-selected {
+      transform: scale(1.15);
+    }
+
+    ion-label {
+      transition: opacity 0.18s ease;
+    }
+  }
 }
