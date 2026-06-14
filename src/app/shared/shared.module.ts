@@ -11,6 +11,7 @@ import { AccountBackupComponent } from './account-backup/account-backup.componen
 import { DateYearPipe } from '../pipes/date-year.pipe';
 import { LeasesComponent } from './leases/leases.component';
 import { TipsCarouselComponent } from './tips-carousel/tips-carousel.component';
+import { NotificationsComponent } from './notifications/notifications.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { TipsCarouselComponent } from './tips-carousel/tips-carousel.component';
     DateYearPipe,
     LeasesComponent,
     TipsCarouselComponent,
+    NotificationsComponent,
   ],
   exports: [
     IntroComponent,
@@ -32,6 +34,7 @@ import { TipsCarouselComponent } from './tips-carousel/tips-carousel.component';
     DateYearPipe,
     LeasesComponent,
     TipsCarouselComponent,
+    NotificationsComponent,
   ],
   imports: [CommonModule, RouterModule, IonicModule, FormsModule],
 })

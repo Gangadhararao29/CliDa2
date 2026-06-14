@@ -1,18 +1,10 @@
 import { Component, Renderer2, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { HttpClient } from '@angular/common/http';
 import { App } from '@capacitor/app';
-import { read, utils, writeFileXLSX } from 'xlsx';
 import { Capacitor } from '@capacitor/core';
-import { FirebaseService } from '../services/firebase.service';
 import { CommonService } from '../services/common.service';
 import { DataBaseService } from '../services/data-base.service';
-import {
-  NotificationService,
-  NotificationSettings,
-} from '../services/notification.service';
 import { localStorConsts, LocalStorageUtils } from '../shared/local-storage';
 import { LeaseService } from '../services/lease.service';
 
@@ -24,39 +16,24 @@ import { LeaseService } from '../services/lease.service';
 })
 export class AboutPage {
   @ViewChild('modal1') modal1: any;
-  @ViewChild('modal2') modal2: any;
   @ViewChild('select2') select2;
 
   themeName = LocalStorageUtils.getItem(localStorConsts.theme);
-  inputClientData: any;
-  isUpdateLoading = false;
   isModalOpen = false;
   latestVersion = '0.0.0';
   currentVersion = '3.26.06';
   gitHubResponse = [];
   loadingData = true;
-  fileType = 'json';
   theme: string;
   isWebVersion: boolean = false;
   isUpdateAvailable = false;
-  notificationSettings: NotificationSettings = {
-    enabled: false,
-    notifyBeforeMonths: 6,
-    minimumAgeYears: 3,
-    reminderIntervalMonths: 2,
-  };
-  notifications: any[] = [];
-  isNotificationModalOpen = false;
 
   constructor(
     public alertController: AlertController,
-    private router: Router,
     private renderer: Renderer2,
     private httpClient: HttpClient,
-    private firebaseService: FirebaseService,
     private commonService: CommonService,
     private dataBaseService: DataBaseService,
-    private notificationService: NotificationService,
     private leaseService: LeaseService,
   ) {}
 
@@ -64,163 +41,37 @@ export class AboutPage {
     this.isWebVersion = Capacitor.getPlatform() != 'web' ? false : true;
     this.theme = this.commonService.getTheme();
     this.loadingData = false;
-    this.notificationSettings = this.notificationService.getSettings();
-    this.notifications = this.notificationService.getAllNotifications() || [];
-  }
-
-  ionViewDidEnter() {
-    const lv = this.latestVersion.split('.');
-    const cv = this.currentVersion.split('.');
-    this.isUpdateAvailable = lv[0] > cv[0] || lv[1] > cv[1] || lv[2] > cv[2];
   }
 
   checkForUpdate() {
-    this.isUpdateLoading = true;
     this.isModalOpen = false;
     App.getInfo().then((suc) => {
       this.currentVersion = suc.version;
+      this.updateUpdateAvailability();
     });
     this.httpClient
       .get('https://api.github.com/repos/gangadhararao29/clida2/releases')
       .subscribe((res: Array<any>) => {
         this.gitHubResponse = res;
         this.latestVersion = this.gitHubResponse[0].tag_name.slice(1);
-        this.isUpdateLoading = false;
+        this.updateUpdateAvailability();
         this.isModalOpen = true;
       });
   }
 
+  private updateUpdateAvailability() {
+    const lv = this.latestVersion.split('.').map(Number);
+    const cv = this.currentVersion.split('.').map(Number);
+
+    const isFirstUpdate = lv[0] >= cv[0];
+    const isSecondUpdate = lv[1] >= cv[1];
+    const isThirdUpdate = lv[2] > cv[2];
+
+    this.isUpdateAvailable = isFirstUpdate && isSecondUpdate && isThirdUpdate;
+  }
+
   setOpen(isOpen: boolean) {
     this.isModalOpen = isOpen;
-  }
-
-  exportData() {
-    this.firebaseService.generateBackupResponse().then((backupData) => {
-      if (this.fileType === 'json') {
-        const clientDataString = JSON.stringify(backupData);
-        this.writeSecretFile(clientDataString);
-        this.nativeSaveByUrl(clientDataString);
-      } else {
-        this.excelExport(backupData.clients);
-      }
-    });
-  }
-
-  nativeSaveByUrl(clientsDataString) {
-    const a = document.createElement('a');
-    const file = new Blob([clientsDataString], { type: 'text/plain' });
-    a.href = URL.createObjectURL(file);
-    a.download = `clientsData_${new Date().toJSON().slice(0, 10)}.json`;
-    a.click();
-  }
-
-  async writeSecretFile(clientsDataString: string) {
-    const fileName = `CliDa/clientsData_${new Date()
-      .toJSON()
-      .slice(0, 10)}.json`;
-    await Filesystem.writeFile({
-      path: fileName,
-      data: clientsDataString,
-      directory: Directory.Documents,
-      encoding: Encoding.UTF8,
-      recursive: true,
-    })
-      .then(() => {
-        this.commonService.presentToast(
-          `The file has been saved successfully in <br> Documents/${fileName}.`,
-        );
-      })
-      .catch((err) => {
-        const errString = 'No data found. <br>' + err.toString().slice(6);
-        this.commonService.presentToast(
-          errString,
-          'failedToastClass',
-          'alert-outline',
-        );
-      });
-  }
-
-  importData(target) {
-    if (this.fileType === 'excel') {
-      this.excelImport(target);
-    } else {
-      const fileReader = new FileReader();
-      fileReader.readAsText(target.files.item(0));
-      fileReader.onload = (e) => {
-        try {
-          this.importDataAlert(JSON.parse(fileReader.result.toString()));
-        } catch (err) {
-          this.commonService.presentToast(
-            err,
-            'failedToastClass',
-            'alert-outline',
-          );
-          this.inputClientData = '';
-        }
-      };
-    }
-  }
-
-  async importDataAlert(clientsData) {
-    const alert = await this.alertController.create({
-      header: 'Import data',
-      message: 'You already have data. How would you like to handle it?',
-      cssClass: 'alertMultiStyle',
-      backdropDismiss: false,
-      animated: true,
-      buttons: [
-        {
-          text: 'Sync with local',
-          cssClass: 'bg-primary',
-          handler: () => {
-            this.importHandler(clientsData, false);
-          },
-        },
-        {
-          text: 'Replace All',
-          cssClass: 'bg-primary',
-          handler: () => {
-            this.importHandler(clientsData, true);
-          },
-        },
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          handler: () => {
-            this.inputClientData = '';
-          },
-        },
-      ],
-    });
-    await alert.present();
-  }
-
-  async importHandler(clientsData, replaceStatus) {
-    await this.commonService.presentLoading('Importing data...');
-
-    if (clientsData?.userPreferences) {
-      this.commonService.setUserPreferences(clientsData);
-    }
-
-    if (clientsData?.leases?.length) {
-      await this.leaseService.restoreFromCloud(clientsData.leases);
-    }
-
-    if (clientsData?.clients?.length) {
-      await this.dataBaseService.saveBulkClients(
-        clientsData.clients,
-        replaceStatus,
-      );
-    }
-
-    await this.commonService.dismissLoading();
-    setTimeout(() => {
-      this.inputClientData = '';
-      this.commonService.presentToast(
-        'Data imported successfully. <br> Redirecting to the Clients List tab.',
-      );
-      this.router.navigate(['clients-list']);
-    }, 1000);
   }
 
   async presentDeleteAlert() {
@@ -364,156 +215,8 @@ export class AboutPage {
     });
   }
 
-  excelExport(res) {
-    const fileName = `clientsData_${new Date().toJSON().slice(0, 10)}.xlsx`;
-    const excelArray = [];
-    res.forEach((client) => {
-      client.data.forEach((record) => {
-        excelArray.push({
-          name: client.name,
-          principal: record.principal,
-          interest: record.interest,
-          startDate: record.startDate,
-          comments: record.comments,
-          closedOn: record.closedOn,
-          closedAmount: record.closedAmount,
-        });
-      });
-    });
-    const ws = utils.json_to_sheet(excelArray);
-    const wb = utils.book_new();
-    utils.book_append_sheet(wb, ws, 'Clients Data');
-    writeFileXLSX(wb, fileName);
-  }
-
-  async excelImport(target) {
-    const wb = read(await target.files[0].arrayBuffer());
-    const data = utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-    const clientsData = [];
-    let id = Date.now();
-    data.forEach((record: any) => {
-      record.id = id++;
-      const clientIndex = clientsData.findIndex(
-        (client) => client.name === record.name,
-      );
-      if (clientIndex > -1) {
-        delete record.name;
-        clientsData[clientIndex].data.push(record);
-      } else {
-        const newClient = record.name;
-        delete record.name;
-        clientsData.push({ name: newClient, data: [record] });
-      }
-    });
-    this.dataBaseService.saveBulkClients(clientsData, true).then(() => {
-      setTimeout(() => {
-        this.inputClientData = '';
-        this.commonService.presentToast(
-          'Data imported successfully <br>Redirecting to Clients-list tab',
-        );
-        this.router.navigate(['clients-list']);
-      }, 1000);
-    });
-  }
-
-  // Notification Settings and Handling
-  onNotificationToggle() {
-    if (this.notificationSettings.enabled) {
-      this.notificationService.requestPermission(true).then((granted) => {
-        if (!granted) {
-          this.notificationSettings.enabled = false;
-          this.commonService.presentToast(
-            'Notification permission denied',
-            'failedToastClass',
-            'alert-outline',
-          );
-        }
-        this.saveNotificationSettings();
-      });
-    } else {
-      this.saveNotificationSettings();
-    }
-  }
-
-  saveNotificationSettings() {
-    this.notificationService.saveSettings(this.notificationSettings);
-  }
-
-  openNotifications() {
-    // this.notifications = this.notificationService.getAllNotifications() || [];
-    this.isNotificationModalOpen = true;
-  }
-
-  markAsRead(notification: any) {
-    this.notificationService.markAsRead(notification.id);
-    const note = this.notifications.find((n) => n.id === notification.id);
-    if (note) note.read = true;
-  }
-
-  dismissNotification(notification: any) {
-    this.notificationService.dismissNotification(notification.id);
-    this.notifications = this.notifications.filter(
-      (n) => n.id !== notification.id,
-    );
-  }
-
-  clearAllNotifications() {
-    this.notificationService.clearAllNotifications();
-    this.notifications = [];
-  }
-
-  openNoteRecord(note: any) {
-    this.isNotificationModalOpen = false;
-    setTimeout(() => {
-      this.router.navigate(['clients-list', 'client-details', note.key]);
-    });
-  }
-
-  getFormattedDate(date: string | Date): string {
-    const noteDate = new Date(date);
-    const now = new Date();
-
-    // Check if it's today
-    if (
-      noteDate.getFullYear() === now.getFullYear() &&
-      noteDate.getMonth() === now.getMonth() &&
-      noteDate.getDate() === now.getDate()
-    ) {
-      // For today, show relative time
-      const diffMs = now.getTime() - noteDate.getTime();
-      const diffMins = Math.floor(diffMs / (1000 * 60));
-      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-
-      if (diffMins < 1) {
-        return 'Just now';
-      } else if (diffMins < 60) {
-        return `${diffMins} min${diffMins !== 1 ? 's' : ''} ago`;
-      } else {
-        return `${diffHours} hr${diffHours !== 1 ? 's' : ''} ago`;
-      }
-    }
-
-    const yesterday = new Date();
-    yesterday.setDate(now.getDate() - 1);
-    if (
-      noteDate.getFullYear() === yesterday.getFullYear() &&
-      noteDate.getMonth() === yesterday.getMonth() &&
-      noteDate.getDate() === yesterday.getDate()
-    ) {
-      return 'Yesterday';
-    }
-
-    return noteDate.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: '2-digit',
-    });
-  }
-
   ionViewWillLeave() {
-    this.isNotificationModalOpen = false;
     this.isModalOpen = false;
     this.modal1.dismiss();
-    this.modal2.dismiss();
   }
 }

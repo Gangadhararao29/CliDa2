@@ -5,48 +5,49 @@
     </ion-card-header>
 
     <ion-card-content class="fs-6" style="line-height: 1.8;">
-      💼 Simplify client management <br />
-      📊 Real-time dashboard insights <br />
-      🧮 Interest calculators (simple & compound) <br />
-      🔄 Data backup & restore (Excel/Json) <br />
-      🎨 Customizable themes <br />
-      📱 Mobile-optimized <br />
-      🚀 Boost operational efficiency
+      💼 Manage client credits, debits, and leases <br />
+      📊 Real-time stats & interactive charts <br />
+      🧮 Simple & compound interest calculators <br />
+      🔄 Auto-backup & restore with Google cloud sync
     </ion-card-content>
   </ion-card>
 
   <ion-card color="light" class="rounded mx-0 my-3">
-    <ion-card-title class="p-2 my-1">
-      <ion-icon name="flash-outline" class="text-primary"></ion-icon>
-      Quick Start Guide
-    </ion-card-title>
+    <ion-card-header class="pb-2">
+      <ion-card-title class="fw-bold d-flex align-items-center gap-2" style="font-size: 1.2rem;">
+        <ion-icon name="flash-outline" color="primary"></ion-icon>
+        Quick Start Guide
+      </ion-card-title>
+    </ion-card-header>
 
-    <!-- Add Client -->
-    <ion-item color="light" button detail routerLink="/clients-list/add-client">
-      <ion-icon name="person-add-outline" slot="start" class="text-danger fs-4"></ion-icon>
-      <ion-label>
-        <h2 class="fw-semibold mb-1">Add Client</h2>
-        <p class="text-muted small mb-0" [attr.data-bs-theme]="theme">Add new clients in seconds.</p>
-      </ion-label>
-    </ion-item>
+    <ion-card-content class="p-0">
+      <!-- Add Client -->
+      <ion-item color="light" button detail routerLink="/clients-list/add-client">
+        <ion-icon name="person-add-outline" slot="start" class="text-danger fs-4"></ion-icon>
+        <ion-label>
+          <h2 class="fw-semibold mb-1">Add Client</h2>
+          <p class="text-muted small mb-0" [attr.data-bs-theme]="theme">Create new client records in seconds.</p>
+        </ion-label>
+      </ion-item>
 
-    <!-- Restore Data -->
-    <ion-item color="light" button detail routerLink="/about">
-      <ion-icon name="sync-outline" slot="start" class="text-primary fs-4"></ion-icon>
-      <ion-label>
-        <h2 class="fw-semibold mb-1">Restore Backup</h2>
-        <p class="text-muted small mb-0" [attr.data-bs-theme]="theme">Bring back your saved data.</p>
-      </ion-label>
-    </ion-item>
+      <!-- Restore Backup -->
+      <ion-item color="light" button detail routerLink="/about">
+        <ion-icon name="sync-outline" slot="start" class="text-primary fs-4"></ion-icon>
+        <ion-label>
+          <h2 class="fw-semibold mb-1">Restore Backup</h2>
+          <p class="text-muted small mb-0" [attr.data-bs-theme]="theme">Restore saved data from cloud or local file.</p>
+        </ion-label>
+      </ion-item>
 
-    <!-- Try Demo Data -->
-    <ion-item color="light" button detail (click)="loadSampleData()">
-      <ion-icon name="bulb-outline" slot="start" class="text-success fs-4"></ion-icon>
-      <ion-label>
-        <h2 class="fw-semibold mb-1">Try Demo Data</h2>
-        <p class="text-muted small mb-0" [attr.data-bs-theme]="theme">Preview with preloaded examples.</p>
-      </ion-label>
-    </ion-item>
+      <!-- Try Demo Data -->
+      <ion-item color="light" button detail (click)="loadSampleData()">
+        <ion-icon name="bulb-outline" slot="start" class="text-success fs-4"></ion-icon>
+        <ion-label>
+          <h2 class="fw-semibold mb-1">Try Demo Data</h2>
+          <p class="text-muted small mb-0" [attr.data-bs-theme]="theme">Explore app features with sample records.</p>
+        </ion-label>
+      </ion-item>
+    </ion-card-content>
   </ion-card>
 
 

@@ -3,7 +3,7 @@ import { NotificationService } from './services/notification.service';
 import { FirebaseService } from './services/firebase.service';
 import { LocalStorageUtils, localStorConsts } from './shared/local-storage';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
-import { filter } from 'rxjs';
+import { filter, take } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -21,11 +21,14 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.setAppTheme();
-    this.notificationService.initializeListeners();
-    this.notificationService.initializeNotificationCheck();
-    this.firebaseService.initializeAutoBackup();
-
     this.checkForSwUpdates();
+
+    // Defer everything else so it doesn't block the first render
+    setTimeout(() => {
+      this.notificationService.initializeListeners();
+      this.notificationService.initializeNotificationCheck();
+      this.firebaseService.initializeAutoBackup();
+    }, 2000);
   }
 
   private setAppTheme() {
@@ -48,25 +51,26 @@ export class AppComponent implements OnInit {
   }
 
   private checkForSwUpdates() {
-    console.log(this.swUpdate, this.swUpdate.isEnabled);
     if (!this.swUpdate.isEnabled) return;
 
-    // Listen for a new version being ready
     this.swUpdate.versionUpdates
       .pipe(
         filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
+        take(1), // ← KEY FIX: only respond to the first event, ignore duplicates
       )
-      .subscribe(() => {
-        // Option A: Auto-reload silently
-        // document.location.reload();
+      .subscribe(() => this.showUpdateAlert());
 
-        // Option B: Prompt the user (better UX)
-        if (confirm('New version available. Load it?')) {
-          document.location.reload();
-        }
-      });
+    // Slight delay so the subscription above is fully set up
+    // before the active check can emit
+    setTimeout(() => this.swUpdate.checkForUpdate(), 100);
+  }
 
-    // Actively check for updates (don't rely on passive checks alone)
-    this.swUpdate.checkForUpdate();
+  private showUpdateAlert() {
+    let userMessage =
+      'A new version of the app is ready. Refresh now to apply the latest updates and improvements?';
+
+    if (confirm(userMessage)) {
+      document.location.reload();
+    }
   }
 }

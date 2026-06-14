@@ -121,7 +121,7 @@ export class DataBaseService {
       } else {
         existingClient.data.push(payload);
         await this.updateClientRecordByName(existingClient);
-        return this.deleteClientData(clientData, key, index);
+        return this.deleteClientData(clientData, index, key);
       }
     } else {
       if (renameAllRecords) {
@@ -134,7 +134,7 @@ export class DataBaseService {
           data: [payload],
         };
         await this.createDataRecords(createPayload);
-        return this.deleteClientData(clientData, key, index);
+        return this.deleteClientData(clientData, index, key);
       }
     }
   }

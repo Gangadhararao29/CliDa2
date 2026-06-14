@@ -1,152 +1,218 @@
-@if (isWebVersion) {
+<div [attr.data-bs-theme]="theme">
+  @if (isWebVersion) {
   @if(user){
 
-  <div class="d-flex justify-content-center" style="position: relative; height: 2rem; z-index: 10;">
-    <ion-avatar style="width: 70px; height: 70px; position: absolute; top: 0.45rem;">
-      <img alt="Profile pic image" [src]="user?.photoURL" referrerpolicy="no-referrer" />
+  <ion-item color="light" class="rounded-3 my-2 shadow-sm">
+    <ion-avatar slot="start">
+      <img [src]="user?.photoURL" referrerpolicy="no-referrer" alt="Profile" />
     </ion-avatar>
+    <ion-label>
+      <h2 class="fw-semibold">Hi {{ user?.displayName }}</h2>
+      <p class="small text-muted">{{ user?.email }}</p>
+    </ion-label>
+  </ion-item>
+
+  <ion-button color="danger" expand="block" class="mb-3" (click)="logOutUser()">
+    <ion-icon slot="start" name="log-out-outline"></ion-icon>
+    Sign out
+  </ion-button>
+
+  <!-- Backup Info / Stats & Badge -->
+  <div class="d-flex justify-content-between align-items-center p-2 bgLight rounded-2 mb-3">
+    <div class="small">
+      @if (autoBackupEnabled) {
+      <div class="d-flex align-items-center gap-1 mb-1">
+        <ion-icon name="cloud-upload-outline" color="primary"></ion-icon>
+        <span class="text-muted">Last backup:</span>
+        <span class="fw-semibold">{{ lastBackupDate ? (lastBackupDate | date:'dd MMM yy, h:mm a') : 'Never'
+          }}</span>
+      </div>
+      <div class="d-flex align-items-center gap-1">
+        <ion-icon name="time-outline" color="secondary"></ion-icon>
+        <span class="text-muted">Next backup:</span>
+        <span class="fw-semibold ">{{ nextBackupDate ? (nextBackupDate | date:'dd MMM yy, h:mm a') : '—'
+          }}</span>
+      </div>
+      } @else {
+      <div class="d-flex align-items-center gap-1 mb-1">
+        <ion-icon name="time-outline" color="warning"></ion-icon>
+        <span class="text-muted">Modified:</span>
+        <span class="fw-semibold ">{{ lastDataModified ? (lastDataModified | date:'dd MMM yy, h:mm a') : 'Never'
+          }}</span>
+      </div>
+      <div class="d-flex align-items-center gap-1">
+        <ion-icon name="cloud-done-outline" color="success"></ion-icon>
+        <span class="text-muted">Synced:</span>
+        <span class="fw-semibold ">{{ lastCloudSync ? (lastCloudSync | date:'dd MMM yy, h:mm a') : 'Never'
+          }}</span>
+      </div>
+      }
+    </div>
+
+    <div>
+      @if (autoBackupEnabled) {
+      <div class="cus_badge text-bg-success">
+        <ion-icon name="sync-outline"></ion-icon>
+        <span>Auto</span>
+      </div>
+      } @else {
+      <div class="cus_badge" [ngClass]="isBackupNeeded ? 'text-bg-warning' : 'text-bg-success'">
+        <ion-icon [name]="isBackupNeeded ? 'cloud-upload-outline' : 'checkmark-circle-outline'"></ion-icon>
+        <span>{{ isBackupNeeded ? 'Backup needed' : 'Synced' }}</span>
+      </div>
+      }
+    </div>
   </div>
 
-  <ion-card color="light">
-    <ion-card-header>
-      <ion-card-title class="text-center">
-        <br />
-        Hi {{ user?.displayName }}
-      </ion-card-title>
-      <div class="text-muted text-center">{{user?.email}}</div>
+  <!-- Cloud Backup Settings Card -->
+  <ion-card color="light" class="mb-3">
+    <ion-card-header class="py-2">
+      <ion-card-title style="font-size: 1.1rem;" class="d-flex align-items-center"><ion-icon name="cloud-outline" color="primary" class="me-2"></ion-icon>Cloud Backup</ion-card-title>
     </ion-card-header>
-    <ion-card-content>
-      <!-- Backup Info -->
-      <div class="d-flex justify-content-between px-2 pt-2 pb-1 align-items-center">
-        @if(autoBackupEnabled){
-        <div>
-          <ion-icon name="cloud-upload-outline" class="me-1"></ion-icon>
-          Last backup: {{ lastBackupDate ? (lastBackupDate | date:'dd MMM yy, h:mm a') : 'Never' }} <br>
-          <ion-icon name="time-outline" class="me-1"></ion-icon>
-          Next backup: {{ nextBackupDate ? (nextBackupDate | date:'dd MMM yy, h:mm a') : '—' }}
-        </div>
-        <div class="mx-1" *ngIf="autoBackupEnabled">
-          <span class="badge rounded-pill text-bg-success">
-            <ion-icon name="repeat-outline"></ion-icon>
-            Auto
-          </span>
-        </div>
 
-        }
-        @else {
-        <div>
-          <ion-icon name="time-outline" class="me-1"></ion-icon>
-          Modified: {{ lastDataModified ? (lastDataModified | date:'dd MMM yy, h:mm a') : 'Never' }} <br>
+    <ion-card-content class="p-0">
+      <ion-item button color="light" lines="none" class="rounded-3 shadow-sm">
+        <ion-toggle [(ngModel)]="autoBackupEnabled" (ionChange)="onAutoBackupToggle()">
+          <ion-label>Automatic backup</ion-label>
+          <ion-note>Back up your data to the cloud</ion-note>
+        </ion-toggle>
+      </ion-item>
 
-          <ion-icon name="cloud-done-outline" class="me-1"></ion-icon>
-          Synced: {{ lastCloudSync ? (lastCloudSync | date:'dd MMM yy, h:mm a') : 'Never' }}
-        </div>
+      @if (autoBackupEnabled) {
+      <ion-item lines="none" color="light" class="border-top">
+        <ion-label class="text-muted" style="font-size: 0.9rem;">
+          Backup Frequency
+        </ion-label>
+        <ion-select slot="end" [(ngModel)]="backupInterval" interface="popover" (ionChange)="onBackupIntervalChange()">
+          <ion-select-option value="1">Every day</ion-select-option>
+          <ion-select-option value="7">Every week</ion-select-option>
+          <ion-select-option value="30">Every month</ion-select-option>
+        </ion-select>
+      </ion-item>
 
-        <div class="mx-1">
-          <span class="badge rounded-pill" [ngClass]="isBackupNeeded ? 'text-bg-warning' : 'text-bg-success'">
-            <ion-icon [name]="isBackupNeeded ? 'cloud-upload-outline' : 'checkmark-circle-outline'"></ion-icon>
-            {{ isBackupNeeded ? 'Backup needed' : 'Synced' }}
-          </span>
-        </div>
-        }
-      </div>
-
-      <ion-button class="m-2" color="danger" expand="block" (click)="logOutUser()">
-        <ion-icon slot="start" name="log-out-outline"></ion-icon>
-        Sign out
-      </ion-button>
-
-    </ion-card-content>
-  </ion-card>
-
-  <!-- Automatic backup Card + Manual Cloud Sync -->
-  <ion-card color="medium" class="my-3">
-    <ion-item button color="light" lines="none" class="rounded-3 shadow-sm">
-      <ion-toggle [(ngModel)]="autoBackupEnabled" (ionChange)="onAutoBackupToggle()">
-        <ion-label>Automatic backup</ion-label>
-        <ion-note>Back up your data to the cloud</ion-note>
-      </ion-toggle>
-    </ion-item>
-
-    <ion-item lines="none" color="light" *ngIf="autoBackupEnabled" class="border-top">
-      <ion-label class="text-muted" style="font-size: 0.9rem;">
-        Backup Frequency
-      </ion-label>
-      <ion-select slot="end" [(ngModel)]="backupInterval" interface="popover" (ionChange)="onBackupIntervalChange()">
-        <ion-select-option value="1">Every day</ion-select-option>
-        <ion-select-option value="7">Every week</ion-select-option>
-        <ion-select-option value="30">Every month</ion-select-option>
-      </ion-select>
-    </ion-item>
-
-    <!-- Manual Cloud Sync -->
-    <ion-accordion-group class="m-0">
-      <div class="mt-2">
-        <ion-accordion value="manual-cloud-sync" class="bg-transparent shadow-none">
-
-          <ion-item button slot="header" class="rounded shadow-sm" color="light" lines="none">
-            <ion-icon name="cloud-outline" slot="start" class="me-2 text-primary" size="small"
-              color="dark"></ion-icon>
-            <ion-label>Manual Cloud Sync</ion-label>
+      <!-- Collapsed accordion for manual sync if automatic backup is enabled -->
+      <ion-accordion-group class="m-0">
+        <ion-accordion value="manual-cloud-sync" class="bg-transparent shadow-none border-0">
+          <ion-item slot="header" color="light" lines="none" class="border-top">
+            <ion-icon name="cloud-outline" slot="start" color="primary" class="me-2" size="small"></ion-icon>
+            <ion-label>Manual Backup</ion-label>
           </ion-item>
 
-          <div slot="content" class="p-1">
-            <ion-item color="light" class="px-0 rounded" lines="none">
-              <ion-select justify="space-between" interface="popover" label="Mode" placeholder="Merge"
-                [(ngModel)]="cloudSyncType">
-
-                <ion-select-option value="soft">Merge</ion-select-option>
-                <ion-select-option value="hard">Overwrite</ion-select-option>
-
-              </ion-select>
-            </ion-item>
-
-            <small *ngIf="cloudSyncType === 'hard'" class="text-warning text-center d-block">
-              <ion-icon name="warning-outline" class="me-1"></ion-icon>
-              Warning: This will replace data in the destination.<br>
-              (Cloud for Backup, local for Restore)
-            </small>
-
-            <div class="d-flex gap-2 mt-1">
-
-              <ion-button class="flex-fill" (click)="uploadToCloud(cloudSyncType === 'soft')">
-                <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
-                Backup
-              </ion-button>
-
-              <ion-button class="flex-fill" (click)="loadCloudData(cloudSyncType === 'soft')">
-                <ion-icon name="cloud-download-outline" slot="start"></ion-icon>
-                Restore
-              </ion-button>
-
-            </div>
-
+          <div slot="content">
+            <ng-container *ngTemplateOutlet="manualBackupCard"></ng-container>
           </div>
         </ion-accordion>
-      </div>
-    </ion-accordion-group>
-
+      </ion-accordion-group>
+      } @else {
+      <!-- Manual sync options shown directly without a header title if automatic backup is disabled -->
+      <ng-container *ngTemplateOutlet="manualBackupCard"></ng-container>
+      }
+    </ion-card-content>
   </ion-card>
 
   }
   @else {
-  <ion-card color="light" class="rounded shadow-sm">
-    <ion-card-content>
+  <ion-item color="light" class="rounded-3 mt-2 shadow-sm">
+    <ion-icon name="cloud-outline" color="primary" size="large" slot="start"></ion-icon>
+    <ion-label>
+      <h2>Secure cloud backup</h2>
+      <p>Sync your data to keep your records safe.</p>
+    </ion-label>
+  </ion-item>
 
+  <ion-button expand="block" color="primary" fill="solid" class="rounded-pill mt-2 mb-3" (click)="signInWithGoogle()"
+    [disabled]="loadingData">
+    <ion-icon name="logo-google" slot="start"></ion-icon>
+    Sign in with Google
+  </ion-button>
+  }
+  }
+
+  <!-- Offline Data Sync -->
+  <ion-card color="light" class="my-3">
+    <ion-card-header class="py-2">
+      <ion-card-title style="font-size: 1.1rem;">
+        <div class="d-flex align-items-center"><ion-icon name="cloud-download-outline" color="primary" class="me-2"></ion-icon>
+          <span>Local Backup</span>
+
+          @if(!hideHelp) {
+          <ion-icon id="help-section" name="information-outline" size="small"
+            class="ms-auto text-dark bg-warning rounded-circle" style="cursor: pointer;">
+          </ion-icon>
+          }
+        </div>
+      </ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
       <ion-item color="light">
-        <ion-icon name="cloud-outline" color="primary" size="large" slot="start"></ion-icon>
-        <ion-label>
-          <h2>Secure cloud backup</h2>
-          <p>Sign in with Google to sync your data and keep your records safe.</p>
-        </ion-label>
+        <ion-select justify="space-between" interface="popover" label="Select file type" placeholder=""
+          [(ngModel)]="fileType">
+          <ion-select-option value="json">JSON</ion-select-option>
+          <ion-select-option value="excel">Excel (beta)</ion-select-option>
+        </ion-select>
       </ion-item>
 
-      <ion-button expand="block" color="primary" fill="solid" class="rounded-pill mx-2 mb-2"
-        (click)="signInWithGoogle()" [disabled]="loadingData">
-        <ion-icon name="logo-google" slot="start"></ion-icon>
-        Continue with Google
-      </ion-button>
+      <div class="d-flex gap-2 mx-2 mb-1">
+        <ion-button class="flex-fill" (click)="exportData()">
+          <ion-icon name="share-outline" slot="start"></ion-icon>
+          Export Data
+        </ion-button>
+
+        <ion-button class="flex-fill" (click)="fileInput.click()">
+          <ion-icon name="download-outline" slot="start"></ion-icon>
+          Import Data
+        </ion-button>
+      </div>
     </ion-card-content>
   </ion-card>
-  }
-}
+
+  <ion-popover trigger="help-section" side="bottom" alignment="end">
+    <ng-template>
+      <ion-content class="ion-padding">
+        <div>
+          <strong>Export:</strong> Downloads your data securely to your device's default
+          downloads folder as a <b>.json</b> or <b>.xlsx</b> file.
+          <hr class="mx-0 my-1 p-0" />
+          <strong>Import:</strong> Select a previously exported JSON or Excel file.
+          You can choose to <b>Replace All</b> (recommended) or <b>Sync with local</b> with your data.
+          <hr class="mx-0 my-1 p-0" />
+          <small>Tip: For best results, always keep a cloud backup before importing new data.</small>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-popover>
+
+  <input hidden #fileInput type="file"
+    [accept]="fileType==='excel'?'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':'application/JSON'"
+    (change)="importData($event.target)" [(ngModel)]="inputClientData" />
+
+  <ng-template #manualBackupCard>
+    <ion-item color="light" class="px-0 rounded border-top border-bottom" lines="none">
+      <ion-select justify="space-between" interface="popover" label="Mode" placeholder="Merge"
+        [(ngModel)]="cloudSyncType">
+        <ion-select-option value="soft">Merge</ion-select-option>
+        <ion-select-option value="hard">Overwrite</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+
+    @if (cloudSyncType === 'hard') {
+    <div class="small text-muted mt-1 px-2">* Merge combines cloud and local records. <br>Overwrite replaces cloud data
+      completely.
+    </div>
+    }
+
+    <div class="d-flex gap-2 p-2">
+      <ion-button class="flex-fill" (click)="uploadToCloud(cloudSyncType === 'soft')">
+        <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+        Backup
+      </ion-button>
+
+      <ion-button class="flex-fill" (click)="loadCloudData(cloudSyncType === 'soft')">
+        <ion-icon name="cloud-download-outline" slot="start"></ion-icon>
+        Restore
+      </ion-button>
+    </div>
+  </ng-template>
+</div>

@@ -12,19 +12,31 @@ ion-card-content {
   padding: 0px;
 }
 
+.bgLight {
+  background-color: var(--ion-color-light);
+}
+
 /* Badge / Pills styling for consistent display */
-.badge {
+.cus_badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 0.35em 0.65em;
-  font-size: 0.75em;
+  justify-content: center;
+  width: 80px;
+  min-height: 32px;
+  padding: 4px 8px;
+  font-size: 0.72rem;
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.1;
   text-align: center;
-  white-space: nowrap;
+  white-space: normal;
   vertical-align: baseline;
-  border-radius: 50rem; /* default to rounded-pill */
+  border-radius: 50rem;
+
+  ion-icon {
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    margin-right: 2px;
+  }
 }
 
 .text-bg-success {

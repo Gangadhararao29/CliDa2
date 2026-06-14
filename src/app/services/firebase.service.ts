@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
+import { Auth, User } from '@angular/fire/auth';
 import {
-  Auth,
-  signInWithPopup,
+  onAuthStateChanged,
   GoogleAuthProvider,
+  signInWithPopup,
   signOut,
-  User,
-} from '@angular/fire/auth';
-import { onAuthStateChanged } from 'firebase/auth';
+} from 'firebase/auth';
 import {
   Firestore,
   doc,
@@ -29,6 +28,7 @@ export interface AutoBackupSettings {
 })
 export class FirebaseService {
   private currentUser: User | null = null;
+  private authUnsubscribe: (() => void) | null = null;
 
   constructor(
     private auth: Auth,
@@ -216,7 +216,12 @@ export class FirebaseService {
 
   initializeAutoBackup(): void {
     console.log('[FirebaseService] Initializing auto backup...');
-    onAuthStateChanged(this.auth, (user) => {
+    if (this.authUnsubscribe) {
+      this.authUnsubscribe();
+      this.authUnsubscribe = null;
+    }
+
+    this.authUnsubscribe = onAuthStateChanged(this.auth, (user) => {
       this.currentUser = user;
       if (!user) return;
 
@@ -233,6 +238,7 @@ export class FirebaseService {
   }
 
   private async runAutoBackup(): Promise<void> {
+    if (!this.currentUser) return;
     try {
       const payload = await this.getModifiedData(true, this.currentUser.uid);
       if (
@@ -240,17 +246,15 @@ export class FirebaseService {
         payload.updatedLeases.length == 0
       ) {
         console.log('[FirebaseService] No updates found');
-        LocalStorageUtils.setStringItem(
-          localStorConsts.lastAutoBackup,
-          new Date().toISOString(),
-        );
+        const nowStr = new Date().toISOString();
+        LocalStorageUtils.setStringItem(localStorConsts.lastAutoBackup, nowStr);
+        LocalStorageUtils.setStringItem(localStorConsts.lastCloudSync, nowStr);
         return;
       }
       await this.uploadToCloud(this.currentUser.uid, payload);
-      LocalStorageUtils.setStringItem(
-        localStorConsts.lastAutoBackup,
-        new Date().toISOString(),
-      );
+      const nowStr = new Date().toISOString();
+      LocalStorageUtils.setStringItem(localStorConsts.lastAutoBackup, nowStr);
+      LocalStorageUtils.setStringItem(localStorConsts.lastCloudSync, nowStr);
       console.log('[FirebaseService] Auto backup completed successfully');
     } catch (err) {
       console.error('[FirebaseService] Auto backup failed:', err);

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';
-import { from, mergeMap } from 'rxjs';
+import { from, mergeMap, BehaviorSubject } from 'rxjs';
 import { DataBaseService } from './data-base.service';
 import { LocalStorageUtils, localStorConsts } from '../shared/local-storage';
 
@@ -31,10 +31,15 @@ export class NotificationService {
   private readonly MAX_CONCURRENT_TASKS = 5;
   private isNative = Capacitor.isNativePlatform();
 
+  private notificationsSubject = new BehaviorSubject<PaymentNotification[]>([]);
+  notifications$ = this.notificationsSubject.asObservable();
+
   constructor(
     private router: Router,
     private dataBaseService: DataBaseService,
-  ) {}
+  ) {
+    this.notificationsSubject.next(this.getAllNotifications());
+  }
 
   defaults: NotificationSettings = {
     enabled: false,
@@ -95,6 +100,18 @@ export class NotificationService {
     );
   }
 
+  addMonths(date: Date, months: number): Date {
+    const result = new Date(date);
+    result.setHours(0, 0, 0, 0);
+    const d = result.getDate();
+    result.setMonth(result.getMonth() + months);
+    if (result.getDate() !== d) {
+      result.setDate(0);
+    }
+    result.setHours(0, 0, 0, 0);
+    return result;
+  }
+
   shouldTriggerReminder(
     startDate: Date,
     checkDate: Date,
@@ -106,18 +123,19 @@ export class NotificationService {
     const settings = this.getSettings();
     if (!settings.enabled) return { trigger: false };
 
-    const ageInMonths = this.getDifferenceInMonths(startDate, checkDate);
+    const checkMidnight = new Date(checkDate);
+    checkMidnight.setHours(0, 0, 0, 0);
 
     const minimumMonthsRequired = settings.minimumAgeYears * 12;
     const notifyBeforeMonths = settings.notifyBeforeMonths;
     const reminderIntervalMonths = settings.reminderIntervalMonths;
 
     let beforeMonths = notifyBeforeMonths;
-    while (
-      beforeMonths >= 0 &&
-      ageInMonths + beforeMonths >= minimumMonthsRequired
-    ) {
-      if (ageInMonths + beforeMonths == minimumMonthsRequired) {
+    while (beforeMonths >= 0) {
+      const targetMonths = minimumMonthsRequired - beforeMonths;
+      const milestoneDate = this.addMonths(startDate, targetMonths);
+
+      if (checkMidnight.getTime() === milestoneDate.getTime()) {
         return {
           trigger: true,
           targetYear: settings.minimumAgeYears,
@@ -231,11 +249,13 @@ export class NotificationService {
     }
   }
 
-  private shouldSuppressNotification(transactionId: string): boolean {
+  private shouldSuppressNotification(
+    transactionId: string,
+    checkDate: Date,
+  ): boolean {
     const notifications = this.getAllNotifications();
     const settings = this.getSettings();
-    const intervalWeeks = settings.reminderIntervalMonths || 2; // Default 2 weeks if undefined
-    const intervalMs = intervalWeeks * 7 * 24 * 60 * 60 * 1000;
+    const intervalMonths = settings.reminderIntervalMonths || 2;
 
     // Find the latest notification for this transaction
     const latest = notifications.find(
@@ -244,16 +264,26 @@ export class NotificationService {
 
     if (!latest) return false; // Never notified, so run it.
 
-    const timeSinceLast = Date.now() - new Date(latest.createdAt).getTime();
+    const checkMidnight = new Date(checkDate);
+    checkMidnight.setHours(0, 0, 0, 0);
 
-    // If time since last notification is LESS than the interval, suppress it.
-    return timeSinceLast < intervalMs;
+    const latestMidnight = new Date(latest.createdAt);
+    latestMidnight.setHours(0, 0, 0, 0);
+
+    const diffMonths = this.getDifferenceInMonths(latestMidnight, checkMidnight);
+
+    // Suppress if the difference is strictly less than the interval (with 0.1 month tolerance)
+    return diffMonths < (intervalMonths - 0.1);
   }
 
   private saveNotification(notification: PaymentNotification) {
     const notifications = this.getAllNotifications();
+    const exists = notifications.some((n) => n.id === notification.id);
+    if (exists) return;
+
     notifications.unshift(notification);
     LocalStorageUtils.setItem(localStorConsts.appNotifications, notifications);
+    this.notificationsSubject.next(notifications);
   }
 
   getAllNotifications(): PaymentNotification[] {
@@ -273,6 +303,7 @@ export class NotificationService {
         localStorConsts.appNotifications,
         notifications,
       );
+      this.notificationsSubject.next(notifications);
     }
   }
 
@@ -280,15 +311,18 @@ export class NotificationService {
     const notifications = this.getAllNotifications();
     notifications.forEach((n) => (n.read = true));
     LocalStorageUtils.setItem(localStorConsts.appNotifications, notifications);
+    this.notificationsSubject.next(notifications);
   }
 
   dismissNotification(id: string) {
     const notifications = this.getAllNotifications().filter((n) => n.id !== id);
     LocalStorageUtils.setItem(localStorConsts.appNotifications, notifications);
+    this.notificationsSubject.next(notifications);
   }
 
   clearAllNotifications() {
     LocalStorageUtils.removeItem(localStorConsts.appNotifications);
+    this.notificationsSubject.next([]);
   }
 
   getNextCheckDate(): Date {
@@ -382,6 +416,13 @@ export class NotificationService {
           const shouldNotify = this.shouldTriggerReminder(startDate, checkDate);
 
           if (shouldNotify.trigger) {
+            if (this.shouldSuppressNotification(record.id, checkDate)) {
+              console.log(
+                `[NotificationService] Notification suppressed for transaction ${record.id} on ${checkDate.toDateString()}`,
+              );
+              return;
+            }
+
             await this.schedulePaymentReminder(
               client.key,
               record.id,
