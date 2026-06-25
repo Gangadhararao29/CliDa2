@@ -1,5 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { NavController } from '@ionic/angular';
 import { DataBaseService } from '../services/data-base.service';
 import { CommonService } from '../services/common.service';
 import { PresetService } from '../services/preset.service';
@@ -25,11 +26,11 @@ export class AddClientPage {
   }> = [];
 
   constructor(
-    private router: Router,
     private activatedRoute: ActivatedRoute,
     private dataBaseService: DataBaseService,
     private commonService: CommonService,
     private presetService: PresetService,
+    private navCtrl: NavController,
   ) {}
 
   ionViewWillEnter() {
@@ -127,24 +128,23 @@ export class AddClientPage {
     let message = 'These records have been added successfully.';
     message += formRef.value.multiRecordsSelected
       ? ''
-      : '<br>Redirecting to the Clients List tab.';
+      : '<br>Redirecting to the previous tab.';
 
     await this.commonService.dismissLoading();
     setTimeout(() => {
       this.isAddBtnDisable = false;
       this.commonService.presentToast(message);
       if (!formRef.value.multiRecordsSelected) {
-        this.router.navigate(['..']).then(() => {
-          formRef.resetForm();
-          // Reset transactions to just one after successful submit/navigate
-          this.transactions = [
-            {
-              principal: null,
-              interest: null,
-              startDate: this.commonService.today,
-            },
-          ];
-        });
+        this.navCtrl.back();
+        formRef.resetForm();
+        // Reset transactions to just one after successful submit/navigate
+        this.transactions = [
+          {
+            principal: null,
+            interest: null,
+            startDate: this.commonService.today,
+          },
+        ];
       } else {
         this.dataBaseService.getAllClientsData().then((res) => {
           this.clientsData = res;
