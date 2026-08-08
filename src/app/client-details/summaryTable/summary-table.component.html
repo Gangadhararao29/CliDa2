@@ -26,13 +26,23 @@
   </table>
 </div>
 
-<div class="d-flex gap-2 mx-2 mt-2 mb-3 justify-content-end" *ngIf="selectedChips.length > 1">
-  <ion-button color="success" size="small" (click)="bulkApprove()">
+
+@if(selectedChips.length > 0){
+<div class="d-flex flex-wrap align-items-center gap-2 m-2">
+  <ion-button color="primary" size="small" (click)="bulkShare()">
+    <ion-icon name="share-social-outline" slot="start"></ion-icon>
+    Share
+  </ion-button>
+
+  @if(selectedChips.length > 1){
+  <ion-button class="ms-auto" color="success" size="small" (click)="bulkApprove()">
     <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
     Approve
   </ion-button>
-  <ion-button color="danger" size="small" (click)="bulkDelete()">
+  <ion-button class="ms-1" color="danger" size="small" (click)="bulkDelete()">
     <ion-icon name="trash-outline" slot="start"></ion-icon>
     Delete
   </ion-button>
+  }
 </div>
+}

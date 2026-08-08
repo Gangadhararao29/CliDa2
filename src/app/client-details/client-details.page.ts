@@ -5,6 +5,7 @@ import { IonAccordionGroup } from '@ionic/angular';
 import { CalculationService } from '../services/calculation.service';
 import { CommonService } from '../services/common.service';
 import { DataBaseService } from '../services/data-base.service';
+import { ShareContentService } from '../services/share-content.service';
 import { Subscription } from 'rxjs';
 import { localStorConsts, LocalStorageUtils } from '../shared/local-storage';
 
@@ -36,7 +37,8 @@ export class ClientDetailsPage {
     private activatedRoute: ActivatedRoute,
     private dataBaseService: DataBaseService,
     private commonService: CommonService,
-    private calculationService: CalculationService
+    private calculationService: CalculationService,
+    private shareContentService: ShareContentService,
   ) {}
 
   ionViewWillEnter() {
@@ -45,7 +47,8 @@ export class ClientDetailsPage {
     this.hideSkeletonText = false;
     this.theme = this.commonService.getTheme();
     this.clientId = this.activatedRoute.snapshot.params.key;
-    this.isOldStyle = LocalStorageUtils.getStringItem(localStorConsts.isOldStyle) === 'true';
+    this.isOldStyle =
+      LocalStorageUtils.getStringItem(localStorConsts.isOldStyle) === 'true';
     this.dataBaseService.getClientByKey(this.clientId).then((res) => {
       this.client = res || { name: 'Data not found', data: [] };
       this.client.id = this.clientId;
@@ -56,7 +59,7 @@ export class ClientDetailsPage {
     this.pageRefreshSub = this.commonService.pageRefreshEmitter.subscribe(
       (newClient) => {
         if (newClient) this.updateDependencies(newClient);
-      }
+      },
     );
   }
 
@@ -74,17 +77,20 @@ export class ClientDetailsPage {
   }
 
   calculateInterest(data) {
-    const intArr = this.calculationService.calculateTotalInterest({
-      principal: data.principal,
-      rate: data.interest,
-      startDate: data.startDate,
-    });
+    const intArr = this.calculationService.calculateTotalInterest(
+      {
+        principal: data.principal,
+        rate: data.interest,
+        startDate: data.startDate,
+      },
+      data.closedOn || this.today,
+    );
     return Math.round(intArr[0].intAmt * 100) / 100;
   }
 
   getColor(detail) {
     const { tm } = this.calculationService.calculateTimePeriod(
-      detail?.startDate
+      detail?.startDate,
     );
 
     if (detail?.closedOn) {
@@ -114,7 +120,7 @@ export class ClientDetailsPage {
 
   onChipClick(data) {
     const isChipSelectedIndex = this.selectedChips.findIndex(
-      (chip) => chip.id === data.id
+      (chip) => chip.id === data.id,
     );
 
     if (isChipSelectedIndex !== -1) {
@@ -170,7 +176,10 @@ export class ClientDetailsPage {
 
   toggleLayout() {
     this.isOldStyle = !this.isOldStyle;
-    LocalStorageUtils.setStringItem(localStorConsts.isOldStyle, this.isOldStyle.toString());
+    LocalStorageUtils.setStringItem(
+      localStorConsts.isOldStyle,
+      this.isOldStyle.toString(),
+    );
   }
 
   // async bulkApprove() {
@@ -218,7 +227,7 @@ export class ClientDetailsPage {
   // }
 
   bulkApproveHandler() {
-    this.commonService.presentLoading("Approving...");
+    this.commonService.presentLoading('Approving...');
 
     this.selectedChips.forEach((chip) => {
       const record = this.client.data.find((r) => r.id === chip.id);
@@ -236,7 +245,7 @@ export class ClientDetailsPage {
     this.dataBaseService
       .bulkUpdateClientByKey(this.client.id, this.client, 'approve')
       .then(() => {
-        this.commonService.dismissLoading()
+        this.commonService.dismissLoading();
         this.selectedChips = [];
         this.updateDependencies(this.client);
         this.commonService.presentToast('Selected transactions approved');
@@ -261,8 +270,125 @@ export class ClientDetailsPage {
         this.selectedChips = [];
         this.updateDependencies(this.client);
         this.commonService.presentToast(
-          'Selected transactions have been deleted successfully.'
+          'Selected transactions have been deleted successfully.',
         );
       });
+  }
+
+  currencyFormatter(value) {
+    return this.commonService.formatCurrency(value);
+  }
+
+  bulkShareHandler() {
+    const selectedIds = this.selectedChips.map((c) => c.id);
+    const selectedRecords = this.client.data.filter((record) =>
+      selectedIds.includes(record.id),
+    );
+
+    const outputLines = [];
+
+    selectedRecords.forEach((rec) => this.insertLines(rec, outputLines));
+
+    const separator = `------------------------------`;
+
+    const totalPrincipal = this.selectedChips.reduce(
+      (a, b) => a + b.principal,
+      0,
+    );
+    const totalInterest = this.selectedChips.reduce(
+      (a, b) => a + b.interest,
+      0,
+    );
+
+    if (this.selectedChips.length > 1) {
+      // outputLines.push(
+      //   separator,
+      //   `Final Principal : ${this.currencyFormatter(totalPrincipal || 0)}`,
+      //   `Final Interest : ${this.currencyFormatter(totalInterest || 0)}`,
+      //   separator,
+      //   `Final Amount : ${this.currencyFormatter(totalPrincipal + totalInterest || 0)}`,
+      //   separator,
+      // );
+
+      outputLines.push(
+        'Final Summary',
+        separator,
+        `Principal : ${this.currencyFormatter(totalPrincipal || 0)}`,
+        `Interest : ${this.currencyFormatter(totalInterest || 0)}`,
+        separator,
+        `Grand Total : ${this.currencyFormatter(totalPrincipal + totalInterest || 0)}`,
+        separator,
+      );
+    }
+
+    this.shareContentService.shareText(outputLines.join('\n'));
+  }
+
+  insertLines(rec, outputLines) {
+    const { principal, interest, startDate } = rec;
+    const endDate = rec.closedOn || this.today;
+
+    const { y, m, d, tm } = this.calculationService.calculateTimePeriod(
+      startDate,
+      endDate,
+    );
+
+    const intArray = this.calculationService.calculateTotalInterest(
+      {
+        principal: principal,
+        rate: interest,
+        startDate: startDate,
+      },
+      endDate,
+    );
+
+    const finalInterest = intArray.reduce(
+      (prev, curr) => prev + curr.intAmt,
+      0,
+    );
+
+    const separator = `------------------------------`;
+
+    outputLines.push(
+      `Principal : ${this.currencyFormatter(principal)}`,
+      `Interest rate : ${interest}`,
+      `End date : ${endDate}`,
+      `Start date : ${startDate}`,
+      `${separator}`,
+      `Time period : ${y}y ${m}m ${d}d`,
+      // `${separator}`,
+      `Time in months : ${tm.toFixed(2)}`,
+    );
+
+    if (intArray.length === 1) {
+      const interestAmt = intArray[0].intAmt;
+
+      outputLines.push(
+        `Total interest : ${this.currencyFormatter(interestAmt)}`,
+        `${separator}`,
+        `Total amount : ${this.currencyFormatter(interestAmt + principal)}`,
+      );
+    } else {
+      outputLines.push('Interest breakdown');
+      intArray.forEach(({ start, end, intAmt }) => {
+        outputLines.push(
+          `${start}y - ${(+end).toFixed(2)}y : ${this.currencyFormatter(intAmt)}`,
+        );
+      });
+
+      outputLines.push(
+        `Total interest : ${this.currencyFormatter(finalInterest)}`,
+        `${separator}`,
+        `Total amount : ${this.currencyFormatter(finalInterest + principal)}`,
+      );
+    }
+
+    const jsonString = `${principal}|${interest}|${startDate}|${endDate}`;
+    const encoded = encodeURIComponent(btoa(jsonString));
+
+    const serverURL = `https://clida3.web.app/calculator/${encoded}`;
+    const localURL = `http://localhost:4200/calculator/${encoded}`;
+
+    outputLines.push(`${separator}`, serverURL, '\n');
   }
 }

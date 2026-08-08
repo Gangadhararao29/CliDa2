@@ -11,6 +11,7 @@ export class SummaryTableComponent {
   @Input() selectedChips: any;
   @Input() bulkApproveHandler: () => {};
   @Input() bulkDeleteHandler: () => {};
+  @Input() bulkShareHandler: () => {};
   @Input() theme: string;
   isd = Intl.NumberFormat('en-IN');
 
@@ -18,19 +19,19 @@ export class SummaryTableComponent {
 
   getQuickMenuPrincipal() {
     return `₹ ${this.isd.format(
-      this.selectedChips.reduce((a, b) => a + b.principal, 0) || 0
+      this.selectedChips.reduce((a, b) => a + b.principal, 0) || 0,
     )}`;
   }
 
   getQuickMenuInterest() {
     return `₹ ${this.isd.format(
-      this.selectedChips.reduce((a, b) => a + b.interest, 0) || 0
+      this.selectedChips.reduce((a, b) => a + b.interest, 0) || 0,
     )}`;
   }
 
   getQuickMenuTotal() {
     return `₹ ${this.isd.format(
-      this.selectedChips.reduce((a, b) => a + b.principal + b.interest, 0) || 0
+      this.selectedChips.reduce((a, b) => a + b.principal + b.interest, 0) || 0,
     )}`;
   }
 
@@ -76,5 +77,10 @@ export class SummaryTableComponent {
       ],
     });
     await alert.present();
+  }
+
+  bulkShare() {
+    if (this.selectedChips.length === 0) return;
+    this.bulkShareHandler();
   }
 }

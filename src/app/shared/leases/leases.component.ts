@@ -7,8 +7,8 @@ import {
 } from '../../calculator2/models/leaseClient.model';
 import { AlertController, IonItemSliding } from '@ionic/angular';
 import { CalculationService } from '../../services/calculation.service';
+import { ShareContentService } from '../../services/share-content.service';
 import { NgForm } from '@angular/forms';
-import { Share } from '@capacitor/share';
 
 @Component({
   selector: 'app-leases',
@@ -40,6 +40,7 @@ export class LeasesComponent implements OnInit {
     private leaseService: LeaseService,
     private calculationService: CalculationService,
     private alertController: AlertController,
+    private shareContentService: ShareContentService,
   ) {}
 
   ngOnInit() {
@@ -392,17 +393,7 @@ export class LeasesComponent implements OnInit {
 
   async shareResults() {
     const clipboardText = this.formatResultsForSharing();
-    try {
-      await Share.share({
-        text: clipboardText,
-      });
-    } catch {
-      const cb = navigator.clipboard;
-      await cb.writeText(clipboardText);
-      this.commonService.presentToast(
-        'The data has been copied to the clipboard successfully.',
-      );
-    }
+    await this.shareContentService.shareText(clipboardText);
   }
   formatResultsForSharing() {
     const separator = `------------------------------`;
