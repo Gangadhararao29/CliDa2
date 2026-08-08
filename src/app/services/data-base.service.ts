@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import LocalBase from 'localbase';
-import { UtilsService } from './utils.service';
+import { CommonService } from './common.service';
+import { LoggingService } from './logging.service';
 
 @Injectable({
   providedIn: 'root',
@@ -8,7 +9,10 @@ import { UtilsService } from './utils.service';
 export class DataBaseService {
   db = new LocalBase('clida');
 
-  constructor(private utilsService: UtilsService) {
+  constructor(
+    private commonService: CommonService,
+    private loggingService: LoggingService,
+  ) {
     this.db.config.debug = false;
   }
 
@@ -55,7 +59,7 @@ export class DataBaseService {
     switch (action) {
       case 'approve':
         const approvedRecords = clientData.data.filter((r) => r.bulkApproved);
-        this.utilsService.addOperationLog('bulk approve', null, {
+        this.loggingService.addOperationLog('bulk approve', null, {
           name: clientData.name,
           data: approvedRecords,
         });
@@ -63,7 +67,7 @@ export class DataBaseService {
 
       case 'delete':
         const deletedRecords = clientData.data.filter((r) => r.bulkDeleted);
-        this.utilsService.addOperationLog('bulk delete', null, {
+        this.loggingService.addOperationLog('bulk delete', null, {
           name: clientData.name,
           data: deletedRecords,
         });
@@ -79,12 +83,12 @@ export class DataBaseService {
   }
 
   async createDataRecords(payload) {
-    payload.name = this.utilsService.formatToTitleCase(payload.name);
+    payload.name = this.commonService.formatToTitleCase(payload.name);
 
     if (payload.data.length == 1) {
-      this.utilsService.addOperationLog('new', null, payload);
+      this.loggingService.addOperationLog('new', null, payload);
     } else {
-      this.utilsService.addOperationLog('bulk new', null, payload);
+      this.loggingService.addOperationLog('bulk new', null, payload);
     }
 
     const existingClient = await this.getClientByName(payload.name);
@@ -100,7 +104,7 @@ export class DataBaseService {
   }
 
   async handleRecordTransfer(payload, clientData) {
-    const name = this.utilsService.formatToTitleCase(payload.name);
+    const name = this.commonService.formatToTitleCase(payload.name);
     const index = payload.index;
     const key = payload.key;
     const renameAllRecords = payload.renameAllRecords;
@@ -140,14 +144,14 @@ export class DataBaseService {
   }
 
   async saveClientRecord(payload, clientData) {
-    const name = this.utilsService.formatToTitleCase(payload.name);
+    const name = this.commonService.formatToTitleCase(payload.name);
     const index = payload.index;
     const key = payload.key;
     delete payload.name;
     delete payload.index;
     delete payload.key;
 
-    this.utilsService.addOperationLog('edit', clientData, payload, index);
+    this.loggingService.addOperationLog('edit', clientData, payload, index);
 
     clientData.name = name;
     clientData.lastModifiedOn = Date.now();
@@ -158,7 +162,7 @@ export class DataBaseService {
   async approveClientData(newData, oldData, index) {
     newData.lastModifiedOn = Date.now();
     return this.updateClientRecordByName(newData).then(() => {
-      this.utilsService.addOperationLog(
+      this.loggingService.addOperationLog(
         'edit - approve',
         { name: newData.name, ...oldData },
         newData.data[index],
@@ -167,7 +171,7 @@ export class DataBaseService {
   }
 
   async deleteClientData(clientData, index, key) {
-    this.utilsService.addOperationLog('delete', clientData, [], index);
+    this.loggingService.addOperationLog('delete', clientData, [], index);
     clientData.data.splice(index, 1);
     if (clientData.data.length < 1) {
       return this.deleteClientByKey(key);
@@ -214,7 +218,7 @@ export class DataBaseService {
                 record?.principal && record?.interest && record?.startDate,
             )
             .map((record) =>
-              this.utilsService.replaceUndefinedWithNull(record),
+              this.commonService.replaceUndefinedWithNull(record),
             ),
           lastModifiedOn: client.lastModifiedOn || Date.now(),
         }))

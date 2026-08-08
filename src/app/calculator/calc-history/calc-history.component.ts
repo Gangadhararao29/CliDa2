@@ -32,7 +32,7 @@ export class CalcHistoryComponent {
     this.showModal = false;
   }
 
-  currFor(value) {
+  currencyFormatter(value) {
     const formattedValue = new Intl.NumberFormat('en-IN').format(
       Math.round(value * 100) / 100
     );

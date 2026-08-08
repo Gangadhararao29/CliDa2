@@ -37,7 +37,7 @@
                   <!-- Card Body -->
                   <div class="card-body">
                     <div class="d-flex justify-content-between mb-2">
-                      <div>{{ currFor(recordData.principal) }}</div>
+                      <div>{{ currencyFormatter(recordData.principal) }}</div>
                       <div>{{ recordData.interest }}</div>
                     </div>
 
@@ -50,7 +50,7 @@
                   <!-- Card Footer -->
                   <div class="card-footer bg-transparent">
                     <div class="text-end fw-bolder">
-                      {{ currFor(recordData.principal + recordData.finalInterest) }}
+                      {{ currencyFormatter(recordData.principal + recordData.finalInterest) }}
                     </div>
                   </div>
                 </div>

@@ -205,12 +205,8 @@ export class LeasesComponent implements OnInit {
     this.editingMode = false;
   }
 
-  formatCurrency(value: number) {
-    if (value === undefined || value === null) return '';
-    const formattedValue = new Intl.NumberFormat('en-IN').format(
-      Math.round(value * 100) / 100,
-    );
-    return `₹ ${formattedValue}`;
+  currencyFormatter(value: number) {
+    return this.commonService.formatCurrency(value);
   }
 
   removeTransactionInput(index: number) {
@@ -422,7 +418,7 @@ export class LeasesComponent implements OnInit {
 
       lines.push(
         yearSep(result.year),
-        `Principal : ${result.amountPerAcre} * ${this.activeLease.acres} = ${this.formatCurrency(principal)}`,
+        `Principal : ${result.amountPerAcre} * ${this.activeLease.acres} = ${this.currencyFormatter(principal)}`,
         `Interest rate : ${result.interestRate}%`,
         ``,
         `Start date: ${this.formatDate(result.startDate)}`,
@@ -430,14 +426,14 @@ export class LeasesComponent implements OnInit {
         `Duration : ${y}y ${m}m ${d}d`,
         `in months : ${tm.toFixed(2)}`,
         ``,
-        `Interest: ${this.formatCurrency(result.interest)}`,
-        `Total ${i + 1}: ${this.formatCurrency(result.totalAmount)}`,
+        `Interest: ${this.currencyFormatter(result.interest)}`,
+        `Total ${i + 1}: ${this.currencyFormatter(result.totalAmount)}`,
       );
     });
 
     lines.push(
       `${separator}`,
-      `Final amount: ${this.formatCurrency(this.finalAmount)}`,
+      `Final amount: ${this.currencyFormatter(this.finalAmount)}`,
     );
 
     const serverURL = `https://clida3.web.app/calculator`;

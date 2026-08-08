@@ -1,8 +1,8 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { DataBaseService } from '../services/data-base.service';
 import { CalculationService } from '../services/calculation.service';
-import { UtilsService } from '../services/utils.service';
 import { CommonService } from '../services/common.service';
+import { LoggingService } from '../services/logging.service';
 import { localStorConsts, LocalStorageUtils } from '../shared/local-storage';
 import { FirebaseService } from '../services/firebase.service';
 
@@ -56,8 +56,8 @@ export class DashboardPage {
   constructor(
     private dataBaseService: DataBaseService,
     private calculationService: CalculationService,
-    private utilsService: UtilsService,
     private commonService: CommonService,
+    private loggingService: LoggingService,
     private firebaseService: FirebaseService,
   ) {
     this.math = Math;
@@ -66,7 +66,7 @@ export class DashboardPage {
   ionViewWillEnter() {
     this.hideSkeletonText = false;
     this.theme = this.commonService.getTheme();
-    this.logData = this.utilsService.formatLogDataForUI();
+    this.logData = this.loggingService.formatLogDataForUI();
     this.dashPref =
       LocalStorageUtils.getItem(localStorConsts.dashPref) ||
       Object.assign({}, this.defaultPref);

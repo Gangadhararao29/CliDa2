@@ -1,58 +1,14 @@
 import { Injectable } from '@angular/core';
-import { LocalStorageUtils, localStorConsts } from '../shared/local-storage';
+import { localStorConsts, LocalStorageUtils } from '../shared/local-storage';
 
 @Injectable({
   providedIn: 'root',
 })
-export class UtilsService {
+export class LoggingService {
   today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
     .toISOString()
     .slice(0, 10);
 
-  constructor() {}
-
-  private generatePayLoad(formData, includeClosedDetails) {
-    return {
-      name: this.formatToTitleCase(formData.userName),
-      data: [
-        {
-          id: Date.now(),
-          principal:
-            formData.recordType === 'credit'
-              ? Math.abs(formData.principal)
-              : -Math.abs(formData.principal),
-          interest: formData.interest,
-          startDate: formData.startDate,
-          comments: formData.comments,
-          closedOn: includeClosedDetails ? formData.closedOn || null : null,
-          closedAmount: includeClosedDetails
-            ? formData.closedAmount || null
-            : null,
-        },
-      ],
-    };
-  }
-
-  formatToTitleCase(name: string) {
-    let name2 = name?.trim();
-    return name2.replace(
-      /(^\w|\s\w)(\S*)/g,
-      (_, m1, m2) => m1.toUpperCase() + m2.toLowerCase(),
-    );
-  }
-
-  replaceUndefinedWithNull(obj) {
-    for (let key in obj) {
-      if (obj.hasOwnProperty(key) && obj[key] === undefined) {
-        obj[key] = null;
-      }
-    }
-    return obj;
-  }
-
-  /**
-   * Operation Log functions
-   */
   addOperationLog(operation, oldData, newData, index = null) {
     this.markAsModified();
     const logData = LocalStorageUtils.getItem(localStorConsts.logs) || [];
@@ -107,7 +63,10 @@ export class UtilsService {
   }
 
   private markAsModified() {
-    LocalStorageUtils.setStringItem(localStorConsts.lastDataModified, new Date().toISOString());
+    LocalStorageUtils.setStringItem(
+      localStorConsts.lastDataModified,
+      new Date().toISOString(),
+    );
   }
 
   formatLogDataForUI() {

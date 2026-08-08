@@ -1,9 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Share } from '@capacitor/share';
 import { CommonService } from '../services/common.service';
 import { DataBaseService } from '../services/data-base.service';
 import { CalculationService } from '../services/calculation.service';
+import { ShareContentService } from '../services/share-content.service';
 import { NgForm } from '@angular/forms';
 import { LocalStorageUtils, localStorConsts } from '../shared/local-storage';
 
@@ -34,6 +34,7 @@ export class CalculatorPage {
     private dataBaseService: DataBaseService,
     private commonService: CommonService,
     private calculationService: CalculationService,
+    private shareContentService: ShareContentService,
     private router: Router,
   ) {}
 
@@ -259,26 +260,13 @@ export class CalculatorPage {
     return alert.present();
   }
 
-  currencyFormat(value) {
-    const formattedValue = new Intl.NumberFormat('en-IN').format(
-      Math.round(value * 100) / 100,
-    );
-    return `₹ ${formattedValue}`;
+  currencyFormatter(value) {
+    return this.commonService.formatCurrency(value);
   }
 
   async shareToClipboard() {
     const clipboardText = this.generateResultHtml();
-    try {
-      await Share.share({
-        text: clipboardText,
-      });
-    } catch {
-      const cb = navigator.clipboard;
-      await cb.writeText(clipboardText);
-      this.commonService.presentToast(
-        'The data has been copied to the clipboard successfully.',
-      );
-    }
+    await this.shareContentService.shareText(clipboardText);
   }
 
   loadHistory(eventData) {
@@ -301,7 +289,7 @@ export class CalculatorPage {
     const separator = `------------------------------`;
 
     const lines: string[] = [
-      `Principal : ${this.currencyFormat(principal)}`,
+      `Principal : ${this.currencyFormatter(principal)}`,
       `Interest rate : ${interest}`,
       `End date : ${endDate}`,
       `Start date : ${startDate}`,
@@ -315,22 +303,22 @@ export class CalculatorPage {
       const interestAmt = this.intArray[0].intAmt;
 
       lines.push(
-        `Total interest : ${this.currencyFormat(interestAmt)}`,
+        `Total interest : ${this.currencyFormatter(interestAmt)}`,
         `${separator}`,
-        `Total amount : ${this.currencyFormat(interestAmt + principal)}`
+        `Total amount : ${this.currencyFormatter(interestAmt + principal)}`
       );
     } else {
       lines.push('Interest breakdown');
       this.intArray.forEach(({ start, end, intAmt }) => {
         lines.push(
-          `${start}y - ${(+end).toFixed(2)}y : ${this.currencyFormat(intAmt)}`
+          `${start}y - ${(+end).toFixed(2)}y : ${this.currencyFormatter(intAmt)}`
         );
       });
 
       lines.push(
-        `Total interest : ${this.currencyFormat(this.finalInterest)}`,
+        `Total interest : ${this.currencyFormatter(this.finalInterest)}`,
         `${separator}`,
-        `Total amount : ${this.currencyFormat(this.finalInterest + principal)}`
+        `Total amount : ${this.currencyFormatter(this.finalInterest + principal)}`
       );
     }
 
@@ -351,7 +339,7 @@ export class CalculatorPage {
     const lines: string[] = [
       `💰 *Interest Calculation Summary*`,
       ``,
-      `Principal: ${this.currencyFormat(principal)}`,
+      `Principal: ${this.currencyFormatter(principal)}`,
       `Interest Rate: ${interest}%`,
       `Period: ${startDate} → ${endDate}`,
       `Duration: ${y}y ${m}m ${d}d (${tm.toFixed(2)} months)`,
@@ -361,21 +349,21 @@ export class CalculatorPage {
     if (this.intArray.length === 1) {
       const interestAmt = this.intArray[0].intAmt;
       lines.push(
-        `Interest Earned: ${this.currencyFormat(interestAmt)}`,
-        `*Total Amount: ${this.currencyFormat(interestAmt + principal)}*`,
+        `Interest Earned: ${this.currencyFormatter(interestAmt)}`,
+        `*Total Amount: ${this.currencyFormatter(interestAmt + principal)}*`,
         ``,
       );
     } else {
       lines.push(`📊 *Interest Breakdown:*`);
       this.intArray.forEach(({ start, end, intAmt }) => {
         lines.push(
-          `  Year ${start}-${(+end).toFixed(2)}: ${this.currencyFormat(intAmt)}`,
+          `  Year ${start}-${(+end).toFixed(2)}: ${this.currencyFormatter(intAmt)}`,
         );
       });
       lines.push(
         ``,
-        `Total Interest: ${this.currencyFormat(this.finalInterest)}`,
-        `*Total Amount: ${this.currencyFormat(this.finalInterest + principal)}*`,
+        `Total Interest: ${this.currencyFormatter(this.finalInterest)}`,
+        `*Total Amount: ${this.currencyFormatter(this.finalInterest + principal)}*`,
         ``,
       );
     }

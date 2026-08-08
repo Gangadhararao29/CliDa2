@@ -19,9 +19,10 @@ export class CommonService {
 
   constructor(
     private toastController: ToastController,
-    private loadingController: LoadingController
-  ) { }
+    private loadingController: LoadingController,
+  ) {}
 
+  // UI / loading helpers
   async presentToast(
     message,
     cssClass = 'successToastClass',
@@ -39,7 +40,7 @@ export class CommonService {
   }
 
   async presentLoading(message = 'Loading...', duration = 5000) {
-    let loadingConfig: LoadingOptions = {
+    const loadingConfig: LoadingOptions = {
       animated: true,
       spinner: 'lines',
       message,
@@ -62,6 +63,7 @@ export class CommonService {
     event.target.style.height = `${event.target.scrollHeight}px`;
   }
 
+  // Theme / local preferences
   getTheme() {
     let theme = LocalStorageUtils.getItem(localStorConsts.theme);
     const preferColorMode = window.matchMedia('(prefers-color-scheme:dark)');
@@ -74,20 +76,29 @@ export class CommonService {
   getUserPreferences() {
     const theme = LocalStorageUtils.getStringItem(localStorConsts.theme);
     const dashPref = LocalStorageUtils.getStringItem(localStorConsts.dashPref);
-    const oldStyle = LocalStorageUtils.getStringItem(localStorConsts.isOldStyle);
-    const tabSection = LocalStorageUtils.getStringItem(localStorConsts.tabSection);
+    const oldStyle = LocalStorageUtils.getStringItem(
+      localStorConsts.isOldStyle,
+    );
+    const tabSection = LocalStorageUtils.getStringItem(
+      localStorConsts.tabSection,
+    );
     const logs = LocalStorageUtils.getItem(localStorConsts.logs);
     const calcLogs = LocalStorageUtils.getItem(localStorConsts.calcsHistory);
+
     return {
       userPreferences: { theme, dashPref, oldStyle, tabSection },
       logs,
-      calcLogs
+      calcLogs,
     };
   }
 
   setUserPreferences(preferences) {
     const { userPreferences, logs, calcLogs } = preferences;
-    LocalStorageUtils.setStringItem(localStorConsts.theme, userPreferences.theme);
+
+    LocalStorageUtils.setStringItem(
+      localStorConsts.theme,
+      userPreferences.theme,
+    );
     LocalStorageUtils.setStringItem(
       localStorConsts.dashPref,
       userPreferences.dashPref,
@@ -100,7 +111,44 @@ export class CommonService {
       localStorConsts.tabSection,
       userPreferences.tabSection,
     );
+
     LocalStorageUtils.setItem(localStorConsts.logs, logs || []);
     LocalStorageUtils.setItem(localStorConsts.calcsHistory, calcLogs || []);
+  }
+
+  // Generic data helpers
+  formatToTitleCase(name: string) {
+    const trimmedName = name?.trim();
+    return trimmedName.replace(
+      /(^\w|\s\w)(\S*)/g,
+      (_, m1, m2) => m1.toUpperCase() + m2.toLowerCase(),
+    );
+  }
+
+  replaceUndefinedWithNull(obj) {
+    for (const key in obj) {
+      if (
+        Object.prototype.hasOwnProperty.call(obj, key) &&
+        obj[key] === undefined
+      ) {
+        obj[key] = null;
+      }
+    }
+    return obj;
+  }
+
+  formatCurrency(value: number | null | undefined): string {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) {
+      return '';
+    }
+
+    const formattedValue = new Intl.NumberFormat('en-IN').format(
+      Math.round(Number(value) * 100) / 100,
+    );
+    return `₹ ${formattedValue}`;
+  }
+
+  currencyFormatter(value: number | null | undefined): string {
+    return this.formatCurrency(value);
   }
 }
