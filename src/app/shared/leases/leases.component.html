@@ -244,7 +244,7 @@
     </div>
   </ion-card>
 
-  <div class="row g-2 mb-2" *ngIf="!formRef.dirty">
+  <div class="row g-2 mb-2" *ngIf="showLeaseCalculatedData">
     <div class="col-12">
       <ion-button color="success" expand="block" (click)="finalizePayment()">
         Save Payment
@@ -271,12 +271,21 @@
   <!-- History Records -->
   @if(isHistoryOpen){
   <div
-    class="bgLight rounded shadow-sm border-start border-3 border-primary d-flex justify-content-between align-items-center px-2 py-1 mb-2">
+    class="bgLight rounded shadow-sm border-start border-3 border-primary d-flex justify-content-between align-items-center px-2 py-1">
     <div>{{activeLease?.name}}</div>
     <ion-button size="small" color="danger" (click)="addNewTransaction()">
       <!-- <ion-icon name="add-outline"></ion-icon> -->
       add record
     </ion-button>
+  </div>
+
+  <div class="swipe-hint d-flex justify-content-end align-items-center gap-1 small text-muted px-1">
+    <div class="swipe-trail" aria-hidden="true">
+      <ion-icon name="chevron-back-outline" class="swipe-ghost"></ion-icon>
+      <ion-icon name="chevron-back-outline" class="swipe-ghost swipe-ghost--second"></ion-icon>
+    </div>
+    <ion-icon name="chevron-back-outline" class="swipe-icon" aria-hidden="true"></ion-icon>
+    <span class="swipe-text">Swipe left for more actions</span>
   </div>
 
   @for (trxn of activeLease?.closedTrans; track $index) {
@@ -329,7 +338,10 @@
     </ion-item>
 
     <ion-item-options side="end">
-      <ion-item-option color="primary" (click)="editTransaction(slidingItem)">
+      <ion-item-option color="primary" (click)="shareActiveLease( trxn, slidingItem )">
+        <ion-icon slot="icon-only" name="share-social-outline"></ion-icon>
+      </ion-item-option>
+      <ion-item-option color="warning" (click)="editTransaction(slidingItem)">
         <ion-icon slot="icon-only" name="pencil"></ion-icon>
       </ion-item-option>
       <ion-item-option color="danger" (click)="deleteTransaction($index, slidingItem)">

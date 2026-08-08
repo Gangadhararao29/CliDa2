@@ -3,6 +3,7 @@ import { CommonService } from '../../services/common.service';
 import { LeaseService } from '../../services/lease.service';
 import {
   CalculationResult,
+  ClosedTransaction,
   LeaseClient,
 } from '../../calculator2/models/leaseClient.model';
 import { AlertController, IonItemSliding } from '@ionic/angular';
@@ -59,7 +60,7 @@ export class LeasesComponent implements OnInit {
 
   getLeaseClients() {
     this.leaseService.getLeaseClients().then((leases) => {
-      this.leaseClients = leases;
+      this.leaseClients = leases || [];
       if (this.leaseClients?.length > 0 && !this.openCalculator) {
         this.activeLease = this.activeLease ?? this.leaseClients[0];
         this.isHistoryOpen = true;
@@ -71,7 +72,21 @@ export class LeasesComponent implements OnInit {
     });
   }
 
+  private resetCalculationState() {
+    this.calculationResults = [];
+    this.finalAmount = 0;
+    this.showLeaseCalculatedData = false;
+    this.editingMode = false;
+  }
+
+  private resetLeaseViewState() {
+    this.isNewTransaction = false;
+    this.isHistoryOpen = false;
+    this.resetCalculationState();
+  }
+
   initNewLease() {
+    this.resetLeaseViewState();
     this.isNewTransaction = true;
     this.isHistoryOpen = false;
     this.activeLease = this.createLeaseClient();
@@ -201,9 +216,8 @@ export class LeasesComponent implements OnInit {
 
   cancelTransaction() {
     this.isNewTransaction = false;
-    this.isHistoryOpen = true;
-    this.showLeaseCalculatedData = false;
-    this.editingMode = false;
+    this.isHistoryOpen = !!this.activeLease?.closedTrans?.length;
+    this.resetCalculationState();
   }
 
   currencyFormatter(value: number) {
@@ -215,12 +229,11 @@ export class LeasesComponent implements OnInit {
   }
 
   determineLastPaidYear() {
-    const trans = this.activeLease.closedTrans[0] || null;
+    const trans = this.activeLease?.closedTrans?.[0] || null;
     if (trans) {
       return this.getYearFromDate(trans.startDate).toString();
-    } else {
-      return (this.getYearFromDate(new Date()) - 1).toString();
     }
+    return (this.getYearFromDate(new Date()) - 1).toString();
   }
 
   getYearFromDate(date) {
@@ -243,13 +256,22 @@ export class LeasesComponent implements OnInit {
   }
 
   setFirstStartDate(event) {
-    const presentTransactions = this.activeLease.transactions;
+    if (!this.activeLease) return;
+
+    const presentTransactions = Array.isArray(this.activeLease.transactions)
+      ? this.activeLease.transactions
+      : [];
     this.activeLease.transactions = [];
 
     let targetYear = +event.target.value;
+    const fallbackTransaction = presentTransactions[0] || {
+      amountPerAcre: 0,
+      interest: 1.5,
+      startDate: `${targetYear}-07-01`,
+    };
 
     for (; targetYear <= this.pendingYears[0]; targetYear++) {
-      var existingTransaction = presentTransactions.find(
+      const existingTransaction = presentTransactions.find(
         (x) => targetYear == this.getYearFromDate(x.startDate),
       );
 
@@ -260,7 +282,7 @@ export class LeasesComponent implements OnInit {
         });
       } else {
         this.activeLease.transactions.push({
-          ...presentTransactions[0],
+          ...fallbackTransaction,
           startDate: `${targetYear}-07-01`,
         });
       }
@@ -268,9 +290,12 @@ export class LeasesComponent implements OnInit {
   }
 
   addTransactionInput() {
+    if (!this.activeLease) return;
+
+    this.activeLease.transactions = this.activeLease.transactions || [];
     const lastTrans =
       this.activeLease.transactions[this.activeLease.transactions.length - 1] ||
-      this.activeLease.closedTrans[0];
+      this.activeLease.closedTrans?.[0];
     const lastYear = this.getYearFromDate(
       lastTrans?.startDate || this.rawDate.toDateString(),
     );
@@ -282,7 +307,7 @@ export class LeasesComponent implements OnInit {
   }
 
   async finalizePayment() {
-    let calculation = null;
+    if (!this.activeLease) return;
 
     if (
       this.activeLease.transactions.length !== this.calculationResults.length
@@ -299,12 +324,20 @@ export class LeasesComponent implements OnInit {
     }
 
     this.activeLease.transactions.forEach((trans) => {
-      calculation = this.calculationResults.find(
+      const calculation = this.calculationResults.find(
         (x) =>
           x.startDate == trans.startDate &&
           x.amountPerAcre == trans.amountPerAcre &&
           x.interestRate == trans.interest,
       );
+
+      if (!calculation) {
+        this.commonService.presentToast(
+          'Error: Missing calculated result for transaction.',
+          'dangerToastClass',
+        );
+        return;
+      }
 
       this.activeLease.closedTrans.unshift({
         amountPerAcre: trans.amountPerAcre,
@@ -321,11 +354,10 @@ export class LeasesComponent implements OnInit {
     });
 
     this.activeLease.transactions = [];
-    this.activeLease.lastPaidYear = this.activeLease.closedTrans[0].year;
+    this.activeLease.lastPaidYear =
+      this.activeLease.closedTrans[0]?.year ?? this.activeLease.lastPaidYear;
 
-    this.calculationResults = [];
-    this.finalAmount = 0;
-    this.showLeaseCalculatedData = false;
+    this.resetCalculationState();
     this.isHistoryOpen = true;
     this.isNewTransaction = false;
     this.editingMode = false;
@@ -395,12 +427,15 @@ export class LeasesComponent implements OnInit {
     const clipboardText = this.formatResultsForSharing();
     await this.shareContentService.shareText(clipboardText);
   }
+
+  yearSep = (y) => `--------Year : ${y}--------`;
+
   formatResultsForSharing() {
     const separator = `------------------------------`;
-    const yearSep = (y) => `--------Year : ${y}--------`;
     const lines: string[] = [
       `Name: ${this.activeLease.name}`,
       `Acres: ${this.activeLease.acres}`,
+      '',
     ];
 
     this.calculationResults.forEach((result, i) => {
@@ -408,7 +443,7 @@ export class LeasesComponent implements OnInit {
       const principal = this.activeLease.acres * result.amountPerAcre;
 
       lines.push(
-        yearSep(result.year),
+        this.yearSep(result.year),
         `Principal : ${result.amountPerAcre} * ${this.activeLease.acres} = ${this.currencyFormatter(principal)}`,
         `Interest rate : ${result.interestRate}%`,
         ``,
@@ -419,19 +454,57 @@ export class LeasesComponent implements OnInit {
         ``,
         `Interest: ${this.currencyFormatter(result.interest)}`,
         `Total ${i + 1}: ${this.currencyFormatter(result.totalAmount)}`,
+        '',
       );
     });
 
     lines.push(
-      `${separator}`,
+      separator,
       `Final amount: ${this.currencyFormatter(this.finalAmount)}`,
+      separator,
+      `https://clida3.web.app/calculator2`,
     );
 
-    const serverURL = `https://clida3.web.app/calculator`;
-
-    lines.push(`${separator}`, serverURL);
-
     return lines.join('\n');
+  }
+
+  async shareActiveLease(
+    transaction: ClosedTransaction,
+    slidingItem?: IonItemSliding,
+  ) {
+    const separator = `------------------------------`;
+    const lines: string[] = [
+      `Name: ${this.activeLease.name}`,
+      `Acres: ${this.activeLease.acres}`,
+      '',
+    ];
+
+    let result = transaction;
+    const { y, m, d, tm } = result.timePeriod;
+    const principal = result.acres * result.amountPerAcre;
+
+    lines.push(
+      this.yearSep(result.year),
+      `Principal : ${result.amountPerAcre} * ${result.acres} = ${this.currencyFormatter(principal)}`,
+      `Interest rate : ${result.interestRate}%`,
+      ``,
+      `Start date: ${this.formatDate(result.startDate)}`,
+      `End date: ${this.formatDate(result.endDate)}`,
+      `Duration : ${y}y ${m}m ${d}d`,
+      `in months : ${tm.toFixed(2)}`,
+      ``,
+      `Interest: ${this.currencyFormatter(result.interest)}`,
+      separator,
+      `Final amount: ${this.currencyFormatter(result.totalAmount)}`,
+      separator,
+    );
+
+    // console.log(lines.join('\n'));
+    await this.shareContentService.shareText(lines.join('\n'));
+
+    if (slidingItem) {
+      slidingItem.close();
+    }
   }
 
   formatDate(date: string | Date): string {
@@ -444,13 +517,26 @@ export class LeasesComponent implements OnInit {
   }
 
   addNewTransaction() {
+    if (!this.activeLease) return;
+
     this.isNewTransaction = true;
     this.isHistoryOpen = false;
 
-    const lastTrans = this.activeLease.closedTrans[0];
-    let lastYear = this.getYearFromDate(lastTrans.startDate);
-
+    const lastTrans = this.activeLease.closedTrans?.[0];
     this.activeLease.transactions = [];
+
+    if (!lastTrans) {
+      this.activeLease.transactions.push({
+        amountPerAcre: 0,
+        interest: 1.5,
+        startDate: `${this.pendingYears[0]}-07-01`,
+      });
+      this.activeLease.endDate = this.today;
+      this.resetTextareaHeight();
+      return;
+    }
+
+    let lastYear = this.getYearFromDate(lastTrans.startDate);
 
     if (lastYear >= this.pendingYears[0]) {
       this.activeLease.transactions.push({
