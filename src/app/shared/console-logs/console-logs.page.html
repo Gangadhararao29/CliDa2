@@ -1,0 +1,86 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Console Logs</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logService.clear()" color="danger">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [attr.data-bs-theme]="theme">
+  @if(logs.length === 0){
+  <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted text-center">
+    <ion-icon name="terminal-outline" class="mb-3" style="font-size: 4rem"></ion-icon>
+    <h4>No errors captured yet</h4>
+  </div>
+  }
+
+  <div class="my-2 container">
+    @for (log of logs; track $index) {
+
+    <!-- Date separator header -->
+    @if (isNewDateGroup(log, $index)) {
+    <div class="text-muted mt-2 mb-1 px-1 fw-semibold">
+      {{ log.timestamp | date : 'MMMM dd, yyyy' }}
+    </div>
+    }
+
+    <ion-card color="light" class="mb-2 rounded-3 mx-0 shadow-none" [class.error-card]="$any(log).level === 'error'"
+      [class.warn-card]="$any(log).level === 'warn'">
+      <ion-card-content class="p-2">
+        <!-- First line: Time (short) and Badge -->
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="text-muted small font-monospace" style="font-size: 0.75rem">{{ log.timestamp | date:'HH:mm:ss'
+            }}</span>
+          <ion-badge [color]="badgeColor(log.level)" style="font-size: 0.65rem; padding: 3px 6px">{{
+            log.level.toUpperCase() }}</ion-badge>
+        </div>
+
+        <!-- Second line: Message (full if error, first line if warning) -->
+        <div class="mb-1">
+          @if (log.level === 'error') {
+          <pre class="mb-0 text-danger-custom text-wrap font-monospace" style="font-size: 0.8rem">
+{{ log.message }}
+          </pre>
+          } @else {
+          <pre class="mb-0 text-wrap font-monospace" [class.text-warning-custom]="log.level === 'warn'"
+            style="font-size: 0.8rem">
+{{ getFirstLine(log.message, log.level) }}</pre>
+          }
+        </div>
+
+        <!-- Third line: Icon and Label to show trace/info -->
+        @if (isExpandable(log)) {
+        <div class="d-flex align-items-center mt-2 text-muted"
+          style="cursor: pointer; font-size: 0.75rem; width: fit-content;" (click)="toggleExpand($index)">
+          <ion-icon [name]="isExpanded($index) ? 'chevron-up-outline' : 'chevron-down-outline'" class="me-1"></ion-icon>
+          <span>
+            @if (log.level === 'error') {
+            {{ isExpanded($index) ? 'Hide Trace' : 'Show Trace' }}
+            } @else {
+            {{ isExpanded($index) ? 'Hide Info' : 'Show More Info' }}
+            }
+          </span>
+        </div>
+
+        <!-- Expanded trace/info box (scrollable and following newlines) -->
+        @if(isExpanded($index)) {
+        <pre class="mt-2 p-2 rounded bg-dark text-white-50 font-monospace" style="
+            font-size: 0.7rem;
+            max-height: 150px;
+            overflow: auto;
+            white-space: pre;
+          ">
+{{ log.level == 'error' ? log.stack : (getRemainingLines(log.message, log.level) || log.stack) }}
+          </pre>
+        } }
+      </ion-card-content>
+    </ion-card>
+    }
+  </div>
+</ion-content>

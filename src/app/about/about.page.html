@@ -12,7 +12,8 @@
 
     <ion-card color="light" class="my-3">
       <ion-card-header class="py-2">
-        <ion-card-title style="font-size: 1.1rem;" class="d-flex align-items-center"><ion-icon name="folder-outline" color="primary" class="me-2"></ion-icon>Data Maintenance</ion-card-title>
+        <ion-card-title style="font-size: 1.1rem;" class="d-flex align-items-center"><ion-icon name="folder-outline"
+            color="primary" class="me-2"></ion-icon>Data Maintenance</ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
@@ -60,7 +61,8 @@
 
     <ion-card color="light" class="my-3">
       <ion-card-header class="py-2">
-        <ion-card-title style="font-size: 1.1rem;" class="d-flex align-items-center"><ion-icon name="apps-outline" color="primary" class="me-2"></ion-icon>Application</ion-card-title>
+        <ion-card-title style="font-size: 1.1rem;" class="d-flex align-items-center"><ion-icon name="apps-outline"
+            color="primary" class="me-2"></ion-icon>Application</ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
@@ -81,16 +83,17 @@
           <ion-row>
             <ion-col size="12">
               <ion-button expand="block" color="success" fill="solid" (click)="checkForUpdate()">
-                <ion-icon name="bag-check-outline" slot="start"></ion-icon>
-                Check for Update
+                <ion-icon name="newspaper-outline" slot="start"></ion-icon>
+                Release notes
               </ion-button>
             </ion-col>
           </ion-row>
+
           <ion-row>
             <ion-col size="6">
               <ion-button expand="block" color="secondary" fill="solid" routerLink="logs">
-                <ion-icon name="document-text-outline" slot="start"></ion-icon>
-                View logs
+                <ion-icon name="reader-outline" slot="start"></ion-icon>
+                App logs
               </ion-button>
             </ion-col>
             <ion-col size="6">
@@ -98,6 +101,15 @@
                 href="https://github.com/Gangadhararao29/CliDa2/issues" target="_blank">
                 <ion-icon name="bug-outline" slot="start"></ion-icon>
                 Report bug
+              </ion-button>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col size="12">
+              <ion-button expand="block" color="warning" fill="solid" routerLink="console-logs">
+                <ion-icon name="terminal-outline" slot="start"></ion-icon>
+                Console logs
               </ion-button>
             </ion-col>
           </ion-row>
@@ -109,14 +121,14 @@
       <ng-template>
         <ion-header class="ion-no-border">
           <ion-toolbar>
-            <ion-title>Check for update</ion-title>
+            <ion-title>Release notes</ion-title>
             <ion-buttons slot="end">
               <ion-button (click)="setOpen(false)">Close</ion-button>
             </ion-buttons>
           </ion-toolbar>
         </ion-header>
         <ion-content>
-          <div class="bgLight m-2 rounded p-1">
+          <!-- <div class="bgLight m-2 rounded p-1">
             <ion-grid>
               <ion-row>
                 <ion-col size="6">Current version</ion-col>
@@ -136,7 +148,7 @@
                 </ion-col>
               </ion-row>
             </ion-grid>
-          </div>
+          </div> -->
 
           <div class="m-2 p-2 bgLight rounded">
             <div *ngFor="let release of gitHubResponse">
@@ -174,6 +186,13 @@
       <strong class="text-grad">CliDa</strong><br>
       <span class="badge bg-info text-dark">{{isWebVersion ? 'Web Version' : 'Android Version'}} :
         {{currentVersion}}</span>
+      <div *ngIf="deviceInfo" class="mt-2 text-center" style="font-size: 0.7rem; line-height: 1.4; opacity: 0.85;">
+        <div class="d-flex justify-content-center flex-wrap gap-1">
+          <span class="badge bg-secondary text-light">{{deviceInfo.deviceType | titlecase}}</span>
+          <span class="badge bg-secondary text-light">{{deviceInfo.os}} {{deviceInfo.osVersion}}</span>
+          <span class="badge bg-secondary text-light">{{deviceInfo.browser}}</span>
+        </div>
+      </div>
     </div>
   </div>
 </ion-content>

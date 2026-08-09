@@ -59,7 +59,7 @@ export class LeasesComponent implements OnInit {
   }
 
   getLeaseClients() {
-    this.leaseService.getLeaseClients().then((leases) => {
+    return this.leaseService.getLeaseClients().then((leases) => {
       this.leaseClients = leases || [];
       if (this.leaseClients?.length > 0 && !this.openCalculator) {
         this.activeLease = this.activeLease ?? this.leaseClients[0];
@@ -472,48 +472,56 @@ export class LeasesComponent implements OnInit {
     transaction: ClosedTransaction,
     slidingItem?: IonItemSliding,
   ) {
-    const separator = `------------------------------`;
+    const separator = '------------------------------';
+    const { name, acres } = this.activeLease;
+    const {
+      year,
+      amountPerAcre,
+      interestRate,
+      startDate,
+      endDate,
+      interest,
+      totalAmount,
+      timePeriod: { y, m, d, tm },
+    } = transaction;
+
+    const principal = acres * amountPerAcre;
+
     const lines: string[] = [
-      `Name: ${this.activeLease.name}`,
-      `Acres: ${this.activeLease.acres}`,
+      `Name: ${name}`,
+      `Acres: ${acres}`,
       '',
-    ];
-
-    let result = transaction;
-    const { y, m, d, tm } = result.timePeriod;
-    const principal = result.acres * result.amountPerAcre;
-
-    lines.push(
-      this.yearSep(result.year),
-      `Principal : ${result.amountPerAcre} * ${result.acres} = ${this.currencyFormatter(principal)}`,
-      `Interest rate : ${result.interestRate}%`,
-      ``,
-      `Start date: ${this.formatDate(result.startDate)}`,
-      `End date: ${this.formatDate(result.endDate)}`,
+      this.yearSep(year),
+      `Principal : ${amountPerAcre} * ${acres} = ${this.currencyFormatter(principal)}`,
+      `Interest rate : ${interestRate}%`,
+      '',
+      `Start date: ${this.formatDate(startDate)}`,
+      `End date: ${this.formatDate(endDate)}`,
       `Duration : ${y}y ${m}m ${d}d`,
       `in months : ${tm.toFixed(2)}`,
-      ``,
-      `Interest: ${this.currencyFormatter(result.interest)}`,
+      '',
+      `Interest: ${this.currencyFormatter(interest)}`,
       separator,
-      `Final amount: ${this.currencyFormatter(result.totalAmount)}`,
+      `Final amount: ${this.currencyFormatter(totalAmount)}`,
       separator,
-    );
+    ];
 
-    // console.log(lines.join('\n'));
-    await this.shareContentService.shareText(lines.join('\n'));
-
-    if (slidingItem) {
-      slidingItem.close();
-    }
+    const clipboardText = lines.join('\n');
+    await this.shareContentService.shareText(clipboardText);
+    slidingItem?.close();
   }
 
   formatDate(date: string | Date): string {
     if (!date) return '';
-    return new Date(date).toLocaleDateString('en-IN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+    return new Date(date)
+      .toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+      .split('/')
+      .reverse()
+      .join('-');
   }
 
   addNewTransaction() {

@@ -92,6 +92,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'about/console-logs',
+        loadChildren: () =>
+          import('../shared/console-logs/console-logs.module').then(
+            (m) => m.ConsoleLogsPageModule,
+          ),
+      },
+      {
         path: 'clients-list/add-client',
         loadChildren: () =>
           import('../add-client/add-client.module').then(

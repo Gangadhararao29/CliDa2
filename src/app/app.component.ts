@@ -4,6 +4,7 @@ import { FirebaseService } from './services/firebase.service';
 import { LocalStorageUtils, localStorConsts } from './shared/local-storage';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter, take } from 'rxjs';
+import { ConsoleLogService } from './services/console-log.service';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +18,7 @@ export class AppComponent implements OnInit {
     private notificationService: NotificationService,
     private firebaseService: FirebaseService,
     private swUpdate: SwUpdate,
+    private consoleLogService: ConsoleLogService,
   ) {}
 
   ngOnInit() {
@@ -25,6 +27,7 @@ export class AppComponent implements OnInit {
 
     // Defer everything else so it doesn't block the first render
     setTimeout(() => {
+      this.consoleLogService.initialize();
       this.notificationService.initializeListeners();
       this.notificationService.initializeNotificationCheck();
       this.firebaseService.initializeAutoBackup();
@@ -67,7 +70,7 @@ export class AppComponent implements OnInit {
 
   private showUpdateAlert() {
     let userMessage =
-      'A new version of the app is ready. Refresh now to apply the latest updates and improvements?';
+      'New update is available. Do you want to reload to get the latest updates and improvements?';
 
     if (confirm(userMessage)) {
       document.location.reload();

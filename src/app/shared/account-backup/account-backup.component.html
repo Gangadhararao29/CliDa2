@@ -67,11 +67,12 @@
   <!-- Cloud Backup Settings Card -->
   <ion-card color="light" class="mb-3">
     <ion-card-header class="py-2">
-      <ion-card-title style="font-size: 1.1rem;" class="d-flex align-items-center"><ion-icon name="cloud-outline" color="primary" class="me-2"></ion-icon>Cloud Backup</ion-card-title>
+      <ion-card-title style="font-size: 1.1rem;" class="d-flex align-items-center"><ion-icon name="cloud-outline"
+          color="primary" class="me-2"></ion-icon>Cloud Backup</ion-card-title>
     </ion-card-header>
 
     <ion-card-content class="p-0">
-      <ion-item button color="light" lines="none" class="rounded-3 shadow-sm">
+      <ion-item button color="light" class="shadow-sm">
         <ion-toggle [(ngModel)]="autoBackupEnabled" (ionChange)="onAutoBackupToggle()">
           <ion-label>Automatic backup</ion-label>
           <ion-note>Back up your data to the cloud</ion-note>
@@ -79,11 +80,12 @@
       </ion-item>
 
       @if (autoBackupEnabled) {
-      <ion-item lines="none" color="light" class="border-top">
-        <ion-label class="text-muted" style="font-size: 0.9rem;">
+      <ion-item color="light">
+        <!-- <ion-label class="text-muted" style="font-size: 0.9rem;">
           Backup Frequency
-        </ion-label>
-        <ion-select slot="end" [(ngModel)]="backupInterval" interface="popover" (ionChange)="onBackupIntervalChange()">
+        </ion-label> -->
+        <ion-select [(ngModel)]="backupInterval" interface="popover" (ionChange)="onBackupIntervalChange()"
+          label="Backup Frequency">
           <ion-select-option value="1">Every day</ion-select-option>
           <ion-select-option value="7">Every week</ion-select-option>
           <ion-select-option value="30">Every month</ion-select-option>
@@ -130,14 +132,36 @@
 
   <!-- Offline Data Sync -->
   <ion-card color="light" class="my-3">
+    @if(user) {
+    <ion-card-content class="p-0">
+      <ion-accordion-group class="m-0">
+        <ion-accordion value="local-backup" class="bg-transparent shadow-none border-0">
+          <ion-item slot="header" color="light" lines="none" class="local-backup-header">
+            <ion-icon name="save-outline" color="primary"></ion-icon>
+            <ion-label>Local Backup</ion-label>
+            @if(!hideHelp) {
+            <ion-icon name="information-outline" size="small" class="ms-auto text-dark bg-warning rounded-circle"
+              style="cursor: pointer;"
+              (click)="popoverEvent = $event; isHelpPopoverOpen = true; $event.stopPropagation()">
+            </ion-icon>
+            }
+          </ion-item>
+          <div slot="content">
+            <ng-container *ngTemplateOutlet="localBackupCardContent"></ng-container>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+    </ion-card-content>
+    } @else {
     <ion-card-header class="py-2">
       <ion-card-title style="font-size: 1.1rem;">
-        <div class="d-flex align-items-center"><ion-icon name="cloud-download-outline" color="primary" class="me-2"></ion-icon>
+        <div class="d-flex align-items-center"><ion-icon name="save-outline" color="primary" class="me-2"></ion-icon>
           <span>Local Backup</span>
 
           @if(!hideHelp) {
-          <ion-icon id="help-section" name="information-outline" size="small"
-            class="ms-auto text-dark bg-warning rounded-circle" style="cursor: pointer;">
+          <ion-icon name="information-outline" size="small" class="ms-auto text-dark bg-warning rounded-circle"
+            style="cursor: pointer;"
+            (click)="popoverEvent = $event; isHelpPopoverOpen = true; $event.stopPropagation()">
           </ion-icon>
           }
         </div>
@@ -145,29 +169,34 @@
     </ion-card-header>
 
     <ion-card-content>
-      <ion-item color="light">
-        <ion-select justify="space-between" interface="popover" label="Select file type" placeholder=""
-          [(ngModel)]="fileType">
-          <ion-select-option value="json">JSON</ion-select-option>
-          <ion-select-option value="excel">Excel (beta)</ion-select-option>
-        </ion-select>
-      </ion-item>
-
-      <div class="d-flex gap-2 mx-2 mb-1">
-        <ion-button class="flex-fill" (click)="exportData()">
-          <ion-icon name="share-outline" slot="start"></ion-icon>
-          Export Data
-        </ion-button>
-
-        <ion-button class="flex-fill" (click)="fileInput.click()">
-          <ion-icon name="download-outline" slot="start"></ion-icon>
-          Import Data
-        </ion-button>
-      </div>
+      <ng-container *ngTemplateOutlet="localBackupCardContent"></ng-container>
     </ion-card-content>
+    }
   </ion-card>
 
-  <ion-popover trigger="help-section" side="bottom" alignment="end">
+  <ng-template #localBackupCardContent>
+    <ion-item color="light">
+      <ion-select interface="popover" label="Select file type" placeholder="" [(ngModel)]="fileType">
+        <ion-select-option value="json">JSON</ion-select-option>
+        <ion-select-option value="excel">Excel (beta)</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <div class="d-flex gap-2 mx-2 mb-1 mt-2">
+      <ion-button class="flex-fill" (click)="exportData()">
+        <ion-icon name="download-outline" slot="start"></ion-icon>
+        Export Data
+      </ion-button>
+
+      <ion-button class="flex-fill" (click)="fileInput.click()">
+        <ion-icon name="document-attach-outline" slot="start"></ion-icon>
+        Import Data
+      </ion-button>
+    </div>
+  </ng-template>
+
+  <ion-popover [isOpen]="isHelpPopoverOpen" [event]="popoverEvent" (didDismiss)="isHelpPopoverOpen = false"
+    side="bottom" alignment="end">
     <ng-template>
       <ion-content class="ion-padding">
         <div>
@@ -188,9 +217,8 @@
     (change)="importData($event.target)" [(ngModel)]="inputClientData" />
 
   <ng-template #manualBackupCard>
-    <ion-item color="light" class="px-0 rounded border-top border-bottom" lines="none">
-      <ion-select justify="space-between" interface="popover" label="Mode" placeholder="Merge"
-        [(ngModel)]="cloudSyncType">
+    <ion-item color="light" class="px-0 rounded border-top border-bottom">
+      <ion-select interface="popover" label="Mode" placeholder="Merge" [(ngModel)]="cloudSyncType">
         <ion-select-option value="soft">Merge</ion-select-option>
         <ion-select-option value="hard">Overwrite</ion-select-option>
       </ion-select>

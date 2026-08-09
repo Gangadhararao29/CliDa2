@@ -31,6 +31,8 @@ export class AccountBackupComponent implements OnInit {
   cloudSyncType: string = 'soft';
   fileType = 'json';
   inputClientData: any;
+  isHelpPopoverOpen = false;
+  popoverEvent: any = null;
 
   constructor(
     public alertController: AlertController,

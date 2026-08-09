@@ -1,0 +1,40 @@
+ion-card {
+  margin: 0 0 8px 0;
+  border: 1px solid var(--ion-color-light-shade, #e0e0e0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  &.error-card {
+    border-left: 4px solid var(--ion-color-danger, #eb445a);
+  }
+
+  &.warn-card {
+    border-left: 4px solid var(--ion-color-warning, #ffc409);
+  }
+}
+
+pre {
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow: hidden;
+  margin: 0;
+  font-family: inherit;
+}
+
+// Contrast adjustments for light and dark themes
+.text-danger-custom {
+  color: #c62828; // High contrast red for light background
+}
+
+.text-warning-custom {
+  color: #805000; // High contrast dark gold/amber for light background
+}
+
+[data-bs-theme="dark"] {
+  .text-danger-custom {
+    color: #ff6b6b; // Bright red for dark background
+  }
+
+  .text-warning-custom {
+    color: #ffd43b; // Bright yellow/gold for dark background
+  }
+}

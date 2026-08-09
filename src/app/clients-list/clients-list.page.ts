@@ -133,6 +133,18 @@ export class ClientsListPage {
   }
 
   async handleRefresh(event: any) {
+    if (this.tabSection == 'leases') {
+      if (this.leaseCalculator) {
+        await this.leaseCalculator.getLeaseClients();
+      }
+      event.target.complete();
+      this.commonService.presentToast(
+        'Leases list refreshed',
+        'successToastClass',
+        'refresh-outline',
+      );
+      return;
+    }
     this.getDisplayData(event);
   }
 

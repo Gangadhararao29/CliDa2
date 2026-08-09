@@ -3,6 +3,7 @@ export const localStorConsts = {
   calcsHistory: 'calcsHistory',
   theme: 'theme',
   logs: 'logs',
+  consoleLogs: 'console_logs',
   lastDataModified: 'lastDataModified',
   sortAndFilterParams: 'sortAndFilterParams',
   transactionPresets: 'transaction_presets',
@@ -20,7 +21,6 @@ export const localStorConsts = {
 
 // Utility functions for localStorage
 export class LocalStorageUtils {
-
   static getItem<T = any>(key: string): T | null {
     const item = localStorage.getItem(key);
     if (item === null) return null;

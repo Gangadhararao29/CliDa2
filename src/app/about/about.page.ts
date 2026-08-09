@@ -7,6 +7,7 @@ import { CommonService } from '../services/common.service';
 import { DataBaseService } from '../services/data-base.service';
 import { localStorConsts, LocalStorageUtils } from '../shared/local-storage';
 import { LeaseService } from '../services/lease.service';
+import { getDeviceInfo, DeviceInfo } from '../shared/device-info.util';
 
 @Component({
   selector: 'app-about',
@@ -27,6 +28,7 @@ export class AboutPage {
   theme: string;
   isWebVersion: boolean = false;
   isUpdateAvailable = false;
+  deviceInfo?: DeviceInfo;
 
   constructor(
     public alertController: AlertController,
@@ -41,20 +43,21 @@ export class AboutPage {
     this.isWebVersion = Capacitor.getPlatform() != 'web' ? false : true;
     this.theme = this.commonService.getTheme();
     this.loadingData = false;
+    this.deviceInfo = getDeviceInfo();
   }
 
   checkForUpdate() {
     this.isModalOpen = false;
     App.getInfo().then((suc) => {
       this.currentVersion = suc.version;
-      this.updateUpdateAvailability();
+      // this.updateUpdateAvailability();
     });
     this.httpClient
       .get('https://api.github.com/repos/gangadhararao29/clida2/releases')
       .subscribe((res: Array<any>) => {
         this.gitHubResponse = res;
         this.latestVersion = this.gitHubResponse[0].tag_name.slice(1);
-        this.updateUpdateAvailability();
+        // this.updateUpdateAvailability();
         this.isModalOpen = true;
       });
   }

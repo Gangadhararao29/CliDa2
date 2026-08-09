@@ -9,6 +9,8 @@ import * as sampleData from '../../../assets/clientsData.json';
 import { DataBaseService } from '../../services/data-base.service';
 import { LeaseService } from '../../services/lease.service';
 import { LocalStorageUtils, localStorConsts } from '../../shared/local-storage';
+import { Router } from '@angular/router';
+import { CommonService } from '../../services/common.service';
 
 @Component({
   selector: 'app-intro',
@@ -24,6 +26,8 @@ export class IntroComponent {
   constructor(
     private dataBaseService: DataBaseService,
     private leaseService: LeaseService,
+    private commonService: CommonService,
+    private router: Router,
   ) {}
 
   async loadSampleData() {
@@ -37,6 +41,8 @@ export class IntroComponent {
         behavior: 'smooth',
         block: 'center',
       });
+      // this.router.navigate(['/clients-list']);
     });
+    this.commonService.presentToast('Sample Data loaded Successfully');
   }
 }
